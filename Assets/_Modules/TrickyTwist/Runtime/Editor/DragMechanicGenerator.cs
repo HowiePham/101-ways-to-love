@@ -1,8 +1,5 @@
 #if UNITY_EDITOR
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using Mimi.Reflection.Extensions;
 using Spine.Unity;
 using UnityEditor;
 using UnityEngine;
@@ -13,8 +10,8 @@ public class DragMechanicGenerator
     private const string StaticPrefix = "static";
     private const string SpineItemPrefabPath = "Assets/_Levels/_Shared/Prefabs/Item_Spine_Cat.prefab";
     private const string StaticItemPrefabPath = "Assets/_Levels/_Shared/Prefabs/Item_Static.prefab";
-    private const string VfxPrefabPath = "Assets/_Levels/_Shared/Prefabs/Flash_star_ellow_white.prefab";
-    private const string BoxPrefabPath = "Assets/_Levels/_Shared/Prefabs/Box.prefab";
+    private const string TapPrefabPath = "Assets/_Levels/_Shared/Prefabs/Tap_Object.prefab";
+    private const string DragPrefabPath = "Assets/_Levels/_Shared/Prefabs/Drag_Object.prefab";
 
     public void GenerateDragMechanic(Transform playTransform, string levelPrefabPath, float psdPixelPerUnit)
     {

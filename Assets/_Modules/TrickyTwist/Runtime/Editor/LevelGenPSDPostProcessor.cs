@@ -8,10 +8,10 @@ public class LevelGenPSDPostProcessor : AssetPostprocessor
 {
     private const string SpinePrefix = "spine";
     private const string StaticPrefix = "static";
-    private const string SequenceObjectName = "Sequence";
+    private const string SequenceObjectName = "RootSequence";
     private const string PlayObjectName = "Play";
     private const string StaticObjectParentName = "StaticObjects";
-    private const string LevelTemplatePath = "Assets/_Levels/_Shared/Prefabs/LevelTemplate.prefab";
+    private const string LevelTemplatePath = "Assets/_Modules/_Shared/Prefabs/LevelTemplate.prefab";
 
     private static void OnPostprocessAllAssets(
         string[] importedAssets,
