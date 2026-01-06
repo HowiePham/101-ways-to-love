@@ -6,12 +6,10 @@ using UnityEngine;
 
 public class LevelGenPSDPostProcessor : AssetPostprocessor
 {
-    private const string SpinePrefix = "spine";
-    private const string StaticPrefix = "static";
+    private const string StaticPrefix = "Static";
     private const string SequenceObjectName = "RootSequence";
-    private const string PlayObjectName = "Play";
     private const string StaticObjectParentName = "StaticObjects";
-    private const string LevelTemplatePath = "Assets/_Modules/_Shared/Prefabs/LevelTemplate.prefab";
+    private const string LevelTemplatePath = "Assets/_Modules/Game/_Shared/Prefabs/LevelTemplate.prefab";
 
     private static void OnPostprocessAllAssets(
         string[] importedAssets,
@@ -30,7 +28,7 @@ public class LevelGenPSDPostProcessor : AssetPostprocessor
 
     private static void GenerateLevelFromPSD(string psdPath)
     {
-        // GenerateLevelPrefab(psdPath);
+        GenerateLevelPrefab(psdPath);
     }
 
     private static void GenerateLevelPrefab(string psdPath)
@@ -41,13 +39,13 @@ public class LevelGenPSDPostProcessor : AssetPostprocessor
 
         var levelTemplatePrefab = AssetDatabase.LoadAssetAtPath<GameObject>(LevelTemplatePath);
         var levelRootGO = (GameObject)PrefabUtility.InstantiatePrefab(levelTemplatePrefab);
-        Transform staticObjectParent = GetObjectParent(levelRootGO.transform, StaticObjectParentName);
+        Transform staticObjectParent = GetTransform(levelRootGO.transform, StaticObjectParentName);
 
         foreach (Transform child in psdRootGO.transform)
         {
             string objectName = child.name;
 
-            if (objectName.Contains(SpinePrefix) || objectName.Contains(StaticPrefix))
+            if (!objectName.Contains(StaticPrefix))
             {
                 continue;
             }
@@ -63,34 +61,34 @@ public class LevelGenPSDPostProcessor : AssetPostprocessor
 
     private static void GenerateLevelMechanics(string psdPath, GameObject levelRootGO, float psdPixelPerUnit)
     {
-        string levelDataPath = Path.GetDirectoryName(psdPath);
-        string levelPath = Path.GetDirectoryName(levelDataPath);
+        string levelPath = Path.GetDirectoryName(psdPath);
+        Debug.Log($"--- (GENERATOR) Level Path: {levelPath}");
 
         GenerateDragMechanic(levelRootGO.transform, levelPath, psdPixelPerUnit);
     }
 
     private static void GenerateDragMechanic(Transform levelRoot, string levelPath, float psdPixelPerUnit)
     {
-        Transform sequenceTransform = GetObjectParent(levelRoot, SequenceObjectName);
-        Transform playTransform = GetObjectParent(sequenceTransform, PlayObjectName);
+        Transform sequenceTransform = GetTransform(levelRoot, SequenceObjectName);
 
         string prefabPath = Path.Combine(levelPath, "Prefabs") + Path.DirectorySeparatorChar;
+        Debug.Log($"--- (GENERATOR) Prefab Path: {prefabPath}");
 
-        if (!Directory.Exists(prefabPath))
-        {
-            Directory.CreateDirectory(prefabPath);
-        }
-
-        var dragMechanicGenerator = new DragMechanicGenerator();
-        dragMechanicGenerator.GenerateDragMechanic(playTransform, prefabPath, psdPixelPerUnit);
+        // if (!Directory.Exists(prefabPath))
+        // {
+        //     Directory.CreateDirectory(prefabPath);
+        // }
+        //
+        // var dragMechanicGenerator = new DragMechanicGenerator();
+        // dragMechanicGenerator.GenerateDragMechanic(sequenceTransform, prefabPath, psdPixelPerUnit);
     }
 
-    private static Transform GetObjectParent(Transform levelRoot, string parentName)
+    private static Transform GetTransform(Transform levelRoot, string name)
     {
         foreach (Transform child in levelRoot)
         {
             GameObject childGameObject = child.gameObject;
-            if (childGameObject.name.Equals(parentName))
+            if (childGameObject.name.Equals(name))
             {
                 return child;
             }
