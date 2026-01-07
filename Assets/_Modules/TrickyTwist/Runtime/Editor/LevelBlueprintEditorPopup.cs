@@ -8,7 +8,7 @@ public class LevelBlueprintEditorPopup : EditorWindow
 
     public static void ShowWindow()
     {
-        var window = GetWindow<LevelBlueprintEditorPopup>(true, "Select Level", true);
+        var window = GetWindow<LevelBlueprintEditorPopup>(true, "Select Level Blueprint", true);
         window.minSize = new Vector2(500, 300);
         window.maxSize = new Vector2(5000, 3000);
         window.ShowPopup();
