@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using CandyCoded.HapticFeedback;
 using MEC;
 
 namespace Mimi.Services.ScriptableObject.Vibration
@@ -29,20 +28,20 @@ namespace Mimi.Services.ScriptableObject.Vibration
 
         public void PlayLoopDefault()
         {
-            if (this.enabled)
-                HapticFeedback.MediumFeedback();
+            if (this.enabled){}
+                // HapticFeedback.MediumFeedback();
         }
 
         public void PlayLoopStrong()
         {
-            if (this.enabled)
-                HapticFeedback.HeavyFeedback();
+            if (this.enabled){}
+                // HapticFeedback.HeavyFeedback();
         }
 
         public void PlayLoopWeak()
         {
-            if (this.enabled)
-                HapticFeedback.LightFeedback();
+            if (this.enabled){}
+                // HapticFeedback.LightFeedback();
         }
 
         public void Stop()
@@ -64,7 +63,7 @@ namespace Mimi.Services.ScriptableObject.Vibration
             float elapsed = 0f;
             while (elapsed < duration)
             {
-                HapticFeedback.MediumFeedback();
+                // HapticFeedback.MediumFeedback();
                 yield return Timing.WaitForSeconds(0.1f);
                 elapsed += 0.1f;
             }
