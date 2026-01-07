@@ -3,6 +3,7 @@ using Mimi.VisualActions.Dragging;
 using Mimi.VisualActions.Spines;
 using Mimi.VisualActions.Tapping;
 using Spine.Unity;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using VisualActions.Areas;
@@ -68,7 +69,6 @@ public class MechanicBlueprintEditorWindow : EditorWindow
 
         Debug.Log($"Creating Mechanic Blueprint: {menuName} --- Interactable Object: {this.objectName}");
         var blueprintObject = (GameObject)PrefabUtility.InstantiatePrefab(blueprintTemplate);
-        blueprintObject.name = $"{blueprintObject.name}_{this.objectName}";
 
         if (menuName.Contains("Drag"))
         {
@@ -115,10 +115,12 @@ public class MechanicBlueprintEditorWindow : EditorWindow
 
         var checkTapArea = blueprintObject.GetComponentInChildren<TapArea>();
         checkTapArea.SetField("target", boxArea, AccessModifier.Private);
-        checkTapArea.name = $"{checkTapArea.name}_{this.objectName}";
 
         var gameObjects = new GameObject[] { boxArea.gameObject };
         HandleSetActiveCommandInMechanic(blueprintObject, gameObjects);
+        
+        AddAutoRenameComponent(blueprintObject, boxArea.gameObject, $"{blueprintObject.name}", "TapArea");
+        AddAutoRenameComponent(checkTapArea.gameObject, boxArea.gameObject, $"{checkTapArea.name}", "TapArea");
     }
 
     private void HandleDragMechanicBlueprint(GameObject blueprintObject)
@@ -126,17 +128,28 @@ public class MechanicBlueprintEditorWindow : EditorWindow
         var draggableObjectTemplate = AssetDatabase.LoadAssetAtPath<GameObject>($"{DraggableObjectBlueprintAddress}");
         var draggableObject = (GameObject)PrefabUtility.InstantiatePrefab(draggableObjectTemplate);
         draggableObject.name = $"Draggable_{this.objectName}";
-
+        
         BoxArea boxArea = CreateBoxArea();
-        boxArea.name = $"BoxDestination_{this.objectName}";
+        boxArea.name = $"BoxDestination";
 
         var insideArea2D = blueprintObject.GetComponentInChildren<InsideArea2D>();
         insideArea2D.SetField("checkTransform", draggableObject.transform, AccessModifier.Private);
         insideArea2D.SetField("targetArea", boxArea, AccessModifier.Private);
-        insideArea2D.name = $"{insideArea2D.name}_{this.objectName}";
 
         var gameObjects = new GameObject[] { draggableObject, boxArea.gameObject };
         HandleSetActiveCommandInMechanic(blueprintObject, gameObjects);
+
+        AddAutoRenameComponent(blueprintObject, draggableObject, $"{blueprintObject.name}", "Draggable");
+        AddAutoRenameComponent(boxArea.gameObject, draggableObject, $"{boxArea.name}", "Draggable");
+        AddAutoRenameComponent(insideArea2D.gameObject, draggableObject, $"{insideArea2D.name}", "Draggable");
+    }
+
+    private void AddAutoRenameComponent(GameObject gameObject, GameObject targetObject, string prefix, string removeString)
+    {
+        var boxAutoRename = gameObject.gameObject.AddComponent<AutoRenameFollow>();
+        boxAutoRename.SetField("target", targetObject, AccessModifier.Private);
+        boxAutoRename.SetField("prefix", prefix, AccessModifier.Private);
+        boxAutoRename.SetField("removeString", removeString, AccessModifier.Private);
     }
 
     private void HandleSetActiveCommandInMechanic(GameObject blueprintObject, GameObject[] gameObjects)
@@ -155,7 +168,6 @@ public class MechanicBlueprintEditorWindow : EditorWindow
         var boxArea2D = boxAreaObject.AddComponent<BoxArea>();
         boxArea2D.transform.localPosition = Vector3.zero;
         boxArea2D.SetField("boxCollider", boxArea2D.GetComponent<BoxCollider2D>(), AccessModifier.Private);
-        boxArea2D.name = $"TapArea_{this.objectName}";
 
         return boxArea2D;
     }

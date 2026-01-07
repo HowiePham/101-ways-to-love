@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1779133680217707954}
   - component: {fileID: 8034610931067395334}
   - component: {fileID: 618473704101537003}
+  - component: {fileID: 4365713939897351120}
   m_Layer: 0
   m_Name: BoxDestination_B
   m_TagString: Untagged
@@ -93,6 +94,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   size: {x: 1, y: 1}
   boxCollider: {fileID: 8034610931067395334}
+--- !u!114 &4365713939897351120
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 153277573724079007}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8bb19d5bd0b42faa62b5fe31ec59152, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 6003009664287145314}
+  prefix: BoxDestination
+  removeString: Draggable
 --- !u!1 &3648224296506549507
 GameObject:
   m_ObjectHideFlags: 0
@@ -156,6 +172,7 @@ GameObject:
   - component: {fileID: 1494349103453157248}
   - component: {fileID: 5930552298106028583}
   - component: {fileID: 4127432209019713190}
+  - component: {fileID: 5734967743325480414}
   m_Layer: 0
   m_Name: BoxDestination_A
   m_TagString: Untagged
@@ -238,6 +255,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   size: {x: 1, y: 1}
   boxCollider: {fileID: 5930552298106028583}
+--- !u!114 &5734967743325480414
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4035094164332645558}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8bb19d5bd0b42faa62b5fe31ec59152, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 327938475907580889}
+  prefix: BoxDestination
+  removeString: Draggable
 --- !u!1 &6845320037113192563
 GameObject:
   m_ObjectHideFlags: 0
@@ -500,18 +532,41 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7821646969815505242, guid: b36244a8e4f8e2d4880c6439129688ce, type: 3}
       propertyPath: m_Name
-      value: Drag_Back_B
+      value: Drag_False_B
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7821646969815505242, guid: b36244a8e4f8e2d4880c6439129688ce, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4582435280929340227}
   m_SourcePrefab: {fileID: 100100000, guid: b36244a8e4f8e2d4880c6439129688ce, type: 3}
 --- !u!4 &6254934666956653279 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6361353927456907161, guid: b36244a8e4f8e2d4880c6439129688ce, type: 3}
   m_PrefabInstance: {fileID: 1046502256471481670}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &7064457022548050972 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7821646969815505242, guid: b36244a8e4f8e2d4880c6439129688ce, type: 3}
+  m_PrefabInstance: {fileID: 1046502256471481670}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4582435280929340227
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7064457022548050972}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8bb19d5bd0b42faa62b5fe31ec59152, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 6003009664287145314}
+  prefix: Drag_False
+  removeString: Draggable
 --- !u!1001 &1583573041956369281
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -591,8 +646,31 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6466137714906184804, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6374816464897976521}
   m_SourcePrefab: {fileID: 100100000, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
+--- !u!1 &5495991011547844581 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6466137714906184804, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
+  m_PrefabInstance: {fileID: 1583573041956369281}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6374816464897976521
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5495991011547844581}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8bb19d5bd0b42faa62b5fe31ec59152, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 327938475907580889}
+  prefix: Drag_True
+  removeString: Draggable
 --- !u!4 &8683412320317819174 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7888149533098179239, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
@@ -648,7 +726,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6520461475559934217, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
       propertyPath: m_Name
-      value: Sprite_Draggable_B
+      value: Sprite_B
       objectReference: {fileID: 0}
     - target: {fileID: 8941882117890696608, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
       propertyPath: m_Name
@@ -719,7 +797,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6520461475559934217, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
       propertyPath: m_Name
-      value: Sprite_Draggable_A
+      value: Sprite_A
       objectReference: {fileID: 0}
     - target: {fileID: 8941882117890696608, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
       propertyPath: m_Name
