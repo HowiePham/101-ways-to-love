@@ -1,14 +1,14 @@
 using UnityEditor;
 using UnityEngine;
 
-public class LevelBlueprintEditorPopup : EditorWindow
+public class LevelBlueprintEditorWindow : EditorWindow
 {
     private const string LevelBlueprintAddress = "Assets/_Modules/Game/_Shared/Prefabs/LevelBlueprint/";
     private string levelName = "";
 
     public static void ShowWindow()
     {
-        var window = GetWindow<LevelBlueprintEditorPopup>(true, "Select Level Blueprint", true);
+        var window = GetWindow<LevelBlueprintEditorWindow>(true, "Select Level Blueprint", true);
         window.minSize = new Vector2(500, 300);
         window.maxSize = new Vector2(5000, 3000);
         window.ShowPopup();

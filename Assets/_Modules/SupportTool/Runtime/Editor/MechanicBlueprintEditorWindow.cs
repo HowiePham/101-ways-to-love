@@ -8,7 +8,7 @@ using UnityEngine;
 using VisualActions.Areas;
 using VisualActions.VisualActions.GameObjects.Runtime;
 
-public class MechanicBlueprintEditorPopup : EditorWindow
+public class MechanicBlueprintEditorWindow : EditorWindow
 {
     private const string DragBlueprintAddress = "Assets/_Modules/Game/_Shared/Prefabs/Drag/";
     private const string DraggableObjectBlueprintAddress = "Assets/_Modules/Game/_Shared/Prefabs/Drag/Draggable_Object.prefab";
@@ -17,7 +17,7 @@ public class MechanicBlueprintEditorPopup : EditorWindow
 
     public static void ShowWindow()
     {
-        var window = GetWindow<MechanicBlueprintEditorPopup>(true, "Select Mechanic Blueprint", true);
+        var window = GetWindow<MechanicBlueprintEditorWindow>(true, "Select Mechanic Blueprint", true);
         window.minSize = new Vector2(500, 300);
         window.maxSize = new Vector2(5000, 3000);
         window.ShowPopup();
