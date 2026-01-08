@@ -78,11 +78,9 @@ public class MechanicBlueprintEditorWindow : EditorWindow
         {
             HandleTapMechanicBlueprint(blueprintObject);
         }
-
-        HandleAnimInMechanic(blueprintObject);
     }
 
-    private void HandleAnimInMechanic(GameObject blueprintObject)
+    private void HandleAnimInMechanic(GameObject blueprintObject, GameObject target)
     {
         var skeletonAnimation = FindAnyObjectByType<SkeletonAnimation>();
         if (skeletonAnimation == null)
@@ -96,7 +94,8 @@ public class MechanicBlueprintEditorWindow : EditorWindow
         {
             WaitSpineAnim waitAnim = waitSpineAnims[i];
             waitAnim.SetField("skeletonAnimation", skeletonAnimation, AccessModifier.Private);
-            waitAnim.name = $"{waitAnim.name}_{this.objectName}_{i + 1}";
+            waitAnim.name = $"{waitAnim.name}_{i + 1}";
+            AddAutoRenameComponent(waitAnim.gameObject, target, $"{waitAnim.name}", blueprintObject.name.Contains("Drag") ? "Draggable" : "TapArea");
         }
 
         PlaySpineAnim[] playSpineAnims = blueprintObject.GetComponentsInChildren<PlaySpineAnim>();
@@ -104,7 +103,8 @@ public class MechanicBlueprintEditorWindow : EditorWindow
         {
             PlaySpineAnim playAnim = playSpineAnims[i];
             playAnim.SetField("skeletonAnimation", skeletonAnimation, AccessModifier.Private);
-            playAnim.name = $"{playAnim.name}_{this.objectName}_{i + 1}";
+            playAnim.name = $"{playAnim.name}_{i + 1}";
+            AddAutoRenameComponent(playAnim.gameObject, target, $"{playAnim.name}", blueprintObject.name.Contains("Drag") ? "Draggable" : "TapArea");
         }
     }
 
@@ -118,7 +118,8 @@ public class MechanicBlueprintEditorWindow : EditorWindow
 
         var gameObjects = new GameObject[] { boxArea.gameObject };
         HandleSetActiveCommandInMechanic(blueprintObject, gameObjects);
-        
+        HandleAnimInMechanic(blueprintObject, boxArea.gameObject);
+
         AddAutoRenameComponent(blueprintObject, boxArea.gameObject, $"{blueprintObject.name}", "TapArea");
         AddAutoRenameComponent(checkTapArea.gameObject, boxArea.gameObject, $"{checkTapArea.name}", "TapArea");
     }
@@ -128,7 +129,7 @@ public class MechanicBlueprintEditorWindow : EditorWindow
         var draggableObjectTemplate = AssetDatabase.LoadAssetAtPath<GameObject>($"{DraggableObjectBlueprintAddress}");
         var draggableObject = (GameObject)PrefabUtility.InstantiatePrefab(draggableObjectTemplate);
         draggableObject.name = $"Draggable_{this.objectName}";
-        
+
         BoxArea boxArea = CreateBoxArea();
         boxArea.name = $"BoxDestination";
 
@@ -138,6 +139,7 @@ public class MechanicBlueprintEditorWindow : EditorWindow
 
         var gameObjects = new GameObject[] { draggableObject, boxArea.gameObject };
         HandleSetActiveCommandInMechanic(blueprintObject, gameObjects);
+        HandleAnimInMechanic(blueprintObject, draggableObject);
 
         AddAutoRenameComponent(blueprintObject, draggableObject, $"{blueprintObject.name}", "Draggable");
         AddAutoRenameComponent(boxArea.gameObject, draggableObject, $"{boxArea.name}", "Draggable");
@@ -158,7 +160,7 @@ public class MechanicBlueprintEditorWindow : EditorWindow
         foreach (SetActiveMultipleGameObjectsAction setActive in setActiveCommand)
         {
             setActive.SetField("gameObjects", gameObjects, AccessModifier.Private);
-            setActive.name = $"{setActive.name}_{this.objectName}";
+            // setActive.name = $"{setActive.name}_{this.objectName}";
         }
     }
 

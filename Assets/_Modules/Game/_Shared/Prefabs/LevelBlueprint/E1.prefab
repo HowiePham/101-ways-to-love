@@ -484,7 +484,7 @@ PrefabInstance:
       objectReference: {fileID: 6003009664287145314}
     - target: {fileID: 5221744764727703246, guid: b36244a8e4f8e2d4880c6439129688ce, type: 3}
       propertyPath: m_Name
-      value: CheckInsideArea_B
+      value: CheckInside_B
       objectReference: {fileID: 0}
     - target: {fileID: 5254898027372093374, guid: b36244a8e4f8e2d4880c6439129688ce, type: 3}
       propertyPath: 'gameObjects.Array.data[0]'
@@ -530,6 +530,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7247917771158818040, guid: b36244a8e4f8e2d4880c6439129688ce, type: 3}
+      propertyPath: m_Name
+      value: PlayAndWaitAnim_B
+      objectReference: {fileID: 0}
     - target: {fileID: 7821646969815505242, guid: b36244a8e4f8e2d4880c6439129688ce, type: 3}
       propertyPath: m_Name
       value: Drag_False_B
@@ -541,7 +545,56 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7821646969815505242, guid: b36244a8e4f8e2d4880c6439129688ce, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4582435280929340227}
+    - targetCorrespondingSourceObject: {fileID: 5221744764727703246, guid: b36244a8e4f8e2d4880c6439129688ce, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3715479380503763712}
+    - targetCorrespondingSourceObject: {fileID: 7247917771158818040, guid: b36244a8e4f8e2d4880c6439129688ce, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7977803443003028338}
+    - targetCorrespondingSourceObject: {fileID: 3847374519160252519, guid: b36244a8e4f8e2d4880c6439129688ce, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2670525582194680960}
   m_SourcePrefab: {fileID: 100100000, guid: b36244a8e4f8e2d4880c6439129688ce, type: 3}
+--- !u!1 &4314856346161722657 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3847374519160252519, guid: b36244a8e4f8e2d4880c6439129688ce, type: 3}
+  m_PrefabInstance: {fileID: 1046502256471481670}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2670525582194680960
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4314856346161722657}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8bb19d5bd0b42faa62b5fe31ec59152, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 0}
+  prefix: 
+  removeString: 
+--- !u!1 &5112343636192340872 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5221744764727703246, guid: b36244a8e4f8e2d4880c6439129688ce, type: 3}
+  m_PrefabInstance: {fileID: 1046502256471481670}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &3715479380503763712
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5112343636192340872}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8bb19d5bd0b42faa62b5fe31ec59152, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 6003009664287145314}
+  prefix: CheckInside
+  removeString: Draggable
 --- !u!4 &6254934666956653279 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6361353927456907161, guid: b36244a8e4f8e2d4880c6439129688ce, type: 3}
@@ -567,6 +620,26 @@ MonoBehaviour:
   target: {fileID: 6003009664287145314}
   prefix: Drag_False
   removeString: Draggable
+--- !u!1 &7642655358003515838 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7247917771158818040, guid: b36244a8e4f8e2d4880c6439129688ce, type: 3}
+  m_PrefabInstance: {fileID: 1046502256471481670}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7977803443003028338
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7642655358003515838}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8bb19d5bd0b42faa62b5fe31ec59152, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 6003009664287145314}
+  prefix: PlayAndWaitAnim
+  removeString: Draggable
 --- !u!1001 &1583573041956369281
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -591,9 +664,17 @@ PrefabInstance:
       propertyPath: skeletonAnimation
       value: 
       objectReference: {fileID: 7693626775238790723}
+    - target: {fileID: 5123041687453207942, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
+      propertyPath: m_Name
+      value: LoopAnim_A
+      objectReference: {fileID: 0}
     - target: {fileID: 6466137714906184804, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
       propertyPath: m_Name
       value: Drag_True_A
+      objectReference: {fileID: 0}
+    - target: {fileID: 6601654361307454106, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
+      propertyPath: m_Name
+      value: PlayAndWaitAnim_A
       objectReference: {fileID: 0}
     - target: {fileID: 7888149533098179239, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
       propertyPath: m_LocalPosition.x
@@ -641,7 +722,7 @@ PrefabInstance:
       objectReference: {fileID: 327938475907580889}
     - target: {fileID: 9027213350944740336, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
       propertyPath: m_Name
-      value: CheckInsideArea_A
+      value: CheckInside_A
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -650,6 +731,15 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6466137714906184804, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6374816464897976521}
+    - targetCorrespondingSourceObject: {fileID: 9027213350944740336, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4767684492211565030}
+    - targetCorrespondingSourceObject: {fileID: 6601654361307454106, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 98473135924092588}
+    - targetCorrespondingSourceObject: {fileID: 5123041687453207942, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8437659344040018581}
   m_SourcePrefab: {fileID: 100100000, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
 --- !u!1 &5495991011547844581 stripped
 GameObject:
@@ -670,6 +760,66 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 327938475907580889}
   prefix: Drag_True
+  removeString: Draggable
+--- !u!1 &5648695773472368923 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6601654361307454106, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
+  m_PrefabInstance: {fileID: 1583573041956369281}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &98473135924092588
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5648695773472368923}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8bb19d5bd0b42faa62b5fe31ec59152, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 327938475907580889}
+  prefix: PlayAndWaitAnim
+  removeString: Draggable
+--- !u!1 &5972133810930400775 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5123041687453207942, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
+  m_PrefabInstance: {fileID: 1583573041956369281}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8437659344040018581
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5972133810930400775}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8bb19d5bd0b42faa62b5fe31ec59152, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 327938475907580889}
+  prefix: LoopAnim
+  removeString: Draggable
+--- !u!1 &7547718499159253105 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9027213350944740336, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
+  m_PrefabInstance: {fileID: 1583573041956369281}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4767684492211565030
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7547718499159253105}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8bb19d5bd0b42faa62b5fe31ec59152, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 327938475907580889}
+  prefix: CheckInside
   removeString: Draggable
 --- !u!4 &8683412320317819174 stripped
 Transform:

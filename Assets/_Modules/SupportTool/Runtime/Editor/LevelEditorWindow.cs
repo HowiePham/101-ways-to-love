@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using Mimi.Interactions.Dragging;
 using Spine.Unity;
 using UnityEditor;
 using UnityEngine;
@@ -89,7 +91,48 @@ public class LevelEditorWindow : EditorWindow
             return;
         }
 
-        DrawObjectRenderersSection(this.levelEditor.InteractableObjectRenderers.ToArray());
+        BaseDraggable[] interactableObjects = this.levelEditor.BaseDraggables;
+        List<SpriteRenderer> renderers = this.levelEditor.InteractableObjectRenderers;
+
+        if (renderers == null || renderers.Count == 0)
+        {
+            EditorGUILayout.HelpBox("No objects found", MessageType.Info);
+            return;
+        }
+
+        EditorGUI.indentLevel++;
+
+        for (int i = 0; i < renderers.Count; i++)
+        {
+            SpriteRenderer renderer = renderers[i];
+            BaseDraggable interactableObject = interactableObjects[i];
+            if (renderer == null) continue;
+
+            EditorGUILayout.BeginVertical("box");
+            EditorGUILayout.BeginHorizontal();
+
+            EditorGUILayout.LabelField($"{i + 1}. ", EditorStyles.boldLabel, GUILayout.Width(25));
+            string newName = EditorGUILayout.TextField(interactableObject.gameObject.name);
+
+            if (!newName.Equals(renderer.gameObject.name))
+            {
+                Undo.RecordObject(interactableObject.gameObject, "Change Name");
+                interactableObject.gameObject.name = newName;
+                EditorUtility.SetDirty(interactableObject.gameObject);
+            }
+
+            if (GUILayout.Button("Select in Hierarchy", GUILayout.Width(150)))
+            {
+                Selection.activeGameObject = interactableObject.gameObject;
+                EditorGUIUtility.PingObject(interactableObject.gameObject);
+            }
+
+            EditorGUILayout.EndHorizontal();
+
+            DrawObjectRenderersSection(renderer);
+        }
+
+        EditorGUI.indentLevel--;
     }
 
     private void DrawStaticObjectsSection()
@@ -100,11 +143,7 @@ public class LevelEditorWindow : EditorWindow
             return;
         }
 
-        DrawObjectRenderersSection(this.levelEditor.StaticObjectRenderers);
-    }
-
-    private void DrawObjectRenderersSection(SpriteRenderer[] renderers)
-    {
+        SpriteRenderer[] renderers = this.levelEditor.StaticObjectRenderers;
         if (renderers == null || renderers.Length == 0)
         {
             EditorGUILayout.HelpBox("No objects found", MessageType.Info);
@@ -120,7 +159,16 @@ public class LevelEditorWindow : EditorWindow
 
             EditorGUILayout.BeginVertical("box");
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField($"{i + 1}. {renderer.gameObject.name}", EditorStyles.boldLabel);
+
+            EditorGUILayout.LabelField($"{i + 1}. ", EditorStyles.boldLabel, GUILayout.Width(25));
+            string newName = EditorGUILayout.TextField(renderer.gameObject.name);
+
+            if (!newName.Equals(renderer.gameObject.name))
+            {
+                Undo.RecordObject(renderer.gameObject, "Change Name");
+                renderer.gameObject.name = newName;
+                EditorUtility.SetDirty(renderer.gameObject);
+            }
 
             if (GUILayout.Button("Select in Hierarchy", GUILayout.Width(150)))
             {
@@ -130,26 +178,31 @@ public class LevelEditorWindow : EditorWindow
 
             EditorGUILayout.EndHorizontal();
 
-            EditorGUILayout.BeginHorizontal();
-            DrawSpriteSection(renderer);
-            EditorGUILayout.EndHorizontal();
-
-            EditorGUILayout.BeginHorizontal();
-            DrawSortingLayerSection(renderer);
-            EditorGUILayout.EndHorizontal();
-
-            EditorGUILayout.BeginHorizontal();
-            DrawOrderInLayerSection(renderer);
-            EditorGUILayout.EndHorizontal();
-
-            EditorGUILayout.EndVertical();
-            EditorGUILayout.Space(5);
+            DrawObjectRenderersSection(renderer);
         }
+    }
+
+    private void DrawObjectRenderersSection(SpriteRenderer renderer)
+    {
+        EditorGUILayout.BeginHorizontal();
+        DrawSpriteSection(renderer);
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        DrawSortingLayerSection(renderer);
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        DrawOrderInLayerSection(renderer);
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.EndVertical();
+        EditorGUILayout.Space(5);
 
         EditorGUI.indentLevel--;
     }
 
-    private static void DrawSpriteSection(SpriteRenderer renderer)
+    private void DrawSpriteSection(SpriteRenderer renderer)
     {
         EditorGUILayout.LabelField("Sprite:", GUILayout.Width(60));
 
@@ -168,7 +221,7 @@ public class LevelEditorWindow : EditorWindow
         }
     }
 
-    private static void DrawOrderInLayerSection(SpriteRenderer renderer)
+    private void DrawOrderInLayerSection(SpriteRenderer renderer)
     {
         EditorGUILayout.LabelField("Order In Layer:", GUILayout.Width(60));
 
