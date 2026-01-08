@@ -1,13 +1,11 @@
 using Mimi.Reflection.Extensions;
-using Mimi.VisualActions.Spines;
 using Mimi.VisualActions.Tapping;
 using Spine.Unity;
 using UnityEditor;
 using UnityEngine;
 using VisualActions.Areas;
-using VisualActions.VisualActions.GameObjects.Runtime;
 
-public class TapMechanicGenerator
+public class TapMechanicGenerator : MechanicGenerator
 {
     private const string TapBlueprintAddress = "Assets/_Modules/Game/_Shared/Prefabs/Tap/";
 
@@ -19,10 +17,24 @@ public class TapMechanicGenerator
             return;
         }
 
-        HandleTapMechanicBlueprint(blueprintObject, objectName, skeletonAnimation);
+        BoxArea boxArea = CreateBoxArea();
+        boxArea.name = $"TapArea_{objectName}";
+
+        HandleTapMechanicBlueprint(blueprintObject, skeletonAnimation, boxArea, "TapArea");
     }
 
-    public GameObject CreateMechanicBlueprint(string menuName)
+    public void CreateMechanic(string menuName, SkeletonAnimation skeletonAnimation, BaseArea baseArea, string suffix)
+    {
+        GameObject blueprintObject = CreateMechanicBlueprint(menuName);
+        if (blueprintObject == null)
+        {
+            return;
+        }
+
+        HandleTapMechanicBlueprint(blueprintObject, skeletonAnimation, baseArea, suffix);
+    }
+
+    private GameObject CreateMechanicBlueprint(string menuName)
     {
         var blueprintTemplate = AssetDatabase.LoadAssetAtPath<GameObject>($"{TapBlueprintAddress}{menuName}.prefab");
 
@@ -36,80 +48,16 @@ public class TapMechanicGenerator
         return blueprintObject;
     }
 
-    private void HandleTapMechanicBlueprint(GameObject blueprintObject, string objectName, SkeletonAnimation skeletonAnimation)
+    private void HandleTapMechanicBlueprint(GameObject blueprintObject, SkeletonAnimation skeletonAnimation, BaseArea baseArea, string suffix)
     {
-        BoxArea boxArea = CreateBoxArea();
-        boxArea.name = $"TapArea_{objectName}";
-
         var checkTapArea = blueprintObject.GetComponentInChildren<TapArea>();
-        checkTapArea.SetField("target", boxArea, AccessModifier.Private);
+        checkTapArea.SetField("target", baseArea, AccessModifier.Private);
 
-        var gameObjects = new GameObject[] { boxArea.gameObject };
+        var gameObjects = new GameObject[] { baseArea.gameObject };
         HandleSetActiveCommandInMechanic(blueprintObject, gameObjects);
-        HandleAnimInMechanic(blueprintObject, boxArea.gameObject, skeletonAnimation);
+        HandleAnimInMechanic(blueprintObject, baseArea.gameObject, skeletonAnimation, suffix);
 
-        AddAutoRenameComponent(blueprintObject, boxArea.gameObject, $"{blueprintObject.name}", "TapArea");
-        AddAutoRenameComponent(checkTapArea.gameObject, boxArea.gameObject, $"{checkTapArea.name}", "TapArea");
-    }
-
-    private void AddAutoRenameComponent(GameObject gameObject, GameObject targetObject, string prefix, string removeString)
-    {
-        var boxAutoRename = gameObject.gameObject.AddComponent<AutoRenameFollow>();
-        boxAutoRename.SetField("target", targetObject, AccessModifier.Private);
-        boxAutoRename.SetField("prefix", prefix, AccessModifier.Private);
-        boxAutoRename.SetField("removeString", removeString, AccessModifier.Private);
-    }
-
-    private void HandleSetActiveCommandInMechanic(GameObject blueprintObject, GameObject[] gameObjects)
-    {
-        SetActiveMultipleGameObjectsAction[] setActiveCommand = blueprintObject.GetComponentsInChildren<SetActiveMultipleGameObjectsAction>();
-        foreach (SetActiveMultipleGameObjectsAction setActive in setActiveCommand)
-        {
-            setActive.SetField("gameObjects", gameObjects, AccessModifier.Private);
-        }
-    }
-
-    private BoxArea CreateBoxArea()
-    {
-        var boxAreaObject = new GameObject();
-        var boxArea2D = boxAreaObject.AddComponent<BoxArea>();
-        boxArea2D.transform.localPosition = Vector3.zero;
-        boxArea2D.SetField("boxCollider", boxArea2D.GetComponent<BoxCollider2D>(), AccessModifier.Private);
-
-        return boxArea2D;
-    }
-
-    private void HandleAnimInMechanic(GameObject blueprintObject, GameObject target, SkeletonAnimation skeletonAnimation)
-    {
-        if (skeletonAnimation == null)
-        {
-            Debug.Log($"There is no skeleton animation in this scene!");
-        }
-
-        WaitSpineAnim[] waitSpineAnims = blueprintObject.GetComponentsInChildren<WaitSpineAnim>();
-        for (var i = 0; i < waitSpineAnims.Length; i++)
-        {
-            WaitSpineAnim waitAnim = waitSpineAnims[i];
-            if (skeletonAnimation != null)
-            {
-                waitAnim.SetField("skeletonAnimation", skeletonAnimation, AccessModifier.Private);
-            }
-
-            waitAnim.name = $"{waitAnim.name}_{i + 1}";
-            AddAutoRenameComponent(waitAnim.gameObject, target, $"{waitAnim.name}", "TapArea");
-        }
-
-        PlaySpineAnim[] playSpineAnims = blueprintObject.GetComponentsInChildren<PlaySpineAnim>();
-        for (var i = 0; i < playSpineAnims.Length; i++)
-        {
-            PlaySpineAnim playAnim = playSpineAnims[i];
-            if (skeletonAnimation != null)
-            {
-                playAnim.SetField("skeletonAnimation", skeletonAnimation, AccessModifier.Private);
-            }
-
-            playAnim.name = $"{playAnim.name}_{i + 1}";
-            AddAutoRenameComponent(playAnim.gameObject, target, $"{playAnim.name}", "TapArea");
-        }
+        AddAutoRenameComponent(blueprintObject, baseArea.gameObject, $"{blueprintObject.name}", suffix);
+        AddAutoRenameComponent(checkTapArea.gameObject, baseArea.gameObject, $"{checkTapArea.name}", suffix);
     }
 }

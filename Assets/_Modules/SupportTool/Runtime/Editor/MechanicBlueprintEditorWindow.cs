@@ -7,6 +7,7 @@ public class MechanicBlueprintEditorWindow : EditorWindow
     private string objectName = "";
     private DragMechanicGenerator dragMechanicGenerator;
     private TapMechanicGenerator tapMechanicGenerator;
+    private TimingMechanicGenerator timingMechanicGenerator;
 
     public static void ShowWindow()
     {
@@ -28,7 +29,7 @@ public class MechanicBlueprintEditorWindow : EditorWindow
         DrawButton("Drag_False", () => OnMenuItemClicked("Drag_False"));
         DrawButton("Tap_True", () => OnMenuItemClicked("Tap_True"));
         DrawButton("Tap_False", () => OnMenuItemClicked("Tap_False"));
-        DrawButton("Tap_Moving_True", () => OnMenuItemClicked("Timing"));
+        DrawButton("Tap_True_Moving", () => OnMenuItemClicked("Tap_True_Moving"));
     }
 
     private void DrawButton(string label, System.Action onClick)
@@ -49,10 +50,15 @@ public class MechanicBlueprintEditorWindow : EditorWindow
             Debug.LogError($"You have to name this interactable object");
             return;
         }
-        
+
         var skeletonAnimation = FindAnyObjectByType<SkeletonAnimation>();
 
-        if (menuName.Contains("Drag"))
+        if (menuName.Contains("Moving"))
+        {
+            this.timingMechanicGenerator = new TimingMechanicGenerator();
+            this.timingMechanicGenerator.CreateMechanic(menuName, this.objectName, skeletonAnimation);
+        }
+        else if (menuName.Contains("Drag"))
         {
             this.dragMechanicGenerator = new DragMechanicGenerator();
             this.dragMechanicGenerator.CreateMechanic(menuName, this.objectName, skeletonAnimation);
@@ -60,7 +66,7 @@ public class MechanicBlueprintEditorWindow : EditorWindow
         else if (menuName.Contains("Tap"))
         {
             this.tapMechanicGenerator = new TapMechanicGenerator();
-            this.tapMechanicGenerator.CreateMechanic(menuName,this.objectName,skeletonAnimation);
+            this.tapMechanicGenerator.CreateMechanic(menuName, this.objectName, skeletonAnimation);
         }
     }
 }
