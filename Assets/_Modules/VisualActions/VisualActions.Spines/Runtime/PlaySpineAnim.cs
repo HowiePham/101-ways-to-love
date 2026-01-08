@@ -13,7 +13,7 @@ namespace Mimi.VisualActions.Spines
 
         protected override async UniTask OnExecuting(CancellationToken cancellationToken)
         {
-            this.skeletonAnimation.AnimationState.SetAnimation(this.track, this.Animation, this.loop);
+            this.SkeletonAnimation.AnimationState.SetAnimation(this.track, this.Animation, this.loop);
             await UniTask.CompletedTask;
         }
     }

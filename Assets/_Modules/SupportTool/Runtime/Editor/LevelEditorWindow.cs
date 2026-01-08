@@ -116,6 +116,20 @@ public class LevelEditorWindow : EditorWindow
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField($"{i + 1}. {animMechanic.gameObject.name}", EditorStyles.boldLabel);
 
+            var newAnim = (SkeletonAnimation)EditorGUILayout.ObjectField(
+                animMechanic.SkeletonAnimation,
+                typeof(SkeletonAnimation),
+                false,
+                GUILayout.Height(18)
+            );
+
+            if (newAnim != animMechanic.SkeletonAnimation)
+            {
+                Undo.RecordObject(animMechanic, "Change Spine Animation");
+                animMechanic.SkeletonAnimation = newAnim;
+                EditorUtility.SetDirty(animMechanic);
+            }
+
             if (GUILayout.Button("Select in Hierarchy", GUILayout.Width(150)))
             {
                 Selection.activeGameObject = animMechanic.gameObject;
@@ -334,13 +348,6 @@ public class LevelEditorWindow : EditorWindow
         {
             this.levelEditor.PrepareData();
             Repaint();
-        }
-
-        if (GUILayout.Button("Save Changes", GUILayout.Height(30)))
-        {
-            EditorUtility.SetDirty(this.levelEditor.gameObject);
-            AssetDatabase.SaveAssets();
-            EditorUtility.DisplayDialog("Success", "Changes saved!", "OK");
         }
 
         EditorGUILayout.EndHorizontal();

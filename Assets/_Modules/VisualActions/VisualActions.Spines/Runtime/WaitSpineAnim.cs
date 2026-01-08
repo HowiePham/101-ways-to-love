@@ -11,13 +11,13 @@ namespace Mimi.VisualActions.Spines
     {
         [SerializeField] private int track;
 
-        private bool IsAnimationComplete => this.skeletonAnimation.AnimationState.GetCurrent(this.track) == null ||
-                                            this.skeletonAnimation.AnimationState.GetCurrent(this.track).IsComplete;
+        private bool IsAnimationComplete => this.SkeletonAnimation.AnimationState.GetCurrent(this.track) == null ||
+                                            this.SkeletonAnimation.AnimationState.GetCurrent(this.track).IsComplete;
 
 
         protected override async UniTask OnExecuting(CancellationToken cancellationToken)
         {
-            this.skeletonAnimation.AnimationState.SetAnimation(this.track, this.Animation, false);
+            this.SkeletonAnimation.AnimationState.SetAnimation(this.track, this.Animation, false);
             try
             {
                 await UniTask.WaitUntil(() => IsAnimationComplete,

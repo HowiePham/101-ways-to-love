@@ -10,5 +10,11 @@ namespace Mimi.VisualActions.Spines
         protected new string animation;
 
         public string Animation => this.animation;
+
+        public SkeletonAnimation SkeletonAnimation
+        {
+            get => this.skeletonAnimation;
+            set => this.skeletonAnimation = value;
+        }
     }
 }

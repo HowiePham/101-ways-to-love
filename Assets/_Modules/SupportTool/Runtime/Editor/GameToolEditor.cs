@@ -3,7 +3,7 @@ using UnityEditor;
 
 public class GameToolEditor
 {
-    [MenuItem("GameObject/Visual Actions/101WaysToLove/LevelBlueprint")]
+    [MenuItem("GameObject/Visual Actions/101WaysToLove/Level Blueprint")]
     public static void CreateLevelBlueprint(MenuCommand menuCommand)
     {
         LevelBlueprintEditorWindow.ShowWindow();
