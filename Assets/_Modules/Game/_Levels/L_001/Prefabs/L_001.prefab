@@ -583,7 +583,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5123041687453207942, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
       propertyPath: m_Name
-      value: LoopAnim_Cancau
+      value: LoopAnim_1_Cancau
       objectReference: {fileID: 0}
     - target: {fileID: 5206804106069373490, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
       propertyPath: targetOrder
@@ -600,6 +600,10 @@ PrefabInstance:
     - target: {fileID: 6466137714906184804, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
       propertyPath: m_Name
       value: Drag_True_Cancau
+      objectReference: {fileID: 0}
+    - target: {fileID: 6601654361307454106, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
+      propertyPath: m_Name
+      value: PlayAndWaitAnim_1_Cancau
       objectReference: {fileID: 0}
     - target: {fileID: 7222015281071853189, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
       propertyPath: targetArea
@@ -700,8 +704,54 @@ PrefabInstance:
     - {fileID: 3904708385506606840, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
     - {fileID: 4051942120001677620, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6601654361307454106, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6534663933054916059}
+    - targetCorrespondingSourceObject: {fileID: 5123041687453207942, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2297756672382567804}
   m_SourcePrefab: {fileID: 100100000, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
+--- !u!1 &4690194258544573623 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5123041687453207942, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
+  m_PrefabInstance: {fileID: 436384695791038769}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2297756672382567804
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4690194258544573623}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8bb19d5bd0b42faa62b5fe31ec59152, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 7514861098964925323}
+  prefix: LoopAnim_1
+  removeString: Draggable
+--- !u!1 &6742891652423691179 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6601654361307454106, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
+  m_PrefabInstance: {fileID: 436384695791038769}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6534663933054916059
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6742891652423691179}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8bb19d5bd0b42faa62b5fe31ec59152, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 7514861098964925323}
+  prefix: PlayAndWaitAnim_1
+  removeString: Draggable
 --- !u!4 &7743393809000582038 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7888149533098179239, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
@@ -1030,6 +1080,10 @@ PrefabInstance:
       propertyPath: skeletonAnimation
       value: 
       objectReference: {fileID: 8897352557695829808}
+    - target: {fileID: 1962181981068023408, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
+      propertyPath: m_Name
+      value: LoopAnim_1_Phao
+      objectReference: {fileID: 0}
     - target: {fileID: 2749194107360934088, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
       propertyPath: gameObjects.Array.size
       value: 2
@@ -1218,6 +1272,10 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: 3.99
       objectReference: {fileID: 0}
+    - target: {fileID: 8317058356796643416, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
+      propertyPath: m_Name
+      value: PlayAndWaitAnim_1_Phao
+      objectReference: {fileID: 0}
     - target: {fileID: 8496093126217635951, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
       propertyPath: animation
       value: action5
@@ -1250,8 +1308,54 @@ PrefabInstance:
     - {fileID: 6331362191044854676, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
     - {fileID: 5687875023182739686, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8317058356796643416, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6448986385773679946}
+    - targetCorrespondingSourceObject: {fileID: 1962181981068023408, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1771176896290853899}
   m_SourcePrefab: {fileID: 100100000, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
+--- !u!1 &3118696138454673422 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8317058356796643416, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
+  m_PrefabInstance: {fileID: 6353441216116813910}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6448986385773679946
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3118696138454673422}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8bb19d5bd0b42faa62b5fe31ec59152, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 1746973428710129754}
+  prefix: PlayAndWaitAnim_1
+  removeString: Draggable
+--- !u!1 &4832616397518186022 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1962181981068023408, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
+  m_PrefabInstance: {fileID: 6353441216116813910}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1771176896290853899
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4832616397518186022}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8bb19d5bd0b42faa62b5fe31ec59152, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 1746973428710129754}
+  prefix: LoopAnim_1
+  removeString: Draggable
 --- !u!4 &6536205850472144977 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 188783436294459399, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}

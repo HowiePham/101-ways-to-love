@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Mimi.Interactions.Dragging;
+using Mimi.VisualActions.Spines;
 using Sirenix.OdinInspector;
 using Spine.Unity;
 using UnityEngine;
@@ -13,16 +14,19 @@ public class LevelEditor : MonoBehaviour
     private SpriteRenderer[] staticObjectRenderers;
     private List<SpriteRenderer> interactableObjectRenderers = new List<SpriteRenderer>();
     private BaseDraggable[] baseDraggables;
+    private SpineAnimMechanic[] spineAnimMechanics;
     public SpriteRenderer[] StaticObjectRenderers => this.staticObjectRenderers;
     public List<SpriteRenderer> InteractableObjectRenderers => this.interactableObjectRenderers;
     public SkeletonAnimation SkeletonAnimation => this.skeletonAnimation;
     public BaseDraggable[] BaseDraggables => this.baseDraggables;
+    public SpineAnimMechanic[] SpineAnimMechanics => this.spineAnimMechanics;
 
     public void PrepareData()
     {
         this.interactableObjectRenderers = new List<SpriteRenderer>();
         this.staticObjectRenderers = this.staticObjectParent.GetComponentsInChildren<SpriteRenderer>();
         this.baseDraggables = this.interactableObjectParent.GetComponentsInChildren<BaseDraggable>();
+        this.spineAnimMechanics = this.gameObject.GetComponentsInChildren<SpineAnimMechanic>();
 
         foreach (BaseDraggable draggable in this.BaseDraggables)
         {

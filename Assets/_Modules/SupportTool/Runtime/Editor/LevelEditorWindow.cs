@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using Mimi.Interactions.Dragging;
+using Mimi.VisualActions.Spines;
 using Spine.Unity;
+using Spine.Unity.Editor;
 using UnityEditor;
 using UnityEngine;
 
@@ -38,15 +40,21 @@ public class LevelEditorWindow : EditorWindow
 
         this.scrollPosition = EditorGUILayout.BeginScrollView(this.scrollPosition);
 
+        EditorGUILayout.BeginVertical("box");
         DrawStaticObjectsSection();
+        EditorGUILayout.EndVertical();
 
         EditorGUILayout.Space(20);
 
+        EditorGUILayout.BeginVertical("box");
         DrawInteractableObjectSection();
+        EditorGUILayout.EndVertical();
 
         EditorGUILayout.Space(20);
 
+        EditorGUILayout.BeginVertical("box");
         DrawAnimationSection();
+        EditorGUILayout.EndVertical();
 
         EditorGUILayout.EndScrollView();
         EditorGUILayout.Space(10);
@@ -61,7 +69,6 @@ public class LevelEditorWindow : EditorWindow
             return;
         }
 
-        EditorGUILayout.BeginVertical("box");
         EditorGUILayout.BeginHorizontal();
 
         var newAnimation = (SkeletonDataAsset)EditorGUILayout.ObjectField(
@@ -78,8 +85,45 @@ public class LevelEditorWindow : EditorWindow
             EditorUtility.SetDirty(this.levelEditor.SkeletonAnimation.skeletonDataAsset);
         }
 
+        if (GUILayout.Button("Select in Hierarchy", GUILayout.Width(150)))
+        {
+            Selection.activeGameObject = this.levelEditor.SkeletonAnimation.gameObject;
+            EditorGUIUtility.PingObject(this.levelEditor.SkeletonAnimation.gameObject);
+        }
+
         EditorGUILayout.EndHorizontal();
-        EditorGUILayout.EndVertical();
+        EditorGUILayout.Space(5);
+
+        SpineAnimMechanic[] spineAnimMechanics = this.levelEditor.SpineAnimMechanics;
+        EditorGUI.indentLevel++;
+
+        for (int i = 0; i < spineAnimMechanics.Length; i++)
+        {
+            SpineAnimMechanic animMechanic = spineAnimMechanics[i];
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField($"{i + 1}. {animMechanic.gameObject.name}", EditorStyles.boldLabel);
+
+            if (GUILayout.Button("Select in Hierarchy", GUILayout.Width(150)))
+            {
+                Selection.activeGameObject = animMechanic.gameObject;
+                EditorGUIUtility.PingObject(animMechanic.gameObject);
+            }
+
+            EditorGUILayout.EndHorizontal();
+
+            var serializedObject = new SerializedObject(animMechanic);
+            SerializedProperty animProp = serializedObject.FindProperty("animation");
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("Action:", GUILayout.Width(50));
+            EditorGUILayout.PropertyField(animProp, GUIContent.none);
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.Space(5);
+
+            serializedObject.ApplyModifiedProperties();
+        }
+
+        EditorGUI.indentLevel--;
     }
 
     private void DrawInteractableObjectSection()
@@ -107,7 +151,6 @@ public class LevelEditorWindow : EditorWindow
             BaseDraggable interactableObject = interactableObjects[i];
             if (renderer == null) continue;
 
-            EditorGUILayout.BeginVertical("box");
             EditorGUILayout.BeginHorizontal();
 
             EditorGUILayout.LabelField($"{i + 1}. ", EditorStyles.boldLabel, GUILayout.Width(25));
@@ -129,6 +172,8 @@ public class LevelEditorWindow : EditorWindow
             EditorGUILayout.EndHorizontal();
 
             DrawObjectRenderersSection(renderer);
+
+            EditorGUILayout.Space(10);
         }
 
         EditorGUI.indentLevel--;
@@ -156,7 +201,6 @@ public class LevelEditorWindow : EditorWindow
             var renderer = renderers[i];
             if (renderer == null) continue;
 
-            EditorGUILayout.BeginVertical("box");
             EditorGUILayout.BeginHorizontal();
 
             EditorGUILayout.LabelField($"{i + 1}. ", EditorStyles.boldLabel, GUILayout.Width(25));
@@ -178,6 +222,8 @@ public class LevelEditorWindow : EditorWindow
             EditorGUILayout.EndHorizontal();
 
             DrawObjectRenderersSection(renderer);
+
+            EditorGUILayout.Space(10);
         }
 
         EditorGUI.indentLevel--;
@@ -196,9 +242,6 @@ public class LevelEditorWindow : EditorWindow
         EditorGUILayout.BeginHorizontal();
         DrawOrderInLayerSection(renderer);
         EditorGUILayout.EndHorizontal();
-
-        EditorGUILayout.EndVertical();
-        EditorGUILayout.Space(5);
     }
 
     private void DrawSpriteSection(SpriteRenderer renderer)
