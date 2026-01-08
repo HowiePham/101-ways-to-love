@@ -49,7 +49,6 @@ public class LevelEditorWindow : EditorWindow
         DrawAnimationSection();
 
         EditorGUILayout.EndScrollView();
-
         EditorGUILayout.Space(10);
         DrawBottomButtons();
     }
@@ -180,6 +179,8 @@ public class LevelEditorWindow : EditorWindow
 
             DrawObjectRenderersSection(renderer);
         }
+
+        EditorGUI.indentLevel--;
     }
 
     private void DrawObjectRenderersSection(SpriteRenderer renderer)
@@ -198,8 +199,6 @@ public class LevelEditorWindow : EditorWindow
 
         EditorGUILayout.EndVertical();
         EditorGUILayout.Space(5);
-
-        EditorGUI.indentLevel--;
     }
 
     private void DrawSpriteSection(SpriteRenderer renderer)
