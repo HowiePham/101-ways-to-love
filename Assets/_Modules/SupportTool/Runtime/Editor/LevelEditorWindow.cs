@@ -71,27 +71,40 @@ public class LevelEditorWindow : EditorWindow
 
         EditorGUILayout.BeginHorizontal();
 
+        SkeletonAnimation skeletionAnimation = this.levelEditor.SkeletonAnimation;
         var newAnimation = (SkeletonDataAsset)EditorGUILayout.ObjectField(
-            this.levelEditor.SkeletonAnimation.SkeletonDataAsset,
+            skeletionAnimation.SkeletonDataAsset,
             typeof(SkeletonDataAsset),
             false,
             GUILayout.Height(18)
         );
 
-        if (newAnimation != this.levelEditor.SkeletonAnimation.SkeletonDataAsset)
+        if (newAnimation != skeletionAnimation.SkeletonDataAsset)
         {
-            Undo.RecordObject(this.levelEditor.SkeletonAnimation.SkeletonDataAsset, "Change Animation");
-            this.levelEditor.SkeletonAnimation.skeletonDataAsset = newAnimation;
-            EditorUtility.SetDirty(this.levelEditor.SkeletonAnimation.skeletonDataAsset);
+            Undo.RecordObject(skeletionAnimation.SkeletonDataAsset, "Change Animation");
+            skeletionAnimation.skeletonDataAsset = newAnimation;
+            EditorUtility.SetDirty(skeletionAnimation.skeletonDataAsset);
         }
 
         if (GUILayout.Button("Select in Hierarchy", GUILayout.Width(150)))
         {
-            Selection.activeGameObject = this.levelEditor.SkeletonAnimation.gameObject;
-            EditorGUIUtility.PingObject(this.levelEditor.SkeletonAnimation.gameObject);
+            Selection.activeGameObject = skeletionAnimation.gameObject;
+            EditorGUIUtility.PingObject(skeletionAnimation.gameObject);
         }
 
         EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.LabelField("Order In Layer:", GUILayout.Width(60));
+
+        var renderer = skeletionAnimation.GetComponent<MeshRenderer>();
+        EditorGUILayout.BeginHorizontal();
+        DrawSortingLayerSection(renderer);
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        DrawOrderInLayerSection(renderer);
+        EditorGUILayout.EndHorizontal();
+
         EditorGUILayout.Space(5);
 
         SpineAnimMechanic[] spineAnimMechanics = this.levelEditor.SpineAnimMechanics;
@@ -263,7 +276,7 @@ public class LevelEditorWindow : EditorWindow
         }
     }
 
-    private void DrawOrderInLayerSection(SpriteRenderer renderer)
+    private void DrawOrderInLayerSection(Renderer renderer)
     {
         EditorGUILayout.LabelField("Order In Layer:", GUILayout.Width(60));
 
@@ -277,7 +290,7 @@ public class LevelEditorWindow : EditorWindow
         }
     }
 
-    private void DrawSortingLayerSection(SpriteRenderer renderer)
+    private void DrawSortingLayerSection(Renderer renderer)
     {
         EditorGUILayout.LabelField("Sorting Layer:", GUILayout.Width(60));
 
