@@ -5,8 +5,8 @@ public class ScaleObjectHighlight : MonoBehaviour
 {
     [SerializeField] private Transform highlightTarget;
     [SerializeField] private Vector3 maxScale = new Vector3(1.1f, 1.1f, 1);
-    [SerializeField] private float duration;
-    [SerializeField] private Ease ease;
+    [SerializeField] private float duration = 0.5f;
+    [SerializeField] private Ease ease = Ease.Linear;
     [SerializeField] private bool enableHighlight = true;
     private Tween scalingTween;
 

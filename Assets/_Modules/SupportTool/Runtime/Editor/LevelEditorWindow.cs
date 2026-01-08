@@ -147,7 +147,7 @@ public class LevelEditorWindow : EditorWindow
             return;
         }
 
-        BaseDraggable[] interactableObjects = this.levelEditor.BaseDraggables;
+        List<GameObject> interactableObjects = this.levelEditor.InteractableObjects;
         List<SpriteRenderer> renderers = this.levelEditor.InteractableObjectRenderers;
 
         if (renderers == null || renderers.Count == 0)
@@ -161,25 +161,25 @@ public class LevelEditorWindow : EditorWindow
         for (int i = 0; i < renderers.Count; i++)
         {
             SpriteRenderer renderer = renderers[i];
-            BaseDraggable interactableObject = interactableObjects[i];
+            GameObject interactableObject = interactableObjects[i];
             if (renderer == null) continue;
 
             EditorGUILayout.BeginHorizontal();
 
             EditorGUILayout.LabelField($"{i + 1}. ", EditorStyles.boldLabel, GUILayout.Width(25));
-            string newName = EditorGUILayout.TextField(interactableObject.gameObject.name);
+            string newName = EditorGUILayout.TextField(interactableObject.name);
 
             if (!newName.Equals(renderer.gameObject.name))
             {
-                Undo.RecordObject(interactableObject.gameObject, "Change Name");
-                interactableObject.gameObject.name = newName;
-                EditorUtility.SetDirty(interactableObject.gameObject);
+                Undo.RecordObject(interactableObject, "Change Name");
+                interactableObject.name = newName;
+                EditorUtility.SetDirty(interactableObject);
             }
 
             if (GUILayout.Button("Select in Hierarchy", GUILayout.Width(150)))
             {
-                Selection.activeGameObject = interactableObject.gameObject;
-                EditorGUIUtility.PingObject(interactableObject.gameObject);
+                Selection.activeGameObject = interactableObject;
+                EditorGUIUtility.PingObject(interactableObject);
             }
 
             EditorGUILayout.EndHorizontal();
