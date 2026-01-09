@@ -14,7 +14,7 @@ public class MechanicGenerator
         boxAutoRename.SetField("prefix", prefix, AccessModifier.Private);
         boxAutoRename.SetField("removeString", removeString, AccessModifier.Private);
     }
-    
+
     protected BoxArea CreateBoxArea()
     {
         var boxAreaObject = new GameObject();
@@ -58,7 +58,7 @@ public class MechanicGenerator
             AddAutoRenameComponent(playAnim.gameObject, target, $"{playAnim.name}", suffix);
         }
     }
-    
+
     protected void HandleSetActiveCommandInMechanic(GameObject blueprintObject, GameObject[] gameObjects)
     {
         SetActiveMultipleGameObjectsAction[] setActiveCommand = blueprintObject.GetComponentsInChildren<SetActiveMultipleGameObjectsAction>();

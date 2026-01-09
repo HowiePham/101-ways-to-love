@@ -48,7 +48,8 @@ public class DragMechanicGenerator : MechanicGenerator
         insideArea2D.SetField("checkTransform", draggableObject.transform, AccessModifier.Private);
         insideArea2D.SetField("targetArea", boxArea, AccessModifier.Private);
 
-        var gameObjects = new GameObject[] { draggableObject, boxArea.gameObject };
+        GameObject boxInteractingParent = GameObject.Find("BoxInteraction");
+        var gameObjects = new GameObject[] { draggableObject, boxInteractingParent };
         HandleSetActiveCommandInMechanic(blueprintObject, gameObjects);
         HandleAnimInMechanic(blueprintObject, draggableObject, skeletonAnimation, suffix);
 

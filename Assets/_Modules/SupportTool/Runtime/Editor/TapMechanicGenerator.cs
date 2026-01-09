@@ -53,7 +53,8 @@ public class TapMechanicGenerator : MechanicGenerator
         var checkTapArea = blueprintObject.GetComponentInChildren<TapArea>();
         checkTapArea.SetField("target", baseArea, AccessModifier.Private);
 
-        var gameObjects = new GameObject[] { baseArea.gameObject };
+        GameObject boxInteractingParent = GameObject.Find("BoxInteraction");
+        var gameObjects = new GameObject[] { baseArea.gameObject, boxInteractingParent };
         HandleSetActiveCommandInMechanic(blueprintObject, gameObjects);
         HandleAnimInMechanic(blueprintObject, baseArea.gameObject, skeletonAnimation, suffix);
 
