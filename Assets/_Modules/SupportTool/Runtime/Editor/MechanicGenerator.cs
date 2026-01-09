@@ -67,4 +67,9 @@ public class MechanicGenerator
             setActive.SetField("gameObjects", gameObjects, AccessModifier.Private);
         }
     }
+
+    protected void SetParent(Transform target, Transform parent)
+    {
+        target.SetParent(parent);
+    }
 }

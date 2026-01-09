@@ -10,7 +10,7 @@ public class DragMechanicGenerator : MechanicGenerator
     private const string DragBlueprintAddress = "Assets/_Modules/Game/_Shared/Prefabs/Drag/";
     private const string DraggableObjectBlueprintAddress = "Assets/_Modules/Game/_Shared/Prefabs/Drag/Draggable_Object.prefab";
 
-    public void CreateMechanic(string menuName, string objectName, SkeletonAnimation skeletonAnimation)
+    public void CreateMechanic(string menuName, string objectName, SkeletonAnimation skeletonAnimation, GameObject interactableObjectParent, GameObject boxInteractionParent)
     {
         GameObject blueprintObject = CreateMechanicBlueprint(menuName);
         if (blueprintObject == null)
@@ -18,7 +18,7 @@ public class DragMechanicGenerator : MechanicGenerator
             return;
         }
 
-        HandleDragMechanicBlueprint(blueprintObject, objectName, skeletonAnimation, "Draggable");
+        HandleDragMechanicBlueprint(blueprintObject, objectName, skeletonAnimation, "Draggable", interactableObjectParent, boxInteractionParent);
     }
 
     public GameObject CreateMechanicBlueprint(string menuName)
@@ -35,21 +35,23 @@ public class DragMechanicGenerator : MechanicGenerator
         return blueprintObject;
     }
 
-    private void HandleDragMechanicBlueprint(GameObject blueprintObject, string objectName, SkeletonAnimation skeletonAnimation, string suffix)
+    private void HandleDragMechanicBlueprint(GameObject blueprintObject, string objectName,
+        SkeletonAnimation skeletonAnimation, string suffix, GameObject interactableObjectParent, GameObject boxInteractionParent)
     {
         var draggableObjectTemplate = AssetDatabase.LoadAssetAtPath<GameObject>($"{DraggableObjectBlueprintAddress}");
         var draggableObject = (GameObject)PrefabUtility.InstantiatePrefab(draggableObjectTemplate);
         draggableObject.name = $"Draggable_{objectName}";
+        SetParent(draggableObject.transform, interactableObjectParent.transform);
 
         BoxArea boxArea = CreateBoxArea();
         boxArea.name = $"BoxDestination";
+        SetParent(boxArea.transform, boxInteractionParent.transform);
 
         var insideArea2D = blueprintObject.GetComponentInChildren<InsideArea2D>();
         insideArea2D.SetField("checkTransform", draggableObject.transform, AccessModifier.Private);
         insideArea2D.SetField("targetArea", boxArea, AccessModifier.Private);
 
-        GameObject boxInteractingParent = GameObject.Find("BoxInteraction");
-        var gameObjects = new GameObject[] { draggableObject, boxInteractingParent };
+        var gameObjects = new GameObject[] { draggableObject, boxInteractionParent };
         HandleSetActiveCommandInMechanic(blueprintObject, gameObjects);
         HandleAnimInMechanic(blueprintObject, draggableObject, skeletonAnimation, suffix);
 

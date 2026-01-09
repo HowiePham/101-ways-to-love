@@ -4,19 +4,19 @@ using UnityEditor;
 using UnityEngine;
 using VisualActions.Areas;
 
-public class TimingMechanicGenerator
+public class TimingMechanicGenerator : MechanicGenerator
 {
     private const string TimingBlueprintAddress = "Assets/_Modules/Game/_Shared/Prefabs/Timing/";
     private const string MovingSuffix = "Moving";
     private TapMechanicGenerator tapMechanicGenerator;
 
-    public void CreateMechanic(string menuName, string objectName, SkeletonAnimation skeletonAnimation)
+    public void CreateMechanic(string menuName, string objectName, SkeletonAnimation skeletonAnimation, GameObject interactableObjectParent, GameObject boxInteractionParent)
     {
         GameObject timingMechanicObject = null;
         var suffix = "";
         if (menuName.Contains(MovingSuffix))
         {
-            timingMechanicObject = CreateMovingMechanic(objectName);
+            timingMechanicObject = CreateMovingMechanic(objectName, boxInteractionParent);
             suffix = MovingSuffix;
         }
 
@@ -39,12 +39,14 @@ public class TimingMechanicGenerator
         this.tapMechanicGenerator.CreateMechanic(menuName, skeletonAnimation, baseArea, suffix);
     }
 
-    private GameObject CreateMovingMechanic(string objectName)
+    private GameObject CreateMovingMechanic(string objectName, GameObject boxInteractionParent)
     {
         GameObject movingObject = CreateMechanicBlueprint("Moving_Object");
         movingObject.name = $"Moving_{objectName}";
+        SetParent(movingObject.transform, boxInteractionParent.transform);
         GameObject movingWayObject = CreateMechanicBlueprint("Moving_Way_Object");
         movingWayObject.name = $"Moving_Way";
+        SetParent(movingWayObject.transform, boxInteractionParent.transform);
 
         AddAutoRenameComponent(movingWayObject, movingObject, $"{movingWayObject.name}", "Moving");
 
@@ -63,13 +65,5 @@ public class TimingMechanicGenerator
 
         var blueprintObject = (GameObject)PrefabUtility.InstantiatePrefab(blueprintTemplate);
         return blueprintObject;
-    }
-
-    private void AddAutoRenameComponent(GameObject gameObject, GameObject targetObject, string prefix, string removeString)
-    {
-        var boxAutoRename = gameObject.gameObject.AddComponent<AutoRenameFollow>();
-        boxAutoRename.SetField("target", targetObject, AccessModifier.Private);
-        boxAutoRename.SetField("prefix", prefix, AccessModifier.Private);
-        boxAutoRename.SetField("removeString", removeString, AccessModifier.Private);
     }
 }

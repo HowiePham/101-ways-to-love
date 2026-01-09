@@ -9,7 +9,7 @@ public class TapMechanicGenerator : MechanicGenerator
 {
     private const string TapBlueprintAddress = "Assets/_Modules/Game/_Shared/Prefabs/Tap/";
 
-    public void CreateMechanic(string menuName, string objectName, SkeletonAnimation skeletonAnimation)
+    public void CreateMechanic(string menuName, string objectName, SkeletonAnimation skeletonAnimation, GameObject boxInteractionParent)
     {
         GameObject blueprintObject = CreateMechanicBlueprint(menuName);
         if (blueprintObject == null)
@@ -19,6 +19,7 @@ public class TapMechanicGenerator : MechanicGenerator
 
         BoxArea boxArea = CreateBoxArea();
         boxArea.name = $"TapArea_{objectName}";
+        SetParent(boxArea.transform, boxInteractionParent.transform);
 
         HandleTapMechanicBlueprint(blueprintObject, skeletonAnimation, boxArea, "TapArea");
     }

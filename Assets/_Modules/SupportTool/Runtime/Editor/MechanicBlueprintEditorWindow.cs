@@ -52,21 +52,23 @@ public class MechanicBlueprintEditorWindow : EditorWindow
         }
 
         var skeletonAnimation = FindAnyObjectByType<SkeletonAnimation>();
+        GameObject interactableObjectsParent = GameObject.Find("InteractableObjects");
+        GameObject boxInteractionParent = GameObject.Find("BoxInteraction");
 
         if (menuName.Contains("Moving"))
         {
             this.timingMechanicGenerator = new TimingMechanicGenerator();
-            this.timingMechanicGenerator.CreateMechanic(menuName, this.objectName, skeletonAnimation);
+            this.timingMechanicGenerator.CreateMechanic(menuName, this.objectName, skeletonAnimation, interactableObjectsParent, boxInteractionParent);
         }
         else if (menuName.Contains("Drag"))
         {
             this.dragMechanicGenerator = new DragMechanicGenerator();
-            this.dragMechanicGenerator.CreateMechanic(menuName, this.objectName, skeletonAnimation);
+            this.dragMechanicGenerator.CreateMechanic(menuName, this.objectName, skeletonAnimation, interactableObjectsParent, boxInteractionParent);
         }
         else if (menuName.Contains("Tap"))
         {
             this.tapMechanicGenerator = new TapMechanicGenerator();
-            this.tapMechanicGenerator.CreateMechanic(menuName, this.objectName, skeletonAnimation);
+            this.tapMechanicGenerator.CreateMechanic(menuName, this.objectName, skeletonAnimation, boxInteractionParent);
         }
     }
 }
