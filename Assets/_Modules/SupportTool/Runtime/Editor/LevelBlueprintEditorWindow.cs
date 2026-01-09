@@ -24,6 +24,9 @@ public class LevelBlueprintEditorWindow : EditorWindow
         DrawButton("E1, E2, M2, M3", () => OnMenuItemClicked("E1"));
         DrawButton("M1, H1, H2", () => OnMenuItemClicked("M1"));
         DrawButton("M4, H3", () => OnMenuItemClicked("M4"));
+        
+        EditorGUILayout.Space();
+        EditorGUILayout.LabelField("Help:", EditorStyles.boldLabel);
     }
 
     private void DrawButton(string label, System.Action onClick)
