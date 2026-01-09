@@ -1,7 +1,6 @@
 using Mimi.Reflection.Extensions;
 using Mimi.VisualActions.Tapping;
 using Spine.Unity;
-using UnityEditor;
 using UnityEngine;
 using VisualActions.Areas;
 
@@ -11,14 +10,13 @@ public class TapMechanicGenerator : MechanicGenerator
 
     public void CreateMechanic(string menuName, string objectName, SkeletonAnimation skeletonAnimation, GameObject boxInteractionParent)
     {
-        GameObject blueprintObject = CreateMechanicBlueprint(menuName);
+        GameObject blueprintObject = CreateMechanicBlueprint(TapBlueprintAddress, menuName);
         if (blueprintObject == null)
         {
             return;
         }
 
-        BoxArea boxArea = CreateBoxArea();
-        boxArea.name = $"TapArea_{objectName}";
+        BoxArea boxArea = CreateTapArea(objectName);
         SetParent(boxArea.transform, boxInteractionParent.transform);
 
         HandleTapMechanicBlueprint(blueprintObject, skeletonAnimation, boxArea, "TapArea");
@@ -26,27 +24,13 @@ public class TapMechanicGenerator : MechanicGenerator
 
     public void CreateMechanic(string menuName, SkeletonAnimation skeletonAnimation, BaseArea baseArea, string suffix)
     {
-        GameObject blueprintObject = CreateMechanicBlueprint(menuName);
+        GameObject blueprintObject = CreateMechanicBlueprint(TapBlueprintAddress, menuName);
         if (blueprintObject == null)
         {
             return;
         }
 
         HandleTapMechanicBlueprint(blueprintObject, skeletonAnimation, baseArea, suffix);
-    }
-
-    private GameObject CreateMechanicBlueprint(string menuName)
-    {
-        var blueprintTemplate = AssetDatabase.LoadAssetAtPath<GameObject>($"{TapBlueprintAddress}{menuName}.prefab");
-
-        if (blueprintTemplate == null)
-        {
-            Debug.LogError($"There is no Blueprint: {menuName}");
-            return null;
-        }
-
-        var blueprintObject = (GameObject)PrefabUtility.InstantiatePrefab(blueprintTemplate);
-        return blueprintObject;
     }
 
     private void HandleTapMechanicBlueprint(GameObject blueprintObject, SkeletonAnimation skeletonAnimation, BaseArea baseArea, string suffix)
@@ -61,5 +45,12 @@ public class TapMechanicGenerator : MechanicGenerator
 
         AddAutoRenameComponent(blueprintObject, baseArea.gameObject, $"{blueprintObject.name}", suffix);
         AddAutoRenameComponent(checkTapArea.gameObject, baseArea.gameObject, $"{checkTapArea.name}", suffix);
+    }
+
+    public BoxArea CreateTapArea(string objectName)
+    {
+        BoxArea boxArea = CreateBoxArea();
+        boxArea.name = $"TapArea_{objectName}";
+        return boxArea;
     }
 }

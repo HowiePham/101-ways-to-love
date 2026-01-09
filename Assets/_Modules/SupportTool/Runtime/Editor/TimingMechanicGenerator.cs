@@ -41,12 +41,12 @@ public class TimingMechanicGenerator : MechanicGenerator
 
     private GameObject CreateMovingMechanic(string objectName, GameObject boxInteractionParent)
     {
-        GameObject movingObject = CreateMechanicBlueprint("Moving_Object");
+        GameObject movingObject = CreateMechanicBlueprint(TimingBlueprintAddress, "Moving_Object");
         movingObject.name = $"Moving_{objectName}";
         SetParent(movingObject.transform, boxInteractionParent.transform);
         var movingObjectFollowWay = movingObject.GetComponent<MoveGameObjectFollowWay>();
 
-        GameObject movingWayObject = CreateMechanicBlueprint("Moving_Way_Object");
+        GameObject movingWayObject = CreateMechanicBlueprint(TimingBlueprintAddress, "Moving_Way_Object");
         movingWayObject.name = $"Moving_Way";
         SetParent(movingWayObject.transform, boxInteractionParent.transform);
         var movingWay = movingWayObject.GetComponent<MovingWay>();
@@ -56,19 +56,5 @@ public class TimingMechanicGenerator : MechanicGenerator
         AddAutoRenameComponent(movingWayObject, movingObject, $"{movingWayObject.name}", "Moving");
 
         return movingObject;
-    }
-
-    private GameObject CreateMechanicBlueprint(string name)
-    {
-        var blueprintTemplate = AssetDatabase.LoadAssetAtPath<GameObject>($"{TimingBlueprintAddress}{name}.prefab");
-
-        if (blueprintTemplate == null)
-        {
-            Debug.LogError($"There is no Blueprint: {name}");
-            return null;
-        }
-
-        var blueprintObject = (GameObject)PrefabUtility.InstantiatePrefab(blueprintTemplate);
-        return blueprintObject;
     }
 }

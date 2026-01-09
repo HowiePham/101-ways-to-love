@@ -12,7 +12,7 @@ public class DragMechanicGenerator : MechanicGenerator
 
     public void CreateMechanic(string menuName, string objectName, SkeletonAnimation skeletonAnimation, GameObject interactableObjectParent, GameObject boxInteractionParent)
     {
-        GameObject blueprintObject = CreateMechanicBlueprint(menuName);
+        GameObject blueprintObject = CreateMechanicBlueprint(DragBlueprintAddress, menuName);
         if (blueprintObject == null)
         {
             return;
@@ -21,26 +21,10 @@ public class DragMechanicGenerator : MechanicGenerator
         HandleDragMechanicBlueprint(blueprintObject, objectName, skeletonAnimation, "Draggable", interactableObjectParent, boxInteractionParent);
     }
 
-    public GameObject CreateMechanicBlueprint(string menuName)
-    {
-        var blueprintTemplate = AssetDatabase.LoadAssetAtPath<GameObject>($"{DragBlueprintAddress}{menuName}.prefab");
-
-        if (blueprintTemplate == null)
-        {
-            Debug.LogError($"There is no Blueprint: {menuName}");
-            return null;
-        }
-
-        var blueprintObject = (GameObject)PrefabUtility.InstantiatePrefab(blueprintTemplate);
-        return blueprintObject;
-    }
-
     private void HandleDragMechanicBlueprint(GameObject blueprintObject, string objectName,
         SkeletonAnimation skeletonAnimation, string suffix, GameObject interactableObjectParent, GameObject boxInteractionParent)
     {
-        var draggableObjectTemplate = AssetDatabase.LoadAssetAtPath<GameObject>($"{DraggableObjectBlueprintAddress}");
-        var draggableObject = (GameObject)PrefabUtility.InstantiatePrefab(draggableObjectTemplate);
-        draggableObject.name = $"Draggable_{objectName}";
+        GameObject draggableObject = CreateDraggableObject(objectName);
         SetParent(draggableObject.transform, interactableObjectParent.transform);
 
         BoxArea boxArea = CreateBoxArea();
@@ -58,5 +42,14 @@ public class DragMechanicGenerator : MechanicGenerator
         AddAutoRenameComponent(blueprintObject, draggableObject, $"{blueprintObject.name}", suffix);
         AddAutoRenameComponent(boxArea.gameObject, draggableObject, $"{boxArea.name}", suffix);
         AddAutoRenameComponent(insideArea2D.gameObject, draggableObject, $"{insideArea2D.name}", suffix);
+    }
+
+    public GameObject CreateDraggableObject(string objectName)
+    {
+        var draggableObjectTemplate = AssetDatabase.LoadAssetAtPath<GameObject>($"{DraggableObjectBlueprintAddress}");
+        var draggableObject = (GameObject)PrefabUtility.InstantiatePrefab(draggableObjectTemplate);
+        draggableObject.name = $"Draggable_{objectName}";
+
+        return draggableObject;
     }
 }

@@ -1,6 +1,7 @@
 using Mimi.Reflection.Extensions;
 using Mimi.VisualActions.Spines;
 using Spine.Unity;
+using UnityEditor;
 using UnityEngine;
 using VisualActions.Areas;
 using VisualActions.VisualActions.GameObjects.Runtime;
@@ -66,6 +67,20 @@ public class MechanicGenerator
         {
             setActive.SetField("gameObjects", gameObjects, AccessModifier.Private);
         }
+    }
+    
+    protected GameObject CreateMechanicBlueprint(string address,string menuName)
+    {
+        var blueprintTemplate = AssetDatabase.LoadAssetAtPath<GameObject>($"{address}{menuName}.prefab");
+
+        if (blueprintTemplate == null)
+        {
+            Debug.LogError($"There is no Blueprint: {menuName}");
+            return null;
+        }
+
+        var blueprintObject = (GameObject)PrefabUtility.InstantiatePrefab(blueprintTemplate);
+        return blueprintObject;
     }
 
     protected void SetParent(Transform target, Transform parent)
