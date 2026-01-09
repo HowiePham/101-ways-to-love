@@ -10,6 +10,7 @@ public class LevelEditor : MonoBehaviour
 #if UNITY_EDITOR
     [SerializeField] private Transform staticObjectParent;
     [SerializeField] private Transform interactableObjectParent;
+    [SerializeField] private Transform boxInteractingObjectParent;
     [SerializeField] private SkeletonAnimation skeletonAnimation;
     [SerializeField] private string interactableTag;
     private SpriteRenderer[] staticObjectRenderers;
@@ -39,10 +40,20 @@ public class LevelEditor : MonoBehaviour
             this.interactableObjects.Add(child.gameObject);
         }
 
-        foreach (GameObject draggable in this.InteractableObjects)
+        foreach (Transform child in this.boxInteractingObjectParent)
+        {
+            if (!child.tag.Equals(this.interactableTag))
+            {
+                continue;
+            }
+
+            this.interactableObjects.Add(child.gameObject);
+        }
+
+        foreach (GameObject draggable in this.interactableObjects)
         {
             var draggableSpriteRenderer = draggable.GetComponentInChildren<SpriteRenderer>();
-            this.InteractableObjectRenderers.Add(draggableSpriteRenderer);
+            this.interactableObjectRenderers.Add(draggableSpriteRenderer);
         }
     }
 #endif

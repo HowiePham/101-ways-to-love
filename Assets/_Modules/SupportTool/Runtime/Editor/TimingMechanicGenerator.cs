@@ -44,9 +44,14 @@ public class TimingMechanicGenerator : MechanicGenerator
         GameObject movingObject = CreateMechanicBlueprint("Moving_Object");
         movingObject.name = $"Moving_{objectName}";
         SetParent(movingObject.transform, boxInteractionParent.transform);
+        var movingObjectFollowWay = movingObject.GetComponent<MoveGameObjectFollowWay>();
+
         GameObject movingWayObject = CreateMechanicBlueprint("Moving_Way_Object");
         movingWayObject.name = $"Moving_Way";
         SetParent(movingWayObject.transform, boxInteractionParent.transform);
+        var movingWay = movingWayObject.GetComponent<MovingWay>();
+
+        movingObjectFollowWay.SetField("movingWay", movingWay, AccessModifier.Private);
 
         AddAutoRenameComponent(movingWayObject, movingObject, $"{movingWayObject.name}", "Moving");
 

@@ -24,6 +24,8 @@ public class MoveGameObjectFollowWay : MonoBehaviour
             path[i] = point.position;
         }
 
+        this.moveObject.position = path[0];
+
         this.movingTween = this.moveObject.DOPath(path, this.duration, this.pathType)
             .SetLoops(-1, LoopType.Yoyo)
             .SetEase(this.ease);

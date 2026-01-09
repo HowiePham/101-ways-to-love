@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 [ExecuteInEditMode]
@@ -19,8 +20,14 @@ public class MovingWay : MonoBehaviour
         }
     }
 
+    private void OnEnable()
+    {
+        UpdatePath();
+    }
+
     private void UpdatePath()
     {
+        Debug.Log("Updating path");
         this.points = new Transform[this.transform.childCount];
         for (int i = 0; i < this.transform.childCount; i++)
         {
