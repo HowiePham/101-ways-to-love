@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using DarkTonic.MasterAudio;
 using Mimi.VisualActions.ControlFlow;
+#if UNITY_EDITOR
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
+#endif
 using Spine.Unity;
 using UnityEditor;
 using UnityEngine;
@@ -13,6 +15,7 @@ using Directory = System.IO.Directory;
 
 public class CreatePlaySoundSpine : MonoBehaviour
 {
+#if UNITY_EDITOR
     [SerializeField] private Transform levelRoot;
     [SerializeField] private SkeletonAnimation skeletonAnimation;
     [SerializeField] private DynamicSoundGroupCreator dsgPrefab;
@@ -23,7 +26,6 @@ public class CreatePlaySoundSpine : MonoBehaviour
 
     private const string audioFilePath = "Assets/_Modules/Game/_Shared/Sounds";
 
-#if UNITY_EDITOR
     [Button]
     private void Generate()
     {
