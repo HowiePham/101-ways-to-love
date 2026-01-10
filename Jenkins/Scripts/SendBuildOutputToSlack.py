@@ -1,13 +1,17 @@
 import os
+import subprocess
 import sys
+
 import Config
 import SlackCommand
-import subprocess
+from BundleToApk import convert_aab_to_apk_build_folder
 
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 
+
 def run_command(command):
     return subprocess.run(command, stdout=subprocess.PIPE, shell=True).stdout.decode('utf-8')
+
 
 # def get_slack_channel(pipeline_name):
 #     if pipeline_name == "release":
@@ -24,6 +28,16 @@ def get_slack_channel(pipeline_name):
         return "#ci-dev"
     else:
         return "#ci-dev"
+
+
+def get_slack_channel_id(pipeline_name):
+    if pipeline_name == "release":
+        return Config.read(Config.KEY.SLACK_RELEASE_CHANNEL_ID);
+    elif pipeline_name == "dev" or pipeline_name == "test":
+        return Config.read(Config.KEY.SLACK_DEV_CHANNEL_ID)
+    else:
+        return Config.read(Config.KEY.SLACK_DEV_CHANNEL_ID)
+
 
 # git info
 commit_time = run_command("git log -1 --pretty=format:%ci")
@@ -46,22 +60,17 @@ build_folder = os.path.join(unity_project, "../build")
 build_url = os.environ["BUILD_URL"]
 workspace = os.environ["WORKSPACE"]
 artifact_url = build_url + "artifact"
+message_ts = os.environ["SLACK_MESSAGE_TS"]
 
-# Not use function def due to function not get local variable run in jenkins
-msg = f'''\
-*{company}|{project}*
-{commit_time}
-{build_id} - {committer} | {branch}-{git_hash}
-```{git_full_message}```
-Unity build *SUCCESS*
-<{pipeline_url}|Console Log>
-'''
+convert_aab_to_apk_build_folder()
 
 print("LOG::: Send artifacts of {p} to channel {c}\n".format(p=pipeline, c=get_slack_channel(pipeline)))
-SlackCommand.send_message(get_slack_channel(pipeline), msg)
 
+artifact_files = []
 for (dirpath, dirnames, filenames) in os.walk(build_folder):
     for file in filenames:
-        if file.endswith(".apk") or file.endswith(".aab") or file.endswith(".csv"):
-            artifact_file = os.sep.join([dirpath, file])
-            SlackCommand.send_file(get_slack_channel(pipeline), artifact_file, f"{file}", '')
+        if file.endswith((".apk", ".aab", ".csv")):
+            artifact_files.append(os.path.join(dirpath, file))
+
+if artifact_files:
+    SlackCommand.append_files_to_message(SlackCommand.get_slack_channel_id(), message_ts, artifact_files)

@@ -1,7 +1,12 @@
+import groovy.json.JsonSlurper
+
 def BUILD_TARGET = BuildTarget()
 def KEYSTORE_CREDENTIAL_ID = ""
 def KEYALIAS_CREDENTIAL_ID = ""
 def BUNDLE_ID = ""
+def PIPELINE_NAME = ""
+def SLACK_TOKEN = ""
+def JOB_URL = ""
 def isAndroid = "${BUILD_TARGET}" == "android"
 def isIOS = "${BUILD_TARGET}" == "ios"
 def isRelease = env.BRANCH_NAME.toLowerCase().contains("-release")
@@ -21,7 +26,7 @@ def GetConfigValue(String key){
     configData = configData.split("\n")
     for(it in configData)
     {
-        lineData = it.split("=")
+        def lineData = it.split("=")
         if(lineData[0].trim() == key){
             return lineData[1].trim();
         }
@@ -32,12 +37,15 @@ def GetConfigValue(String key){
 // Share pipeline between Windows and OS X because they both do same thing except build code
 pipeline {
     agent none
+    environment {
+        BUILD_CURRENT_STEP = ""
+    }
     //For some case you want to build some headless server with unity linux that build/run on AWS for testing.
     //Make another parallel stages that run only on slave machine with Linux Tags.
     options {
         disableConcurrentBuilds()  //each branch has 1 job running at a time
         skipDefaultCheckout(true) // skip git default checkout because it call git clean -xffd. It clean all ignore files included cached unity /library folder. use custom git clean flags for faster build.
-        buildDiscarder(logRotator(numToKeepStr: '180', artifactNumToKeepStr: '30')) // Default keep last 180 logs and latest 30 build artifacts. Will be override from Jenkins Settings website
+        buildDiscarder(logRotator(numToKeepStr: '7', artifactNumToKeepStr: '1')) // Default keep last 180 logs and latest 30 build artifacts. Will be override from Jenkins Settings website
         skipStagesAfterUnstable()
     }
 
@@ -45,65 +53,118 @@ pipeline {
         stage('Checkout') {
             agent { label BUILD_TARGET }
             steps {
-                dir('src') {
-                    timeout(time: 30, unit: 'MINUTES') {
-                        //Debug: you never know what is missing on slave machine
-                        sh 'printenv | sort'
-                        // prevent null project init on new branch
-                        sh 'git init'
-                        sh 'git clean -ffd'
-                        sh 'git config core.ignorecase false' // For Mac unity user or you have serialized case sensitive file
-                        sh 'git config --list'
-                        // Jenkins git fetch and pull
-                        checkout scm // the alternative to jenkins git plugin is sshagent[] and call checkout/clean by yourself
+                withEnv(['BUILD_CURRENT_STEP=Checkout']) {
+                    dir('src') {
+                        timeout(time: 30, unit: 'MINUTES') {
+                            //Debug: you never know what is missing on slave machine
+                            sh 'printenv | sort'
+                            // prevent null project init on new branch
+                            sh 'git init'
+                            sh 'git clean -ffd'
+                            sh 'git config core.ignorecase false' // For Mac unity user or you have serialized case sensitive file
+                            sh 'git config --list'
+                            // Jenkins git fetch and pull
+                            checkout scm // the alternative to jenkins git plugin is sshagent[] and call checkout/clean by yourself
+                        }
+                    }
+
+                    dir('src/Library/Bee/Android') {
+                        deleteDir()
+                    }
+
+                    dir('build') {
+                        deleteDir()
+                    }
+
+                    script {
+                        def fileName = 'buildlog.txt'
+                        if (fileExists(fileName)) {
+                            echo "File '${fileName}' found, deleting..."
+                            if(isUnix())
+                            {
+                                sh "rm -f ${fileName}"
+                            }
+                            else
+                            {
+                                bat "del /F /Q ${fileName}"
+                            }
+                        }
+
+                        def channelId = ""
+                        if(isRelease){
+                            channelId = GetConfigValue('SLACK_RELEASE_CHANNEL_ID')
+                        }
+                        else {
+                            channelId = GetConfigValue('SLACK_DEV_CHANNEL_ID')
+                        }
+
+                        def queuedMessage = """:loading-jump-bar: *${env.JOB_NAME.replace("%2F", "/")} #${env.BUILD_NUMBER}* - WAITING...\n<${env.BUILD_URL}|View Build>"""
+                        def ts = PostSlackMessage(channelId, queuedMessage)
+
+                        if (ts) {
+                            env.SLACK_MESSAGE_TS = ts
+                        } else {
+                            echo "Slack notification skipped."
+                        }
                     }
                 }
-                
-                dir('src/Library/Bee/Android') {
-                    deleteDir()
-                }
-                
-                dir('build') {
-                    deleteDir()
+            }
+            post {
+                failure {
+                    script {
+                        UpdateSlackMessageFailedStage()
+                    }
                 }
             }
         }
         stage('Prepare venv') {
             agent { label BUILD_TARGET }
             steps {
-                script {
-                    sh 'printenv | sort'
-                    if (isUnix()) {
-                        env.ISUNIX = "TRUE" // cache isUnix() function to prevent blueocean show too many duplicate step (Checks if running on a Unix-like node) in python function below
-                        sh 'python3 -m venv pyenv'
-                        PYTHON_PATH =  sh(script: 'echo ${WORKSPACE}/pyenv/bin/', returnStdout: true).trim()
-                    }
-                    else {
-                        env.ISUNIX = "FALSE"
-                        powershell(script:"py -3 -m venv pyenv") // window not allow call python3.exe with venv. https://github.com/msys2/MINGW-packages/issues/5001
-                        PYTHON_PATH =  sh(script: 'echo ${WORKSPACE}/pyenv/Scripts/', returnStdout: true).trim()
-                    }
+                withEnv(['BUILD_CURRENT_STEP=Prepare Venv']) {
+                    script {
+                        sh 'printenv | sort'
+                        def PYTHON_PATH
+                        
+                        if (isUnix()) {
+                            env.ISUNIX = "TRUE" // cache isUnix() function to prevent blueocean show too many duplicate step (Checks if running on a Unix-like node) in python function below
+                            sh 'python3 -m venv pyenv'
+                            PYTHON_PATH =  sh(script: 'echo ${WORKSPACE}/pyenv/bin/', returnStdout: true).trim()
+                        }
+                        else {
+                            env.ISUNIX = "FALSE"
+                            powershell(script:"py -3 -m venv pyenv") // window not allow call python3.exe with venv. https://github.com/msys2/MINGW-packages/issues/5001
+                            PYTHON_PATH =  sh(script: 'echo ${WORKSPACE}/pyenv/Scripts/', returnStdout: true).trim()
+                        }
+                        
+                        env.PYTHON_PATH = PYTHON_PATH
+                        echo "PYTHON_PATH = ${env.PYTHON_PATH}"
 
-                    // Find unity root projects.
-                    // If have multiple projects. Change */Assets to */NoSpace_Name/Assets
-                    // env.UNITY_PROJECT_ROOT = sh(script: "find . -type d -path '*/Library' -prune -false -o -name 'Assets' -prune | sed -e 's/......\$//' " , returnStdout:true).trim()
-                    env.UNITY_PROJECT_ROOT = sh(script: 'echo ${WORKSPACE}/src', returnStdout: true).trim()
-                    echo env.UNITY_PROJECT_ROOT
+                        // Find unity root projects.
+                        // If have multiple projects. Change */Assets to */NoSpace_Name/Assets
+                        // env.UNITY_PROJECT_ROOT = sh(script: "find . -type d -path '*/Library' -prune -false -o -name 'Assets' -prune | sed -e 's/......\$//' " , returnStdout:true).trim()
+                        env.UNITY_PROJECT_ROOT = sh(script: 'echo ${WORKSPACE}/src', returnStdout: true).trim()
+                        echo env.UNITY_PROJECT_ROOT
 
-                    // Sometime agent with older pip version can cause error due to non compatible plugin.
-                    try  {
-                        Python("-m pip install --upgrade pip")
-                    }
-                    catch (ignore) { } // update pip always return false when already lastest version
+                        // Sometime agent with older pip version can cause error due to non compatible plugin.
+                        try  {
+                            Python("-m pip install --upgrade pip")
+                        }
+                        catch (ignore) { } // update pip always return false when already lastest version
 
-                    // Temporary disable because of permission error on Mac slave
-                    if(isTest)
-                    {
-                        Python("-m pip install -r $env.UNITY_PROJECT_ROOT/Jenkins/Scripts/test-requirements.txt")
-                    }
-                    else
-                    {
+                        // Temporary disable because of permission error on Mac slave
                         Python("-m pip install -r $env.UNITY_PROJECT_ROOT/Jenkins/Scripts/requirements.txt")
+
+                        if(isTest)
+                        {
+                            Python("-m pip install -r $env.UNITY_PROJECT_ROOT/Jenkins/Scripts/test-requirements.txt")
+                        }
+                    }
+                }
+            }
+            post {
+                failure {
+                    script {
+                        UpdateSlackMessageFailedStage()
                     }
                 }
             }
@@ -111,79 +172,111 @@ pipeline {
         stage('Setup Environment') {
             agent { label BUILD_TARGET }
             steps {
-                script {
-                    KEYSTORE_CREDENTIAL_ID = GetConfigValue("KEYSTORE_CREDENTIAL_ID")
-                    KEYALIAS_CREDENTIAL_ID = GetConfigValue("KEYALIAS_CREDENTIAL_ID")
-                    
-                    dir('src')
-                    {
-                        Python(" -u  $env.UNITY_PROJECT_ROOT/Jenkins/Scripts/ConfigEnvironment.py ")
-                    }
-                    
-                    BUNDLE_ID = GetConfigValue("BUNDLE_ID")
-                    
-                    if(isAndroid && isRelease)
-                    {
-                        try
+                withEnv(['BUILD_CURRENT_STEP=Setup Environment']) {
+                    script {
+                        KEYSTORE_CREDENTIAL_ID = GetConfigValue("KEYSTORE_CREDENTIAL_ID")
+                        KEYALIAS_CREDENTIAL_ID = GetConfigValue("KEYALIAS_CREDENTIAL_ID")
+
+                        dir('src')
                         {
-                            // get latest app version and version code from Google Console then save into environment variables
+                            Python(" -u  $env.UNITY_PROJECT_ROOT/Jenkins/Scripts/ConfigEnvironment.py ")
+                        }
+
+                        BUNDLE_ID = GetConfigValue("BUNDLE_ID")
+                        SetConfig('SLACK_MESSAGE_TS', env.SLACK_MESSAGE_TS)
+
+                        if(isAndroid && isRelease)
+                        {
                             withCredentials([file(credentialsId: "google-play-console-credentials", variable: 'GCLOUD_SERVICE_ACCOUNT_CREDENTIALS')])
                             {
-                                def getLatestBuildNumberCmd = "google-play get-latest-build-number --credentials=@file:$env.GCLOUD_SERVICE_ACCOUNT_CREDENTIALS --silent --tracks=internal --package-name=${BUNDLE_ID}"
-                                def latestBuildNumber = -1;
-                                
-                                if (env.ISUNIX == "TRUE") {
-                                    getLatestBuildNumberCmd = "source ${WORKSPACE}/pyenv/bin/activate && ${getLatestBuildNumberCmd}"
-                                    latestBuildNumber = sh (
-                                        script: getLatestBuildNumberCmd,
-                                        returnStdout: true
-                                    ).trim()
+                                try
+                                {
+                                    dir('src') {
+                                        Python(" -u ${env.UNITY_PROJECT_ROOT}/Jenkins/Scripts/ValidateRemoteConfig.py")
+                                    }
                                 }
-                                else {
-                                    getLatestBuildNumberCmd = "${WORKSPACE}\\pyenv\\Scripts\\Activate.ps1 ; ${getLatestBuildNumberCmd}"
-                                    latestBuildNumber = powershell (
-                                        script: getLatestBuildNumberCmd,
-                                        returnStdout: true
-                                    ).trim()
+                                catch(err)
+                                {
+                                    def msg = "Validate Remote Config failed: ${err.message ?: err.toString()}"
+                                    echo msg
+                                    currentBuild.description = msg
+                                    error(msg)
                                 }
-                                
-                                SetConfig("LATEST_GOOGLE_CONSOLE_VERSION_CODE", latestBuildNumber)                                    
+                                try
+                                {
+                                    // get latest app version and version code from Google Console then save into environment variables
+                                    def getLatestBuildNumberCmd = "google-play get-latest-build-number --credentials=@file:$env.GCLOUD_SERVICE_ACCOUNT_CREDENTIALS --silent --tracks=internal --package-name=${BUNDLE_ID}"
+                                    def latestBuildNumber = -1;
+
+                                    if (env.ISUNIX == "TRUE") {
+                                        getLatestBuildNumberCmd = "source ${WORKSPACE}/pyenv/bin/activate && ${getLatestBuildNumberCmd}"
+                                        latestBuildNumber = sh (
+                                            script: getLatestBuildNumberCmd,
+                                            returnStdout: true
+                                        ).trim()
+                                    }
+                                    else {
+                                        getLatestBuildNumberCmd = "${WORKSPACE}\\pyenv\\Scripts\\Activate.ps1 ; ${getLatestBuildNumberCmd}"
+                                        latestBuildNumber = powershell (
+                                            script: getLatestBuildNumberCmd,
+                                            returnStdout: true
+                                        ).trim()
+                                    }
+
+                                    SetConfig("LATEST_GOOGLE_CONSOLE_VERSION_CODE", latestBuildNumber)
+                                }
+                                catch(err)
+                                {
+                                    echo err.getMessage()
+                                    SetConfig("LATEST_GOOGLE_CONSOLE_VERSION_CODE", "-1")
+                                }
                             }
                         }
-                        catch(err)
-                        {
-                            echo err.getMessage()
-                            SetConfig("LATEST_GOOGLE_CONSOLE_VERSION_CODE", "-1")
+
+                        def available = Python(" $env.UNITY_PROJECT_ROOT/Jenkins/Scripts/VerifyUnityInstallation.py")
+                        if (available == 1) {
+                            timeout(time: 30, unit: 'MINUTES') {
+                                echo 'Start Installing Unity'
+                                // TODO move this to gem U3d by dragon. UnityHub cli not working on OS X
+                                error('TODO install Unity version android + macos')
+                            }
                         }
+                        // sh([script: "rm -R Library", returnStatus:true, label:'Clean library'])
+                        // sh([script: "pkill -f java ", returnStatus:true, label:'Kill java from previous build'])
+                        ExecuteAllPythonScriptsInDirectory("AfterUnitySetup")
                     }
-                                            
-                    def available = Python(" $env.UNITY_PROJECT_ROOT/Jenkins/Scripts/VerifyUnityInstallation.py")
-                    if (available == 1) {
-                        timeout(time: 30, unit: 'MINUTES') {
-                            echo 'Start Installing Unity'
-                            // TODO move this to gem U3d by dragon. UnityHub cli not working on OS X
-                            error('TODO install Unity version android + macos')
-                        }
+                }
+            }
+            post {
+                failure {
+                    script {
+                        UpdateSlackMessageFailedStage()
                     }
-                    // sh([script: "rm -R Library", returnStatus:true, label:'Clean library'])
-                    // sh([script: "pkill -f java ", returnStatus:true, label:'Kill java from previous build'])
-                    ExecuteAllPythonScriptsInDirectory("AfterUnitySetup")
                 }
             }
         }
         stage('Prepare Master Files') {
             agent { label  'master'}
             steps {
-                script {
-                    if(isAndroid)
-                    {
-                        withCredentials([usernamePassword(credentialsId: "${KEYSTORE_CREDENTIAL_ID}", usernameVariable: 'KEYSTORE_NAME', passwordVariable: 'KEYSTORE_PASSWORD')])
+                withEnv(['BUILD_CURRENT_STEP=PrepareMasterFiles']) {
+                    script {
+                        if(isAndroid)
                         {
-                            dir(env.KEYSTORE_ROOT) {
-                                echo KEYSTORE_NAME
-                                stash includes: KEYSTORE_NAME, name: 'keystore'
+                            withCredentials([usernamePassword(credentialsId: "${KEYSTORE_CREDENTIAL_ID}", usernameVariable: 'KEYSTORE_NAME', passwordVariable: 'KEYSTORE_PASSWORD')])
+                            {
+                                dir(env.KEYSTORE_ROOT) {
+                                    echo KEYSTORE_NAME
+                                    stash includes: KEYSTORE_NAME, name: 'keystore'
+                                }
                             }
                         }
+                    }
+                }
+            }
+            post {
+                failure {
+                    script {
+                        UpdateSlackMessageFailedStage()
                     }
                 }
             }
@@ -191,36 +284,61 @@ pipeline {
         stage('Build Project') {
             agent { label BUILD_TARGET }
             steps {
-                script {
-                    ExecuteAllPythonScriptsInDirectory("BeforeBuild")
+                withEnv(['BUILD_CURRENT_STEP=Build Project']) {
+                    script {
+                        try {
+                            ExecuteAllPythonScriptsInDirectory("BeforeBuild")
 
-                    if(isAndroid)
-                    {
-                        unstash 'keystore'
-                    }
+                            if(isAndroid)
+                            {
+                                unstash 'keystore'
+                            }
 
-                    withCredentials(
-                    [
-                        usernamePassword(credentialsId: 'unityhub-account', usernameVariable: 'UNITY_USERNAME', passwordVariable: 'UNITY_PASSWORD'),
-                        usernamePassword(credentialsId: "${KEYSTORE_CREDENTIAL_ID}", usernameVariable: 'KEYSTORE_NAME', passwordVariable: 'KEYSTORE_PASSWORD'),
-                        usernamePassword(credentialsId: "${KEYALIAS_CREDENTIAL_ID}", usernameVariable: 'KEYALIAS_NAME', passwordVariable: 'KEYALIAS_PASSWORD')]) {
+                            PIPELINE_NAME = GetConfigValue("PIPELINE")
+                            SLACK_TOKEN = GetConfigValue("SLACK_BOT_TOKEN")
+                            JOB_URL = GetConfigValue("JOB_URL")
 
-                        timeout(time: 100, unit: 'MINUTES') {
-                            if (isUnix()) {
-                                def shellCmd = GetConfig("UNITY_BUILD_COMMAND").trim()
-                                def unixBuildStatus = sh([script: "${shellCmd} -username ${UNITY_USERNAME} -password ${UNITY_PASSWORD} keystore-name=${KEYSTORE_NAME} keystore-password=${KEYSTORE_PASSWORD} keyalias-name=${KEYALIAS_NAME} keyalias-password=${KEYALIAS_PASSWORD} ", returnStatus:true, label:'Build unity on Unix'])
-                                if (unixBuildStatus != 0) {
-                                    currentBuild.result = 'FAILED'
-                                    error 'Build Failed by Unity. Check above log for more detail'
+                            withCredentials(
+                            [
+                                usernamePassword(credentialsId: 'admin-jenkins-api-token', usernameVariable: 'JENKINS_API_USER', passwordVariable: 'JENKINS_API_TOKEN')]) {
+                                dir('src'){
+                                    println("Clean up python build monitor progress")
+                                    KillPythonScript("UpdateBuildProgress.py")
+                                    println("Start python build monitor progress")
+                                    withEnv(['JENKINS_NODE_COOKIE=dontKillMe']){
+                                        PythonBackground(" -u $env.UNITY_PROJECT_ROOT/Jenkins/Scripts/UpdateBuildProgress.py --job-url '${env.BUILD_URL}' --build-number ${env.BUILD_NUMBER} --jenkins-user ${JENKINS_API_USER} --jenkins-token ${JENKINS_API_TOKEN} --slack-token ${SLACK_TOKEN} --pipeline-name ${PIPELINE_NAME} --interval 5")
+                                    }
                                 }
                             }
-                            else {
-                                def buildStatus = powershell([script: "$env.UNITY_PROJECT_ROOT/Jenkins/Scripts/UnityBuild.ps1 -config '$env.UNITY_PROJECT_ROOT/Jenkins/config.cfg' -quit -batchmode -silent-crashes -username ${UNITY_USERNAME} -password ${UNITY_PASSWORD} keystore-name=${KEYSTORE_NAME} keystore-password=${KEYSTORE_PASSWORD} keyalias-name=${KEYALIAS_NAME} keyalias-password=${KEYALIAS_PASSWORD} ", returnStatus:true, label:'Build unity on Windows'])
-                                if (buildStatus != 0) {
-                                    currentBuild.result = 'FAILED'
-                                    error 'Build Failed by Unity. Check above log for more detail'
+
+                            withCredentials(
+                            [
+                                usernamePassword(credentialsId: 'unityhub-account', usernameVariable: 'UNITY_USERNAME', passwordVariable: 'UNITY_PASSWORD'),
+                                usernamePassword(credentialsId: "${KEYSTORE_CREDENTIAL_ID}", usernameVariable: 'KEYSTORE_NAME', passwordVariable: 'KEYSTORE_PASSWORD'),
+                                usernamePassword(credentialsId: "${KEYALIAS_CREDENTIAL_ID}", usernameVariable: 'KEYALIAS_NAME', passwordVariable: 'KEYALIAS_PASSWORD')]) {
+
+                                timeout(time: 100, unit: 'MINUTES') {
+                                    if (isUnix()) {
+                                        def shellCmd = GetConfig("UNITY_BUILD_COMMAND").trim()
+                                        def unixBuildStatus = sh([script: "${shellCmd} -username ${UNITY_USERNAME} -password ${UNITY_PASSWORD} keystore-name=${KEYSTORE_NAME} keystore-password=${KEYSTORE_PASSWORD} keyalias-name=${KEYALIAS_NAME} keyalias-password=${KEYALIAS_PASSWORD} ", returnStatus:true, label:'Build unity on Unix'])
+                                        if (unixBuildStatus != 0) {
+                                            currentBuild.result = 'FAILED'
+                                            error 'Build Failed by Unity. Check above log for more detail'
+                                        }
+                                    }
+                                    else {
+                                        def buildStatus = powershell([script: "$env.UNITY_PROJECT_ROOT/Jenkins/Scripts/UnityBuild.ps1 -config '$env.UNITY_PROJECT_ROOT/Jenkins/config.cfg' -quit -batchmode -silent-crashes -username ${UNITY_USERNAME} -password ${UNITY_PASSWORD} keystore-name=${KEYSTORE_NAME} keystore-password=${KEYSTORE_PASSWORD} keyalias-name=${KEYALIAS_NAME} keyalias-password=${KEYALIAS_PASSWORD} ", returnStatus:true, label:'Build unity on Windows'])
+                                        if (buildStatus != 0) {
+                                            currentBuild.result = 'FAILED'
+                                            error 'Build Failed by Unity. Check above log for more detail'
+                                        }
+                                    }
                                 }
                             }
+                        } catch (err) {
+                            echo "Build Project failed: ${err.getMessage()}"
+                            currentBuild.result = 'FAILURE'
+                            error "Fail pipeline: skipping next stages"
                         }
                     }
                 }
@@ -234,6 +352,8 @@ pipeline {
                         dir('src') {
                             ExecuteAllPythonScriptsInDirectory("AfterBuildFailure")
                         }
+
+                        SetConfig('BUILD_ERROR_MESSAGE', 'Unity build failed')
                         error "Unity build failed!"
                     }
                 }
@@ -246,26 +366,23 @@ pipeline {
                 }
             }
         }
-        stage('Post Build') {
-            agent { label BUILD_TARGET }
-            steps {
-                script {
-                    dir('src') {
-                        if(isAndroid && isRelease)
-                        {
-                            Python(" -u  $env.UNITY_PROJECT_ROOT/Jenkins/Scripts/BundleToApk.py")
-                        }
-                        
-                        ExecuteAllPythonScriptsInDirectory("AfterBuild")
-                        
-//                         if("${BUILD_TARGET}" == "android" && env.BRANCH_NAME.toLowerCase().contains("-release") && "${FIREBASE_APP_ID}" != "")
-//                         {
-//                             Python(" -u  $env.UNITY_PROJECT_ROOT/Jenkins/Scripts/SendSymbolToFirebase.py")
+//         stage('Post Build') {
+//             agent { label BUILD_TARGET }
+//             steps {
+//                 withEnv(['BUILD_CURRENT_STEP=Post Build']) {
+//                     script {
+//                         dir('src') {
+//                             ExecuteAllPythonScriptsInDirectory("AfterBuild")
+//
+//     //                         if("${BUILD_TARGET}" == "android" && env.BRANCH_NAME.toLowerCase().contains("-release") && "${FIREBASE_APP_ID}" != "")
+//     //                         {
+//     //                             Python(" -u  $env.UNITY_PROJECT_ROOT/Jenkins/Scripts/SendSymbolToFirebase.py")
+//     //                         }
 //                         }
-                    }
-                }
-            }
-        }
+//                     }
+//                 }
+//             }
+//         }
         // Only send test version to Test Flight.
         // Android send apk to Tester or aab to Test version
         stage('Publish') {
@@ -276,65 +393,74 @@ pipeline {
                 //FIREBASE_CLI_TOKEN = credentials('FIREBASE_CLI_TOKEN')
             }
             steps {
-                script {
-                    // android publisher jenkins plugin
-                    if(isAndroid && isRelease)
-                    {
-                        // There are myriad issues when build gradle for production. Dont push production 100%
-                        try {
-                            androidApkUpload googleCredentialsId: 'gapu-play-console',
-                                filesPattern: '**/build/Android/*.aab',
-                                trackName: 'internal',
-                                usePreviousExpansionFilesIfMissing: true,
-                                rolloutPercentage: '100',
-                                recentChangeList: [
-                                    [language: 'en-US', text: "Internal test ${env.BUILD_NUMBER}."]
-                                ]
-
-                        } catch (err) {
-                            echo err.getMessage()
-                        }
-                    }
-
-                    if (isIOS)
-                    {
-                        def xcode_dir = "$env.WORKSPACE/build/iOS"
-                        sh "yes | cp -rf $env.UNITY_PROJECT_ROOT/Jenkins/Scripts/FastLaneFiles/.  $xcode_dir"
-                        dir(xcode_dir)
+                withEnv(['BUILD_CURRENT_STEP=Publish']) {
+                    script {
+                        // android publisher jenkins plugin
+                        if(isAndroid && isRelease)
                         {
-                            sh "printenv | sort"
-                            sh "pod install"
-                            
-                            def lane = "beta"
-                            if(isRelease)
-                                lane = "publish"
-                            sh(script:"fastlane ${lane} --verbose 2>&1 | tee ${workspace}/fastlane_log.txt ; ( exit \${PIPESTATUS[0]} )", label: 'Fastlane')
-                            
-//                             withCredentials([string(credentialsId: 'KEYCHAIN_PASSWORD', variable: 'KEYCHAIN_PASSWORD'),
-//                                             string(credentialsId: 'FASTLANE_PASSWORD', variable: 'FASTLANE_PASSWORD'),
-//                                             string(credentialsId: 'FASTLANE_USER', variable: 'FASTLANE_USER'),
-//                                             string(credentialsId: 'MATCH_PASSWORD', variable: 'MATCH_PASSWORD')])
+                            // There are myriad issues when build gradle for production. Dont push production 100%
+                            try {
+                                androidApkUpload googleCredentialsId: 'gapu-play-console',
+                                    filesPattern: '**/build/Android/*.aab',
+                                    trackName: 'internal',
+                                    usePreviousExpansionFilesIfMissing: true,
+                                    rolloutPercentage: '100',
+                                    recentChangeList: [
+                                        [language: 'en-US', text: "Internal test ${env.BUILD_NUMBER}."]
+                                    ]
+
+                            } catch (err) {
+                                echo err.getMessage()
+                            }
+                        }
+
+                        try {
+                            Python(" -u $env.UNITY_PROJECT_ROOT/Jenkins/Scripts/SendBuildOutputToSlack.py")
+                        } catch (err) {
+                            echo "Slack post failed: ${err.getMessage()}"
+                        }
+
+
+//                         if (isIOS)
+//                         {
+//                             def xcode_dir = "$env.WORKSPACE/build/iOS"
+//                             sh "yes | cp -rf $env.UNITY_PROJECT_ROOT/Jenkins/Scripts/FastLaneFiles/.  $xcode_dir"
+//                             dir(xcode_dir)
 //                             {
-//                                 sshagent (credentials: ['appstore_github'])
+//                                 sh "printenv | sort"
+//                                 sh "pod install"
+//
+//                                 def lane = "beta"
+//                                 if(isRelease)
+//                                     lane = "publish"
+//                                 sh(script:"fastlane ${lane} --verbose 2>&1 | tee ${workspace}/fastlane_log.txt ; ( exit \${PIPESTATUS[0]} )", label: 'Fastlane')
+//
+//                                 withCredentials([string(credentialsId: 'KEYCHAIN_PASSWORD', variable: 'KEYCHAIN_PASSWORD'),
+//                                                 string(credentialsId: 'FASTLANE_PASSWORD', variable: 'FASTLANE_PASSWORD'),
+//                                                 string(credentialsId: 'FASTLANE_USER', variable: 'FASTLANE_USER'),
+//                                                 string(credentialsId: 'MATCH_PASSWORD', variable: 'MATCH_PASSWORD')])
 //                                 {
-//                                     // Enable below code if fastlane still cant find ssh key. It add all ssh in ~/.ssh key if jenkins have sudo power (you shouldn't give CI root and fastlane cant run in sudo shell)
-//                                     // sh "ssh-add -A"
-//                                     sh "printenv | sort"
-// 
-//                                     // For proper keychain setup with fastlane. Create new keychain user in macbook with custom password. login.keychain is the default keychain
-//                                     // That included all login for appstore, github, and certification use for fastlane.
-//                                     // sh "security list-keychains"
-//                                     sh(script:'security -v unlock-keychain -p "${KEYCHAIN_PASSWORD}" ~/Library/Keychains/login.keychain', label: 'Unlock Keychain')
-//                                     // sh "security list-keychains"
-// 
-//                                     def lane = "beta"
-//                                     if( env.BRANCH_NAME.toLowerCase().contains("-release"))
-//                                         lane = "publish"
-// 
-//                                     sh(script:"fastlane ${lane} --verbose 2>&1 | tee ${workspace}/fastlane_log.txt ; ( exit \${PIPESTATUS[0]} )", label: 'Fastlane')
+//                                     sshagent (credentials: ['appstore_github'])
+//                                     {
+//                                         // Enable below code if fastlane still cant find ssh key. It add all ssh in ~/.ssh key if jenkins have sudo power (you shouldn't give CI root and fastlane cant run in sudo shell)
+//                                         // sh "ssh-add -A"
+//                                         sh "printenv | sort"
+//
+//                                         // For proper keychain setup with fastlane. Create new keychain user in macbook with custom password. login.keychain is the default keychain
+//                                         // That included all login for appstore, github, and certification use for fastlane.
+//                                         // sh "security list-keychains"
+//                                         sh(script:'security -v unlock-keychain -p "${KEYCHAIN_PASSWORD}" ~/Library/Keychains/login.keychain', label: 'Unlock Keychain')
+//                                         // sh "security list-keychains"
+//
+//                                         def lane = "beta"
+//                                         if( env.BRANCH_NAME.toLowerCase().contains("-release"))
+//                                             lane = "publish"
+//
+//                                         sh(script:"fastlane ${lane} --verbose 2>&1 | tee ${workspace}/fastlane_log.txt ; ( exit \${PIPESTATUS[0]} )", label: 'Fastlane')
+//                                     }
 //                                 }
 //                             }
-                        }
+//                         }
                     }
                 }
             }
@@ -355,35 +481,69 @@ pipeline {
                 }
             }
         }
-//         stage('Test') {
-//             agent { label BUILD_TARGET }
-//             steps {
-//                 script {
-//                     dir("src")
-//                     {
-//                         if(env.BRANCH_NAME.toLowerCase().contains("-test"))
-//                         {
-//                             if ("${BUILD_TARGET}" == "android")
-//                             {
-//                                 Python(" -u  $env.UNITY_PROJECT_ROOT/Jenkins/Scripts/RunAndroidTests.py $env.BRANCH_NAME $env.GIT_COMMIT_HASH $env.GIT_COMMIT_DATE")
-//                             }
-//                         }
-//                     }
-//                 }
-//             }
-//             post {
-//                 success {
-//                     script {
-//                         ExecuteAllPythonScriptsInDirectory("AfterTestSuccess")
-//                     }
-//                 }
-//                 failure {
-//                     script {
-//                         ExecuteAllPythonScriptsInDirectory("AfterTestFailure")
-//                     }
-//                 }
-//             }
-//         }
+        stage('Test') {
+            agent { label BUILD_TARGET }
+            when {
+                beforeAgent true
+                allOf {
+                    expression { isTest }
+                    expression { isAndroid }
+                }
+            }
+            steps {
+                withEnv(['BUILD_CURRENT_STEP=Test']) {
+                    script {
+                        dir("src")
+                        {
+                            Python(" -u  $env.UNITY_PROJECT_ROOT/Jenkins/Scripts/RunAndroidTests.py $env.BRANCH_NAME $env.GIT_COMMIT_HASH $env.GIT_COMMIT_DATE")
+                        }
+                    }
+                }
+            }
+            post {
+                success {
+                    script {
+                        ExecuteAllPythonScriptsInDirectory("AfterTestSuccess")
+                    }
+                }
+                failure {
+                    script {
+                        ExecuteAllPythonScriptsInDirectory("AfterTestFailure")
+                    }
+                }
+            }
+        }
+    }
+    post {
+        always {
+            node(BUILD_TARGET) {
+                script {
+                    script {
+                        echo "==== Post final build status ===="
+                        withCredentials(
+                        [
+                            usernamePassword(credentialsId: 'admin-jenkins-api-token', usernameVariable: 'JENKINS_API_USER', passwordVariable: 'JENKINS_API_TOKEN')]) {
+                            dir('src'){
+                                Python(" -u $env.UNITY_PROJECT_ROOT/Jenkins/Scripts/UpdateFinalSlackStatus.py --jenkins-user ${JENKINS_API_USER} --jenkins-token ${JENKINS_API_TOKEN}")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        failure {
+            node(BUILD_TARGET) {
+                script {
+                    withCredentials(
+                    [
+                        usernamePassword(credentialsId: 'admin-jenkins-api-token', usernameVariable: 'JENKINS_API_USER', passwordVariable: 'JENKINS_API_TOKEN')]) {
+                        dir('src'){
+                            Python(" -u $env.UNITY_PROJECT_ROOT/Jenkins/Scripts/ParseAndPostErrors.py --jenkins-user ${JENKINS_API_USER} --jenkins-token ${JENKINS_API_TOKEN}")
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -424,6 +584,48 @@ def Python(String command) {
     }
 }
 
+
+def PythonBackground(String command) {
+    // Escape ký tự % để tránh lỗi khi chạy trong shell/batch
+    def escapedCommand = command.replaceAll('%', '%%')
+
+    if (env.ISUNIX == "TRUE") {
+        sh script: """
+            echo "[INFO] === PythonBackground (Linux) ==="
+
+            echo "[INFO] Starting new Python background task..."
+            export BUILD_ID=dontKillMe
+            source ${WORKSPACE}/pyenv/bin/activate
+
+            # Tách process khỏi Jenkins session
+            nohup bash -c "setsid python -u ${escapedCommand}" > ${WORKSPACE}/python.log 2>&1 &
+            disown || true
+
+            echo "[INFO] Background Python started (detached)."
+        """, label: "python ${escapedCommand}"
+    } else {
+        bat script: """
+            echo [INFO] === PythonBackground (Windows) ===
+
+            echo [INFO] Starting new Python background task...
+            set BUILD_ID=dontKillMe
+            call ${WORKSPACE}\\pyenv\\Scripts\\activate.bat
+
+            REM Dùng start "" cmd /C để detach hoàn toàn khỏi Jenkins
+            start "" cmd /C "python -u ${escapedCommand} > ${WORKSPACE}\\python.log 2>&1"
+
+            echo [INFO] Background Python started (detached).
+        """, label: "python ${escapedCommand}"
+    }
+}
+
+def KillPythonScript(String match) {
+    sh """
+        echo "[INFO] Killing python scripts containing: ${match}"
+        pkill -f "${match}" || true
+    """
+}
+
 def ConvertPathSeparator(String path){
     if (env.ISUNIX == "TRUE") {
         return path.replace("\\", "/")
@@ -437,4 +639,138 @@ def ToUnixPath(String path){
     return path.replace("\\", "/")
 }
 
+def PostSlackMessage(String channelId, String text) {
+    def resp = sh(script: """
+        curl -s -X POST \
+        -H "Authorization: Bearer ${GetConfigValue('SLACK_BOT_TOKEN')}" \
+        -H 'Content-type: application/json; charset=utf-8' \
+        --data '{
+            "channel": "${channelId}",
+            "text": "${text}"
+        }' \
+        https://slack.com/api/chat.postMessage
+    """, returnStdout: true).trim()
 
+    def json = new JsonSlurper().parseText(resp)
+
+    if (json.ok) {
+        echo "Slack message posted successfully (ts=${json.ts})"
+        return json.ts
+    } else {
+        echo "Slack postMessage failed: ${json.error}"
+        return null
+    }
+}
+
+def UpdateSlackMessage(String channelId, String ts, String text) {
+    if (!ts) {
+        echo "No Slack message timestamp found — skipping update."
+        return
+    }
+
+    def resp = sh(script: """
+        curl -s -X POST \
+        -H "Authorization: Bearer ${GetConfigValue('SLACK_BOT_TOKEN')}" \
+        -H 'Content-type: application/json; charset=utf-8' \
+        --data '{
+            "channel": "${channelId}",
+            "ts": "${ts}",
+            "text": "${text}"
+        }' \
+        https://slack.com/api/chat.update
+    """, returnStdout: true).trim()
+
+    def json = new JsonSlurper().parseText(resp)
+
+    if (json.ok) {
+        echo "Slack message updated successfully (ts=${ts})"
+        return true
+    } else {
+        echo "Slack updateMessage failed: ${json.error}"
+        return false
+    }
+}
+
+def DeleteSlackMessage(String channelId, String ts) {
+    if (!ts) {
+        echo "No Slack message timestamp found — skipping delete."
+        return
+    }
+
+    def resp = sh(script: """
+        curl -s -X POST \
+        -H "Authorization: Bearer ${GetConfigValue('SLACK_BOT_TOKEN')}" \
+        -H 'Content-type: application/json; charset=utf-8' \
+        --data '{
+            "channel": "${channelId}",
+            "ts": "${ts}"
+        }' \
+        https://slack.com/api/chat.delete
+    """, returnStdout: true).trim()
+
+    def json = new groovy.json.JsonSlurper().parseText(resp)
+    if (json.ok) {
+        echo "Slack message deleted successfully (ts=${ts})"
+        env.SLACK_MESSAGE_TS = ""
+        return true
+    } else {
+        echo "Slack deleteMessage failed: ${json.error}"
+        return false
+    }
+}
+
+def UpdateSlackMessageFailedStage() {
+    if (!env.SLACK_MESSAGE_TS?.trim()) {
+        echo "[Slack] No SLACK_MESSAGE_TS found — skipping update."
+        return
+    }
+
+    def stageName = env.BUILD_CURRENT_STEP ?: "Unknown Stage"
+    def channelId = ""
+    if (env.BRANCH_NAME?.toLowerCase()?.contains("-release")) {
+        channelId = GetConfigValue('SLACK_RELEASE_CHANNEL_ID')
+    } else {
+        channelId = GetConfigValue('SLACK_DEV_CHANNEL_ID')
+    }
+
+    def ts = env.SLACK_MESSAGE_TS
+    def token = GetConfigValue('SLACK_BOT_TOKEN')
+
+    def emoji = ":x:"
+    def status = "FAILED at stage *${stageName}*"
+    def projectName = GetConfigValue("PROJECT_NAME")
+    def developer = sh(script: "git log -1 --pretty=format:%cn", returnStdout: true).trim()
+    def commitHash = sh(script: "git log -1 --pretty=format:%h", returnStdout: true).trim()
+    def commitMsg = sh(script: "git log -1 --pretty=format:%B", returnStdout: true).trim()
+    def branch = env.BRANCH_NAME
+    def buildNumber = env.BUILD_NUMBER
+    def buildUrl = env.BUILD_URL
+
+    def message = """${emoji} *${projectName} #${buildNumber}* - ${status}
+Branch: `${branch}`
+Developer: `${developer}`
+Commit SHA: `${commitHash}`
+Changelog:
+```""" + commitMsg + """```
+<${buildUrl}|View Build Details>"""
+
+    // Update message lên Slack
+    def resp = sh(script: """
+        curl -s -X POST \
+        -H "Authorization: Bearer ${token}" \
+        -H 'Content-type: application/json; charset=utf-8' \
+        --data '{
+            "channel": "${channelId}",
+            "ts": "${ts}",
+            "text": "${message.replaceAll('"','\\\\\\"')}"
+        }' \
+        https://slack.com/api/chat.update
+    """, returnStdout: true).trim()
+
+    def json = new groovy.json.JsonSlurper().parseText(resp)
+    if (json.ok) {
+        echo "[Slack] Updated message with FAILED stage: ${stageName}"
+    } else {
+        echo "[Slack] Failed to update Slack message: ${json.error}"
+    }
+}
