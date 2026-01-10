@@ -1,0 +1,243 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7580e91ba8c57d64db9a909183b608b8, type: 3}
+  m_Name: Sheet_Localize
+  m_EditorClassIdentifier: 
+  serverUrl: https://gapustudio.net/gsheet
+  spreadsheetId: 1ahf8VdKsTljRqhaEWD7INYdlbEPejINprvPAnnV0olI
+  idLookupFileName: LocalizeId
+  sheets:
+  - sheetName: General
+    targetClass: Mimi.Localizations.DataSources.GoogleSheet.LanguageModel, Mimi.Localizations.GoogleSheet,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    majorDimension: 0
+    fieldNames:
+    - English
+    - Vietnamese
+    - French
+    - German
+    - Portuguese
+    - Spanish
+    - Korean
+    - Japanese
+    - Italian
+    - Dutch
+    - Russian
+    - Afrikaans
+    - Thai
+    - Indonesian
+  cachedJsonData: "{\"General\":[{\"Id\":\"NotiTitle\",\"English\":\"Let's find your
+    real love\",\"Vietnamese\":\"\u0110\u1EEBng b\u1ECF l\u1EE1 t\u1EA5t c\u1EA3
+    nh\u1EEFng ni\u1EC1m vui.\"},{\"Id\":\"NotiContent\",\"English\":\"Missing the
+    excitement? Dive back into our game and discover new updates and surprises. Get
+    ready for Save Prisoner\",\"Vietnamese\":\"Missing the excitement? Dive back
+    into our game and discover new updates and surprises. Get ready for Save Prisoner\"},{\"Id\":\"Level\",\"English\":\"Level\",\"Vietnamese\":\"C\u1EA5p
+    \u0111\u1ED9\",\"French\":\"Niveau\",\"German\":\"Ebene\",\"Portuguese\":\"N\xEDvel\",\"Spanish\":\"Nivel\",\"Korean\":\"\uC218\uC900\",\"Japanese\":\"\u30EC\u30D9\u30EB\",\"Italian\":\"Livello\",\"Dutch\":\"Niveau\",\"Russian\":\"\u0423\u0440\u043E\u0432\u0435\u043D\u044C\",\"Afrikaans\":\"\u0938\u094D\u0924\u0930\",\"Thai\":\"\u0E23\u0E30\u0E14\u0E31\u0E1A\",\"Indonesian\":\"Tingkat\"},{\"Id\":\"NotEnoughCurrency\",\"English\":\"Not
+    enough <color=yellow>{0}</color>\",\"Vietnamese\":\"Kh\xF4ng \u0111\u1EE7 <color=yellow>{0}</color>\"},{\"Id\":\"AdNetworkError\",\"English\":\"Ad
+    is not available now!\",\"Vietnamese\":\"Qu\u1EA3ng c\xE1o hi\u1EC7n kh\xF4ng
+    kh\u1EA3 d\u1EE5ng!\"},{\"Id\":\"EarnBrain\",\"English\":\"+ {0} <sprite name=\\\"Tex_Icon_Brain\\\">\",\"Vietnamese\":\"+
+    {0} <sprite name=\\\"Tex_Icon_Brain\\\">\"},{\"Id\":\"ConsumeBrain\",\"English\":\"-
+    {0} <sprite name=\\\"Tex_Icon_Brain\\\">\",\"Vietnamese\":\"- {0} <sprite name=\\\"Tex_Icon_Brain\\\">\"},{\"Id\":\"Play\",\"English\":\"Play\",\"Vietnamese\":\"Ch\u01A1i\",\"French\":\"Jouer\",\"German\":\"Spielen\",\"Portuguese\":\"Jogar\",\"Spanish\":\"Jugar\",\"Korean\":\"\uB180\uB2E4\",\"Japanese\":\"\u904A\u3076\",\"Italian\":\"Giocare\",\"Dutch\":\"Toneelstuk\",\"Russian\":\"\u0418\u0433\u0440\u0430\u0442\u044C\",\"Afrikaans\":\"\u0916\u0947\u0932\",\"Thai\":\"\u0E40\u0E25\u0E48\u0E19\",\"Indonesian\":\"Bermain\"},{\"Id\":\"Shop\",\"English\":\"Shop\",\"Vietnamese\":\"C\u1EEDa
+    h\xE0ng\",\"French\":\"Boutique\",\"German\":\"Laden\",\"Portuguese\":\"Loja\",\"Spanish\":\"Tienda\",\"Korean\":\"\uAC00\uAC8C\",\"Japanese\":\"\u5E97\",\"Italian\":\"Negozio\",\"Dutch\":\"Winkel\",\"Russian\":\"\u041C\u0430\u0433\u0430\u0437\u0438\u043D\",\"Afrikaans\":\"\u0926\u0941\u0915\u093E\u0928\",\"Thai\":\"\u0E23\u0E49\u0E32\u0E19\",\"Indonesian\":\"Toko\"},{\"Id\":\"EraserShop\",\"English\":\"Eraser
+    Shop\",\"Vietnamese\":\"C\u1EEDa h\xE0ng t\u1EA9y\",\"French\":\"Gomme Boutique\",\"German\":\"Radiergummi-Shop\",\"Portuguese\":\"Loja
+    de borracha\",\"Spanish\":\"Tienda de borradores\",\"Korean\":\"\uC9C0\uC6B0\uAC1C
+    \uAC00\uAC8C\",\"Japanese\":\"\u6D88\u3057\u30B4\u30E0\u5C4B\\r\\n\",\"Italian\":\"Negozio
+    di gomme\",\"Dutch\":\"Gummetjes Winkel\",\"Russian\":\"\u041B\u0430\u0441\u0442\u0438\u043A
+    \u041C\u0430\u0433\u0430\u0437\u0438\u043D\",\"Afrikaans\":\"\u0907\u0930\u0947\u091C\u093C\u0930
+    \u0936\u0949\u092A\",\"Thai\":\"\u0E23\u0E49\u0E32\u0E19\u0E22\u0E32\u0E07\u0E25\u0E1A\",\"Indonesian\":\"Toko
+    Penghapus\"},{\"Id\":\"Unlock\",\"English\":\"Unlock Level\",\"Vietnamese\":\"M\u1EDF
+    kh\xF3a m\xE0n\",\"French\":\"Ouvrir\",\"German\":\"Level Freischalten\",\"Portuguese\":\"N\xEDvel
+    de desbloqueio\",\"Spanish\":\"Nivel de desbloqueo\",\"Korean\":\"\uC7A0\uAE08
+    \uD574\uC81C \uB808\uBCA8\",\"Japanese\":\"\u30ED\u30C3\u30AF\u89E3\u9664\u30EC\u30D9\u30EB\",\"Italian\":\"Sblocca
+    livello\",\"Dutch\":\"Ontgrendelen\",\"Russian\":\"\u0420\u0430\u0437\u0431\u043B\u043E\u043A\u0438\u0440\u043E\u0432\u0430\u0442\u044C
+    \u0423\u0440\u043E\u0432\u0435\u043D\u044C\",\"Afrikaans\":\"\u0905\u0928\u0932\u0949\u0915
+    \u0938\u094D\u0924\u0930\",\"Thai\":\"\u0E1B\u0E25\u0E14\u0E25\u0E47\u0E2D\u0E01\u0E23\u0E30\u0E14\u0E31\u0E1A\",\"Indonesian\":\"Tingkat
+    Buka Kunci\"},{\"Id\":\"SelectLevel\",\"English\":\"Select Level\",\"Vietnamese\":\"Ch\u1ECDn
+    c\u1EA5p \u0111\u1ED9 ch\u01A1i\",\"French\":\"Choisir le niveau\",\"German\":\"W\xE4hlen
+    Sie Ebene aus\",\"Portuguese\":\"Selecione o n\xEDvel\",\"Spanish\":\"Selecciona
+    el nivel\",\"Korean\":\"\uB808\uBCA8 \uC120\uD0DD\",\"Japanese\":\"\u30EC\u30D9\u30EB\u306E\u9078\u629E\",\"Italian\":\"Seleziona
+    livello\",\"Dutch\":\"Kies een niveau\",\"Russian\":\"\u0412\u044B\u0431\u0435\u0440\u0438\u0442\u0435
+    \u0423\u0440\u043E\u0432\u0435\u043D\u044C\",\"Afrikaans\":\"\u0938\u094D\u0924\u0930
+    \u091A\u0941\u0928\u0947\u0902\",\"Thai\":\"\u0E40\u0E25\u0E37\u0E2D\u0E01\u0E23\u0E30\u0E14\u0E31\u0E1A\",\"Indonesian\":\"Pilih
+    tingkat\"},{\"Id\":\"SpecialLevel\",\"English\":\"Special Level\",\"Vietnamese\":\"M\xE0n
+    \u0111\u1EB7c bi\u1EC7t\",\"French\":\"Niveau sp\xE9cial\\r\\n\",\"German\":\"Sonderniveau\",\"Portuguese\":\"N\xEDvel
+    Especial\",\"Spanish\":\"Nivel Especial\",\"Korean\":\"\uD2B9\uBCC4 \uB808\uBCA8\",\"Japanese\":\"\\r\\n\u7279\u5225\u30EC\u30D9\u30EB\",\"Italian\":\"Livello
+    Speciale\",\"Dutch\":\"\\r\\nSpeciaal niveau\",\"Russian\":\"\u0421\u043F\u0435\u0446\u0438\u0430\u043B\u044C\u043D\u044B\u0439
+    \u0443\u0440\u043E\u0432\u0435\u043D\u044C\",\"Afrikaans\":\"\\r\\n\u0935\u093F\u0936\u0947\u0937
+    \u0938\u094D\u0924\u0930\",\"Thai\":\"\\n\u0E23\u0E30\u0E14\u0E31\u0E1A\u0E1E\u0E34\u0E40\u0E28\u0E29\",\"Indonesian\":\"Level
+    Khusus\"},{\"Id\":\"Challenges\",\"English\":\"Challenges\",\"Vietnamese\":\"Th\u1EED
+    th\xE1ch\",\"French\":\"D\xE9fis\",\"German\":\"Herausforderungen\",\"Portuguese\":\"Desafios\",\"Spanish\":\"Desaf\xEDos\",\"Korean\":\"\uB3C4\uC804\",\"Japanese\":\"\u8AB2\u984C\",\"Italian\":\"Sfide\",\"Dutch\":\"Uitdagingen\",\"Russian\":\"\u0418\u0441\u043F\u044B\u0442\u0430\u043D\u0438\u0435\",\"Afrikaans\":\"\u091A\u0941\u0928\u094C\u0924\u093F\u092F\u093E\u0902\",\"Thai\":\"\u0E17\u0E49\u0E32\u0E17\u0E32\u0E22\",\"Indonesian\":\"Tantangan\"},{\"Id\":\"ComingSoon\",\"English\":\"Coming
+    Soon\",\"Vietnamese\":\"S\u1EAFp ra m\u1EAFt\",\"French\":\"\\r\\n\xC0 venir\",\"German\":\"Demn\xE4chst
+    verf\xFCgbar\",\"Portuguese\":\"Em breve\",\"Spanish\":\"Muy pronto\",\"Korean\":\"\uACE7
+    \uCD9C\uC2DC\",\"Japanese\":\"\u8FD1\u65E5\u516C\u958B\",\"Italian\":\"Prossimamente\",\"Dutch\":\"Binnenkort
+    beschikbaar\",\"Russian\":\"\u0412\u0441\u043A\u043E\u0440\u0435\",\"Afrikaans\":\"\u091C\u0932\u094D\u0926
+    \u0906 \u0930\u0939\u093E \u0939\u0948\",\"Thai\":\"\u0E40\u0E23\u0E47\u0E27\u0E46
+    \u0E19\u0E35\u0E49\",\"Indonesian\":\"Segera hadir\"},{\"Id\":\"Loading\",\"English\":\"Loading
+    ...\",\"Vietnamese\":\"\u0110ang t\u1EA3i ...\",\"French\":\"Chargement ...\",\"German\":\"Laden
+    ...\",\"Portuguese\":\"Carregamento ...\",\"Spanish\":\"Cargando ...\",\"Korean\":\"\uB85C\uB4DC
+    \uC911...\",\"Japanese\":\"\u8AAD\u307F\u8FBC\u307F\u4E2D ...\",\"Italian\":\"Caricamento
+    ...\",\"Dutch\":\"Bezig met laden ...\",\"Russian\":\"\u0417\u0430\u0433\u0440\u0443\u0437\u043A\u0430\",\"Afrikaans\":\"\u0932\u094B\u0921
+    \u0939\u094B \u0930\u0939\u093E \u0939\u0948 ...\",\"Thai\":\"\u0E01\u0E33\u0E25\u0E31\u0E07\u0E42\u0E2B\u0E25\u0E14
+    ...\",\"Indonesian\":\"Memuat...\"},{\"Id\":\"Evaluate\",\"English\":\"How would
+    you rate Delete Master 2?\",\"Vietnamese\":\"B\u1EA1n th\xEDch Delete Master2
+    ch\u1EE9? \",\"French\":\"Comment \xE9valueriez-vous Supprimer Master 2\_?\",\"German\":\"Wie
+    w\xFCrden Sie \u201EDelete Master 2\u201C bewerten?\",\"Portuguese\":\"Como voc\xEA
+    avaliaria Delete Master 2?\",\"Spanish\":\"\xBFC\xF3mo calificar\xEDas Delete
+    Master 2?\",\"Korean\":\"\uC0AD\uC81C \uB9C8\uC2A4\uD130 2\uB97C \uC5B4\uB5BB\uAC8C
+    \uD3C9\uAC00\uD558\uC2DC\uB098\uC694?\",\"Japanese\":\"\u30C7\u30EA\u30FC\u30C8\u30DE\u30B9\u30BF\u30FC
+    2 \u3092\u3069\u3046\u8A55\u4FA1\u3057\u307E\u3059\u304B?\",\"Italian\":\"Come
+    valuteresti Elimina Master 2?\",\"Dutch\":\"Hoe zou u Delete Master 2 beoordelen?\",\"Russian\":\"\u041A\u0430\u043A
+    \u0431\u044B \u0432\u044B \u043E\u0446\u0435\u043D\u0438\u043B\u0438 \xABDelete
+    Master 2\xBB?\",\"Afrikaans\":\"\u0906\u092A \u0921\u093F\u0932\u0940\u091F \u092E\u093E\u0938\u094D\u091F\u0930
+    2 \u0915\u094B \u0915\u0948\u0938\u0947 \u0930\u0947\u091F\u093F\u0902\u0917
+    \u0926\u0947\u0902\u0917\u0947?\",\"Thai\":\"\u0E04\u0E38\u0E13\u0E08\u0E30\u0E43\u0E2B\u0E49\u0E04\u0E30\u0E41\u0E19\u0E19
+    Delete Master 2 \u0E2D\u0E22\u0E48\u0E32\u0E07\u0E44\u0E23?\",\"Indonesian\":\"Bagaimana
+    Anda menilai Hapus Master 2?\"},{\"Id\":\"Submit\",\"English\":\"Submit\",\"Vietnamese\":\"X\xE1c
+    nh\u1EADn\",\"French\":\"\\r\\nSoumettre\",\"German\":\"Einreichen\",\"Portuguese\":\"Enviar\",\"Spanish\":\"Entregar\",\"Korean\":\"\uC81C\uCD9C\uD558\uB2E4\",\"Japanese\":\"\u9001\u4FE1\",\"Italian\":\"Invia\",\"Dutch\":\"Indienen\",\"Russian\":\"\u041F\u043E\u0434\u0442\u0432\u0435\u0440\u0436\u0434\u0430\u0442\u044C\",\"Afrikaans\":\"\u091C\u092E\u093E
+    \u0915\u0930\u0928\u093E\",\"Thai\":\"\u0E2A\u0E48\u0E07\",\"Indonesian\":\"Kirim\"},{\"Id\":\"Rate\",\"English\":\"Rate\",\"Vietnamese\":\"\u0110\xE1nh
+    Gi\xE1\",\"French\":\"Taux\",\"German\":\"Rate\",\"Portuguese\":\"Avaliar\",\"Spanish\":\"Tasa\",\"Korean\":\"\uBE44\uC728\",\"Japanese\":\"\u30EC\u30FC\u30C8\",\"Italian\":\"Valutare\",\"Dutch\":\"Tarief\",\"Russian\":\"\u0421\u0442\u0430\u0432\u043A\u0430\",\"Afrikaans\":\"\u0926\u0930\",\"Thai\":\"\u0E1B\u0E23\u0E30\u0E40\u0E21\u0E34\u0E19\",\"Indonesian\":\"Kecepatan\"},{\"Id\":\"Select\",\"English\":\"Select\",\"Vietnamese\":\"L\u1EF1a
+    ch\u1ECDn\",\"French\":\"S\xE9lectionner\",\"German\":\"W\xE4hlen\",\"Portuguese\":\"Selecione\",\"Spanish\":\"Seleccionar\",\"Korean\":\"\uC120\uD0DD\uD558\uB2E4\",\"Japanese\":\"\u9078\u629E\",\"Italian\":\"Selezionare\",\"Dutch\":\"Selecteer\",\"Russian\":\"\u0412\u044B\u0431\u0438\u0440\u0430\u0442\u044C\",\"Afrikaans\":\"\u091A\u0941\u0928\u0928\u093E\",\"Thai\":\"\u0E40\u0E25\u0E37\u0E2D\u0E01\",\"Indonesian\":\"Memilih\"},{\"Id\":\"Congratulations\",\"English\":\"Congratulations\",\"Vietnamese\":\"Ch\xFAc
+    m\u1EEBng\",\"French\":\"F\xE9licitations\",\"German\":\"Gl\xFCckwunsch\",\"Portuguese\":\"Parab\xE9ns\",\"Spanish\":\"Felicidades\",\"Korean\":\"\uCD95\uD558\uD574\uC694\",\"Japanese\":\"\u304A\u3081\u3067\u3068\u3046\",\"Italian\":\"Congratulazioni\",\"Dutch\":\"Gefeliciteerd\",\"Russian\":\"\u041F\u043E\u0437\u0434\u0440\u0430\u0432\u043B\u0435\u043D\u0438\u044F\",\"Afrikaans\":\"\u092C\u0927\u093E\u0908
+    \u0939\u094B\",\"Thai\":\"\u0E22\u0E34\u0E19\u0E14\u0E35\u0E14\u0E49\u0E27\u0E22\",\"Indonesian\":\"Selamat\"},{\"Id\":\"GiftUnlock\",\"English\":\"Gift
+    Unlock\",\"Vietnamese\":\"M\u1EDF kh\xF3a qu\xE0 t\u1EB7ng\",\"French\":\"Cadeau
+    \xE0 d\xE9bloquer\",\"German\":\"Geschenk-Freischaltung\",\"Portuguese\":\"Desbloqueio
+    de presente\",\"Spanish\":\"Desbloqueo de regalo\",\"Korean\":\"\uC120\uBB3C
+    \uC7A0\uAE08 \uD574\uC81C\",\"Japanese\":\"\u30AE\u30D5\u30C8\u306E\u30ED\u30C3\u30AF\u89E3\u9664\",\"Italian\":\"Sblocco
+    regalo\",\"Dutch\":\"Cadeau ontgrendelen\",\"Russian\":\"\u041F\u043E\u0434\u0430\u0440\u043E\u0447\u043D\u0430\u044F
+    \u0440\u0430\u0437\u0431\u043B\u043E\u043A\u0438\u0440\u043E\u0432\u043A\u0430\",\"Afrikaans\":\"\u0909\u092A\u0939\u093E\u0930
+    \u0905\u0928\u0932\u0949\u0915\",\"Thai\":\"\u0E1B\u0E25\u0E14\u0E25\u0E47\u0E2D\u0E04\u0E02\u0E2D\u0E07\u0E02\u0E27\u0E31\u0E0D\",\"Indonesian\":\"Hadiah
+    Buka Kunci\"},{\"Id\":\"Claim\",\"English\":\"Claim x2\",\"Vietnamese\":\"Nh\u1EADn
+    qu\xE0 X2\",\"French\":\"R\xE9clamation x2\",\"German\":\"Anspruch x2\",\"Portuguese\":\"Reivindicar
+    x2\",\"Spanish\":\"Reclamar x2\",\"Korean\":\"2\uAC1C \uD68D\uB4DD\",\"Japanese\":\"\u8ACB\u6C42
+    x2\",\"Italian\":\"Richiedi x2\",\"Dutch\":\"Claim x2\",\"Russian\":\"\u041F\u0440\u0435\u0442\u0435\u043D\u0437\u0438\u044F
+    x2\",\"Afrikaans\":\"\u0926\u093E\u0935\u093E x2\",\"Thai\":\"\u0E40\u0E04\u0E25\u0E21
+    x2\",\"Indonesian\":\"Klaim x2\"},{\"Id\":\"No\",\"English\":\"No, thanks\",\"Vietnamese\":\"Kh\xF4ng,
+    c\u1EA3m \u01A1n\",\"French\":\"Non merci\",\"German\":\"Nein danke\",\"Portuguese\":\"N\xE3o,
+    obrigado\",\"Spanish\":\"No, gracias\",\"Korean\":\"\uC544\uB2C8\uC694, \uAC10\uC0AC\uD569\uB2C8\uB2E4\",\"Japanese\":\"\u7D50\u69CB\u3067\u3059\",\"Italian\":\"No
+    grazie\",\"Dutch\":\"Nee, bedankt\",\"Russian\":\"\u041D\u0435\u0442, \u0441\u043F\u0430\u0441\u0438\u0431\u043E\",\"Afrikaans\":\"\u091C\u0940
+    \u0928\u0939\u0940\u0902, \u0927\u0928\u094D\u092F\u0935\u093E\u0926\",\"Thai\":\"\u0E44\u0E21\u0E48
+    \u0E02\u0E2D\u0E1A\u0E04\u0E38\u0E13\",\"Indonesian\":\"Tidak, terima kasih\"},{\"Id\":\"ClaimEraser\",\"English\":\"Claim\",\"Vietnamese\":\"Nh\u1EADn
+    qu\xE0\",\"French\":\"R\xE9clamer\",\"German\":\"Beanspruchen\",\"Portuguese\":\"Alegar\",\"Spanish\":\"Afirmar\",\"Korean\":\"\uC8FC\uC7A5\uD558\uB2E4\",\"Japanese\":\"\u8ACB\u6C42\",\"Italian\":\"Reclamo\",\"Dutch\":\"Claim\",\"Russian\":\"\u0422\u0440\u0435\u0431\u043E\u0432\u0430\u0442\u044C\",\"Afrikaans\":\"\u0926\u093E\u0935\u093E\",\"Thai\":\"\u0E40\u0E23\u0E35\u0E22\u0E01\u0E23\u0E49\u0E2D\u0E07\",\"Indonesian\":\"Mengeklaim\"},{\"Id\":\"GetMore\",\"English\":\"Get
+    500 coins\",\"Vietnamese\":\"Nh\u1EADn 500 xu\",\"French\":\"Obtenez 500 pi\xE8ces\",\"German\":\"Holen
+    Sie sich 500 M\xFCnzen\",\"Portuguese\":\"Ganhe 500 moedas\",\"Spanish\":\"Consigue
+    500 monedas\",\"Korean\":\"500\uCF54\uC778 \uD68D\uB4DD\",\"Japanese\":\"500\u30B3\u30A4\u30F3\u3092\u30B2\u30C3\u30C8\",\"Italian\":\"Ottieni
+    500 monete\",\"Dutch\":\"Ontvang 500 munten\",\"Russian\":\"\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u0435
+    500 \u043C\u043E\u043D\u0435\u0442\",\"Afrikaans\":\"500 \u0938\u093F\u0915\u094D\u0915\u0947
+    \u092A\u094D\u0930\u093E\u092A\u094D\u0924 \u0915\u0930\u0947\u0902\",\"Thai\":\"\u0E23\u0E31\u0E1A
+    500 \u0E40\u0E2B\u0E23\u0E35\u0E22\u0E0D\",\"Indonesian\":\"Dapatkan 500 koin\"},{\"Id\":\"OhNo\",\"English\":\"OH,
+    NO !!!\",\"Vietnamese\":\"\u1ED2, KH\xD4NG !!!\",\"French\":\"OH NON !!!\",\"German\":\"OH,
+    NEIN!!!\",\"Portuguese\":\"OH N\xC3O !!!\",\"Spanish\":\"OH, NO !!!\",\"Korean\":\"\uC548
+    \uB3FC !!!\",\"Japanese\":\"\u306A\u3093\u3066\u3053\u3063\u305F \uFF01\uFF01\uFF01\",\"Italian\":\"OH
+    NO !!!\",\"Dutch\":\"O, NEE!!!\",\"Russian\":\"\u041E, \u041D\u0415\u0422 !!!\",\"Afrikaans\":\"\u0905\u0930\u0947
+    \u0928\u0939\u0940\u0902 !!!\",\"Thai\":\"\u0E44\u0E21\u0E48\u0E19\u0E30 !!!\",\"Indonesian\":\"Oh
+    tidak!!!\"},{\"Id\":\"NotEnoughtCoin\",\"English\":\"You don't have enough coins\",\"Vietnamese\":\"B\u1EA1n
+    kh\xF4ng c\xF3 \u0111\u1EE7 xu\",\"French\":\"Vous n'avez pas assez de pi\xE8ces\",\"German\":\"Sie
+    haben nicht genug M\xFCnzen\",\"Portuguese\":\"Voc\xEA n\xE3o tem moedas suficientes\",\"Spanish\":\"No
+    tienes suficientes monedas\",\"Korean\":\"\uB3D9\uC804\uC774 \uBD80\uC871\uD574\uC694\",\"Japanese\":\"\u30B3\u30A4\u30F3\u304C\u8DB3\u308A\u307E\u305B\u3093\",\"Italian\":\"Non
+    hai abbastanza monete\",\"Dutch\":\"Je hebt niet genoeg munten\",\"Russian\":\"\u0423
+    \u0432\u0430\u0441 \u043D\u0435\u0434\u043E\u0441\u0442\u0430\u0442\u043E\u0447\u043D\u043E
+    \u043C\u043E\u043D\u0435\u0442\",\"Afrikaans\":\"\u0906\u092A\u0915\u0947 \u092A\u093E\u0938
+    \u092A\u0930\u094D\u092F\u093E\u092A\u094D\u0924 \u0938\u093F\u0915\u094D\u0915\u0947
+    \u0928\u0939\u0940\u0902 \u0939\u0948\u0902\",\"Thai\":\"\u0E04\u0E38\u0E13\u0E21\u0E35\u0E40\u0E2B\u0E23\u0E35\u0E22\u0E0D\u0E44\u0E21\u0E48\u0E40\u0E1E\u0E35\u0E22\u0E07\u0E1E\u0E2D\",\"Indonesian\":\"Anda
+    tidak memiliki cukup koin\"},{\"Id\":\"Sorry\",\"English\":\"Sorry\",\"Vietnamese\":\"L\u1EA5y
+    l\xE0m ti\u1EBFc\",\"French\":\"D\xE9sol\xE9\",\"German\":\"Entschuldigung\",\"Portuguese\":\"Desculpe\",\"Spanish\":\"Lo
+    siento\",\"Korean\":\"\uC8C4\uC1A1\uD569\uB2C8\uB2E4\",\"Japanese\":\"\u3054\u3081\u3093\",\"Italian\":\"Scusa\",\"Dutch\":\"Sorry\",\"Russian\":\"\u0418\u0437\u0432\u0438\u043D\u0438\",\"Afrikaans\":\"\u0915\u094D\u0937\u092E\u093E
+    \u092E\u093E\u0902\u0917\u0928\u093E\",\"Thai\":\"\u0E02\u0E2D\u0E42\u0E17\u0E29\",\"Indonesian\":\"Maaf\"},{\"Id\":\"Retry\",\"English\":\"Retry\",\"Vietnamese\":\"Th\u1EED
+    l\u1EA1i\",\"French\":\"R\xE9essayer\",\"German\":\"Wiederholen\",\"Portuguese\":\"Tentar
+    novamente\",\"Spanish\":\"Rever\",\"Korean\":\"\uB2E4\uC2DC \uD574 \uBCF4\uB2E4\",\"Japanese\":\"\u30EA\u30C8\u30E9\u30A4\",\"Italian\":\"Riprova\",\"Dutch\":\"Opnieuw
+    proberen\",\"Russian\":\"\u041F\u043E\u0432\u0442\u043E\u0440\u0438\u0442\u044C
+    \u043F\u043E\u043F\u044B\u0442\u043A\u0443\",\"Afrikaans\":\"\u092A\u0941\u0928:
+    \u092A\u094D\u0930\u092F\u093E\u0938 \u0915\u0930\u0947\u0902\",\"Thai\":\"\u0E25\u0E2D\u0E07\u0E2D\u0E35\u0E01\u0E04\u0E23\u0E31\u0E49\u0E07\",\"Indonesian\":\"Mencoba
+    kembali\"},{\"Id\":\"NoInternet\",\"English\":\"Could not connect to the internet\",\"Vietnamese\":\"Kh\xF4ng
+    th\u1EC3 k\u1EBFt n\u1ED1i v\u1EDBi internet\",\"French\":\"Impossible de se
+    connecter \xE0 Internet\",\"German\":\"Es konnte keine Verbindung zum Internet
+    hergestellt werden\",\"Portuguese\":\"N\xE3o foi poss\xEDvel conectar-se \xE0
+    Internet\",\"Spanish\":\"No se pudo conectar a internet\",\"Korean\":\"\uC778\uD130\uB137\uC5D0
+    \uC5F0\uACB0\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4.\",\"Japanese\":\"\u30A4\u30F3\u30BF\u30FC\u30CD\u30C3\u30C8\u306B\u63A5\u7D9A\u3067\u304D\u307E\u305B\u3093\u3067\u3057\u305F\",\"Italian\":\"Impossibile
+    connettersi a Internet\",\"Dutch\":\"Kan geen verbinding maken met internet\",\"Russian\":\"\u041D\u0435
+    \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u043F\u043E\u0434\u043A\u043B\u044E\u0447\u0438\u0442\u044C\u0441\u044F
+    \u043A \u0418\u043D\u0442\u0435\u0440\u043D\u0435\u0442\u0443\",\"Afrikaans\":\"\u0907\u0902\u091F\u0930\u0928\u0947\u091F
+    \u0938\u0947 \u0915\u0928\u0947\u0915\u094D\u091F \u0928\u0939\u0940\u0902 \u0939\u094B
+    \u0938\u0915\u093E\",\"Thai\":\"\u0E44\u0E21\u0E48\u0E2A\u0E32\u0E21\u0E32\u0E23\u0E16\u0E40\u0E0A\u0E37\u0E48\u0E2D\u0E21\u0E15\u0E48\u0E2D\u0E2D\u0E34\u0E19\u0E40\u0E17\u0E2D\u0E23\u0E4C\u0E40\u0E19\u0E47\u0E15\u0E44\u0E14\u0E49\",\"Indonesian\":\"Tidak
+    dapat terhubung ke internet\"},{\"Id\":\"NoAds\",\"English\":\"No ads to show
+    at the moment. Try later\",\"Vietnamese\":\"Kh\xF4ng c\xF3 qu\u1EA3ng c\xE1o
+    \u0111\u1EC3 hi\u1EC3n th\u1ECB v\xE0o l\xFAc n\xE0y. Th\u1EED sau\",\"French\":\"Aucune
+    annonce \xE0 diffuser pour le moment. Essayez plus tard\",\"German\":\"Im Moment
+    werden keine Anzeigen geschaltet. Versuchen Sie es sp\xE4ter\",\"Portuguese\":\"N\xE3o
+    h\xE1 an\xFAncios para exibir no momento. Tente mais tarde\",\"Spanish\":\"No
+    hay anuncios para mostrar en este momento. Int\xE9ntalo m\xE1s tarde\",\"Korean\":\"\uD604\uC7AC
+    \uD45C\uC2DC\uD560 \uAD11\uACE0\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4. \uB098\uC911\uC5D0
+    \uC2DC\uB3C4\uD558\uC138\uC694\",\"Japanese\":\"\u73FE\u5728\u8868\u793A\u3059\u308B\u5E83\u544A\u306F\u3042\u308A\u307E\u305B\u3093\u3002\u5F8C\u3067\u8A66\u3057\u3066\u304F\u3060\u3055\u3044\",\"Italian\":\"Nessun
+    annuncio da mostrare al momento. Riprova pi\xF9 tardi\",\"Dutch\":\"Er zijn momenteel
+    geen advertenties om weer te geven. Probeer het later\",\"Russian\":\"\u041D\u0430
+    \u0434\u0430\u043D\u043D\u044B\u0439 \u043C\u043E\u043C\u0435\u043D\u0442 \u043D\u0435\u0442
+    \u043E\u0431\u044A\u044F\u0432\u043B\u0435\u043D\u0438\u0439 \u0434\u043B\u044F
+    \u043F\u043E\u043A\u0430\u0437\u0430. \u041F\u043E\u043F\u0440\u043E\u0431\u0443\u0439\u0442\u0435
+    \u043F\u043E\u0437\u0436\u0435\",\"Afrikaans\":\"\u0907\u0938 \u0938\u092E\u092F
+    \u0926\u093F\u0916\u093E\u0928\u0947 \u0915\u0947 \u0932\u093F\u090F \u0915\u094B\u0908
+    \u0935\u093F\u091C\u094D\u091E\u093E\u092A\u0928 \u0928\u0939\u0940\u0902 \u0939\u0948.
+    \u092C\u093E\u0926 \u092E\u0947\u0902 \u092A\u094D\u0930\u092F\u093E\u0938 \u0915\u0930\u0947\u0902\",\"Thai\":\"\u0E44\u0E21\u0E48\u0E21\u0E35\u0E42\u0E06\u0E29\u0E13\u0E32\u0E17\u0E35\u0E48\u0E08\u0E30\u0E41\u0E2A\u0E14\u0E07\u0E43\u0E19\u0E02\u0E13\u0E30\u0E19\u0E35\u0E49
+    \u0E25\u0E2D\u0E07\u0E43\u0E2B\u0E21\u0E48\u0E20\u0E32\u0E22\u0E2B\u0E25\u0E31\u0E07\",\"Indonesian\":\"Tidak
+    ada iklan untuk ditampilkan saat ini. Coba nanti\"},{\"Id\":\"Coins\",\"English\":\"Coins\",\"Vietnamese\":\"ti\u1EC1n
+    xu\",\"French\":\"Pi\xE8ces\",\"German\":\"M\xFCnzen\",\"Portuguese\":\"Moedas\",\"Spanish\":\"monedas\",\"Korean\":\"\uB3D9\uC804\",\"Japanese\":\"\u30B3\u30A4\u30F3\",\"Italian\":\"Monete\",\"Dutch\":\"Munten\",\"Russian\":\"\u041C\u043E\u043D\u0435\u0442\u044B\",\"Afrikaans\":\"\u0938\u093F\u0915\u094D\u0915\u0947\",\"Thai\":\"\u0E40\u0E2B\u0E23\u0E35\u0E22\u0E0D\",\"Indonesian\":\"Koin\"},{\"Id\":\"Hint\",\"English\":\"Hint\",\"Vietnamese\":\"Tr\u1EE3
+    gi\xFAp\",\"French\":\"Indice\",\"German\":\"Hinweis\",\"Portuguese\":\"Dica\",\"Spanish\":\"Pista\",\"Korean\":\"\uD78C\uD2B8\",\"Japanese\":\"\u30D2\u30F3\u30C8\",\"Italian\":\"Suggerimento\",\"Dutch\":\"Tip\",\"Russian\":\"\u041D\u0430\u043C\u0435\u043A\u0430\u0442\u044C\",\"Afrikaans\":\"\u0938\u0902\u0915\u0947\u0924
+    \u0926\u0947\u0928\u093E\",\"Thai\":\"\u0E04\u0E33\u0E43\u0E1A\u0E49\",\"Indonesian\":\"Petunjuk\"},{\"Id\":\"NewEraser\",\"English\":\"New
+    eraser unlock\",\"Vietnamese\":\"M\u1EDF kh\xF3a t\u1EA9y m\u1EDBi\",\"French\":\"D\xE9verrouillage
+    d'une nouvelle gomme\",\"German\":\"Neuer Radiergummi freigeschaltet\",\"Portuguese\":\"Nova
+    borracha desbloqueada\",\"Spanish\":\"Nuevo desbloqueo del borrador\",\"Korean\":\"\uC0C8\uB85C\uC6B4
+    \uC9C0\uC6B0\uAC1C \uC7A0\uAE08 \uD574\uC81C\",\"Japanese\":\"\u65B0\u3057\u3044\u6D88\u3057\u30B4\u30E0\u306E\u30ED\u30C3\u30AF\u89E3\u9664\",\"Italian\":\"Nuovo
+    sblocco della gomma\",\"Dutch\":\"Nieuwe gum-ontgrendeling\",\"Russian\":\"\u041D\u043E\u0432\u0430\u044F
+    \u0440\u0430\u0437\u0431\u043B\u043E\u043A\u0438\u0440\u043E\u0432\u043A\u0430
+    \u043B\u0430\u0441\u0442\u0438\u043A\u0430\",\"Afrikaans\":\"\u0928\u092F\u093E
+    \u0907\u0930\u0947\u091C\u093C\u0930 \u0905\u0928\u0932\u0949\u0915\",\"Thai\":\"\u0E1B\u0E25\u0E14\u0E25\u0E47\u0E2D\u0E04\u0E22\u0E32\u0E07\u0E25\u0E1A\u0E43\u0E2B\u0E21\u0E48\",\"Indonesian\":\"Buka
+    kunci penghapus baru\"},{\"Id\":\"Setting\",\"English\":\"Setting\",\"Vietnamese\":\"C\xE0i
+    \u0111\u1EB7t\",\"French\":\"Param\xE8tre\",\"German\":\"Einstellung\",\"Portuguese\":\"Contexto\",\"Spanish\":\"Configuraci\xF3n\",\"Korean\":\"\uD658\uACBD\",\"Japanese\":\"\u8A2D\u5B9A\",\"Italian\":\"Collocamento\",\"Dutch\":\"Instelling\",\"Russian\":\"\u041F\u0430\u0440\u0430\u043C\u0435\u0442\u0440\",\"Afrikaans\":\"\u0938\u0947\u091F\u093F\u0902\u0917\",\"Thai\":\"\u0E01\u0E32\u0E23\u0E15\u0E31\u0E49\u0E07\u0E04\u0E48\u0E32\",\"Indonesian\":\"Pengaturan\"},{\"Id\":\"free\",\"English\":\"Free\",\"Vietnamese\":\"Mi\u1EC5n
+    ph\xED\",\"French\":\"Gratuit\",\"German\":\"Frei\",\"Portuguese\":\"Livre\",\"Spanish\":\"Gratis\",\"Korean\":\"\uBB34\uB8CC\",\"Japanese\":\"\u7121\u6599\",\"Italian\":\"Gratuito\",\"Dutch\":\"Vrij\",\"Russian\":\"\u0411\u0435\u0441\u043F\u043B\u0430\u0442\u043D\u043E\",\"Afrikaans\":\"\u092E\u0941\u0915\u094D\u0924\",\"Thai\":\"\u0E1F\u0E23\u0E35\",\"Indonesian\":\"Bebas\"},{\"Id\":\"Luckywheel\",\"English\":\"Lucky
+    Wheel\",\"Vietnamese\":\"V\xF2ng quay may m\u1EAFn\",\"French\":\"Roue porte-bonheur\",\"German\":\"Gl\xFCcksrad\",\"Portuguese\":\"Roda
+    da Sorte\",\"Spanish\":\"Rueda de la suerte\",\"Korean\":\"\uB7ED\uD0A4 \uD720\",\"Japanese\":\"\u30E9\u30C3\u30AD\u30FC\u30DB\u30A4\u30FC\u30EB\",\"Italian\":\"Ruota
+    fortunata\",\"Dutch\":\"Gelukswiel\",\"Russian\":\"\u0421\u0447\u0430\u0441\u0442\u043B\u0438\u0432\u043E\u0435
+    \u043A\u043E\u043B\u0435\u0441\u043E\",\"Afrikaans\":\"\u092D\u093E\u0917\u094D\u092F\u0936\u093E\u0932\u0940
+    \u092A\u0939\u093F\u092F\u093E\",\"Thai\":\"\u0E27\u0E07\u0E25\u0E49\u0E2D\u0E19\u0E33\u0E42\u0E0A\u0E04\",\"Indonesian\":\"Roda
+    Keberuntungan\"},{\"Id\":\"NoConnection\",\"English\":\"No Connection\",\"Vietnamese\":\"Kh\xF4ng
+    c\xF3 k\u1EBFt n\u1ED1i\",\"French\":\"Aucune connexion\",\"German\":\"Keine
+    Verbindung\",\"Portuguese\":\"Sem conex\xE3o\",\"Spanish\":\"Sin conexi\xF3n\",\"Korean\":\"\uC5F0\uACB0\uB418\uC9C0
+    \uC54A\uC74C\",\"Japanese\":\"\u63A5\u7D9A\u304C\u3042\u308A\u307E\u305B\u3093\",\"Italian\":\"Nessuna
+    connessione\",\"Dutch\":\"Geen verbinding\",\"Russian\":\"\u041D\u0435\u0442
+    \u0441\u043E\u0435\u0434\u0438\u043D\u0435\u043D\u0438\u044F\",\"Afrikaans\":\"\u0915\u094B\u0908
+    \u0915\u0928\u0947\u0915\u094D\u0936\u0928 \u0928\u0939\u0940\u0902\",\"Thai\":\"\u0E44\u0E21\u0E48\u0E21\u0E35\u0E01\u0E32\u0E23\u0E40\u0E0A\u0E37\u0E48\u0E2D\u0E21\u0E15\u0E48\u0E2D\",\"Indonesian\":\"Tidak
+    Ada Koneksi\"},{\"Id\":\"RetryConnectInternet\",\"English\":\"Retrying connecting
+    to internet...\",\"Vietnamese\":\"\u0110ang th\u1EED k\u1EBFt n\u1ED1i l\u1EA1i
+    v\u1EDBi Internet...\",\"French\":\"Nouvelle tentative de connexion \xE0 Internet...\",\"German\":\"Es
+    wird erneut versucht, eine Verbindung zum Internet herzustellen...\",\"Portuguese\":\"Tentando
+    novamente conectar-se \xE0 Internet...\",\"Spanish\":\"Reintentando conectarse
+    a Internet...\",\"Korean\":\"\uC778\uD130\uB137 \uC5F0\uACB0\uC744 \uB2E4\uC2DC
+    \uC2DC\uB3C4\uD558\uB294 \uC911...\",\"Japanese\":\"\u30A4\u30F3\u30BF\u30FC\u30CD\u30C3\u30C8\u3078\u306E\u63A5\u7D9A\u3092\u518D\u8A66\u884C\u3057\u3066\u3044\u307E\u3059...\",\"Italian\":\"Nuovo
+    tentativo di connessione a Internet...\",\"Dutch\":\"Opnieuw verbinding maken
+    met internet...\",\"Russian\":\"\u041F\u043E\u0432\u0442\u043E\u0440\u043D\u0430\u044F
+    \u043F\u043E\u043F\u044B\u0442\u043A\u0430 \u043F\u043E\u0434\u043A\u043B\u044E\u0447\u0435\u043D\u0438\u044F
+    \u043A \u0418\u043D\u0442\u0435\u0440\u043D\u0435\u0442\u0443...\",\"Afrikaans\":\"\u0907\u0902\u091F\u0930\u0928\u0947\u091F
+    \u0938\u0947 \u0915\u0928\u0947\u0915\u094D\u091F \u0915\u0930\u0928\u0947 \u0915\u093E
+    \u092A\u0941\u0928\u0903 \u092A\u094D\u0930\u092F\u093E\u0938 \u0915\u093F\u092F\u093E
+    \u091C\u093E \u0930\u0939\u093E \u0939\u0948...\",\"Thai\":\"\u0E01\u0E33\u0E25\u0E31\u0E07\u0E25\u0E2D\u0E07\u0E40\u0E0A\u0E37\u0E48\u0E2D\u0E21\u0E15\u0E48\u0E2D\u0E2D\u0E34\u0E19\u0E40\u0E17\u0E2D\u0E23\u0E4C\u0E40\u0E19\u0E47\u0E15\u0E2D\u0E35\u0E01\u0E04\u0E23\u0E31\u0E49\u0E07...\",\"Indonesian\":\"Mencoba
+    menyambung kembali ke internet...\"},{\"Id\":\"watch\",\"English\":\"Watch\",\"Vietnamese\":\"Xem\",\"French\":\"Montre\",\"German\":\"Betrachten\",\"Portuguese\":\"Assistir\",\"Spanish\":\"Mirar\",\"Korean\":\"\uBCF4\uB2E4\",\"Japanese\":\"\u6642\u8A08\",\"Italian\":\"Orologio\",\"Dutch\":\"Horloge\",\"Russian\":\"\u0421\u043C\u043E\u0442\u0440\u0435\u0442\u044C\",\"Afrikaans\":\"\u0918\u0921\u093C\u0940\",\"Thai\":\"\u0E14\u0E39\",\"Indonesian\":\"Jam
+    tangan\"},{\"Id\":\"havingFun\",\"English\":\"Having fun?\",\"Vietnamese\":\"Vui
+    v\u1EBB kh\xF4ng?\",\"French\":\"Vous vous amusez ?\",\"German\":\"Spa\xDF haben?\",\"Portuguese\":\"Est\xE1
+    se divertindo?\",\"Spanish\":\"\xBFDivirti\xE9ndose?\",\"Korean\":\"\uC7AC\uBBF8\uC788\uB098\uC694?\",\"Japanese\":\"\u697D\u3057\u3093\u3067\u3044\u307E\u3059\u304B\uFF1F\",\"Italian\":\"Divertirsi?\",\"Dutch\":\"Plezier
+    hebben?\",\"Russian\":\"\u0412\u0435\u0441\u0435\u043B\u0438\u0442\u0435\u0441\u044C?\",\"Afrikaans\":\"\u092E\u091C\u093C\u093E
+    \u0915\u0930\u0928\u093E?\",\"Thai\":\"\u0E2A\u0E19\u0E38\u0E01\u0E44\u0E2B\u0E21?\",\"Indonesian\":\"Bersenang
+    senang?\"},{\"Id\":\"rateUs\",\"English\":\"Rate us\",\"Vietnamese\":\"\u0110\xE1nh
+    gi\xE1 ch\xFAng t\xF4i\",\"French\":\"\xC9valuez-nous\",\"German\":\"Bewerten
+    Sie uns\",\"Portuguese\":\"Avalie-nos\",\"Spanish\":\"Calif\xEDcanos\",\"Korean\":\"\uC6B0\uB9AC\uB97C
+    \uD3C9\uAC00\uD574 \uC8FC\uC138\uC694\",\"Japanese\":\"\u8A55\u4FA1\u3057\u3066\u304F\u3060\u3055\u3044\",\"Italian\":\"Valutaci\",\"Dutch\":\"Beoordeel
+    ons\",\"Russian\":\"\u041E\u0446\u0435\u043D\u0438\u0442\u0435 \u043D\u0430\u0441\",\"Afrikaans\":\"\u0939\u092E\u0947\u0902
+    \u0930\u0947\u091F\u093F\u0902\u0917 \u0926\u0947\u0902\",\"Thai\":\"\u0E43\u0E2B\u0E49\u0E04\u0E30\u0E41\u0E19\u0E19\u0E40\u0E23\u0E32\",\"Indonesian\":\"Nilai
+    kami\"}]}"

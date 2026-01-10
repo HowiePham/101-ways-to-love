@@ -1,0 +1,440 @@
+def BUILD_TARGET = BuildTarget()
+def KEYSTORE_CREDENTIAL_ID = ""
+def KEYALIAS_CREDENTIAL_ID = ""
+def BUNDLE_ID = ""
+def isAndroid = "${BUILD_TARGET}" == "android"
+def isIOS = "${BUILD_TARGET}" == "ios"
+def isRelease = env.BRANCH_NAME.toLowerCase().contains("-release")
+def isTest = env.BRANCH_NAME.toLowerCase().contains("-test")
+
+def BuildTarget() {
+    if (env.BRANCH_NAME.toLowerCase().contains("ios")) {
+        return "ios"
+    }
+    else {
+        return "android"
+    }
+}
+
+def GetConfigValue(String key){
+    def configData = readFile('src/Jenkins/config.cfg')
+    configData = configData.split("\n")
+    for(it in configData)
+    {
+        lineData = it.split("=")
+        if(lineData[0].trim() == key){
+            return lineData[1].trim();
+        }
+    }
+    return ""
+}
+
+// Share pipeline between Windows and OS X because they both do same thing except build code
+pipeline {
+    agent none
+    //For some case you want to build some headless server with unity linux that build/run on AWS for testing.
+    //Make another parallel stages that run only on slave machine with Linux Tags.
+    options {
+        disableConcurrentBuilds()  //each branch has 1 job running at a time
+        skipDefaultCheckout(true) // skip git default checkout because it call git clean -xffd. It clean all ignore files included cached unity /library folder. use custom git clean flags for faster build.
+        buildDiscarder(logRotator(numToKeepStr: '180', artifactNumToKeepStr: '30')) // Default keep last 180 logs and latest 30 build artifacts. Will be override from Jenkins Settings website
+        skipStagesAfterUnstable()
+    }
+
+    stages {
+        stage('Checkout') {
+            agent { label BUILD_TARGET }
+            steps {
+                dir('src') {
+                    timeout(time: 30, unit: 'MINUTES') {
+                        //Debug: you never know what is missing on slave machine
+                        sh 'printenv | sort'
+                        // prevent null project init on new branch
+                        sh 'git init'
+                        sh 'git clean -ffd'
+                        sh 'git config core.ignorecase false' // For Mac unity user or you have serialized case sensitive file
+                        sh 'git config --list'
+                        // Jenkins git fetch and pull
+                        checkout scm // the alternative to jenkins git plugin is sshagent[] and call checkout/clean by yourself
+                    }
+                }
+                
+                dir('src/Library/Bee/Android') {
+                    deleteDir()
+                }
+                
+                dir('build') {
+                    deleteDir()
+                }
+            }
+        }
+        stage('Prepare venv') {
+            agent { label BUILD_TARGET }
+            steps {
+                script {
+                    sh 'printenv | sort'
+                    if (isUnix()) {
+                        env.ISUNIX = "TRUE" // cache isUnix() function to prevent blueocean show too many duplicate step (Checks if running on a Unix-like node) in python function below
+                        sh 'python3 -m venv pyenv'
+                        PYTHON_PATH =  sh(script: 'echo ${WORKSPACE}/pyenv/bin/', returnStdout: true).trim()
+                    }
+                    else {
+                        env.ISUNIX = "FALSE"
+                        powershell(script:"py -3 -m venv pyenv") // window not allow call python3.exe with venv. https://github.com/msys2/MINGW-packages/issues/5001
+                        PYTHON_PATH =  sh(script: 'echo ${WORKSPACE}/pyenv/Scripts/', returnStdout: true).trim()
+                    }
+
+                    // Find unity root projects.
+                    // If have multiple projects. Change */Assets to */NoSpace_Name/Assets
+                    // env.UNITY_PROJECT_ROOT = sh(script: "find . -type d -path '*/Library' -prune -false -o -name 'Assets' -prune | sed -e 's/......\$//' " , returnStdout:true).trim()
+                    env.UNITY_PROJECT_ROOT = sh(script: 'echo ${WORKSPACE}/src', returnStdout: true).trim()
+                    echo env.UNITY_PROJECT_ROOT
+
+                    // Sometime agent with older pip version can cause error due to non compatible plugin.
+                    try  {
+                        Python("-m pip install --upgrade pip")
+                    }
+                    catch (ignore) { } // update pip always return false when already lastest version
+
+                    // Temporary disable because of permission error on Mac slave
+                    if(isTest)
+                    {
+                        Python("-m pip install -r $env.UNITY_PROJECT_ROOT/Jenkins/Scripts/test-requirements.txt")
+                    }
+                    else
+                    {
+                        Python("-m pip install -r $env.UNITY_PROJECT_ROOT/Jenkins/Scripts/requirements.txt")
+                    }
+                }
+            }
+        }
+        stage('Setup Environment') {
+            agent { label BUILD_TARGET }
+            steps {
+                script {
+                    KEYSTORE_CREDENTIAL_ID = GetConfigValue("KEYSTORE_CREDENTIAL_ID")
+                    KEYALIAS_CREDENTIAL_ID = GetConfigValue("KEYALIAS_CREDENTIAL_ID")
+                    
+                    dir('src')
+                    {
+                        Python(" -u  $env.UNITY_PROJECT_ROOT/Jenkins/Scripts/ConfigEnvironment.py ")
+                    }
+                    
+                    BUNDLE_ID = GetConfigValue("BUNDLE_ID")
+                    
+                    if(isAndroid && isRelease)
+                    {
+                        try
+                        {
+                            // get latest app version and version code from Google Console then save into environment variables
+                            withCredentials([file(credentialsId: "google-play-console-credentials", variable: 'GCLOUD_SERVICE_ACCOUNT_CREDENTIALS')])
+                            {
+                                def getLatestBuildNumberCmd = "google-play get-latest-build-number --credentials=@file:$env.GCLOUD_SERVICE_ACCOUNT_CREDENTIALS --silent --tracks=internal --package-name=${BUNDLE_ID}"
+                                def latestBuildNumber = -1;
+                                
+                                if (env.ISUNIX == "TRUE") {
+                                    getLatestBuildNumberCmd = "source ${WORKSPACE}/pyenv/bin/activate && ${getLatestBuildNumberCmd}"
+                                    latestBuildNumber = sh (
+                                        script: getLatestBuildNumberCmd,
+                                        returnStdout: true
+                                    ).trim()
+                                }
+                                else {
+                                    getLatestBuildNumberCmd = "${WORKSPACE}\\pyenv\\Scripts\\Activate.ps1 ; ${getLatestBuildNumberCmd}"
+                                    latestBuildNumber = powershell (
+                                        script: getLatestBuildNumberCmd,
+                                        returnStdout: true
+                                    ).trim()
+                                }
+                                
+                                SetConfig("LATEST_GOOGLE_CONSOLE_VERSION_CODE", latestBuildNumber)                                    
+                            }
+                        }
+                        catch(err)
+                        {
+                            echo err.getMessage()
+                            SetConfig("LATEST_GOOGLE_CONSOLE_VERSION_CODE", "-1")
+                        }
+                    }
+                                            
+                    def available = Python(" $env.UNITY_PROJECT_ROOT/Jenkins/Scripts/VerifyUnityInstallation.py")
+                    if (available == 1) {
+                        timeout(time: 30, unit: 'MINUTES') {
+                            echo 'Start Installing Unity'
+                            // TODO move this to gem U3d by dragon. UnityHub cli not working on OS X
+                            error('TODO install Unity version android + macos')
+                        }
+                    }
+                    // sh([script: "rm -R Library", returnStatus:true, label:'Clean library'])
+                    // sh([script: "pkill -f java ", returnStatus:true, label:'Kill java from previous build'])
+                    ExecuteAllPythonScriptsInDirectory("AfterUnitySetup")
+                }
+            }
+        }
+        stage('Prepare Master Files') {
+            agent { label  'master'}
+            steps {
+                script {
+                    if(isAndroid)
+                    {
+                        withCredentials([usernamePassword(credentialsId: "${KEYSTORE_CREDENTIAL_ID}", usernameVariable: 'KEYSTORE_NAME', passwordVariable: 'KEYSTORE_PASSWORD')])
+                        {
+                            dir(env.KEYSTORE_ROOT) {
+                                echo KEYSTORE_NAME
+                                stash includes: KEYSTORE_NAME, name: 'keystore'
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        stage('Build Project') {
+            agent { label BUILD_TARGET }
+            steps {
+                script {
+                    ExecuteAllPythonScriptsInDirectory("BeforeBuild")
+
+                    if(isAndroid)
+                    {
+                        unstash 'keystore'
+                    }
+
+                    withCredentials(
+                    [
+                        usernamePassword(credentialsId: 'unityhub-account', usernameVariable: 'UNITY_USERNAME', passwordVariable: 'UNITY_PASSWORD'),
+                        usernamePassword(credentialsId: "${KEYSTORE_CREDENTIAL_ID}", usernameVariable: 'KEYSTORE_NAME', passwordVariable: 'KEYSTORE_PASSWORD'),
+                        usernamePassword(credentialsId: "${KEYALIAS_CREDENTIAL_ID}", usernameVariable: 'KEYALIAS_NAME', passwordVariable: 'KEYALIAS_PASSWORD')]) {
+
+                        timeout(time: 100, unit: 'MINUTES') {
+                            if (isUnix()) {
+                                def shellCmd = GetConfig("UNITY_BUILD_COMMAND").trim()
+                                def unixBuildStatus = sh([script: "${shellCmd} -username ${UNITY_USERNAME} -password ${UNITY_PASSWORD} keystore-name=${KEYSTORE_NAME} keystore-password=${KEYSTORE_PASSWORD} keyalias-name=${KEYALIAS_NAME} keyalias-password=${KEYALIAS_PASSWORD} ", returnStatus:true, label:'Build unity on Unix'])
+                                if (unixBuildStatus != 0) {
+                                    currentBuild.result = 'FAILED'
+                                    error 'Build Failed by Unity. Check above log for more detail'
+                                }
+                            }
+                            else {
+                                def buildStatus = powershell([script: "$env.UNITY_PROJECT_ROOT/Jenkins/Scripts/UnityBuild.ps1 -config '$env.UNITY_PROJECT_ROOT/Jenkins/config.cfg' -quit -batchmode -silent-crashes -username ${UNITY_USERNAME} -password ${UNITY_PASSWORD} keystore-name=${KEYSTORE_NAME} keystore-password=${KEYSTORE_PASSWORD} keyalias-name=${KEYALIAS_NAME} keyalias-password=${KEYALIAS_PASSWORD} ", returnStatus:true, label:'Build unity on Windows'])
+                                if (buildStatus != 0) {
+                                    currentBuild.result = 'FAILED'
+                                    error 'Build Failed by Unity. Check above log for more detail'
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            post {
+                always {
+                    archiveArtifacts artifacts: "buildlog.txt , build/Android/*, build/**/*.apk, build/**/*.csv" , allowEmptyArchive: true
+                }
+                failure {
+                    script {
+                        dir('src') {
+                            ExecuteAllPythonScriptsInDirectory("AfterBuildFailure")
+                        }
+                        error "Unity build failed!"
+                    }
+                }
+                aborted { // Timeout or cancel from UI blue ocean. There is issue with unity when cancel build in the middle cause library have some very troublesome files need to be removed from repo
+                    script {
+                        dir('src') {
+                            sh([script: "git clean -ffxd", returnStatus:true, label:'Clean project after failure'])
+                        }
+                    }
+                }
+            }
+        }
+        stage('Post Build') {
+            agent { label BUILD_TARGET }
+            steps {
+                script {
+                    dir('src') {
+                        if(isAndroid && isRelease)
+                        {
+                            Python(" -u  $env.UNITY_PROJECT_ROOT/Jenkins/Scripts/BundleToApk.py")
+                        }
+                        
+                        ExecuteAllPythonScriptsInDirectory("AfterBuild")
+                        
+//                         if("${BUILD_TARGET}" == "android" && env.BRANCH_NAME.toLowerCase().contains("-release") && "${FIREBASE_APP_ID}" != "")
+//                         {
+//                             Python(" -u  $env.UNITY_PROJECT_ROOT/Jenkins/Scripts/SendSymbolToFirebase.py")
+//                         }
+                    }
+                }
+            }
+        }
+        // Only send test version to Test Flight.
+        // Android send apk to Tester or aab to Test version
+        stage('Publish') {
+            agent { label BUILD_TARGET }
+            environment {
+                LC_ALL="en_US.UTF-8"
+                LANG="en_US.UTF-8"
+                //FIREBASE_CLI_TOKEN = credentials('FIREBASE_CLI_TOKEN')
+            }
+            steps {
+                script {
+                    // android publisher jenkins plugin
+                    if(isAndroid && isRelease)
+                    {
+                        // There are myriad issues when build gradle for production. Dont push production 100%
+                        try {
+                            androidApkUpload googleCredentialsId: 'gapu-play-console',
+                                filesPattern: '**/build/Android/*.aab',
+                                trackName: 'internal',
+                                usePreviousExpansionFilesIfMissing: true,
+                                rolloutPercentage: '100',
+                                recentChangeList: [
+                                    [language: 'en-US', text: "Internal test ${env.BUILD_NUMBER}."]
+                                ]
+
+                        } catch (err) {
+                            echo err.getMessage()
+                        }
+                    }
+
+                    if (isIOS)
+                    {
+                        def xcode_dir = "$env.WORKSPACE/build/iOS"
+                        sh "yes | cp -rf $env.UNITY_PROJECT_ROOT/Jenkins/Scripts/FastLaneFiles/.  $xcode_dir"
+                        dir(xcode_dir)
+                        {
+                            sh "printenv | sort"
+                            sh "pod install"
+                            
+                            def lane = "beta"
+                            if(isRelease)
+                                lane = "publish"
+                            sh(script:"fastlane ${lane} --verbose 2>&1 | tee ${workspace}/fastlane_log.txt ; ( exit \${PIPESTATUS[0]} )", label: 'Fastlane')
+                            
+//                             withCredentials([string(credentialsId: 'KEYCHAIN_PASSWORD', variable: 'KEYCHAIN_PASSWORD'),
+//                                             string(credentialsId: 'FASTLANE_PASSWORD', variable: 'FASTLANE_PASSWORD'),
+//                                             string(credentialsId: 'FASTLANE_USER', variable: 'FASTLANE_USER'),
+//                                             string(credentialsId: 'MATCH_PASSWORD', variable: 'MATCH_PASSWORD')])
+//                             {
+//                                 sshagent (credentials: ['appstore_github'])
+//                                 {
+//                                     // Enable below code if fastlane still cant find ssh key. It add all ssh in ~/.ssh key if jenkins have sudo power (you shouldn't give CI root and fastlane cant run in sudo shell)
+//                                     // sh "ssh-add -A"
+//                                     sh "printenv | sort"
+// 
+//                                     // For proper keychain setup with fastlane. Create new keychain user in macbook with custom password. login.keychain is the default keychain
+//                                     // That included all login for appstore, github, and certification use for fastlane.
+//                                     // sh "security list-keychains"
+//                                     sh(script:'security -v unlock-keychain -p "${KEYCHAIN_PASSWORD}" ~/Library/Keychains/login.keychain', label: 'Unlock Keychain')
+//                                     // sh "security list-keychains"
+// 
+//                                     def lane = "beta"
+//                                     if( env.BRANCH_NAME.toLowerCase().contains("-release"))
+//                                         lane = "publish"
+// 
+//                                     sh(script:"fastlane ${lane} --verbose 2>&1 | tee ${workspace}/fastlane_log.txt ; ( exit \${PIPESTATUS[0]} )", label: 'Fastlane')
+//                                 }
+//                             }
+                        }
+                    }
+                }
+            }
+            post {
+                success {
+                    archiveArtifacts artifacts: "build/iOS/*.ipa", fingerprint: true, allowEmptyArchive: true
+                    script {
+                        ExecuteAllPythonScriptsInDirectory("AfterPublishSuccess")
+                    }
+                }
+                always {
+                    archiveArtifacts artifacts: "fastlane_log.txt" , allowEmptyArchive: true
+                }
+                failure {
+                    script {
+                        ExecuteAllPythonScriptsInDirectory("AfterPublishFailure")
+                    }
+                }
+            }
+        }
+//         stage('Test') {
+//             agent { label BUILD_TARGET }
+//             steps {
+//                 script {
+//                     dir("src")
+//                     {
+//                         if(env.BRANCH_NAME.toLowerCase().contains("-test"))
+//                         {
+//                             if ("${BUILD_TARGET}" == "android")
+//                             {
+//                                 Python(" -u  $env.UNITY_PROJECT_ROOT/Jenkins/Scripts/RunAndroidTests.py $env.BRANCH_NAME $env.GIT_COMMIT_HASH $env.GIT_COMMIT_DATE")
+//                             }
+//                         }
+//                     }
+//                 }
+//             }
+//             post {
+//                 success {
+//                     script {
+//                         ExecuteAllPythonScriptsInDirectory("AfterTestSuccess")
+//                     }
+//                 }
+//                 failure {
+//                     script {
+//                         ExecuteAllPythonScriptsInDirectory("AfterTestFailure")
+//                     }
+//                 }
+//             }
+//         }
+    }
+}
+
+// Think of this like python stage that jenkins dont care about. Just execute.
+def ExecuteAllPythonScriptsInDirectory(String subDirectory) {
+    try {
+        Python("-u $env.UNITY_PROJECT_ROOT/Jenkins/Scripts/RunAllPythonScript.py ${subDirectory}")
+    } catch (err) {
+        echo err.getMessage()
+        unstable "Python script have errors. Mark stage as unstable"
+    }
+}
+
+// Get and Set is the same as Load .groovy into global env
+// This method is more convenient since config allow communication between python and pipeline code.
+// Make it easy to replicate in local without running pipeline
+def GetConfig(String configKey) {
+    return sh(script:". $env.UNITY_PROJECT_ROOT/Jenkins/config.cfg && echo \$${configKey}", returnStdout:true)
+}
+
+def SetConfig(String configKey, String configValue) {
+    def configFilePath = ToUnixPath("$env.UNITY_PROJECT_ROOT/Jenkins/config.cfg")
+    println "Jenkins Config Path: ${configFilePath}"
+    sh """
+    sed -i "/${configKey} =/d" ${configFilePath}
+    echo '${configKey}=${configValue}'  >> ${configFilePath}
+    """
+}
+
+// Several plugins like WithPyenv is not working perfectly across platform when using Virtual Env.
+// Do the venv manually this way is much better.
+def Python(String command) {
+    if (env.ISUNIX == "TRUE") {
+        sh script:"source ${WORKSPACE}/pyenv/bin/activate && python ${command}", label: "python ${command}"
+    }
+    else {
+        powershell script:"${WORKSPACE}\\pyenv\\Scripts\\Activate.ps1 ; python ${command}", label: "python ${command}"
+    }
+}
+
+def ConvertPathSeparator(String path){
+    if (env.ISUNIX == "TRUE") {
+        return path.replace("\\", "/")
+    }
+    else {
+        return path.replace("/", "\\")
+    }
+}
+
+def ToUnixPath(String path){
+    return path.replace("\\", "/")
+}
+
+

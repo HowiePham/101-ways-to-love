@@ -1,0 +1,123 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:ios)
+
+firebase_app_id = ENV["FIREBASE_APP_ID"]
+firebase_cli_token = "1//0ekQCBK9EjMl6CgYIARAAGA4SNwF-L9Ir7sPzoBgfc4Ms38jIF6KYlCyelqgGncMWrr_ZeWPJErP0F-iBlt2nKBjeuZqavhdKunE"
+release_notes = ENV["GIT_SUBJECT"]
+
+platform :ios do
+  desc "Push a new beta build to TestFlight"
+  lane :publish do
+    #sh("ssh-add -l")
+
+    sync_code_signing(
+      type: "appstore", 
+      readonly: true
+    )
+
+    sh "printenv | sort"
+    
+    # unlock_keychain( # Unlock an existing keychain and add it to the keychain search list
+    #   path: "/Users/unimob/Library/Keychains/login.keychain-db",
+    #   password: "1234"
+    # )
+
+    update_project_provisioning(
+      profile: ENV["sigh_com.unimob.stickman.master.shadow_appstore_profile-path"], 
+      code_signing_identity: "Apple Distribution: UNIMOB VIET NAM COMPANY LIMITED (NYM6S93RTY)"
+    )
+    
+    sh "printenv | sort"
+
+    build_app(
+      clean: true,
+      export_team_id: CredentialsManager::AppfileConfig.try_fetch_value(:team_id),
+      # export_options: {
+      #   method: "Release",
+      #   signingStyle: "manual",
+      #   provisioningProfiles: { 
+      #     "com.Unimob.TestApk" => "match Appstore com.Unimob.TestApk"
+      #   }
+      # }
+    )
+
+
+    firebase_app_distribution(
+      app: CredentialsManager::AppfileConfig.try_fetch_value(:firebase_app_id),
+      firebase_cli_token: CredentialsManager::AppfileConfig.try_fetch_value(:firebase_cli_token),
+      testers_file: "firebase_testers.txt",
+      groups_file: "firebase_group_testers.txt",
+    )
+
+    
+    upload_to_testflight(
+      skip_waiting_for_build_processing: true,
+    )
+
+
+  end
+
+  lane :beta do
+#     sync_code_signing(
+#       type: "development", 
+#       readonly: true
+#     )
+    
+    # update_project_provisioning(
+    #   profile: ENV["sigh_com.Unimob.TestApk_development_profile-path"], 
+    #   code_signing_identity: "Apple Development: DO VAN HUY (LS6SW37497)"
+    # )
+
+    update_code_signing_settings(
+      use_automatic_signing: true,
+      team_id: CredentialsManager::AppfileConfig.try_fetch_value(:team_id),
+      bundle_identifier: CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier),
+      code_sign_identity: "Apple Development",
+      # sdk: "iphoneos*",
+      # profile_name: "Demo App Deployment Profile",
+      # entitlements_file_path: "Demo App/generated/New.entitlements"
+    )
+  
+    build_app(
+      clean: true,
+      # manually set signing to manual and set provision profile due gym not use correct setting when build over non interact console.
+      export_team_id: CredentialsManager::AppfileConfig.try_fetch_value(:team_id),      
+      export_options: {
+        method: "development",
+#         signingStyle: "manual",
+#         provisioningProfiles: { 
+#           identifier => "match Development " + identifier
+#         },
+        export_xcargs: "-allowProvisioningUpdates"
+      },
+      workspace: "Unity-iPhone.xcworkspace",
+      include_bitcode: false,
+#       xcodebuild_command: "xcodebuild -scheme Unity-iPhone -target Unity-iPhone -showBuildSettings LIBRARY_SEARCH_PATHS='${LIBRARY_SEARCH_PATHS} $(SDKROOT)/usr/lib/swift'"
+    )
+    
+    firebase_app_distribution(
+      app: firebase_app_id,
+      firebase_cli_token: firebase_cli_token,
+      testers_file: "firebase_testers.txt",
+      groups_file: "firebase_group_testers.txt",
+      release_notes: release_notes
+    )
+
+    sh "printenv | sort"
+    lane_context()    
+  end
+end
