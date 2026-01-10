@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using System.Threading;
-using _Modules._UI.LoseView.Scripts;
 using _Modules._UI.WinView.Scripts;
 using Cysharp.Threading.Tasks;
 using MEC;
@@ -48,7 +46,6 @@ public class GameplayViewPresenter : BaseViewPresenter
 
         this.gameplayView.OnPauseClicked += PauseClickedHandler;
         Messenger.AddListener(EventKey.LevelWin, ShowWinView);
-        this.gameplayView.SetActiveProgress(false);
 
 #if DEVELOPMENT
         var cheatViewPresenter = this.ScenePresenter.GetViewPresenter<CheatViewPresenter>();
@@ -71,13 +68,6 @@ public class GameplayViewPresenter : BaseViewPresenter
         var cheatViewPresenter = this.ScenePresenter.GetViewPresenter<CheatViewPresenter>();
         cheatViewPresenter.Hide();
 #endif
-    }
-
-    private void InitCatPhaseUI()
-    {
-        this.gameplayView.SetActiveProgress(true);
-        this.gameplayView.SetProgressText(this.currentProgress, this.maxProgress);
-        this.gameplayView.ShowFindTheCatNotification();
     }
 
     private void ShowWinView()

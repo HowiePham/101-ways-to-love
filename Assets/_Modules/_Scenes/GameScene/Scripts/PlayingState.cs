@@ -22,7 +22,6 @@ namespace Mimi
         private LevelPlayer levelPlayer;
         private ILevelLoader levelLoader;
         private readonly DisposableBag eventBag = new DisposableBag();
-        private const float TimeTest = 120f;
 
         public override void OnInitialized()
         {
