@@ -55,6 +55,12 @@ public class MechanicBlueprintEditorWindow : EditorWindow
         GameObject interactableObjectsParent = GameObject.Find("InteractableObjects");
         GameObject boxInteractionParent = GameObject.Find("BoxInteraction");
 
+        if (interactableObjectsParent == null || boxInteractionParent == null)
+        {
+            Debug.LogError("You have to create level blueprint!");
+            return;
+        }
+
         if (menuName.Contains("Moving"))
         {
             this.timingMechanicGenerator = new TimingMechanicGenerator();
