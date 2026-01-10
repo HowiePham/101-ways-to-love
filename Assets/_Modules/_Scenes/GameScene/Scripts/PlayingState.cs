@@ -101,17 +101,17 @@ namespace Mimi
         {
             GameObject levelPrefab = await this.levelLoader.Load(currentLevelInfo.Id);
             this.levelRoot = ServiceLocator.Global.Get<IPoolService>().Spawn(levelPrefab);
-            // this.levelRoot.transform.SetPosition(0f, 0.5f, 0f);
             this.levelPlayer = this.levelRoot.GetComponent<LevelPlayer>();
+            ShowGameplayView();
+
             await UniTask.Delay(500);
             await Context.EventPublisher.PublishAsync(new LevelStarted(currentLevelInfo.Id));
             await this.levelPlayer.Play();
-
-            ShowGameplayView();
         }
 
         private void ShowGameplayView()
         {
+            Debug.Log($"--- (PRESENTER) Showing Gameplay View");
             var gameplayViewPresenter = this.Presenter.GetViewPresenter<GameplayViewPresenter>();
             gameplayViewPresenter.Show();
         }

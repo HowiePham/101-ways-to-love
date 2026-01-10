@@ -1,6 +1,6 @@
 using System.Threading;
-using BW.EventSystem;
 using Cysharp.Threading.Tasks;
+using Mimi.Prototypes.Events;
 using Mimi.VisualActions;
 
 public class LevelWin : VisualAction

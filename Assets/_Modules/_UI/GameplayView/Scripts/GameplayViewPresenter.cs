@@ -72,6 +72,8 @@ public class GameplayViewPresenter : BaseViewPresenter
 
     private void ShowWinView()
     {
+        Debug.Log($"--- (GAMEVIEW) Show Win View");
+        
         var winViewPresenter = this.ScenePresenter.GetViewPresenter<WinViewPresenter>();
         winViewPresenter.Show();
 
