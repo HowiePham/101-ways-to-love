@@ -81,9 +81,9 @@ public class LevelEditorWindow : EditorWindow
 
         if (newAnimation != skeletionAnimation.SkeletonDataAsset)
         {
-            Undo.RecordObject(skeletionAnimation.SkeletonDataAsset, "Change Animation");
+            Undo.RecordObject(skeletionAnimation, "Change Animation");
             skeletionAnimation.skeletonDataAsset = newAnimation;
-            EditorUtility.SetDirty(skeletionAnimation.skeletonDataAsset);
+            EditorUtility.SetDirty(skeletionAnimation);
         }
 
         if (GUILayout.Button("Select in Hierarchy", GUILayout.Width(150)))
