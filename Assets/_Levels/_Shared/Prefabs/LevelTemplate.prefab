@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 6808042788965963766}
   - component: {fileID: 3881719483489565583}
   - component: {fileID: 2199842622212010541}
+  - component: {fileID: 7227640078257949821}
+  - component: {fileID: 7951086386032803133}
   m_Layer: 0
   m_Name: LevelTemplate
   m_TagString: Untagged
@@ -72,6 +74,32 @@ MonoBehaviour:
   boxInteractingObjectParent: {fileID: 3182794269766423435}
   skeletonAnimation: {fileID: 7756851102787594369}
   interactableTag: Interactable
+--- !u!114 &7227640078257949821
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2136877016337065425}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a753caa8776b0174d805228e24f9457c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startingAction: {fileID: 1840712849198390214}
+--- !u!114 &7951086386032803133
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2136877016337065425}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19afa9d1698841369dbb75ba04eafcf0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  timeline: {fileID: 7227640078257949821}
 --- !u!1 &2158489968699475224
 GameObject:
   m_ObjectHideFlags: 0
@@ -214,7 +242,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2204120795262255485}
   - component: {fileID: 1840712849198390214}
-  - component: {fileID: 2486694331103339501}
   m_Layer: 0
   m_Name: RootSequence
   m_TagString: Untagged
@@ -255,19 +282,6 @@ MonoBehaviour:
   onExit:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &2486694331103339501
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4316014879158129011}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c2ce1c58632d9d647b9f86068e0b1048, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  action: {fileID: 1840712849198390214}
 --- !u!1 &5932056155213299720
 GameObject:
   m_ObjectHideFlags: 0
