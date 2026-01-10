@@ -6,7 +6,7 @@ namespace _Modules.SupportTool.Runtime.Editor
 {
     public class LevelFolderCreatorWindow : EditorWindow
     {
-        private const string LevelBasePath = "Assets/_Modules/Game/_Levels";
+        private const string LevelBasePath = "Assets/_Levels";
         private string levelName;
 
         public static void ShowWindow()

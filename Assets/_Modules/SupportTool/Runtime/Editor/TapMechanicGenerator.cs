@@ -6,11 +6,11 @@ using VisualActions.Areas;
 
 public class TapMechanicGenerator : MechanicGenerator
 {
-    private const string TapBlueprintAddress = "Assets/_Modules/Game/_Shared/Prefabs/Tap/";
+    private string tapBlueprintAddress = $"{MechanicBlueprintAddress}/Tap/";
 
     public void CreateMechanic(string menuName, string objectName, SkeletonAnimation skeletonAnimation, GameObject boxInteractionParent)
     {
-        GameObject blueprintObject = CreateMechanicBlueprint(TapBlueprintAddress, menuName);
+        GameObject blueprintObject = CreateMechanicBlueprint(this.tapBlueprintAddress, menuName);
         if (blueprintObject == null)
         {
             return;
@@ -24,7 +24,7 @@ public class TapMechanicGenerator : MechanicGenerator
 
     public void CreateMechanic(string menuName, SkeletonAnimation skeletonAnimation, BaseArea baseArea, string suffix)
     {
-        GameObject blueprintObject = CreateMechanicBlueprint(TapBlueprintAddress, menuName);
+        GameObject blueprintObject = CreateMechanicBlueprint(this.tapBlueprintAddress, menuName);
         if (blueprintObject == null)
         {
             return;

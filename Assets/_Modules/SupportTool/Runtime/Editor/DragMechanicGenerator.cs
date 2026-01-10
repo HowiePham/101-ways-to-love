@@ -7,12 +7,12 @@ using VisualActions.Areas;
 
 public class DragMechanicGenerator : MechanicGenerator
 {
-    private const string DragBlueprintAddress = "Assets/_Modules/Game/_Shared/Prefabs/Drag/";
-    private const string DraggableObjectBlueprintAddress = "Assets/_Modules/Game/_Shared/Prefabs/Drag/Draggable_Object.prefab";
+    private string dragBlueprintAddress = $"{MechanicBlueprintAddress}/Drag/";
+    private string draggableObjectBlueprintAddress = $"{MechanicBlueprintAddress}/Drag/Draggable_Object.prefab";
 
     public void CreateMechanic(string menuName, string objectName, SkeletonAnimation skeletonAnimation, GameObject interactableObjectParent, GameObject boxInteractionParent)
     {
-        GameObject blueprintObject = CreateMechanicBlueprint(DragBlueprintAddress, menuName);
+        GameObject blueprintObject = CreateMechanicBlueprint(this.dragBlueprintAddress, menuName);
         if (blueprintObject == null)
         {
             return;
@@ -46,7 +46,7 @@ public class DragMechanicGenerator : MechanicGenerator
 
     public GameObject CreateDraggableObject(string objectName)
     {
-        var draggableObjectTemplate = AssetDatabase.LoadAssetAtPath<GameObject>($"{DraggableObjectBlueprintAddress}");
+        var draggableObjectTemplate = AssetDatabase.LoadAssetAtPath<GameObject>($"{this.draggableObjectBlueprintAddress}");
         var draggableObject = (GameObject)PrefabUtility.InstantiatePrefab(draggableObjectTemplate);
         draggableObject.name = $"Draggable_{objectName}";
 
