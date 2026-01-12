@@ -13,6 +13,12 @@ namespace Mimi.VisualActions.Spines
 
         protected override async UniTask OnExecuting(CancellationToken cancellationToken)
         {
+            if (SkeletonAnimation.SkeletonDataAsset == null)
+            {
+                await UniTask.CompletedTask;
+                return;
+            }
+
             this.SkeletonAnimation.AnimationState.SetAnimation(this.track, this.Animation, this.loop);
             await UniTask.CompletedTask;
         }

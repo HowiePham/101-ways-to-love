@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using DarkTonic.MasterAudio;
 using Mimi.VisualActions.ControlFlow;
 #if UNITY_EDITOR
+using Mimi.Services.ScriptableObject.Audio;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
 #endif
@@ -19,12 +20,13 @@ public class CreatePlaySoundSpine : MonoBehaviour
     [SerializeField] private Transform levelRoot;
     [SerializeField] private SkeletonAnimation skeletonAnimation;
     [SerializeField] private DynamicSoundGroupCreator dsgPrefab;
+    [SerializeField] private BaseAudioServiceSO audioPlayer;
     [SerializeField] private int busIndex = 3;
 
     private const string namePattern = @"(S[f|F][x|X]_)+([^\.]*)(\.((mp3)|(wav)))*";
     private const string actionPattern = @"Act[1-9]\.*[1-9]*";
 
-    private const string audioFilePath = "Assets/_Modules/Game/_Shared/Sounds";
+    private const string audioFilePath = "Assets/_Levels/_Shared/Sounds";
 
     [Button]
     private void Generate()
@@ -142,6 +144,7 @@ public class CreatePlaySoundSpine : MonoBehaviour
                 playSoundSpine = go.AddComponent<PlaySoundSpine>();
                 playSoundSpine.SkeletonAnimation = skeletonAnimation;
                 playSoundSpine.eventName = e.Name;
+                playSoundSpine.AudioPlayer = this.audioPlayer;
             }
 
             foreach (var soundName in GetSoundGroups())

@@ -6,7 +6,8 @@ using VisualActions.Areas;
 
 public class TimingMechanicGenerator : MechanicGenerator
 {
-    private const string TimingBlueprintAddress = "Assets/_Modules/Game/_Shared/Prefabs/Timing/";
+    private string timingBlueprintAddress = $"{MechanicBlueprintAddress}/Timing/";
+
     private const string MovingSuffix = "Moving";
     private TapMechanicGenerator tapMechanicGenerator;
 
@@ -41,12 +42,12 @@ public class TimingMechanicGenerator : MechanicGenerator
 
     private GameObject CreateMovingMechanic(string objectName, GameObject boxInteractionParent)
     {
-        GameObject movingObject = CreateMechanicBlueprint(TimingBlueprintAddress, "Moving_Object");
+        GameObject movingObject = CreateMechanicBlueprint(this.timingBlueprintAddress, "Moving_Object");
         movingObject.name = $"Moving_{objectName}";
         SetParent(movingObject.transform, boxInteractionParent.transform);
         var movingObjectFollowWay = movingObject.GetComponent<MoveGameObjectFollowWay>();
 
-        GameObject movingWayObject = CreateMechanicBlueprint(TimingBlueprintAddress, "Moving_Way_Object");
+        GameObject movingWayObject = CreateMechanicBlueprint(this.timingBlueprintAddress, "Moving_Way_Object");
         movingWayObject.name = $"Moving_Way";
         SetParent(movingWayObject.transform, boxInteractionParent.transform);
         var movingWay = movingWayObject.GetComponent<MovingWay>();
