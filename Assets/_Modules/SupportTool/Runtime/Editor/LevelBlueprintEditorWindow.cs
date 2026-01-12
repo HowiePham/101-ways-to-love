@@ -21,6 +21,7 @@ public class LevelBlueprintEditorWindow : EditorWindow
 
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Choose Level Blueprint:", EditorStyles.boldLabel);
+        DrawButton("Empty Blueprint", () => OnMenuItemClicked("LevelTemplate"));
         DrawButton("E1, E2, M2, M3", () => OnMenuItemClicked("E1"));
         DrawButton("M1, H1, H2", () => OnMenuItemClicked("M1"));
         DrawButton("M4, H3", () => OnMenuItemClicked("M4"));
