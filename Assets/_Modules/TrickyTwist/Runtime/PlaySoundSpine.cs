@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using DarkTonic.MasterAudio;
 using Mimi.Prototypes;
 using Mimi.ServiceLocators;
 using Mimi.Services.ScriptableObject.Audio;
@@ -86,5 +88,12 @@ namespace VisualFlow
             // ServiceLocator.Get<IAudioService>().PlaySound(this.nameMusic, 0f);
             this.AudioPlayer.StopSound(this.nameMusic);
         }
+        
+#if UNITY_EDITOR
+        private static IEnumerable<string> GetSoundGroups()
+        {
+            return MasterAudio.SafeInstance.GroupNames;
+        }
+#endif
     }
 }
