@@ -198,6 +198,20 @@ public class LevelEditorWindow : EditorWindow
 
             EditorGUILayout.EndHorizontal();
 
+            EditorGUILayout.BeginHorizontal();
+
+            var objectHighlight = interactableObject.GetComponent<ScaleObjectHighlight>();
+            var highlightToggle = EditorGUILayout.Toggle($"Highlighted Object ", objectHighlight.EnableHighlight);
+
+            if (highlightToggle != objectHighlight.EnableHighlight)
+            {
+                Undo.RecordObject(objectHighlight, "Change Highlight toggle");
+                objectHighlight.EnableHighlight = highlightToggle;
+                EditorUtility.SetDirty(objectHighlight);
+            }
+
+            EditorGUILayout.EndHorizontal();
+
             DrawObjectRenderersSection(renderer);
 
             EditorGUILayout.Space(10);

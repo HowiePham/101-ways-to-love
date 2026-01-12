@@ -10,9 +10,15 @@ public class ScaleObjectHighlight : MonoBehaviour
     [SerializeField] private bool enableHighlight = true;
     private Tween scalingTween;
 
+    public bool EnableHighlight
+    {
+        get => this.enableHighlight;
+        set => this.enableHighlight = value;
+    }
+
     private void OnEnable()
     {
-        if (!this.enableHighlight)
+        if (!this.EnableHighlight)
         {
             return;
         }
