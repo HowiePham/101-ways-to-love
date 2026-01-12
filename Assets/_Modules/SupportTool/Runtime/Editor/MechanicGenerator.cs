@@ -8,6 +8,8 @@ using VisualActions.VisualActions.GameObjects.Runtime;
 
 public class MechanicGenerator
 {
+    protected const string MechanicBlueprintAddress = "Assets/_Levels/_Shared/Prefabs";
+    
     protected void AddAutoRenameComponent(GameObject gameObject, GameObject targetObject, string prefix, string removeString)
     {
         var boxAutoRename = gameObject.gameObject.AddComponent<AutoRenameFollow>();

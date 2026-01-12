@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7580e91ba8c57d64db9a909183b608b8, type: 3}
+  m_Name: Sheet_Game
+  m_EditorClassIdentifier: 
+  serverUrl: https://gapustudio.net/gsheet
+  spreadsheetId: 11c7D5toJNMtpzgUvVY9XDWBFL9q-hy2J2rn-RSUN-1g
+  idLookupFileName: SheetIds
+  sheets:
+  - sheetName: LevelRepo
+    targetClass: Games.SheetLevelModel, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+    majorDimension: 0
+    fieldNames:
+    - PrefabAddress
+  - sheetName: LevelDev
+    targetClass: Mimi.Prototypes.LevelManagement.SheetOrderModel, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    majorDimension: 0
+    fieldNames:
+    - PrefabAddress
+  cachedJsonData: '{"LevelRepo":[{"Id":"L1","PrefabAddress":"L_001"},{"Id":"L2","PrefabAddress":"L_002"},{"Id":"L3","PrefabAddress":"L_003"},{"Id":"L4","PrefabAddress":"L_004"},{"Id":"L5","PrefabAddress":"L_005"}],"LevelDev":[{"Id":"L1","PrefabAddress":"L_001"},{"Id":"L2","PrefabAddress":"L_002"},{"Id":"L3","PrefabAddress":"L_003"},{"Id":"L4","PrefabAddress":"L_004"},{"Id":"L5","PrefabAddress":"L_005"}]}'

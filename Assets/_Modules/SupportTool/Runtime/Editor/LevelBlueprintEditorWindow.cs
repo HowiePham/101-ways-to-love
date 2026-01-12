@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class LevelBlueprintEditorWindow : EditorWindow
 {
-    private const string LevelBlueprintAddress = "Assets/_Modules/Game/_Shared/Prefabs/LevelBlueprint/";
+    private const string LevelBlueprintAddress = "Assets/_Levels/_Shared/Prefabs/LevelBlueprint/";
     private string levelName = "";
 
     public static void ShowWindow()
