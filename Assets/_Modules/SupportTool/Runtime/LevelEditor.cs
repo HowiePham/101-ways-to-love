@@ -17,17 +17,21 @@ public class LevelEditor : MonoBehaviour
     private List<SpriteRenderer> interactableObjectRenderers = new List<SpriteRenderer>();
     private List<GameObject> interactableObjects;
     private SpineAnimMechanic[] spineAnimMechanics;
+    private InteractingBox[] interactingBoxes;
     public SpriteRenderer[] StaticObjectRenderers => this.staticObjectRenderers;
     public List<SpriteRenderer> InteractableObjectRenderers => this.interactableObjectRenderers;
     public SkeletonAnimation SkeletonAnimation => this.skeletonAnimation;
     public List<GameObject> InteractableObjects => this.interactableObjects;
     public SpineAnimMechanic[] SpineAnimMechanics => this.spineAnimMechanics;
 
+    public InteractingBox[] InteractingBoxes => this.interactingBoxes;
+
     public void PrepareData()
     {
         this.interactableObjectRenderers = new List<SpriteRenderer>();
         this.interactableObjects = new List<GameObject>();
         this.staticObjectRenderers = this.staticObjectParent.GetComponentsInChildren<SpriteRenderer>();
+        this.interactingBoxes = this.boxInteractingObjectParent.GetComponentsInChildren<InteractingBox>();
         this.spineAnimMechanics = this.gameObject.GetComponentsInChildren<SpineAnimMechanic>();
 
         foreach (Transform child in this.interactableObjectParent)

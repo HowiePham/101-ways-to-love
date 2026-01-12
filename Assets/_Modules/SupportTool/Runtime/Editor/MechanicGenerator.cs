@@ -9,7 +9,7 @@ using VisualActions.VisualActions.GameObjects.Runtime;
 public class MechanicGenerator
 {
     protected const string MechanicBlueprintAddress = "Assets/_Levels/_Shared/Prefabs";
-    
+
     protected void AddAutoRenameComponent(GameObject gameObject, GameObject targetObject, string prefix, string removeString)
     {
         var boxAutoRename = gameObject.gameObject.AddComponent<AutoRenameFollow>();
@@ -22,6 +22,7 @@ public class MechanicGenerator
     {
         var boxAreaObject = new GameObject();
         var boxArea2D = boxAreaObject.AddComponent<BoxArea>();
+        var interactingBox = boxAreaObject.AddComponent<InteractingBox>();
         boxArea2D.transform.localPosition = Vector3.zero;
         boxArea2D.SetField("boxCollider", boxArea2D.GetComponent<BoxCollider2D>(), AccessModifier.Private);
 
@@ -70,8 +71,8 @@ public class MechanicGenerator
             setActive.SetField("gameObjects", gameObjects, AccessModifier.Private);
         }
     }
-    
-    protected GameObject CreateMechanicBlueprint(string address,string menuName)
+
+    protected GameObject CreateMechanicBlueprint(string address, string menuName)
     {
         var blueprintTemplate = AssetDatabase.LoadAssetAtPath<GameObject>($"{address}{menuName}.prefab");
 

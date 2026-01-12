@@ -12,6 +12,7 @@ public class LevelEditorWindow : EditorWindow
     private Vector2 scrollPosition;
     private bool showStaticObjects = true;
     private bool showInteractableObjects = true;
+    private bool showInteractingBoxes = true;
     private bool showAnimation = true;
 
     public void Initialize(LevelEditor editor)
@@ -48,6 +49,12 @@ public class LevelEditorWindow : EditorWindow
 
         EditorGUILayout.BeginVertical("box");
         DrawInteractableObjectSection();
+        EditorGUILayout.EndVertical();
+
+        EditorGUILayout.Space(20);
+
+        EditorGUILayout.BeginVertical("box");
+        DrawInteractingBoxSection();
         EditorGUILayout.EndVertical();
 
         EditorGUILayout.Space(20);
@@ -148,6 +155,75 @@ public class LevelEditorWindow : EditorWindow
             EditorGUILayout.Space(5);
 
             serializedObject.ApplyModifiedProperties();
+        }
+
+        EditorGUI.indentLevel--;
+    }
+
+    private void DrawInteractingBoxSection()
+    {
+        this.showInteractingBoxes = EditorGUILayout.Foldout(this.showInteractingBoxes, "Interacting Boxes", true, EditorStyles.foldoutHeader);
+        if (!this.showInteractingBoxes)
+        {
+            return;
+        }
+
+        InteractingBox[] interactingBoxes = this.levelEditor.InteractingBoxes;
+        if (interactingBoxes == null || interactingBoxes.Length == 0)
+        {
+            EditorGUILayout.HelpBox("No boxes found", MessageType.Info);
+            return;
+        }
+
+        EditorGUI.indentLevel++;
+
+        for (var i = 0; i < interactingBoxes.Length; i++)
+        {
+            InteractingBox interactingBox = interactingBoxes[i];
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField($"{i + 1}. {interactingBox.gameObject.name}", EditorStyles.boldLabel);
+
+            if (GUILayout.Button("Select in Hierarchy", GUILayout.Width(150)))
+            {
+                Selection.activeGameObject = interactingBox.gameObject;
+                EditorGUIUtility.PingObject(interactingBox.gameObject);
+            }
+
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.BeginHorizontal();
+            bool followTarget = EditorGUILayout.Toggle($"Box Following Object ", interactingBox.FollowTarget);
+            if (followTarget != interactingBox.FollowTarget)
+            {
+                Undo.RecordObject(interactingBox, "Change Following toggle");
+                interactingBox.FollowTarget = followTarget;
+                EditorUtility.SetDirty(interactingBox);
+            }
+
+            if (!interactingBox.FollowTarget)
+            {
+                EditorGUILayout.EndHorizontal();
+                EditorGUILayout.Space(10);
+
+                continue;
+            }
+
+            var target = (Transform)EditorGUILayout.ObjectField(
+                interactingBox.Target,
+                typeof(Transform),
+                true,
+                GUILayout.Height(18)
+            );
+
+            if (target != interactingBox.Target)
+            {
+                Undo.RecordObject(interactingBox, "Change Target transform");
+                interactingBox.Target = target;
+                EditorUtility.SetDirty(interactingBox);
+            }
+
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.Space(10);
         }
 
         EditorGUI.indentLevel--;
