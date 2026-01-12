@@ -11,6 +11,7 @@ using Sirenix.Utilities;
 using Spine.Unity;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using VisualFlow;
 using Directory = System.IO.Directory;
 
@@ -103,7 +104,8 @@ public class CreatePlaySoundSpine : MonoBehaviour
             try
             {
                 var guid = AssetDatabase.GUIDFromAssetPath(audioFilePaths[soundKey]);
-                // dynamicGroupVariation.audioClipAddressable = new AssetReference(guid.ToString());
+                dynamicGroupVariation.audLocation = MasterAudio.AudioLocation.Addressable;
+                dynamicGroupVariation.audioClipAddressable = new AssetReference(guid.ToString());
             }
             catch (Exception exception)
             {
