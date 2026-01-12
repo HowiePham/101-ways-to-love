@@ -16,5 +16,10 @@ namespace Mimi.VisualActions.Spines
             get => this.skeletonAnimation;
             set => this.skeletonAnimation = value;
         }
+
+        protected bool HasAnimation()
+        {
+            return SkeletonAnimation.SkeletonDataAsset != null && !string.IsNullOrEmpty(this.Animation);
+        }
     }
 }
