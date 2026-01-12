@@ -1,5 +1,7 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using Mimi.Prototypes;
+using Mimi.ServiceLocators;
 using Mimi.Services.ScriptableObject.Audio;
 using Mimi.VisualActions;
 using Sirenix.OdinInspector;
@@ -13,6 +15,7 @@ namespace VisualFlow
     {
         [SerializeField] private SkeletonAnimation skeletonAnimation;
         [SerializeField] private BaseAudioServiceSO audioPlayer;
+        private ServiceLocator ServiceLocator => ServiceLocator.Global;
 
         public SkeletonAnimation SkeletonAnimation
         {
@@ -30,6 +33,12 @@ namespace VisualFlow
         {
             get => this.nameMusic;
             set => this.nameMusic = value;
+        }
+
+        public BaseAudioServiceSO AudioPlayer
+        {
+            get => this.audioPlayer;
+            set => this.audioPlayer = value;
         }
 
         [SerializeField] private int track;
@@ -53,15 +62,15 @@ namespace VisualFlow
                 this.count++;
                 if (this.noLoop && !this.outPlaysound)
                 {
-                    // ServiceLocator.GetService<IAudioService>().PlaySound(this.nameMusic);
-                    this.audioPlayer.PlaySound(this.nameMusic);
+                    // ServiceLocator.Get<IAudioService>().PlaySound(this.nameMusic);
+                    this.AudioPlayer.PlaySound(this.nameMusic);
                     this.outPlaysound = true;
                 }
 
                 if (!this.outPlaysound)
                 {
-                    // ServiceLocator.GetService<IAudioService>().PlaySound(this.nameMusic);
-                    this.audioPlayer.PlaySound(this.nameMusic);
+                    // ServiceLocator.Get<IAudioService>().PlaySound(this.nameMusic);
+                    this.AudioPlayer.PlaySound(this.nameMusic);
                 }
             }
         }
@@ -74,8 +83,8 @@ namespace VisualFlow
 
         private void OnDisable()
         {
-            // ServiceLocator.GetService<IAudioService>().StopSound(this.nameMusic);
-            this.audioPlayer.StopSound(this.nameMusic);
+            // ServiceLocator.Get<IAudioService>().PlaySound(this.nameMusic, 0f);
+            this.AudioPlayer.StopSound(this.nameMusic);
         }
     }
 }
