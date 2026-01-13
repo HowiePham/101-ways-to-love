@@ -439,6 +439,20 @@ public class LevelEditorWindow : EditorWindow
             this.levelEditor.PrepareData();
             Repaint();
         }
+        
+        if (GUILayout.Button("Generate Level Sound", GUILayout.Height(30)))
+        {
+            var creatingPlaySoundSpine = FindAnyObjectByType<CreatePlaySoundSpine>();
+
+            if (creatingPlaySoundSpine == null)
+            {
+                Debug.LogError($"Do not have any Sound Spine Generator!");
+            }
+            else
+            {
+                creatingPlaySoundSpine.Generate();
+            }
+        }
 
         EditorGUILayout.EndHorizontal();
     }

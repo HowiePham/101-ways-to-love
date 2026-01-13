@@ -30,7 +30,7 @@ public class CreatePlaySoundSpine : MonoBehaviour
     private const string audioFilePath = "Assets/_Levels/_Shared/Sounds";
 
     [Button]
-    private void Generate()
+    public void Generate()
     {
         GenerateDynamicSoundGroupCreator();
         GenerateSound();
