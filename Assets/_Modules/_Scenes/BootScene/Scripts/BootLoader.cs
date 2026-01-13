@@ -40,10 +40,10 @@ namespace Mimi.Prototypes
         {
             float loadingSecs = Application.isEditor ? 1f : fakeLoadingSecs;
             float loadingPercentage = 0f;
-            
+
             this.gameContext.CreateAudioService();
             this.gameContext.AudioService.PlaySound(this.backgroundMusic);
-            
+
             UniTask fakeLoadingBarProgress = DOTween.To(() => loadingPercentage,
                 value =>
                 {
@@ -52,7 +52,6 @@ namespace Mimi.Prototypes
                 }, 0.9f, loadingSecs).AsyncWaitForCompletion().AsUniTask();
 
             UniTask waitForContextInitialized = UniTask.WaitUntil(() => this.gameContext.IsInitialized);
-
             UniTask loadNextScene = this.gameContext.LoadSceneAsync(this.nextSceneType.Type);
             UniTask loadingProgress =
                 UniTask.WhenAll(fakeLoadingBarProgress, waitForContextInitialized);
