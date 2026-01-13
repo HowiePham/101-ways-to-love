@@ -8,6 +8,7 @@ public class MechanicBlueprintEditorWindow : EditorWindow
     private DragMechanicGenerator dragMechanicGenerator;
     private TapMechanicGenerator tapMechanicGenerator;
     private TimingMechanicGenerator timingMechanicGenerator;
+    private MixingMechanicGenerator mixingMechanicGenerator;
 
     public static void ShowWindow()
     {
@@ -31,6 +32,7 @@ public class MechanicBlueprintEditorWindow : EditorWindow
         DrawButton("Tap_True", () => OnMenuItemClicked("Tap_True"));
         DrawButton("Tap_False", () => OnMenuItemClicked("Tap_False"));
         DrawButton("Tap_True_Moving", () => OnMenuItemClicked("Tap_True_Moving"));
+        DrawButton("Mix_Tap_Drag_True", () => OnMenuItemClicked("Mix_Tap_Drag_True"));
     }
 
     private void DrawButton(string label, System.Action onClick)
@@ -62,7 +64,12 @@ public class MechanicBlueprintEditorWindow : EditorWindow
             return;
         }
 
-        if (menuName.Contains("Moving"))
+        if (menuName.Contains("Mix"))
+        {
+            this.mixingMechanicGenerator = new MixingMechanicGenerator();
+            this.mixingMechanicGenerator.CreateMechanic(menuName, this.objectName, skeletonAnimation, interactableObjectsParent, boxInteractionParent);
+        }
+        else if (menuName.Contains("Moving"))
         {
             this.timingMechanicGenerator = new TimingMechanicGenerator();
             this.timingMechanicGenerator.CreateMechanic(menuName, this.objectName, skeletonAnimation, interactableObjectsParent, boxInteractionParent);

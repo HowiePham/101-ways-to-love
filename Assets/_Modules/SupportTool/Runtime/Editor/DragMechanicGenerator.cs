@@ -15,17 +15,21 @@ public class DragMechanicGenerator : MechanicGenerator
 
     public void CreateMechanic(string menuName, string objectName, SkeletonAnimation skeletonAnimation, GameObject interactableObjectParent, GameObject boxInteractionParent)
     {
+        GameObject draggableObject;
         if (menuName.Contains("2Result"))
         {
-            CreateDragDuoResult(menuName, objectName, skeletonAnimation, interactableObjectParent, boxInteractionParent);
+            draggableObject = CreateDraggableObject(objectName,interactableObjectParent);
+            CreateDragDuoResult(menuName, draggableObject, skeletonAnimation, boxInteractionParent);
 
             return;
         }
 
-        CreateDragSingleResult(menuName, objectName, skeletonAnimation, interactableObjectParent, boxInteractionParent);
+        draggableObject = CreateDraggableObject(objectName,interactableObjectParent);
+        SetParent(draggableObject.transform, interactableObjectParent.transform);
+        CreateDragSingleResult(menuName, draggableObject, skeletonAnimation, boxInteractionParent);
     }
 
-    private void CreateDragDuoResult(string menuName, string objectName, SkeletonAnimation skeletonAnimation, GameObject interactableObjectParent, GameObject boxInteractionParent)
+    private void CreateDragDuoResult(string menuName, GameObject draggableObject, SkeletonAnimation skeletonAnimation, GameObject boxInteractionParent)
     {
         GameObject trueBlueprintObject = CreateMechanicBlueprint(this.dragBlueprintAddress, DragTrueName);
         GameObject falseBlueprintObject = CreateMechanicBlueprint(this.dragBlueprintAddress, DragFalseName);
@@ -34,9 +38,6 @@ public class DragMechanicGenerator : MechanicGenerator
         {
             return;
         }
-
-        GameObject draggableObject = CreateDraggableObject(objectName);
-        SetParent(draggableObject.transform, interactableObjectParent.transform);
 
         HandleDragMechanicBlueprint(trueBlueprintObject, draggableObject, skeletonAnimation, "Draggable", boxInteractionParent);
         HandleDragMechanicBlueprint(falseBlueprintObject, draggableObject, skeletonAnimation, "Draggable", boxInteractionParent);
@@ -50,22 +51,20 @@ public class DragMechanicGenerator : MechanicGenerator
         AddAutoRenameComponent(dragDuoFlowParent, draggableObject, dragDuoFlowParent.name, "Draggable");
     }
 
-    private void CreateDragSingleResult(string menuName, string objectName, SkeletonAnimation skeletonAnimation, GameObject interactableObjectParent, GameObject boxInteractionParent)
+    public GameObject CreateDragSingleResult(string menuName, GameObject draggableObject, SkeletonAnimation skeletonAnimation, GameObject boxInteractionParent)
     {
         GameObject blueprintObject = CreateMechanicBlueprint(this.dragBlueprintAddress, menuName);
 
         if (blueprintObject == null)
         {
-            return;
+            return null;
         }
 
-        GameObject draggableObject = CreateDraggableObject(objectName);
-        SetParent(draggableObject.transform, interactableObjectParent.transform);
-
         HandleDragMechanicBlueprint(blueprintObject, draggableObject, skeletonAnimation, "Draggable", boxInteractionParent);
+        return blueprintObject;
     }
 
-    private void HandleDragMechanicBlueprint(GameObject blueprintObject, GameObject draggableObject,
+    public void HandleDragMechanicBlueprint(GameObject blueprintObject, GameObject draggableObject,
         SkeletonAnimation skeletonAnimation, string suffix, GameObject boxInteractionParent)
     {
         BoxArea boxArea = CreateBoxArea();
@@ -85,11 +84,12 @@ public class DragMechanicGenerator : MechanicGenerator
         AddAutoRenameComponent(insideArea2D.gameObject, draggableObject, $"{insideArea2D.name}", suffix);
     }
 
-    public GameObject CreateDraggableObject(string objectName)
+    public GameObject CreateDraggableObject(string objectName, GameObject interactableObjectParent)
     {
         var draggableObjectTemplate = AssetDatabase.LoadAssetAtPath<GameObject>($"{this.draggableObjectBlueprintAddress}");
         var draggableObject = (GameObject)PrefabUtility.InstantiatePrefab(draggableObjectTemplate);
         draggableObject.name = $"Draggable_{objectName}";
+        SetParent(draggableObject.transform, interactableObjectParent.transform);
 
         return draggableObject;
     }
