@@ -20,6 +20,7 @@ using Mimi.Prototypes.Pooling;
 using Mimi.Prototypes.SaveLoad;
 using Mimi.Prototypes.UI;
 using Mimi.ServiceLocators;
+using Mimi.Services.ScriptableObject.Audio;
 using UnityEngine;
 
 namespace Mimi.Prototypes
@@ -28,6 +29,7 @@ namespace Mimi.Prototypes
     {
         [SerializeField] private SheetAsset gameDataAsset;
         [SerializeField] private SheetAsset localizeAsset;
+        [SerializeField] private BaseAudioServiceSO audioService;
         [SerializeField] private DialogManager dialogManager;
         public RuntimeState RuntimeState { private set; get; }
 
@@ -113,7 +115,6 @@ namespace Mimi.Prototypes
             CreateLocalPrefsService();
             CreateGameSessionService();
             CreateDialogService();
-            CreateAudioService();
             CreatePlayerResourceService();
             CreateGameData();
             CreateSaveService();
@@ -160,10 +161,9 @@ namespace Mimi.Prototypes
             PlayerResources = currencyRepo;
         }
 
-        private void CreateAudioService()
+        public void CreateAudioService()
         {
-            IAudioPlayer audioPlayer = new MasterAudioPlayer();
-            AudioService = new AudioServiceAdapter(audioPlayer);
+            AudioService = new AudioServiceAdapter(this.audioService);
             ServiceLocator.Global.Register(AudioService);
         }
 
