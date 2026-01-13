@@ -16,22 +16,29 @@ public class TapMechanicGenerator : MechanicGenerator
             return;
         }
 
-        BoxArea boxArea = CreateBoxArea();
-        boxArea.name = $"TapArea_{objectName}";
-        SetParent(boxArea.transform, boxInteractionParent.transform);
+        BoxArea boxArea = CreateTapArea(objectName, boxInteractionParent);
 
         HandleTapMechanicBlueprint(blueprintObject, skeletonAnimation, boxArea, "TapArea");
     }
 
-    public void CreateMechanic(string menuName, SkeletonAnimation skeletonAnimation, BaseArea baseArea, string suffix)
+    public BoxArea CreateTapArea(string objectName, GameObject boxInteractionParent)
+    {
+        BoxArea boxArea = CreateBoxArea();
+        boxArea.name = $"TapArea_{objectName}";
+        SetParent(boxArea.transform, boxInteractionParent.transform);
+        return boxArea;
+    }
+
+    public GameObject CreateMechanic(string menuName, SkeletonAnimation skeletonAnimation, BaseArea baseArea, string suffix)
     {
         GameObject blueprintObject = CreateMechanicBlueprint(this.tapBlueprintAddress, menuName);
         if (blueprintObject == null)
         {
-            return;
+            return null;
         }
 
         HandleTapMechanicBlueprint(blueprintObject, skeletonAnimation, baseArea, suffix);
+        return blueprintObject;
     }
 
     private void HandleTapMechanicBlueprint(GameObject blueprintObject, SkeletonAnimation skeletonAnimation, BaseArea baseArea, string suffix)
