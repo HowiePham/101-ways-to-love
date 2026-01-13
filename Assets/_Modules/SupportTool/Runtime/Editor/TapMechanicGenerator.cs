@@ -16,7 +16,8 @@ public class TapMechanicGenerator : MechanicGenerator
             return;
         }
 
-        BoxArea boxArea = CreateTapArea(objectName);
+        BoxArea boxArea = CreateBoxArea();
+        boxArea.name = $"TapArea_{objectName}";
         SetParent(boxArea.transform, boxInteractionParent.transform);
 
         HandleTapMechanicBlueprint(blueprintObject, skeletonAnimation, boxArea, "TapArea");
@@ -45,12 +46,5 @@ public class TapMechanicGenerator : MechanicGenerator
 
         AddAutoRenameComponent(blueprintObject, baseArea.gameObject, $"{blueprintObject.name}", suffix);
         AddAutoRenameComponent(checkTapArea.gameObject, baseArea.gameObject, $"{checkTapArea.name}", suffix);
-    }
-
-    public BoxArea CreateTapArea(string objectName)
-    {
-        BoxArea boxArea = CreateBoxArea();
-        boxArea.name = $"TapArea_{objectName}";
-        return boxArea;
     }
 }
