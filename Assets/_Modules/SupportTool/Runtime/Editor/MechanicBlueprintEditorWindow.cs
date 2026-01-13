@@ -27,6 +27,7 @@ public class MechanicBlueprintEditorWindow : EditorWindow
 
         DrawButton("Drag_True", () => OnMenuItemClicked("Drag_True"));
         DrawButton("Drag_False", () => OnMenuItemClicked("Drag_False"));
+        DrawButton("Drag_2_Result", () => OnMenuItemClicked("Drag_2Result"));
         DrawButton("Tap_True", () => OnMenuItemClicked("Tap_True"));
         DrawButton("Tap_False", () => OnMenuItemClicked("Tap_False"));
         DrawButton("Tap_True_Moving", () => OnMenuItemClicked("Tap_True_Moving"));
