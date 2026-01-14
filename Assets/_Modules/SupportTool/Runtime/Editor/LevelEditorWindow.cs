@@ -364,12 +364,13 @@ public class LevelEditorWindow : EditorWindow
     private void DrawSpriteSection(SpriteRenderer renderer)
     {
         EditorGUILayout.LabelField("Sprite:", GUILayout.Width(60));
-
+        
         var newSprite = (Sprite)EditorGUILayout.ObjectField(
             renderer.sprite,
             typeof(Sprite),
             false,
-            GUILayout.Height(18)
+            GUILayout.Width(100),
+            GUILayout.Height(100)
         );
 
         if (newSprite != renderer.sprite)
@@ -439,7 +440,7 @@ public class LevelEditorWindow : EditorWindow
             this.levelEditor.PrepareData();
             Repaint();
         }
-        
+
         if (GUILayout.Button("Generate Level Sound", GUILayout.Height(30)))
         {
             var creatingPlaySoundSpine = FindAnyObjectByType<CreatePlaySoundSpine>();
