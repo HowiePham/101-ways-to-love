@@ -4,7 +4,7 @@ namespace VisualActions.Areas
 {
     public abstract class BaseArea : MonoBehaviour
     {
-        public bool Active => gameObject.activeSelf;
+        public bool Active => gameObject.activeInHierarchy;
         public abstract Vector3 Center { get; }
         public abstract Collider2D Collider { get; }
 
