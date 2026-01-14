@@ -41,21 +41,28 @@ namespace Mimi
 
         private async UniTask SelectLevelHandler(SelectLevel selectLevel, CancellationToken cancellationToken)
         {
-            ServiceLocator.Global.Get<IPoolService>().Despawn(this.levelRoot);
+            DestroyOldLevelRoot();
             PlayLevel(selectLevel.LevelOrder);
             await UniTask.CompletedTask;
         }
 
         private async UniTask TryAgainLevelHandler(LevelTryAgain levelTryAgain, CancellationToken cancellationToken)
         {
-            ServiceLocator.Global.Get<IPoolService>().Despawn(this.levelRoot);
+            DestroyOldLevelRoot();
+
             PlayLevel(Context.RuntimeState.CurrentLevelOrder.Value);
             await UniTask.CompletedTask;
         }
 
+        private void DestroyOldLevelRoot()
+        {
+            this.levelPlayer.Cancel();
+            ServiceLocator.Global.Get<IPoolService>().Despawn(this.levelRoot);
+        }
+
         private async UniTask NextLevelHandler(NextLevelClicked nextLevelClicked, CancellationToken cancellationToken)
         {
-            ServiceLocator.Global.Get<IPoolService>().Despawn(this.levelRoot);
+            DestroyOldLevelRoot();
 
             if (!IsLastLevel())
             {

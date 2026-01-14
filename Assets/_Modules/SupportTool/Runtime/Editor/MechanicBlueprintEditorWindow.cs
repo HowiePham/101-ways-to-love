@@ -33,6 +33,14 @@ public class MechanicBlueprintEditorWindow : EditorWindow
         DrawButton("Tap_False", () => OnMenuItemClicked("Tap_False"));
         DrawButton("Tap_True_Moving", () => OnMenuItemClicked("Tap_True_Moving"));
         DrawButton("Mix_Tap_Drag_True", () => OnMenuItemClicked("Mix_Tap_Drag_True"));
+
+        EditorGUILayout.Space();
+        EditorGUILayout.LabelField("Help:", EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("Drag_True/False: Tạo ra Mechanic Drag cho 1 vật dẫn đến kết quả True/False");
+        EditorGUILayout.LabelField("Drag_2_Result: Tạo ra Mechanic Drag cho 1 vật dẫn đến 1 trong 2 kết quả True/False trong Level");
+        EditorGUILayout.LabelField("Tap_True/False: Tạo ra Mechanic Tap cho 1 khu vực dẫn đến kết quả True/False");
+        EditorGUILayout.LabelField("Tap_True/False_Moving: Tạo ra Mechanic Tap cho 1 vật di chuyển dẫn đến kết quả True/False");
+        EditorGUILayout.LabelField("Mix_Tap_Drag_True/False: Tạo ra Mechanic có 2 step, Tap 1 khu vực, sau đó kéo 1 vật dẫn đến kết quả True/False");
     }
 
     private void DrawButton(string label, System.Action onClick)

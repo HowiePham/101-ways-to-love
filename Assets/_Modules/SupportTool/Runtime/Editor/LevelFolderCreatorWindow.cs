@@ -23,12 +23,7 @@ namespace _Modules.SupportTool.Runtime.Editor
             this.levelName = EditorGUILayout.TextField(this.levelName);
 
             EditorGUILayout.Space();
-            DrawButton("Create", OnMenuItemClicked);
-        }
-
-        private void OnMenuItemClicked()
-        {
-            CreateLevelFolderStructure();
+            DrawButton("Create", CreateLevelFolderStructure);
         }
 
         private void CreateLevelFolderStructure()
@@ -41,10 +36,13 @@ namespace _Modules.SupportTool.Runtime.Editor
 
             string rootPath = Path.Combine(LevelBasePath, this.levelName);
 
-            if (!AssetDatabase.IsValidFolder(rootPath))
+            if (AssetDatabase.IsValidFolder(rootPath))
             {
-                AssetDatabase.CreateFolder(LevelBasePath, this.levelName);
+                Debug.LogError("Level Folder already exists.");
+                return;
             }
+
+            AssetDatabase.CreateFolder(LevelBasePath, this.levelName);
 
             CreateSub(rootPath, "Textures");
             CreateSub(rootPath, "Prefabs");
