@@ -1,10 +1,12 @@
 using UnityEngine;
+using VisualActions.Areas;
 
 [ExecuteInEditMode]
 public class InteractingBox : MonoBehaviour
 {
     [SerializeField] private Transform target;
     [SerializeField] private bool followTarget;
+    private BoxArea BoxArea => GetComponent<BoxArea>();
 
     public bool FollowTarget
     {
@@ -41,5 +43,11 @@ public class InteractingBox : MonoBehaviour
         }
 
         this.transform.position = this.Target.position;
+
+        var targetBoxArea = this.Target.GetComponent<BoxArea>();
+        if (BoxArea != null && targetBoxArea != null)
+        {
+            BoxArea.SetSize(targetBoxArea.Size);
+        }
     }
 }
