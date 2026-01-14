@@ -1,3 +1,4 @@
+using _Modules._UI.LoseView.Scripts;
 using Mimi.Events;
 using Mimi.Events.AsyncBus;
 using Mimi.Prototypes;
@@ -10,12 +11,10 @@ namespace _Modules._UI.WinView.Scripts
     {
         private WinView winView;
         private IAsyncPublisher eventPublisher;
-        private RuntimeState runtimeState;
 
         public WinViewPresenter(BaseScenePresenter scenePresenter, Transform transform, IAsyncPublisher eventPublisher, RuntimeState runtimeState) : base(scenePresenter, transform)
         {
             this.eventPublisher = eventPublisher;
-            this.runtimeState = runtimeState;
         }
 
         protected override void AddViews()
@@ -32,7 +31,7 @@ namespace _Modules._UI.WinView.Scripts
             base.OnShow();
 
             this.winView.OnContinueClicked += ContinueClickedHandler;
-            this.winView.SetLevelText(this.runtimeState.CurrentLevelOrder.Value + 1);
+            this.winView.OnReplayClicked += ReplayClickedHandler;
         }
 
         protected override void OnHide()
@@ -40,12 +39,20 @@ namespace _Modules._UI.WinView.Scripts
             base.OnHide();
 
             this.winView.OnContinueClicked -= ContinueClickedHandler;
+            this.winView.OnReplayClicked -= ReplayClickedHandler;
         }
 
         private void ContinueClickedHandler()
         {
             Debug.Log($"--- (WIN) Continue Clicked");
             this.eventPublisher.PublishAsync(new NextLevelClicked());
+            Hide();
+        }
+        
+        private void ReplayClickedHandler()
+        {
+            Debug.Log($"--- (WIN) Replay Clicked");
+            this.eventPublisher.PublishAsync(new LevelTryAgain());
             Hide();
         }
     }

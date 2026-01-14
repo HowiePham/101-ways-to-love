@@ -8,21 +8,18 @@ namespace _Modules._UI.WinView.Scripts
 {
     public class WinView : BaseView
     {
-        [SerializeField] private TMP_Text levelText;
         [SerializeField] private Button continueButton;
+        [SerializeField] private Button replayButton;
 
         public Action OnContinueClicked;
+        public Action OnReplayClicked;
 
         public override void Initialize()
         {
             base.Initialize();
 
             this.continueButton.onClick.AddListener(() => OnContinueClicked?.Invoke());
-        }
-
-        public void SetLevelText(int levelOrder)
-        {
-            this.levelText.text = "Level " + levelOrder;
+            this.replayButton.onClick.AddListener(() => OnReplayClicked?.Invoke());
         }
     }
 }
