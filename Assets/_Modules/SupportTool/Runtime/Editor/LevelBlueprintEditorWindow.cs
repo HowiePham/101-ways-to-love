@@ -28,6 +28,8 @@ public class LevelBlueprintEditorWindow : EditorWindow
         
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Help:", EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("Empty Blueprint: Level chỉ có background");
+        EditorGUILayout.LabelField("E1, E2, M2, M3: 1 vật đúng (Drag), 1 vật sai (Drag)");
     }
 
     private void DrawButton(string label, System.Action onClick)
