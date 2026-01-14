@@ -1,17 +1,25 @@
 using System;
 using Mimi.Prototypes.UI;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class GameplayView : BaseView
 {
-    [SerializeField] private Button pauseButton;
+    [Header("Text")] [SerializeField] private TMP_Text levelTextCurrent;
 
-    public Action OnPauseClicked;
+    [Header("Button")] [SerializeField] private Button settingBtn;
+
+    public Action OnSettingClicked;
 
     public override void Initialize()
     {
         base.Initialize();
-        this.pauseButton.onClick.AddListener(() => this.OnPauseClicked?.Invoke());
+        this.settingBtn.onClick.AddListener(() => this.OnSettingClicked?.Invoke());
+    }
+    
+    public void SetLevelCurrent(string level)
+    {
+        this.levelTextCurrent.text = "Level " + level;
     }
 }
