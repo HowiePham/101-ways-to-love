@@ -126,7 +126,7 @@ public class LevelEditorWindow : EditorWindow
             var newAnim = (SkeletonAnimation)EditorGUILayout.ObjectField(
                 animMechanic.SkeletonAnimation,
                 typeof(SkeletonAnimation),
-                false,
+                true,
                 GUILayout.Height(18)
             );
 
