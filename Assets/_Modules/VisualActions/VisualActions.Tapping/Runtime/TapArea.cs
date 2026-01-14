@@ -23,7 +23,7 @@ namespace Mimi.VisualActions.Tapping
         protected override async UniTask OnInitializing()
         {
             await base.OnInitializing();
-            Waypoints = new[] {this.target.Center};
+            Waypoints = new[] { this.target.Center };
         }
 
         protected override async UniTask OnExecuting(CancellationToken cancellationToken)
@@ -45,7 +45,16 @@ namespace Mimi.VisualActions.Tapping
 
         private void FingerTapHandler(LeanFinger finger)
         {
-            if (!this.target.ContainsScreenPosition(finger.ScreenPosition, Camera.main)) return;
+            if (!this.target.Active)
+            {
+                return;
+            }
+
+            if (!this.target.ContainsScreenPosition(finger.ScreenPosition, Camera.main))
+            {
+                return;
+            }
+
             this.complete = true;
         }
     }
