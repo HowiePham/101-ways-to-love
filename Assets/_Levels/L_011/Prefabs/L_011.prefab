@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &3361915758507476337
+--- !u!1 &6275396208180498750
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,26 +8,24 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 8458755377980652285}
-  - component: {fileID: 4297727374320720270}
-  - component: {fileID: 2781249122016074923}
-  - component: {fileID: 2511695711634845581}
-  - component: {fileID: 5980473414627910098}
-  - component: {fileID: 224273487171285477}
+  - component: {fileID: 1943141386919580235}
+  - component: {fileID: 3583631481965972912}
+  - component: {fileID: 3588729266396940280}
+  - component: {fileID: 1412811598849105895}
   m_Layer: 0
-  m_Name: Anim_GauBong
+  m_Name: Sprite_GauBong
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &8458755377980652285
+--- !u!4 &1943141386919580235
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3361915758507476337}
+  m_GameObject: {fileID: 6275396208180498750}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -36,45 +34,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4451616092528222888}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4297727374320720270
-MonoBehaviour:
+--- !u!212 &3583631481965972912
+SpriteRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3361915758507476337}
+  m_GameObject: {fileID: 6275396208180498750}
   m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e8bb19d5bd0b42faa62b5fe31ec59152, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  target: {fileID: 5647299975648960405}
-  prefix: Anim
-  removeString: Draggable
---- !u!33 &2781249122016074923
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3361915758507476337}
-  m_Mesh: {fileID: 0}
---- !u!23 &2511695711634845581
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3361915758507476337}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
+  m_RayTracingMode: 0
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
@@ -82,7 +57,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: da4fc62357977534c89c036159b5887a, type: 2}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -95,7 +70,7 @@ MeshRenderer:
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
   m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
+  m_SelectedEditorRenderState: 0
   m_MinimumChartSize: 4
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
@@ -103,57 +78,45 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 100
-  m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &5980473414627910098
+  m_Sprite: {fileID: 6299959796665240229, guid: 8a7f4d7682927cb4db850e1b8c51ea40, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 1.81, y: 2.01}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_MaskInteraction: 0
+  m_SpriteSortPoint: 0
+--- !u!114 &3588729266396940280
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3361915758507476337}
+  m_GameObject: {fileID: 6275396208180498750}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d247ba06193faa74d9335f5481b2b56c, type: 3}
+  m_Script: {fileID: 11500000, guid: 1bb5698a66414350934d5f8434bc2d8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skeletonDataAsset: {fileID: 11400000, guid: d99e9c368a27fb145a0a114b686dca9b, type: 2}
-  initialSkinName: 
-  initialFlipX: 0
-  initialFlipY: 0
-  updateWhenInvisible: 3
-  separatorSlotNames: []
-  zSpacing: 0
-  useClipping: 1
-  immutableTriangles: 0
-  pmaVertexColors: 1
-  clearStateOnDisable: 0
-  tintBlack: 0
-  singleSubmesh: 0
-  fixDrawOrder: 0
-  addNormals: 0
-  calculateTangents: 0
-  maskInteraction: 0
-  maskMaterials:
-    materialsMaskDisabled: []
-    materialsInsideMask: []
-    materialsOutsideMask: []
-  disableRenderingOnOverride: 1
-  _animationName: action1
-  loop: 1
-  timeScale: 1
---- !u!114 &224273487171285477
+  _spriteRenderer: {fileID: 3583631481965972912}
+--- !u!114 &1412811598849105895
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3361915758507476337}
+  m_GameObject: {fileID: 6275396208180498750}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 76186420506a489494cdc57d8f79c8f8, type: 3}
+  m_Script: {fileID: 11500000, guid: e8bb19d5bd0b42faa62b5fe31ec59152, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skeletonAnimation: {fileID: 5980473414627910098}
+  target: {fileID: 5647299975648960405}
+  prefix: Sprite
+  removeString: Draggable
 --- !u!1 &8388538166408263362
 GameObject:
   m_ObjectHideFlags: 0
@@ -342,6 +305,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Sprite_CucXuong
       objectReference: {fileID: 0}
+    - target: {fileID: 7239171114073413634, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
+      propertyPath: enableHighlight
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8941882117890696608, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
       propertyPath: m_Name
       value: Draggable_CucXuong
@@ -429,6 +396,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: L_011
       objectReference: {fileID: 0}
+    - target: {fileID: 2084132951560306299, guid: cbcec8d86ca5e2847a8e2370ba2e9ec1, type: 3}
+      propertyPath: enableHighlight
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2515177983656062832, guid: cbcec8d86ca5e2847a8e2370ba2e9ec1, type: 3}
       propertyPath: m_Name
       value: Sprite_GauBong
@@ -480,7 +451,7 @@ PrefabInstance:
     - target: {fileID: 4405858339449753575, guid: cbcec8d86ca5e2847a8e2370ba2e9ec1, type: 3}
       propertyPath: 'graphics.Array.data[0]'
       value: 
-      objectReference: {fileID: 224273487171285477}
+      objectReference: {fileID: 3588729266396940280}
     - target: {fileID: 5141058558534876289, guid: cbcec8d86ca5e2847a8e2370ba2e9ec1, type: 3}
       propertyPath: size.x
       value: 2
@@ -488,6 +459,10 @@ PrefabInstance:
     - target: {fileID: 5141058558534876289, guid: cbcec8d86ca5e2847a8e2370ba2e9ec1, type: 3}
       propertyPath: size.y
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5417752101747278016, guid: cbcec8d86ca5e2847a8e2370ba2e9ec1, type: 3}
+      propertyPath: enableHighlight
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5495991011547844581, guid: cbcec8d86ca5e2847a8e2370ba2e9ec1, type: 3}
       propertyPath: m_Name
@@ -520,6 +495,14 @@ PrefabInstance:
     - target: {fileID: 6003009664287145314, guid: cbcec8d86ca5e2847a8e2370ba2e9ec1, type: 3}
       propertyPath: m_Name
       value: Draggable_QuaBong
+      objectReference: {fileID: 0}
+    - target: {fileID: 6551693867434602273, guid: cbcec8d86ca5e2847a8e2370ba2e9ec1, type: 3}
+      propertyPath: m_Size.x
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6551693867434602273, guid: cbcec8d86ca5e2847a8e2370ba2e9ec1, type: 3}
+      propertyPath: m_Size.y
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6853239382090150196, guid: cbcec8d86ca5e2847a8e2370ba2e9ec1, type: 3}
       propertyPath: m_LocalPosition.x
@@ -573,6 +556,14 @@ PrefabInstance:
       propertyPath: skeletonDataAsset
       value: 
       objectReference: {fileID: 11400000, guid: ab6cae584ee1885458f1e66dbe5ea82a, type: 2}
+    - target: {fileID: 8313106717758248554, guid: cbcec8d86ca5e2847a8e2370ba2e9ec1, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.63
+      objectReference: {fileID: 0}
+    - target: {fileID: 8313106717758248554, guid: cbcec8d86ca5e2847a8e2370ba2e9ec1, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 2.83
+      objectReference: {fileID: 0}
     - target: {fileID: 8440975201663324619, guid: cbcec8d86ca5e2847a8e2370ba2e9ec1, type: 3}
       propertyPath: m_Name
       value: Sprite_QuaBong
@@ -590,7 +581,7 @@ PrefabInstance:
       addedObject: {fileID: 4825552325214677588}
     - targetCorrespondingSourceObject: {fileID: 8580903642910555876, guid: cbcec8d86ca5e2847a8e2370ba2e9ec1, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 8458755377980652285}
+      addedObject: {fileID: 1943141386919580235}
     - targetCorrespondingSourceObject: {fileID: 3263720731302245705, guid: cbcec8d86ca5e2847a8e2370ba2e9ec1, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4710956773832865402}
