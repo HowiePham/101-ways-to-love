@@ -23,6 +23,7 @@ namespace Mimi.VisualActions.Spines
                 return;
             }
 
+            this.SkeletonAnimation.timeScale = this.timeScale;
             this.SkeletonAnimation.AnimationState.SetAnimation(this.track, this.Animation, false);
             try
             {

@@ -9,6 +9,8 @@ namespace Mimi.VisualActions.Spines
         [SerializeField, SpineAnimation(dataField = "skeletonAnimation")]
         protected new string animation;
 
+        [SerializeField] protected float timeScale = 1f;
+
         public string Animation => this.animation;
 
         public SkeletonAnimation SkeletonAnimation

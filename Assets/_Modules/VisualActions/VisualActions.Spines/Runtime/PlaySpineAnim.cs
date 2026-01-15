@@ -18,7 +18,8 @@ namespace Mimi.VisualActions.Spines
                 await UniTask.CompletedTask;
                 return;
             }
-
+            
+            this.SkeletonAnimation.timeScale = this.timeScale;
             this.SkeletonAnimation.AnimationState.SetAnimation(this.track, this.Animation, this.loop);
             await UniTask.CompletedTask;
         }
