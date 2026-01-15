@@ -17,7 +17,12 @@ namespace VisualActions.Areas
         public override Vector3 Center => transform.position;
         public override Collider2D Collider => this.boxCollider;
 
-        public Vector2 Size => this.size;
+        public Vector2 Size
+        {
+            get => this.size;
+            set => this.size = value;
+        }
+
         public Vector3 TopLeft => Center + new Vector3(-size.x / 2, size.y / 2);
         public Vector3 BottomRight => Center + new Vector3(size.x / 2, -size.y / 2);
         private Transform trans;
@@ -38,7 +43,7 @@ namespace VisualActions.Areas
             this.size = size;
         }
 
-        
+
         public override bool Intersect(BaseArea otherArea)
         {
             return this.boxCollider.IsTouching(otherArea.Collider);
@@ -73,7 +78,7 @@ namespace VisualActions.Areas
             this.size = size;
             OnSizeChanged();
         }
-       
+
         private void OnDrawGizmos()
         {
             this.debugBounds.center = transform.position;
