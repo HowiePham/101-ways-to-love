@@ -6,6 +6,7 @@ using Spine.Unity;
 using Spine.Unity.Editor;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UI;
 using VisualActions.Areas;
 
 public class LevelEditorWindow : EditorWindow
@@ -80,32 +81,20 @@ public class LevelEditorWindow : EditorWindow
 
         EditorGUILayout.BeginHorizontal();
 
-        SkeletonAnimation skeletionAnimation = this.levelEditor.SkeletonAnimation;
-        var newAnimation = (SkeletonDataAsset)EditorGUILayout.ObjectField(
-            skeletionAnimation.SkeletonDataAsset,
-            typeof(SkeletonDataAsset),
-            false,
-            GUILayout.Height(18)
-        );
-
-        if (newAnimation != skeletionAnimation.SkeletonDataAsset)
-        {
-            Undo.RecordObject(skeletionAnimation, "Change Animation");
-            skeletionAnimation.skeletonDataAsset = newAnimation;
-            EditorUtility.SetDirty(skeletionAnimation);
-        }
+        SkeletonAnimation skeletonAnimation = this.levelEditor.SkeletonAnimation;
+        DrawSkeletonAnimationSection(skeletonAnimation);
 
         if (GUILayout.Button("Select in Hierarchy", GUILayout.Width(150)))
         {
-            Selection.activeGameObject = skeletionAnimation.gameObject;
-            EditorGUIUtility.PingObject(skeletionAnimation.gameObject);
+            Selection.activeGameObject = skeletonAnimation.gameObject;
+            EditorGUIUtility.PingObject(skeletonAnimation.gameObject);
         }
 
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.LabelField("Order In Layer:", GUILayout.Width(60));
 
-        var renderer = skeletionAnimation.GetComponent<MeshRenderer>();
+        var renderer = skeletonAnimation.GetComponent<MeshRenderer>();
         EditorGUILayout.BeginHorizontal();
         DrawSortingLayerSection(renderer);
         EditorGUILayout.EndHorizontal();
@@ -269,9 +258,6 @@ public class LevelEditorWindow : EditorWindow
         for (int i = 0; i < interactableObjects.Count; i++)
         {
             GameObject interactableObject = interactableObjects[i];
-            var renderer = interactableObject.GetComponentInChildren<SpriteRenderer>();
-            if (renderer == null) continue;
-
             EditorGUILayout.BeginHorizontal();
 
             EditorGUILayout.LabelField($"{i + 1}. ", EditorStyles.boldLabel, GUILayout.Width(25));
@@ -305,7 +291,7 @@ public class LevelEditorWindow : EditorWindow
             }
 
             EditorGUILayout.EndHorizontal();
-            
+
             var boxArea = interactableObject.GetComponent<BoxArea>();
             if (boxArea != null)
             {
@@ -322,7 +308,7 @@ public class LevelEditorWindow : EditorWindow
                 EditorGUILayout.EndHorizontal();
             }
 
-            DrawObjectRenderersSection(renderer);
+            DrawObjectRenderersSection(interactableObject);
 
             EditorGUILayout.Space(10);
         }
@@ -338,8 +324,8 @@ public class LevelEditorWindow : EditorWindow
             return;
         }
 
-        SpriteRenderer[] renderers = this.levelEditor.StaticObjectRenderers;
-        if (renderers == null || renderers.Length == 0)
+        List<GameObject> staticObjects = this.levelEditor.StaticObjects;
+        if (staticObjects == null || staticObjects.Count == 0)
         {
             EditorGUILayout.HelpBox("No objects found", MessageType.Info);
             return;
@@ -347,32 +333,32 @@ public class LevelEditorWindow : EditorWindow
 
         EditorGUI.indentLevel++;
 
-        for (int i = 0; i < renderers.Length; i++)
+        for (int i = 0; i < staticObjects.Count; i++)
         {
-            var renderer = renderers[i];
-            if (renderer == null) continue;
+            GameObject staticObject = staticObjects[i];
+            if (staticObject == null) continue;
 
             EditorGUILayout.BeginHorizontal();
 
             EditorGUILayout.LabelField($"{i + 1}. ", EditorStyles.boldLabel, GUILayout.Width(25));
-            string newName = EditorGUILayout.TextField(renderer.gameObject.name);
+            string newName = EditorGUILayout.TextField(staticObject.gameObject.name);
 
-            if (!newName.Equals(renderer.gameObject.name))
+            if (!newName.Equals(staticObject.gameObject.name))
             {
-                Undo.RecordObject(renderer.gameObject, "Change Name");
-                renderer.gameObject.name = newName;
-                EditorUtility.SetDirty(renderer.gameObject);
+                Undo.RecordObject(staticObject.gameObject, "Change Name");
+                staticObject.gameObject.name = newName;
+                EditorUtility.SetDirty(staticObject.gameObject);
             }
 
             if (GUILayout.Button("Select in Hierarchy", GUILayout.Width(150)))
             {
-                Selection.activeGameObject = renderer.gameObject;
-                EditorGUIUtility.PingObject(renderer.gameObject);
+                Selection.activeGameObject = staticObject.gameObject;
+                EditorGUIUtility.PingObject(staticObject.gameObject);
             }
 
             EditorGUILayout.EndHorizontal();
 
-            DrawObjectRenderersSection(renderer);
+            DrawObjectRenderersSection(staticObject);
 
             EditorGUILayout.Space(10);
         }
@@ -380,11 +366,38 @@ public class LevelEditorWindow : EditorWindow
         EditorGUI.indentLevel--;
     }
 
-    private void DrawObjectRenderersSection(SpriteRenderer renderer)
+    private void DrawObjectRenderersSection(GameObject gameObject)
     {
-        EditorGUILayout.BeginHorizontal();
-        DrawSpriteSection(renderer);
-        EditorGUILayout.EndHorizontal();
+        Renderer renderer = gameObject.GetComponentInChildren<SpriteRenderer>();
+        if (renderer != null)
+        {
+            EditorGUILayout.BeginHorizontal();
+            DrawSpriteSection(renderer);
+            EditorGUILayout.EndHorizontal();
+        }
+        else
+        {
+            var skeletonAnimation = gameObject.GetComponentInChildren<SkeletonAnimation>();
+            renderer = skeletonAnimation.GetComponent<MeshRenderer>();
+
+            EditorGUILayout.BeginHorizontal();
+            DrawSkeletonAnimationSection(skeletonAnimation);
+
+            var serializedObject = new SerializedObject(skeletonAnimation);
+            SerializedProperty animProp = serializedObject.FindProperty("_animationName");
+            EditorGUILayout.LabelField("Action:", GUILayout.Width(50));
+            EditorGUILayout.PropertyField(animProp, GUIContent.none);
+
+            bool newLoopState = EditorGUILayout.Toggle($"Loop: ", skeletonAnimation.loop);
+            if (newLoopState != skeletonAnimation.loop)
+            {
+                Undo.RecordObject(skeletonAnimation, "Change Loop state");
+                skeletonAnimation.loop = newLoopState;
+                EditorUtility.SetDirty(skeletonAnimation);
+            }
+
+            EditorGUILayout.EndHorizontal();
+        }
 
         EditorGUILayout.BeginHorizontal();
         DrawSortingLayerSection(renderer);
@@ -395,22 +408,42 @@ public class LevelEditorWindow : EditorWindow
         EditorGUILayout.EndHorizontal();
     }
 
-    private void DrawSpriteSection(SpriteRenderer renderer)
+    private static void DrawSkeletonAnimationSection(SkeletonAnimation skeletonAnimation)
     {
+        EditorGUILayout.LabelField("Animation:", GUILayout.Width(60));
+
+        var newAnimation = (SkeletonDataAsset)EditorGUILayout.ObjectField(
+            skeletonAnimation.SkeletonDataAsset,
+            typeof(SkeletonDataAsset),
+            false,
+            GUILayout.Height(18)
+        );
+
+        if (newAnimation != skeletonAnimation.SkeletonDataAsset)
+        {
+            Undo.RecordObject(skeletonAnimation, "Change Animation");
+            skeletonAnimation.skeletonDataAsset = newAnimation;
+            EditorUtility.SetDirty(skeletonAnimation);
+        }
+    }
+
+    private void DrawSpriteSection(Renderer renderer)
+    {
+        var spriteRenderer = (SpriteRenderer)renderer;
         EditorGUILayout.LabelField("Sprite:", GUILayout.Width(60));
 
         var newSprite = (Sprite)EditorGUILayout.ObjectField(
-            renderer.sprite,
+            spriteRenderer.sprite,
             typeof(Sprite),
             false,
             GUILayout.Width(100),
             GUILayout.Height(100)
         );
 
-        if (newSprite != renderer.sprite)
+        if (newSprite != spriteRenderer.sprite)
         {
             Undo.RecordObject(renderer, "Change Sprite");
-            renderer.sprite = newSprite;
+            spriteRenderer.sprite = newSprite;
             EditorUtility.SetDirty(renderer);
         }
     }
