@@ -14,11 +14,11 @@ public class LevelEditor : MonoBehaviour
     [SerializeField] private Transform rootSequenceParent;
     [SerializeField] private SkeletonAnimation skeletonAnimation;
     [SerializeField] private string interactableTag;
-    private SpriteRenderer[] staticObjectRenderers;
+    private List<GameObject> staticObjects;
     private List<GameObject> interactableObjects;
     private SpineAnimMechanic[] spineAnimMechanics;
     private InteractingBox[] interactingBoxes;
-    public SpriteRenderer[] StaticObjectRenderers => this.staticObjectRenderers;
+    public List<GameObject> StaticObjects => this.staticObjects;
     public SkeletonAnimation SkeletonAnimation => this.skeletonAnimation;
     public List<GameObject> InteractableObjects => this.interactableObjects;
     public SpineAnimMechanic[] SpineAnimMechanics => this.spineAnimMechanics;
@@ -28,7 +28,7 @@ public class LevelEditor : MonoBehaviour
     public void PrepareData()
     {
         this.interactableObjects = new List<GameObject>();
-        this.staticObjectRenderers = this.staticObjectParent.GetComponentsInChildren<SpriteRenderer>();
+        this.staticObjects = new List<GameObject>();
         this.interactingBoxes = this.boxInteractingObjectParent.GetComponentsInChildren<InteractingBox>();
         this.spineAnimMechanics = this.rootSequenceParent.GetComponentsInChildren<SpineAnimMechanic>();
 
@@ -40,6 +40,11 @@ public class LevelEditor : MonoBehaviour
             }
 
             this.interactableObjects.Add(child.gameObject);
+        }
+        
+        foreach (Transform child in this.staticObjectParent)
+        {
+            this.staticObjects.Add(child.gameObject);
         }
 
         foreach (Transform child in this.boxInteractingObjectParent)
