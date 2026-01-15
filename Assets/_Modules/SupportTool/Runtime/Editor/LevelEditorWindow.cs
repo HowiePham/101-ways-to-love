@@ -5,6 +5,7 @@ using Spine.Unity;
 using Spine.Unity.Editor;
 using UnityEditor;
 using UnityEngine;
+using VisualActions.Areas;
 
 public class LevelEditorWindow : EditorWindow
 {
@@ -203,6 +204,23 @@ public class LevelEditorWindow : EditorWindow
             if (!interactingBox.FollowTarget)
             {
                 EditorGUILayout.EndHorizontal();
+
+                var boxArea = interactingBox.gameObject.GetComponent<BoxArea>();
+                if (boxArea != null)
+                {
+                    EditorGUILayout.BeginHorizontal();
+                    Vector2 newSize = EditorGUILayout.Vector2Field("Box Size:", boxArea.Size);
+
+                    if (newSize != boxArea.Size)
+                    {
+                        Undo.RecordObject(boxArea, "Change Box Size");
+                        boxArea.Size = newSize;
+                        EditorUtility.SetDirty(boxArea);
+                    }
+
+                    EditorGUILayout.EndHorizontal();
+                }
+
                 EditorGUILayout.Space(10);
 
                 continue;
@@ -364,7 +382,7 @@ public class LevelEditorWindow : EditorWindow
     private void DrawSpriteSection(SpriteRenderer renderer)
     {
         EditorGUILayout.LabelField("Sprite:", GUILayout.Width(60));
-        
+
         var newSprite = (Sprite)EditorGUILayout.ObjectField(
             renderer.sprite,
             typeof(Sprite),
