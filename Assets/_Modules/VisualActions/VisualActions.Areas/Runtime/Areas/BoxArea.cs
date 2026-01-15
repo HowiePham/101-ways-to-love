@@ -17,11 +17,7 @@ namespace VisualActions.Areas
         public override Vector3 Center => transform.position;
         public override Collider2D Collider => this.boxCollider;
 
-        public Vector2 Size
-        {
-            get => this.size;
-            set => this.size = value;
-        }
+        public Vector2 Size => this.size;
 
         public Vector3 TopLeft => Center + new Vector3(-size.x / 2, size.y / 2);
         public Vector3 BottomRight => Center + new Vector3(size.x / 2, -size.y / 2);
@@ -36,13 +32,14 @@ namespace VisualActions.Areas
                 this.boxCollider.isTrigger = true;
                 this.boxCollider.size = this.size;
             }
+
+            OnSizeChanged();
         }
 
         public void SetSize(Vector2 size)
         {
             this.size = size;
         }
-
 
         public override bool Intersect(BaseArea otherArea)
         {
@@ -65,13 +62,12 @@ namespace VisualActions.Areas
             SetActive(false);
         }
 
-#if UNITY_EDITOR
-        private Bounds debugBounds;
-
         private void OnSizeChanged()
         {
             this.boxCollider.size = this.size;
         }
+#if UNITY_EDITOR
+        private Bounds debugBounds;
 
         public void SetSizeEditor(Vector2 size)
         {

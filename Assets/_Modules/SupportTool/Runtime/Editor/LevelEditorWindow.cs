@@ -204,7 +204,7 @@ public class LevelEditorWindow : EditorWindow
                     if (newSize != boxArea.Size)
                     {
                         Undo.RecordObject(boxArea, "Change Box Size");
-                        boxArea.Size = newSize;
+                        boxArea.SetSizeEditor(newSize);
                         EditorUtility.SetDirty(boxArea);
                     }
 
@@ -301,7 +301,7 @@ public class LevelEditorWindow : EditorWindow
                 if (newSize != boxArea.Size)
                 {
                     Undo.RecordObject(boxArea, "Change Box Size");
-                    boxArea.Size = newSize;
+                    boxArea.SetSizeEditor(newSize);
                     EditorUtility.SetDirty(boxArea);
                 }
 
