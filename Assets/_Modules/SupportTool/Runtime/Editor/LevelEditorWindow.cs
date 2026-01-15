@@ -382,6 +382,20 @@ public class LevelEditorWindow : EditorWindow
 
             EditorGUILayout.BeginHorizontal();
             DrawSkeletonAnimationSection(skeletonAnimation);
+
+            var serializedObject = new SerializedObject(skeletonAnimation);
+            SerializedProperty animProp = serializedObject.FindProperty("_animationName");
+            EditorGUILayout.LabelField("Action:", GUILayout.Width(50));
+            EditorGUILayout.PropertyField(animProp, GUIContent.none);
+
+            bool newLoopState = EditorGUILayout.Toggle($"Loop: ", skeletonAnimation.loop);
+            if (newLoopState != skeletonAnimation.loop)
+            {
+                Undo.RecordObject(skeletonAnimation, "Change Loop state");
+                skeletonAnimation.loop = newLoopState;
+                EditorUtility.SetDirty(skeletonAnimation);
+            }
+
             EditorGUILayout.EndHorizontal();
         }
 
@@ -397,7 +411,7 @@ public class LevelEditorWindow : EditorWindow
     private static void DrawSkeletonAnimationSection(SkeletonAnimation skeletonAnimation)
     {
         EditorGUILayout.LabelField("Animation:", GUILayout.Width(60));
-        
+
         var newAnimation = (SkeletonDataAsset)EditorGUILayout.ObjectField(
             skeletonAnimation.SkeletonDataAsset,
             typeof(SkeletonDataAsset),
