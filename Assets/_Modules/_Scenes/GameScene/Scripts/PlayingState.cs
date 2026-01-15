@@ -3,7 +3,9 @@ using _Modules._UI.LoseView.Scripts;
 using _Modules.Gameflow_Events_.Scripts;
 using Cysharp.Threading.Tasks;
 using GameScenes;
+using Lean.Touch;
 using LeveLoaders;
+using Mimi.Audio;
 using Mimi.Events;
 using Mimi.Games;
 using Mimi.Prototypes;
@@ -16,6 +18,8 @@ namespace Mimi
 {
     public class PlayingState : BaseSceneState
     {
+        [SerializeField, SoundKey] private string soundKey;
+
         private LevelInfo currentLevel;
         private LevelInfo nextLevel;
         private GameObject levelRoot;
@@ -36,7 +40,15 @@ namespace Mimi
             Context.EventSubscriber.Subscribe<NextLevelClicked>(NextLevelHandler).AddToBag(this.eventBag);
             Context.EventSubscriber.Subscribe<LevelTryAgain>(TryAgainLevelHandler).AddToBag(this.eventBag);
             Context.EventSubscriber.Subscribe<SelectLevel>(SelectLevelHandler).AddToBag(this.eventBag);
+
+            LeanTouch.OnFingerDown += ClickSoundHandler;
+
             PlayLevel(Context.RuntimeState.CurrentLevelOrder.Value);
+        }
+
+        private void ClickSoundHandler(LeanFinger finger)
+        {
+            this.Context.AudioService.PlaySound(this.soundKey);
         }
 
         private async UniTask SelectLevelHandler(SelectLevel selectLevel, CancellationToken cancellationToken)
@@ -93,6 +105,8 @@ namespace Mimi
         public override void Exit()
         {
             base.Exit();
+            LeanTouch.OnFingerDown -= ClickSoundHandler;
+
             this.eventBag.Dispose();
         }
 
