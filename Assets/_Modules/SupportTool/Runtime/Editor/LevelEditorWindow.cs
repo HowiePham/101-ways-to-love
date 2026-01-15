@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Mimi.Actor.Graphic.Core;
 using Mimi.Interactions.Dragging;
 using Mimi.VisualActions.Spines;
 using Spine.Unity;
@@ -256,9 +257,9 @@ public class LevelEditorWindow : EditorWindow
         }
 
         List<GameObject> interactableObjects = this.levelEditor.InteractableObjects;
-        List<SpriteRenderer> renderers = this.levelEditor.InteractableObjectRenderers;
+        // List<SpriteRenderer> renderers = this.levelEditor.InteractableObjectRenderers;
 
-        if (renderers == null || renderers.Count == 0)
+        if (interactableObjects == null || interactableObjects.Count == 0)
         {
             EditorGUILayout.HelpBox("No objects found", MessageType.Info);
             return;
@@ -266,10 +267,10 @@ public class LevelEditorWindow : EditorWindow
 
         EditorGUI.indentLevel++;
 
-        for (int i = 0; i < renderers.Count; i++)
+        for (int i = 0; i < interactableObjects.Count; i++)
         {
-            SpriteRenderer renderer = renderers[i];
             GameObject interactableObject = interactableObjects[i];
+            var renderer = interactableObject.GetComponentInChildren<SpriteRenderer>();
             if (renderer == null) continue;
 
             EditorGUILayout.BeginHorizontal();
@@ -277,7 +278,7 @@ public class LevelEditorWindow : EditorWindow
             EditorGUILayout.LabelField($"{i + 1}. ", EditorStyles.boldLabel, GUILayout.Width(25));
             string newName = EditorGUILayout.TextField(interactableObject.name);
 
-            if (!newName.Equals(renderer.gameObject.name))
+            if (!newName.Equals(interactableObject.name))
             {
                 Undo.RecordObject(interactableObject, "Change Name");
                 interactableObject.name = newName;
@@ -305,6 +306,22 @@ public class LevelEditorWindow : EditorWindow
             }
 
             EditorGUILayout.EndHorizontal();
+            
+            var boxArea = interactableObject.GetComponent<BoxArea>();
+            if (boxArea != null)
+            {
+                EditorGUILayout.BeginHorizontal();
+                Vector2 newSize = EditorGUILayout.Vector2Field("Box Size:", boxArea.Size);
+
+                if (newSize != boxArea.Size)
+                {
+                    Undo.RecordObject(boxArea, "Change Box Size");
+                    boxArea.Size = newSize;
+                    EditorUtility.SetDirty(boxArea);
+                }
+
+                EditorGUILayout.EndHorizontal();
+            }
 
             DrawObjectRenderersSection(renderer);
 
