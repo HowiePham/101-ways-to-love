@@ -257,7 +257,6 @@ public class LevelEditorWindow : EditorWindow
         }
 
         List<GameObject> interactableObjects = this.levelEditor.InteractableObjects;
-        // List<SpriteRenderer> renderers = this.levelEditor.InteractableObjectRenderers;
 
         if (interactableObjects == null || interactableObjects.Count == 0)
         {

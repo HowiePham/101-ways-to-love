@@ -11,15 +11,14 @@ public class LevelEditor : MonoBehaviour
     [SerializeField] private Transform staticObjectParent;
     [SerializeField] private Transform interactableObjectParent;
     [SerializeField] private Transform boxInteractingObjectParent;
+    [SerializeField] private Transform rootSequenceParent;
     [SerializeField] private SkeletonAnimation skeletonAnimation;
     [SerializeField] private string interactableTag;
     private SpriteRenderer[] staticObjectRenderers;
-    private List<SpriteRenderer> interactableObjectRenderers = new List<SpriteRenderer>();
     private List<GameObject> interactableObjects;
     private SpineAnimMechanic[] spineAnimMechanics;
     private InteractingBox[] interactingBoxes;
     public SpriteRenderer[] StaticObjectRenderers => this.staticObjectRenderers;
-    public List<SpriteRenderer> InteractableObjectRenderers => this.interactableObjectRenderers;
     public SkeletonAnimation SkeletonAnimation => this.skeletonAnimation;
     public List<GameObject> InteractableObjects => this.interactableObjects;
     public SpineAnimMechanic[] SpineAnimMechanics => this.spineAnimMechanics;
@@ -28,11 +27,10 @@ public class LevelEditor : MonoBehaviour
 
     public void PrepareData()
     {
-        this.interactableObjectRenderers = new List<SpriteRenderer>();
         this.interactableObjects = new List<GameObject>();
         this.staticObjectRenderers = this.staticObjectParent.GetComponentsInChildren<SpriteRenderer>();
         this.interactingBoxes = this.boxInteractingObjectParent.GetComponentsInChildren<InteractingBox>();
-        this.spineAnimMechanics = this.gameObject.GetComponentsInChildren<SpineAnimMechanic>();
+        this.spineAnimMechanics = this.rootSequenceParent.GetComponentsInChildren<SpineAnimMechanic>();
 
         foreach (Transform child in this.interactableObjectParent)
         {
@@ -52,12 +50,6 @@ public class LevelEditor : MonoBehaviour
             }
 
             this.interactableObjects.Add(child.gameObject);
-        }
-
-        foreach (GameObject draggable in this.interactableObjects)
-        {
-            var draggableSpriteRenderer = draggable.GetComponentInChildren<SpriteRenderer>();
-            this.interactableObjectRenderers.Add(draggableSpriteRenderer);
         }
     }
 #endif
