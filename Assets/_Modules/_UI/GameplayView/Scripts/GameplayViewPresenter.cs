@@ -3,6 +3,7 @@ using _Modules._UI.CheatView.Scripts;
 using _Modules._UI.WinView.Scripts;
 using Cysharp.Threading.Tasks;
 using MEC;
+using Mimi.Events;
 using Mimi.Events.AsyncBus;
 using Mimi.Games;
 using Mimi.Games.Events;
@@ -49,12 +50,13 @@ public class GameplayViewPresenter : BaseViewPresenter
     protected override void OnShow()
     {
         base.OnShow();
-        
+
         this.gameplayView.OnSettingClicked += SettingClickedHandler;
+        this.gameplayView.OnSkipClicked += SkipClickedHandler;
         Messenger.AddListener(EventKey.LevelWin, ShowWinView);
 
         ShowLevelInfo();
-        
+
 #if DEVELOPMENT
         var cheatViewPresenter = this.ScenePresenter.GetViewPresenter<CheatViewPresenter>();
         cheatViewPresenter.Show();
@@ -70,6 +72,8 @@ public class GameplayViewPresenter : BaseViewPresenter
         base.OnHide();
 
         this.gameplayView.OnSettingClicked -= SettingClickedHandler;
+        this.gameplayView.OnSkipClicked -= SkipClickedHandler;
+
         Messenger.RemoveListener(EventKey.LevelWin, ShowWinView);
 
 #if DEVELOPMENT
@@ -100,5 +104,10 @@ public class GameplayViewPresenter : BaseViewPresenter
 
         var settingViewPresenter = this.ScenePresenter.GetViewPresenter<SettingViewPresenter>();
         settingViewPresenter.Show();
+    }
+
+    private void SkipClickedHandler()
+    {
+        this.eventPublisher.PublishAsync(new NextLevelClicked());
     }
 }
