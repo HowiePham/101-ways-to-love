@@ -9,6 +9,7 @@ using Mimi.Audio;
 using Mimi.Events;
 using Mimi.Games;
 using Mimi.Prototypes;
+using Mimi.Prototypes.Events;
 using Mimi.Prototypes.LevelManagement;
 using Mimi.Prototypes.Pooling;
 using Mimi.ServiceLocators;
@@ -19,6 +20,7 @@ namespace Mimi
     public class PlayingState : BaseSceneState
     {
         [SerializeField, SoundKey] private string soundKey;
+        [SerializeField] private GameObject winCamera;
 
         private LevelInfo currentLevel;
         private LevelInfo nextLevel;
@@ -41,9 +43,16 @@ namespace Mimi
             Context.EventSubscriber.Subscribe<LevelTryAgain>(TryAgainLevelHandler).AddToBag(this.eventBag);
             Context.EventSubscriber.Subscribe<SelectLevel>(SelectLevelHandler).AddToBag(this.eventBag);
 
+            Messenger.AddListener(EventKey.LevelWin, LevelWinHandler);
+
             LeanTouch.OnFingerDown += ClickSoundHandler;
 
             PlayLevel(Context.RuntimeState.CurrentLevelOrder.Value);
+        }
+
+        private void LevelWinHandler()
+        {
+            this.winCamera.SetActive(true);
         }
 
         private void ClickSoundHandler(LeanFinger finger)
@@ -120,6 +129,7 @@ namespace Mimi
 
         private async UniTask PlayLevel(LevelInfo currentLevelInfo)
         {
+            this.winCamera.SetActive(false);
             GameObject levelPrefab = await this.levelLoader.Load(currentLevelInfo.Id);
             this.levelRoot = ServiceLocator.Global.Get<IPoolService>().Spawn(levelPrefab);
             this.levelPlayer = this.levelRoot.GetComponent<LevelPlayer>();
