@@ -6,6 +6,7 @@ namespace GameScenes
     public class LevelAutoPlay : MonoBehaviour
     {
         private LevelPlayer levelPlayer;
+        [SerializeField] private GameObject winCamera;
 
         private void Start()
         {
@@ -15,6 +16,7 @@ namespace GameScenes
                 return;
             }
 
+            this.winCamera.SetActive(false);
             this.levelPlayer.Play();
         }
     }
