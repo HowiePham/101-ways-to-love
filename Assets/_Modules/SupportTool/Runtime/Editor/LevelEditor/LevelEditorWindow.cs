@@ -191,46 +191,41 @@ public class LevelEditorWindow : EditorWindow
                 EditorUtility.SetDirty(interactingBox);
             }
 
-            if (!interactingBox.FollowTarget)
+            if (interactingBox.FollowTarget)
             {
-                EditorGUILayout.EndHorizontal();
+                var target = (Transform)EditorGUILayout.ObjectField(
+                    interactingBox.Target,
+                    typeof(Transform),
+                    true,
+                    GUILayout.Height(18)
+                );
 
-                var boxArea = interactingBox.gameObject.GetComponent<BoxArea>();
-                if (boxArea != null)
+                if (target != interactingBox.Target)
                 {
-                    EditorGUILayout.BeginHorizontal();
-                    Vector2 newSize = EditorGUILayout.Vector2Field("Box Size:", boxArea.Size);
-
-                    if (newSize != boxArea.Size)
-                    {
-                        Undo.RecordObject(boxArea, "Change Box Size");
-                        boxArea.SetSizeEditor(newSize);
-                        EditorUtility.SetDirty(boxArea);
-                    }
-
-                    EditorGUILayout.EndHorizontal();
+                    Undo.RecordObject(interactingBox, "Change Target transform");
+                    interactingBox.Target = target;
+                    EditorUtility.SetDirty(interactingBox);
                 }
-
-                EditorGUILayout.Space(10);
-
-                continue;
-            }
-
-            var target = (Transform)EditorGUILayout.ObjectField(
-                interactingBox.Target,
-                typeof(Transform),
-                true,
-                GUILayout.Height(18)
-            );
-
-            if (target != interactingBox.Target)
-            {
-                Undo.RecordObject(interactingBox, "Change Target transform");
-                interactingBox.Target = target;
-                EditorUtility.SetDirty(interactingBox);
             }
 
             EditorGUILayout.EndHorizontal();
+            
+            var boxArea = interactingBox.gameObject.GetComponent<BoxArea>();
+            if (boxArea != null)
+            {
+                EditorGUILayout.BeginHorizontal();
+                Vector2 newSize = EditorGUILayout.Vector2Field("Box Size:", boxArea.Size);
+
+                if (newSize != boxArea.Size)
+                {
+                    Undo.RecordObject(boxArea, "Change Box Size");
+                    boxArea.SetSizeEditor(newSize);
+                    EditorUtility.SetDirty(boxArea);
+                }
+
+                EditorGUILayout.EndHorizontal();
+            }
+            
             EditorGUILayout.Space(10);
         }
 
