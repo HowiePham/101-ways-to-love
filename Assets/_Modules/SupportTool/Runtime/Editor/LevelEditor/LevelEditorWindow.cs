@@ -1,4 +1,3 @@
-using Spine.Unity;
 using UnityEditor;
 using UnityEngine;
 
@@ -9,6 +8,8 @@ public class LevelEditorWindow : EditorWindow
     private InteractableObjectEditorSection interactableObjectEditorSection;
     private SkeletonAnimationEditorSection skeletonAnimationEditorSection;
     private InteractingBoxEditorSection boxEditorSection;
+    private LevelGenerator levelGenerator;
+    private GameObject psdImporter;
     private Vector2 scrollPosition;
     private bool showStaticObjects = true;
     private bool showInteractableObjects = true;
@@ -36,8 +37,37 @@ public class LevelEditorWindow : EditorWindow
             return;
         }
 
+        this.levelGenerator = new LevelGenerator();
+
         EditorGUILayout.LabelField("Level Editor", EditorStyles.boldLabel);
         EditorGUILayout.Space(10);
+
+        EditorGUILayout.BeginVertical("box");
+        EditorGUILayout.LabelField("PSD: ", EditorStyles.boldLabel);
+
+        var psdImporter = (GameObject)EditorGUILayout.ObjectField(
+            this.psdImporter,
+            typeof(GameObject),
+            false,
+            GUILayout.Height(18)
+        );
+
+        if (psdImporter != this.psdImporter)
+        {
+            this.psdImporter = psdImporter;
+        }
+
+        if (this.psdImporter != null)
+        {
+            if (GUILayout.Button("Generate Static Object", GUILayout.Width(150)))
+            {
+                this.levelGenerator.GenerateStaticObjects(this.psdImporter, this.levelEditor.gameObject);
+            }
+        }
+
+        EditorGUILayout.EndVertical();
+
+        EditorGUILayout.Space(20);
 
         this.scrollPosition = EditorGUILayout.BeginScrollView(this.scrollPosition);
 
