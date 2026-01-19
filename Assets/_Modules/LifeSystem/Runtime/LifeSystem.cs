@@ -47,7 +47,6 @@ public class LifeSystem
         }
 
         CheckLife();
-        RunTimer();
     }
 
     private async UniTask LifeUsingHandler(LifeUsing lifeUsing, CancellationToken token)
@@ -85,15 +84,7 @@ public class LifeSystem
 
     public string GetRemainingTime(TimeSpan timeSpan)
     {
-        string time = "";
-        if (timeSpan.TotalSeconds <= 0)
-        {
-            time = "Full";
-        }
-        else
-        {
-            time = String.Format("{0:00}:{1:00}", timeSpan.Minutes, timeSpan.Seconds);
-        }
+        string time = String.Format("{0:00}:{1:00}", timeSpan.Minutes, timeSpan.Seconds);
 
         return time;
     }
@@ -147,7 +138,7 @@ public class LifeSystem
         }
     }
 
-    private void RunTimer()
+    public void RunTimer()
     {
         StopTimer();
         this.lifeTimerCoroutine = Timing.RunCoroutine(LifeRecoveringTimer());

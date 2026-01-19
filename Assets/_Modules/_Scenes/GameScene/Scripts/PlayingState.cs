@@ -47,6 +47,7 @@ namespace Mimi
 
             LeanTouch.OnFingerDown += ClickSoundHandler;
 
+            Context.LifeSystem.RunTimer();
             PlayLevel(Context.RuntimeState.CurrentLevelOrder.Value);
         }
 
