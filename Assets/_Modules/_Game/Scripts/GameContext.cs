@@ -4,6 +4,7 @@ using Mimi.Games.InitSteps;
 using Mimi.Games.Plugins;
 using Mimi.Games.ProjectConfigs;
 using Mimi.Prototypes.LevelManagement;
+using Sirenix.OdinInspector;
 
 namespace Mimi.Prototypes
 {
@@ -37,6 +38,12 @@ namespace Mimi.Prototypes
         private void InitLifeSystem()
         {
             LifeSystem = new LifeSystem(5, 30, this.EventPublisher, this.EventSubscriber);
+        }
+
+        [Button]
+        private void TestLifeSystem()
+        {
+            this.EventPublisher.PublishAsync(new LifeUsing());
         }
     }
 }

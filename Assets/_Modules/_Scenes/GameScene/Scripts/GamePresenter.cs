@@ -19,7 +19,7 @@ namespace Mimi.Prototypes
             GameContext gameContext = this.SceneController.Context;
 
             Debug.Log($"--- (PRESENTER) Init GameplayViewPresenter");
-            var gameplayViewPresenter = new GameplayViewPresenter(this, this.Transform, gameContext.EventPublisher, gameContext.EventSubscriber, gameContext.RuntimeState);
+            var gameplayViewPresenter = new GameplayViewPresenter(this, this.Transform, gameContext.EventPublisher, gameContext.EventSubscriber, gameContext.RuntimeState, gameContext.LifeSystem);
             AddViewPresenter(gameplayViewPresenter);
             Debug.Log($"--- (PRESENTER) Init SettingViewPresenter");
             var settingViewPresenter = new SettingViewPresenter(this, this.Transform, gameContext.EventPublisher, gameContext.GameData.SettingModel, gameContext.SaveManager);

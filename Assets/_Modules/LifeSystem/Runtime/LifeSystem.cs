@@ -1,5 +1,10 @@
 using System;
+using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
+using MEC;
 using Mimi.Events.AsyncBus;
+using Mimi.Games;
 using UnityEngine;
 
 public class LifeSystem
@@ -9,7 +14,9 @@ public class LifeSystem
     private readonly LifeData lifeData;
     private readonly IAsyncPublisher publisher;
     private readonly IAsyncSubscriber subscriber;
+    private readonly DisposableBag eventBag;
     private const string LifeDataKey = "LIFE";
+    private CoroutineHandle lifeTimerCoroutine;
 
     public int CurrentLifeCount
     {
@@ -23,6 +30,8 @@ public class LifeSystem
         this.timeToAddLifeInSeconds = timeToAddLifeInSeconds;
         this.publisher = publisher;
         this.subscriber = subscriber;
+        this.eventBag = new DisposableBag();
+        this.subscriber.Subscribe<LifeUsing>(LifeUsingHandler).AddToBag(this.eventBag);
 
         if (PlayerPrefs.HasKey(LifeDataKey))
         {
@@ -34,13 +43,21 @@ public class LifeSystem
             {
                 CurrentLifeCount = maxLifeCount
             };
-            PlayerPrefs.SetString(LifeDataKey, JsonUtility.ToJson(lifeData));
+            PlayerPrefs.SetString(LifeDataKey, JsonUtility.ToJson(this.lifeData));
         }
 
         CheckLife();
+        RunTimer();
     }
 
-    public void LooseLife()
+    private async UniTask LifeUsingHandler(LifeUsing lifeUsing, CancellationToken token)
+    {
+        LooseLife();
+        RunTimer();
+        await UniTask.CompletedTask;
+    }
+
+    private void LooseLife()
     {
         if (CurrentLifeCount > 0)
         {
@@ -50,7 +67,7 @@ public class LifeSystem
         }
     }
 
-    public void AddLife()
+    private void AddLife()
     {
         if (CurrentLifeCount < this.maxLifeCount)
         {
@@ -66,28 +83,7 @@ public class LifeSystem
         PlayerPrefs.SetString(LifeDataKey, JsonUtility.ToJson(this.lifeData));
     }
 
-    private void Update()
-    {
-        if (CurrentLifeCount < this.maxLifeCount)
-        {
-            if (this.lifeData.AddedNextTime.Count > 0)
-            {
-                TimeSpan span = DateTime.Parse(this.lifeData.AddedNextTime[0]) - DateTime.Now;
-                this.publisher.PublishAsync(new LifeUpdated(CurrentLifeCount, GetRemainingTime(span)));
-                if (span.TotalSeconds < 0)
-                {
-                    this.lifeData.AddedNextTime.RemoveAt(0);
-                    AddLife();
-                }
-            }
-        }
-        else
-        {
-            this.publisher.PublishAsync(new LifeUpdated(CurrentLifeCount, "Full"));
-        }
-    }
-
-    private string GetRemainingTime(TimeSpan timeSpan)
+    public string GetRemainingTime(TimeSpan timeSpan)
     {
         string time = "";
         if (timeSpan.TotalSeconds <= 0)
@@ -100,6 +96,17 @@ public class LifeSystem
         }
 
         return time;
+    }
+
+    public string GetRemainingTime()
+    {
+        if (this.lifeData.AddedNextTime.Count <= 0)
+        {
+            return "Full";
+        }
+
+        TimeSpan span = DateTime.Parse(this.lifeData.AddedNextTime[0]) - DateTime.Now;
+        return GetRemainingTime(span);
     }
 
     public bool IsLifeIsFull()
@@ -138,5 +145,43 @@ public class LifeSystem
             TimeSpan span = DateTime.Parse(times) - DateTime.Now;
             this.publisher.PublishAsync(new LifeUpdated(CurrentLifeCount, GetRemainingTime(span)));
         }
+    }
+
+    private void RunTimer()
+    {
+        StopTimer();
+        this.lifeTimerCoroutine = Timing.RunCoroutine(LifeRecoveringTimer());
+    }
+
+    private void StopTimer()
+    {
+        if (this.lifeTimerCoroutine == default)
+        {
+            return;
+        }
+
+        Timing.KillCoroutines(this.lifeTimerCoroutine);
+        this.lifeTimerCoroutine = default;
+    }
+
+    private IEnumerator<float> LifeRecoveringTimer()
+    {
+        while (CurrentLifeCount < this.maxLifeCount)
+        {
+            if (this.lifeData.AddedNextTime.Count > 0)
+            {
+                TimeSpan span = DateTime.Parse(this.lifeData.AddedNextTime[0]) - DateTime.Now;
+                this.publisher.PublishAsync(new LifeUpdated(CurrentLifeCount, GetRemainingTime(span)));
+                if (span.TotalSeconds < 0)
+                {
+                    this.lifeData.AddedNextTime.RemoveAt(0);
+                    AddLife();
+                }
+            }
+
+            yield return Timing.WaitForSeconds(0.5f);
+        }
+
+        this.publisher.PublishAsync(new LifeUpdated(CurrentLifeCount, "Full"));
     }
 }
