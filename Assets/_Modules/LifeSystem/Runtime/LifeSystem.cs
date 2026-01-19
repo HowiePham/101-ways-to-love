@@ -51,6 +51,12 @@ public class LifeSystem
 
     private async UniTask LifeUsingHandler(LifeUsing lifeUsing, CancellationToken token)
     {
+        if (!AnyLifeLeft())
+        {
+            Debug.Log($"--- (LIFE) Do not have any Life left!");
+            return;
+        }
+        
         LooseLife();
         RunTimer();
         await UniTask.CompletedTask;
@@ -78,7 +84,7 @@ public class LifeSystem
     public void RefillLife()
     {
         CurrentLifeCount = this.maxLifeCount;
-        this.lifeData.AddedNextTime = new System.Collections.Generic.List<string>();
+        this.lifeData.AddedNextTime = new List<string>();
         PlayerPrefs.SetString(LifeDataKey, JsonUtility.ToJson(this.lifeData));
     }
 
@@ -105,7 +111,7 @@ public class LifeSystem
         return CurrentLifeCount >= this.maxLifeCount;
     }
 
-    public bool CanPlay()
+    public bool AnyLifeLeft()
     {
         return CurrentLifeCount > 0;
     }
