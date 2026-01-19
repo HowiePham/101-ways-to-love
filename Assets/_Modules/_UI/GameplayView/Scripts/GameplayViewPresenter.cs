@@ -60,6 +60,7 @@ public class GameplayViewPresenter : BaseViewPresenter
         this.eventSubscriber.Subscribe<LevelResumed>(ResumeGameplay).AddToBag(this.eventBag);
         this.eventSubscriber.Subscribe<LifeUpdated>(OnLifeUpdate).AddToBag(this.eventBag);
         Messenger.AddListener(EventKey.LevelWin, ShowWinView);
+        Messenger.AddListener(EventKey.ActionFailed, ActionFailedHandler);
 
         ShowLevelInfo();
         this.lifeView.SetLifeCount(this.lifeSystem.CurrentLifeCount.ToString());
@@ -83,6 +84,7 @@ public class GameplayViewPresenter : BaseViewPresenter
         this.gameplayView.OnSkipClicked -= SkipClickedHandler;
         this.eventBag.Dispose();
         Messenger.RemoveListener(EventKey.LevelWin, ShowWinView);
+        Messenger.RemoveListener(EventKey.ActionFailed, ActionFailedHandler);
 
 #if DEVELOPMENT
         var cheatViewPresenter = this.ScenePresenter.GetViewPresenter<CheatViewPresenter>();
@@ -117,6 +119,11 @@ public class GameplayViewPresenter : BaseViewPresenter
 
         settingViewPresenter.Hide();
         Hide();
+    }
+
+    private void ActionFailedHandler()
+    {
+        this.eventPublisher.PublishAsync(new LifeUsing());
     }
 
     private void SettingClickedHandler()

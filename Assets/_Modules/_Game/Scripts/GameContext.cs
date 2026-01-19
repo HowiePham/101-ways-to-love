@@ -39,11 +39,5 @@ namespace Mimi.Prototypes
         {
             LifeSystem = new LifeSystem(5, 30, this.EventPublisher, this.EventSubscriber);
         }
-
-        [Button]
-        private void TestLifeSystem()
-        {
-            this.EventPublisher.PublishAsync(new LifeUsing());
-        }
     }
 }
