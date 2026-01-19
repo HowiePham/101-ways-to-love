@@ -11,10 +11,12 @@ namespace Mimi.Prototypes
     {
         public ILevelRepository LevelRepository { private set; get; }
         public ILevelOrder LevelOrder { private set; get; }
+        public LifeSystem LifeSystem { private set; get; }
 
         protected override void CreateServices()
         {
             CreateLevelServices();
+            InitLifeSystem();
         }
 
         protected override void AddInitSteps(IGameInitiator gameInitiator, ProjectConfig projectConfig)
@@ -30,6 +32,11 @@ namespace Mimi.Prototypes
             LevelRepository = new SheetLevelRepository(GetDataSheet<SheetLevelModel>("LevelRepo"));
             var levelIdOrders = GetDataSheet<SheetOrderModel>().Select(x => x.Id).Distinct();
             LevelOrder = new LinearLevelOrder(LevelRepository, levelIdOrders);
+        }
+
+        private void InitLifeSystem()
+        {
+            LifeSystem = new LifeSystem(5, 30, this.EventPublisher, this.EventSubscriber);
         }
     }
 }
