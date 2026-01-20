@@ -13,6 +13,7 @@ namespace Mimi.Prototypes.Currencies
         Hint = 500,
         GDPR = 600,
         CCPA = 700,
-        RequireInternet = 800
+        RequireInternet = 800,
+        LifeDialog = 900,
     }
 }

@@ -5,6 +5,8 @@ using Cysharp.Threading.Tasks;
 using MEC;
 using Mimi.Events.AsyncBus;
 using Mimi.Games;
+using Mimi.Prototypes.Currencies;
+using Mimi.Prototypes.UI;
 using UnityEngine;
 
 public class LifeSystem
@@ -14,6 +16,7 @@ public class LifeSystem
     private readonly LifeData lifeData;
     private readonly IAsyncPublisher publisher;
     private readonly IAsyncSubscriber subscriber;
+    private readonly DialogManager dialogManager;
     private readonly DisposableBag eventBag;
     private const string LifeDataKey = "LIFE";
     private CoroutineHandle lifeTimerCoroutine;
@@ -24,12 +27,13 @@ public class LifeSystem
         private set => this.lifeData.CurrentLifeCount = value;
     }
 
-    public LifeSystem(int maxLifeCount, int timeToAddLifeInSeconds, IAsyncPublisher publisher, IAsyncSubscriber subscriber)
+    public LifeSystem(int maxLifeCount, int timeToAddLifeInSeconds, IAsyncPublisher publisher, IAsyncSubscriber subscriber, DialogManager dialogManager)
     {
         this.maxLifeCount = maxLifeCount;
         this.timeToAddLifeInSeconds = timeToAddLifeInSeconds;
         this.publisher = publisher;
         this.subscriber = subscriber;
+        this.dialogManager = dialogManager;
         this.eventBag = new DisposableBag();
         this.subscriber.Subscribe<LifeUsing>(LifeUsingHandler).AddToBag(this.eventBag);
 
@@ -54,12 +58,32 @@ public class LifeSystem
         if (!AnyLifeLeft())
         {
             Debug.Log($"--- (LIFE) Do not have any Life left!");
+
             return;
         }
-        
+
         LooseLife();
         RunTimer();
+
+        if (!AnyLifeLeft())
+        {
+            if (this.dialogManager.TryShowModalDialogOnce(DialogId.LifeDialog, out YesNoDialog dialog))
+            {
+                dialog.SetContentText("Get more life");
+                dialog.SetYesText("Get 1 Life");
+                dialog.SetNoText("Close");
+                dialog.SetYesCallback(GetMoreLife);
+            }
+        }
+
         await UniTask.CompletedTask;
+    }
+
+    private void GetMoreLife()
+    {
+        AddLife();
+        this.lifeData.AddedNextTime.RemoveAt(this.lifeData.AddedNextTime.Count - 1);
+        RunTimer();
     }
 
     private void LooseLife()
