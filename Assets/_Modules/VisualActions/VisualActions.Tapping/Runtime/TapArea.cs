@@ -45,7 +45,7 @@ namespace Mimi.VisualActions.Tapping
 
         private void FingerTapHandler(LeanFinger finger)
         {
-            if (!this.target.Active)
+            if (!this.target.Active || finger.IsOverGui)
             {
                 return;
             }
