@@ -2,14 +2,14 @@ using Mimi.Prototypes.UI;
 using TMPro;
 using UnityEngine;
 
-public class LifeView : BaseView
+public class NumberBasedLifeView : BaseView
 {
     [SerializeField] private TMP_Text lifeCount;
     [SerializeField] private TMP_Text timeRemaining;
 
-    public void SetLifeCount(string count)
+    public void SetLifeCount(int count)
     {
-        this.lifeCount.text = count;
+        this.lifeCount.text = count.ToString();
     }
 
     public void SetTimeRemaining(string timeRemaining)

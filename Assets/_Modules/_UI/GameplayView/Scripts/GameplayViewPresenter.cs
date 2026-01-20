@@ -22,7 +22,7 @@ public class GameplayViewPresenter : BaseViewPresenter
     private readonly LifeSystem lifeSystem;
 
     private GameplayView gameplayView;
-    private LifeView lifeView;
+    private NumberBasedLifeView numberBasedLifeView;
     private CoroutineHandle timerCoroutineHandler;
     private float timeLeft;
     private int maxProgress;
@@ -43,7 +43,7 @@ public class GameplayViewPresenter : BaseViewPresenter
     protected override void AddViews()
     {
         this.gameplayView = AddView<GameplayView>();
-        this.lifeView = AddView<LifeView>();
+        this.numberBasedLifeView = AddView<NumberBasedLifeView>();
     }
 
     protected override void AddChildren()
@@ -63,8 +63,8 @@ public class GameplayViewPresenter : BaseViewPresenter
         Messenger.AddListener(EventKey.ActionFailed, ActionFailedHandler);
 
         ShowLevelInfo();
-        this.lifeView.SetLifeCount(this.lifeSystem.CurrentLifeCount.ToString());
-        this.lifeView.SetTimeRemaining(this.lifeSystem.GetRemainingTime());
+        this.numberBasedLifeView.SetLifeCount(this.lifeSystem.CurrentLifeCount);
+        this.numberBasedLifeView.SetTimeRemaining(this.lifeSystem.GetRemainingTime());
 
 #if DEVELOPMENT
         var cheatViewPresenter = this.ScenePresenter.GetViewPresenter<CheatViewPresenter>();
@@ -97,8 +97,8 @@ public class GameplayViewPresenter : BaseViewPresenter
         int currentLifeCount = lifeUpdated.LifeCount;
         string timeRemaining = lifeUpdated.RemainingTime;
 
-        this.lifeView.SetLifeCount(currentLifeCount.ToString());
-        this.lifeView.SetTimeRemaining(timeRemaining);
+        this.numberBasedLifeView.SetLifeCount(currentLifeCount);
+        this.numberBasedLifeView.SetTimeRemaining(timeRemaining);
 
         await UniTask.CompletedTask;
     }
