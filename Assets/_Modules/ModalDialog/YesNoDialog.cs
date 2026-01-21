@@ -9,7 +9,7 @@ namespace Mimi.Prototypes.UI
 {
     public class YesNoDialog : SimpleAnimModalDialog
     {
-        [SerializeField] private TextMeshProUGUI contentText;
+        [SerializeField] private TMP_Text contentText;
         [SerializeField] private Button yesButton;
         [SerializeField] private Button noButton;
         [SerializeField] private TMP_Text yestText;

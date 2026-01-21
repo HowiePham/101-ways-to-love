@@ -67,10 +67,10 @@ public class LifeSystem
 
         if (!AnyLifeLeft())
         {
-            if (this.dialogManager.TryShowModalDialogOnce(DialogId.LifeDialog, out YesNoDialog dialog))
+            if (this.dialogManager.TryShowModalDialogOnce<YesNoDialog>(DialogId.LifeDialog, out var dialog))
             {
                 dialog.SetContentText("Get more life");
-                dialog.SetYesText("Get 1 Life");
+                dialog.SetYesText("+1 Life");
                 dialog.SetNoText("Close");
                 dialog.SetYesCallback(GetMoreLife);
             }
