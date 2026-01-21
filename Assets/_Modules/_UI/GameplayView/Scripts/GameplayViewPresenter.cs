@@ -19,8 +19,10 @@ public class GameplayViewPresenter : BaseViewPresenter
     private readonly IAsyncSubscriber eventSubscriber;
     private readonly DisposableBag eventBag = new DisposableBag();
     private readonly RuntimeState runtimeState;
+    private readonly LifeSystem lifeSystem;
 
     private GameplayView gameplayView;
+    private NumberBasedLifeView numberBasedLifeView;
     private CoroutineHandle timerCoroutineHandler;
     private float timeLeft;
     private int maxProgress;
@@ -28,19 +30,20 @@ public class GameplayViewPresenter : BaseViewPresenter
 
     private const float TimeStep = 1f;
 
-    public GameplayViewPresenter(BaseScenePresenter scenePresenter, Transform transform, IAsyncPublisher eventPublisher, IAsyncSubscriber eventSubscriber, RuntimeState runtimeState) :
+    public GameplayViewPresenter(BaseScenePresenter scenePresenter, Transform transform, IAsyncPublisher eventPublisher, IAsyncSubscriber eventSubscriber, RuntimeState runtimeState,
+        LifeSystem lifeSystem) :
         base(scenePresenter, transform)
     {
         this.eventPublisher = eventPublisher;
         this.eventSubscriber = eventSubscriber;
         this.runtimeState = runtimeState;
+        this.lifeSystem = lifeSystem;
     }
 
     protected override void AddViews()
     {
         this.gameplayView = AddView<GameplayView>();
-
-        this.eventSubscriber.Subscribe<LevelResumed>(ResumeGameplay).AddToBag(this.eventBag);
+        this.numberBasedLifeView = AddView<NumberBasedLifeView>();
     }
 
     protected override void AddChildren()
@@ -53,9 +56,16 @@ public class GameplayViewPresenter : BaseViewPresenter
 
         this.gameplayView.OnSettingClicked += SettingClickedHandler;
         this.gameplayView.OnSkipClicked += SkipClickedHandler;
+
+        this.eventSubscriber.Subscribe<LevelResumed>(ResumeGameplay).AddToBag(this.eventBag);
+        this.eventSubscriber.Subscribe<LifeUpdated>(OnLifeUpdate).AddToBag(this.eventBag);
+        this.eventSubscriber.Subscribe<RecoveryLifeTimerUpdated>(OnRecoveryTimerUpdate).AddToBag(this.eventBag);
         Messenger.AddListener(EventKey.LevelWin, ShowWinView);
+        Messenger.AddListener(EventKey.ActionFailed, ActionFailedHandler);
 
         ShowLevelInfo();
+        this.numberBasedLifeView.SetLifeCount(this.lifeSystem.CurrentLifeCount);
+        this.numberBasedLifeView.SetTimeRemaining(this.lifeSystem.GetRemainingTime());
 
 #if DEVELOPMENT
         var cheatViewPresenter = this.ScenePresenter.GetViewPresenter<CheatViewPresenter>();
@@ -73,13 +83,28 @@ public class GameplayViewPresenter : BaseViewPresenter
 
         this.gameplayView.OnSettingClicked -= SettingClickedHandler;
         this.gameplayView.OnSkipClicked -= SkipClickedHandler;
-
+        this.eventBag.Dispose();
         Messenger.RemoveListener(EventKey.LevelWin, ShowWinView);
+        Messenger.RemoveListener(EventKey.ActionFailed, ActionFailedHandler);
 
 #if DEVELOPMENT
         var cheatViewPresenter = this.ScenePresenter.GetViewPresenter<CheatViewPresenter>();
         cheatViewPresenter.Hide();
 #endif
+    }
+
+    private async UniTask OnLifeUpdate(LifeUpdated lifeUpdated, CancellationToken cancellationToken)
+    {
+        int currentLifeCount = lifeUpdated.LifeCount;
+        this.numberBasedLifeView.SetLifeCount(currentLifeCount);
+        await UniTask.CompletedTask;
+    }
+
+    private async UniTask OnRecoveryTimerUpdate(RecoveryLifeTimerUpdated recoveryLifeTimerUpdated, CancellationToken cancellationToken)
+    {
+        string timeRemaining = recoveryLifeTimerUpdated.RemainingTime;
+        this.numberBasedLifeView.SetTimeRemaining(timeRemaining);
+        await UniTask.CompletedTask;
     }
 
     private void ShowLevelInfo()
@@ -98,6 +123,12 @@ public class GameplayViewPresenter : BaseViewPresenter
 
         settingViewPresenter.Hide();
         Hide();
+    }
+
+    private void ActionFailedHandler()
+    {
+        this.gameplayView.ShowWrongSignal();
+        this.eventPublisher.PublishAsync(new LifeUsing());
     }
 
     private void SettingClickedHandler()
