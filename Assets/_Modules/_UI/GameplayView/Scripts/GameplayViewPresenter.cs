@@ -59,6 +59,7 @@ public class GameplayViewPresenter : BaseViewPresenter
 
         this.eventSubscriber.Subscribe<LevelResumed>(ResumeGameplay).AddToBag(this.eventBag);
         this.eventSubscriber.Subscribe<LifeUpdated>(OnLifeUpdate).AddToBag(this.eventBag);
+        this.eventSubscriber.Subscribe<RecoveryLifeTimerUpdated>(OnRecoveryTimerUpdate).AddToBag(this.eventBag);
         Messenger.AddListener(EventKey.LevelWin, ShowWinView);
         Messenger.AddListener(EventKey.ActionFailed, ActionFailedHandler);
 
@@ -95,11 +96,14 @@ public class GameplayViewPresenter : BaseViewPresenter
     private async UniTask OnLifeUpdate(LifeUpdated lifeUpdated, CancellationToken cancellationToken)
     {
         int currentLifeCount = lifeUpdated.LifeCount;
-        string timeRemaining = lifeUpdated.RemainingTime;
-
         this.numberBasedLifeView.SetLifeCount(currentLifeCount);
-        this.numberBasedLifeView.SetTimeRemaining(timeRemaining);
+        await UniTask.CompletedTask;
+    }
 
+    private async UniTask OnRecoveryTimerUpdate(RecoveryLifeTimerUpdated recoveryLifeTimerUpdated, CancellationToken cancellationToken)
+    {
+        string timeRemaining = recoveryLifeTimerUpdated.RemainingTime;
+        this.numberBasedLifeView.SetTimeRemaining(timeRemaining);
         await UniTask.CompletedTask;
     }
 

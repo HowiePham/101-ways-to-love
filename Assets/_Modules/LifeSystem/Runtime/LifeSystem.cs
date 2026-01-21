@@ -93,6 +93,7 @@ public class LifeSystem
             CurrentLifeCount--;
             PlayerPrefs.SetString(LifeDataKey, JsonUtility.ToJson(this.lifeData));
             SetTimeToAddNextLife();
+            this.publisher.PublishAsync(new LifeUpdated(CurrentLifeCount));
         }
     }
 
@@ -102,6 +103,7 @@ public class LifeSystem
         {
             this.lifeData.CurrentLifeCount += 1;
             PlayerPrefs.SetString(LifeDataKey, JsonUtility.ToJson(this.lifeData));
+            this.publisher.PublishAsync(new LifeUpdated(CurrentLifeCount));
         }
     }
 
@@ -207,7 +209,7 @@ public class LifeSystem
             if (this.lifeData.AddedNextTime.Count > 0)
             {
                 TimeSpan span = DateTime.Parse(this.lifeData.AddedNextTime[0]) - DateTime.Now;
-                this.publisher.PublishAsync(new LifeUpdated(CurrentLifeCount, GetRemainingTime(span)));
+                this.publisher.PublishAsync(new RecoveryLifeTimerUpdated(GetRemainingTime(span)));
                 if (span.TotalSeconds < 0)
                 {
                     this.lifeData.AddedNextTime.RemoveAt(0);
@@ -215,9 +217,10 @@ public class LifeSystem
                 }
             }
 
-            yield return Timing.WaitForSeconds(0.5f);
+            yield return Timing.WaitForOneFrame;
         }
 
-        this.publisher.PublishAsync(new LifeUpdated(CurrentLifeCount, "Full"));
+        this.publisher.PublishAsync(new LifeUpdated(CurrentLifeCount));
+        this.publisher.PublishAsync(new RecoveryLifeTimerUpdated("Full"));
     }
 }
