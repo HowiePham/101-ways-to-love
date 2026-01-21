@@ -160,11 +160,26 @@ public class LifeSystem
 
     private void CheckLife()
     {
-        if (this.lifeData.AddedNextTime.Count > 0)
+        if (this.lifeData.AddedNextTime.Count <= 0)
         {
-            string times = this.lifeData.AddedNextTime[lifeData.AddedNextTime.Count - 1];
-            TimeSpan span = DateTime.Parse(times) - DateTime.Now;
-            this.publisher.PublishAsync(new LifeUpdated(CurrentLifeCount, GetRemainingTime(span)));
+            return;
+        }
+
+        for (var i = 0; i < this.lifeData.AddedNextTime.Count; i++)
+        {
+            string nextTime = this.lifeData.AddedNextTime[i];
+            TimeSpan span = DateTime.Parse(nextTime) - DateTime.Now;
+
+            if (span.TotalSeconds < 0)
+            {
+                this.lifeData.AddedNextTime.RemoveAt(0);
+                AddLife();
+                i--;
+            }
+            else
+            {
+                break;
+            }
         }
     }
 
