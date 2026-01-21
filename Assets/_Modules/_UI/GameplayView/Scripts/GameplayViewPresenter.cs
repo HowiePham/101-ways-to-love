@@ -123,6 +123,7 @@ public class GameplayViewPresenter : BaseViewPresenter
 
     private void ActionFailedHandler()
     {
+        this.gameplayView.ShowWrongSignal();
         this.eventPublisher.PublishAsync(new LifeUsing());
     }
 
