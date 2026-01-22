@@ -1,5 +1,6 @@
 using System;
 using DG.Tweening;
+using Mimi.VisualActions;
 using UnityEngine;
 
 public class MoveGameObjectFollowWay : MonoBehaviour
@@ -9,10 +10,9 @@ public class MoveGameObjectFollowWay : MonoBehaviour
     [SerializeField] private float duration = 1f;
     [SerializeField] private PathType pathType = PathType.Linear;
     [SerializeField] private Ease ease = Ease.Linear;
+    [SerializeField] private VisualAction actionCondition;
 
     private Tween movingTween;
-    // [SerializeField, ValueDropdown("GetSoundGroups")]
-    // private string moveSFX;
 
     private void OnEnable()
     {
@@ -29,6 +29,16 @@ public class MoveGameObjectFollowWay : MonoBehaviour
         this.movingTween = this.moveObject.DOPath(path, this.duration, this.pathType)
             .SetLoops(-1, LoopType.Yoyo)
             .SetEase(this.ease);
+    }
+
+    private void Update()
+    {
+        if (this.actionCondition == null || !this.actionCondition.Completed)
+        {
+            return;
+        }
+
+        this.movingTween?.Kill();
     }
 
     private void OnDisable()
