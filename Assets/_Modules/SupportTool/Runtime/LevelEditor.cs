@@ -41,7 +41,7 @@ public class LevelEditor : MonoBehaviour
 
             this.interactableObjects.Add(child.gameObject);
         }
-        
+
         foreach (Transform child in this.staticObjectParent)
         {
             this.staticObjects.Add(child.gameObject);
