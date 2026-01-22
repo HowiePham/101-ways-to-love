@@ -51,7 +51,7 @@ namespace Games
         }
 
         [Button]
-        private void GetHints()
+        public void GetHints()
         {
             this.hints = GetComponentsInChildren<BaseHint>();
         }

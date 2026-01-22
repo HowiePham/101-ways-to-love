@@ -1,3 +1,4 @@
+using Games;
 using UnityEditor;
 using UnityEngine;
 
@@ -9,6 +10,7 @@ public class LevelEditorWindow : EditorWindow
     private SkeletonAnimationEditorSection skeletonAnimationEditorSection;
     private InteractingBoxEditorSection boxEditorSection;
     private LevelGenerator levelGenerator;
+    private HintGenerator hintGenerator;
     private GameObject psdImporter;
     private Vector2 scrollPosition;
     private bool showStaticObjects = true;
@@ -38,6 +40,7 @@ public class LevelEditorWindow : EditorWindow
         }
 
         this.levelGenerator = new LevelGenerator();
+        this.hintGenerator = new HintGenerator();
 
         EditorGUILayout.LabelField("Level Editor", EditorStyles.boldLabel);
         EditorGUILayout.Space(10);
@@ -129,6 +132,14 @@ public class LevelEditorWindow : EditorWindow
             {
                 creatingPlaySoundSpine.Generate();
             }
+        }
+
+        if (GUILayout.Button("Generate Level Hint", GUILayout.Height(30)))
+        {
+            TrueAction[] trueActions = FindObjectsByType<TrueAction>(FindObjectsSortMode.InstanceID);
+            var hintPlayer = this.levelEditor.GetComponent<HintPlayer>();
+            this.hintGenerator.Generate(trueActions, this.levelEditor.HintParent);
+            hintPlayer.GetHints();
         }
 
         EditorGUILayout.EndHorizontal();

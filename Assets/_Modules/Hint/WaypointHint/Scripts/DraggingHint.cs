@@ -13,7 +13,12 @@ public class DraggingHint : BaseHint
     [SerializeField, MinValue(0.1f)] private float moveDuration;
     [SerializeField] private Transform[] pathPoints;
     private Vector3[] path;
-    public Transform[] PathPoints => this.pathPoints;
+
+    public Transform[] PathPoints
+    {
+        get => this.pathPoints;
+        set => this.pathPoints = value;
+    }
 
     protected override async UniTask OnInitializing()
     {
