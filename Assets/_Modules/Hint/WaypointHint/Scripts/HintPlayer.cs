@@ -17,9 +17,14 @@ namespace Games
 
         private readonly CancellationTokenSource tokenSource = new();
 
-        private void Awake()
+        private void Start()
         {
             this.availableHints = new List<BaseHint>(this.hints);
+
+            foreach (BaseHint hint in this.availableHints)
+            {
+                hint.Initialize();
+            }
         }
 
         public async UniTask ShowNextHint()
