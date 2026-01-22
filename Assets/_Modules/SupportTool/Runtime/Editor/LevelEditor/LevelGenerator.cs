@@ -12,13 +12,13 @@ public class LevelGenerator
     {
         var psdRootGO = (GameObject)PrefabUtility.InstantiatePrefab(psd);
         Transform staticObjectParent = GetTransform(levelRootGO.transform, StaticObjectParentName);
-        var levelTexturesAddress = $"{LevelAddress}{levelRootGO.name}/Textures/";
+        var levelTexturesAddress = $"{LevelAddress}{levelRootGO.name}/Textures";
 
-        if (!File.Exists(levelTexturesAddress))
-        {
-            Debug.Log($"Level Folder {levelRootGO.name} does not exist");
-            return;
-        }
+        // if (!File.Exists(levelTexturesAddress))
+        // {
+        //     Debug.Log($"Level Folder {levelRootGO.name} does not exist");
+        //     return;
+        // }
 
         foreach (Transform layer in psdRootGO.transform)
         {
@@ -41,7 +41,7 @@ public class LevelGenerator
     private GameObject CreateStaticObject(Transform psdLayer, string textureAddress)
     {
         GameObject staticObject = Object.Instantiate(psdLayer.gameObject, psdLayer.position, psdLayer.rotation);
-        var objectTextureAddress = $"{textureAddress}{psdLayer.gameObject.name}.png";
+        var objectTextureAddress = $"{textureAddress}/{psdLayer.gameObject.name}.png";
         Debug.Log(objectTextureAddress);
         var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(objectTextureAddress);
         var newSprite = Sprite.Create(
