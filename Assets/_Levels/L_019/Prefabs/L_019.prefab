@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 3470140502939936621}
   - component: {fileID: 6451713910673036006}
   m_Layer: 0
-  m_Name: BoxDestination_Drag_False_SungBac
+  m_Name: BoxDestination_Drag_False_DayTroi
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -29,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 236283015871261236}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -1.33, y: -1.28, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -93,7 +93,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: baa6ed95937f4ff5a544ae51cc6ada55, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  size: {x: 1, y: 1}
+  size: {x: 1, y: 2}
   boxCollider: {fileID: 7982889665125653373}
 --- !u!114 &3470140502939936621
 MonoBehaviour:
@@ -107,7 +107,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb7cf003cd11b3e4cbf47fc62689b896, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
+  target: {fileID: 3731832337598078656}
   followTarget: 0
 --- !u!114 &6451713910673036006
 MonoBehaviour:
@@ -153,7 +153,7 @@ Transform:
   m_GameObject: {fileID: 782232712342642043}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.38, y: -1.04, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -217,7 +217,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: baa6ed95937f4ff5a544ae51cc6ada55, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  size: {x: 1, y: 1}
+  size: {x: 1, y: 2}
   boxCollider: {fileID: 6235198318472442939}
 --- !u!114 &7735085803802587826
 MonoBehaviour:
@@ -231,8 +231,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb7cf003cd11b3e4cbf47fc62689b896, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
-  followTarget: 0
+  target: {fileID: 3731832337598078656}
+  followTarget: 1
 --- !u!114 &2899736352609346982
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -262,7 +262,7 @@ GameObject:
   - component: {fileID: 7965161291145453641}
   - component: {fileID: 2612443281187729409}
   m_Layer: 0
-  m_Name: BoxDestination_Drag_False_SoiXich
+  m_Name: BoxDestination_Drag_False_GayPhep
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -277,7 +277,7 @@ Transform:
   m_GameObject: {fileID: 978684203928319881}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.38, y: -1.04, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -327,7 +327,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 1, y: 2}
   m_EdgeRadius: 0
 --- !u!114 &3901650427483723070
 MonoBehaviour:
@@ -341,7 +341,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: baa6ed95937f4ff5a544ae51cc6ada55, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  size: {x: 1, y: 1}
+  size: {x: 1, y: 2}
   boxCollider: {fileID: 110087048362227344}
 --- !u!114 &7965161291145453641
 MonoBehaviour:
@@ -382,11 +382,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 848073819641458707, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 1.48
       objectReference: {fileID: 0}
     - target: {fileID: 848073819641458707, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -2.37
       objectReference: {fileID: 0}
     - target: {fileID: 848073819641458707, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
       propertyPath: m_LocalPosition.z
@@ -420,13 +420,25 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1822424218480299595, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 0a0c5faf6ecbc53458328e990d7a6277, type: 3}
+    - target: {fileID: 2483360238437534040, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
+      propertyPath: m_Size.x
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4594328731360598776, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
+      propertyPath: size.x
+      value: 1.5
+      objectReference: {fileID: 0}
     - target: {fileID: 6520461475559934217, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
       propertyPath: m_Name
-      value: Sprite_SoiXich
+      value: Sprite_GayPhep
       objectReference: {fileID: 0}
     - target: {fileID: 8941882117890696608, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
       propertyPath: m_Name
-      value: Draggable_SoiXich
+      value: Draggable_GayPhep
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -493,7 +505,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 663345585319983839, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
       propertyPath: m_Name
-      value: CheckInsideArea_SungBac
+      value: CheckInsideArea_DayTroi
       objectReference: {fileID: 0}
     - target: {fileID: 1725230485220451236, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
       propertyPath: skeletonAnimation
@@ -501,11 +513,11 @@ PrefabInstance:
       objectReference: {fileID: 1177037262688426803}
     - target: {fileID: 1962181981068023408, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
       propertyPath: m_Name
-      value: LoopIdleAnim_1_SungBac
+      value: LoopIdleAnim_1_DayTroi
       objectReference: {fileID: 0}
     - target: {fileID: 3916638830560073412, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
       propertyPath: m_Name
-      value: Drag_False_SungBac
+      value: Drag_False_DayTroi
       objectReference: {fileID: 0}
     - target: {fileID: 4330146481096361610, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
       propertyPath: skeletonAnimation
@@ -545,7 +557,7 @@ PrefabInstance:
       objectReference: {fileID: 692769501991000496}
     - target: {fileID: 8317058356796643416, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
       propertyPath: m_Name
-      value: PlayAndWaitAnim_1_SungBac
+      value: PlayAndWaitAnim_1_DayTroi
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -659,11 +671,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 848073819641458707, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 1.72
       objectReference: {fileID: 0}
     - target: {fileID: 848073819641458707, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -0.53
       objectReference: {fileID: 0}
     - target: {fileID: 848073819641458707, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
       propertyPath: m_LocalPosition.z
@@ -697,13 +709,25 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1822424218480299595, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 6d62753fc529a8a45ba0567d845d6e88, type: 3}
+    - target: {fileID: 2483360238437534040, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
+      propertyPath: m_Size.x
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4594328731360598776, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
+      propertyPath: size.x
+      value: 1.5
+      objectReference: {fileID: 0}
     - target: {fileID: 6520461475559934217, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
       propertyPath: m_Name
-      value: Sprite_SungBac
+      value: Sprite_DayTroi
       objectReference: {fileID: 0}
     - target: {fileID: 8941882117890696608, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
       propertyPath: m_Name
-      value: Draggable_SungBac
+      value: Draggable_DayTroi
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -730,11 +754,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 848073819641458707, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -1.5
       objectReference: {fileID: 0}
     - target: {fileID: 848073819641458707, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -0.42
       objectReference: {fileID: 0}
     - target: {fileID: 848073819641458707, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
       propertyPath: m_LocalPosition.z
@@ -768,6 +792,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1822424218480299595, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 645d7e1aa0562a241b29521f9a0dee9e, type: 3}
     - target: {fileID: 6520461475559934217, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
       propertyPath: m_Name
       value: Sprite_CaiDiaNem
@@ -1043,7 +1071,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 663345585319983839, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
       propertyPath: m_Name
-      value: CheckInsideArea_SoiXich
+      value: CheckInsideArea_GayPhep
       objectReference: {fileID: 0}
     - target: {fileID: 1725230485220451236, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
       propertyPath: skeletonAnimation
@@ -1051,11 +1079,11 @@ PrefabInstance:
       objectReference: {fileID: 1177037262688426803}
     - target: {fileID: 1962181981068023408, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
       propertyPath: m_Name
-      value: LoopIdleAnim_1_SoiXich
+      value: LoopIdleAnim_1_GayPhep
       objectReference: {fileID: 0}
     - target: {fileID: 3916638830560073412, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
       propertyPath: m_Name
-      value: Drag_False_SoiXich
+      value: Drag_False_GayPhep
       objectReference: {fileID: 0}
     - target: {fileID: 4330146481096361610, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
       propertyPath: skeletonAnimation
@@ -1095,7 +1123,7 @@ PrefabInstance:
       objectReference: {fileID: 692769501991000496}
     - target: {fileID: 8317058356796643416, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
       propertyPath: m_Name
-      value: PlayAndWaitAnim_1_SoiXich
+      value: PlayAndWaitAnim_1_GayPhep
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1207,6 +1235,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 308746235448937717, guid: 77b33504dcc19a941a4ece2a723f7ce6, type: 3}
+      propertyPath: m_Size.x
+      value: 5.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 308746235448937717, guid: 77b33504dcc19a941a4ece2a723f7ce6, type: 3}
+      propertyPath: m_Size.y
+      value: 12.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 308746235448937717, guid: 77b33504dcc19a941a4ece2a723f7ce6, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: b2ef00dfeb83de04a8f3734a9352e27f, type: 3}
+    - target: {fileID: 308746235448937717, guid: 77b33504dcc19a941a4ece2a723f7ce6, type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2136877016337065425, guid: 77b33504dcc19a941a4ece2a723f7ce6, type: 3}
       propertyPath: m_Name
       value: L_019
