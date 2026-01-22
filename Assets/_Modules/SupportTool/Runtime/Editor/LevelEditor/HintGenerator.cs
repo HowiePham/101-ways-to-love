@@ -54,7 +54,7 @@ public class HintGenerator
         hint.SetField("hintedAction", actionCondition, AccessModifier.Private);
 
         var tapArea = actionCondition.GetComponent<TapArea>();
-        hint.transform.position = tapArea.transform.position;
+        hint.transform.position = tapArea.Target.transform.position;
     }
 
     private GameObject CreateHintBlueprint(string address, string hintName)
