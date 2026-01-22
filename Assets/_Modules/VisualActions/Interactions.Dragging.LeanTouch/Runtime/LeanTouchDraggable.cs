@@ -3,6 +3,7 @@ using Lean.Common;
 using Lean.Touch;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using VisualActions.Areas;
 
 namespace Mimi.Interactions.Dragging
 {
@@ -13,6 +14,7 @@ namespace Mimi.Interactions.Dragging
         /// <summary>The method used to find fingers to use with this component. See LeanFingerFilter documentation for more information.</summary>
         //[SerializeField] private LeanFingerFilter fingerFilter = new(true);
         [SerializeField] private LeanSelectable selectable;
+
         /// <summary>
         /// The camera the translation will be calculated using.
         /// </summary>
@@ -46,14 +48,34 @@ namespace Mimi.Interactions.Dragging
         protected override void OnInit()
         {
             //this.fingerFilter.UpdateRequiredSelectable(gameObject);
-            
         }
 
         protected override void OnActivated()
         {
             this.selectable.OnSelected.AddListener(OnSelected);
             LeanTouch.OnFingerUpdate += OnMove;
+            LeanTouch.OnFingerDown += FingerDownHandler;
+            LeanTouch.OnFingerUp += FingerUpHandler;
             this.selectable.OnDeselected.AddListener(OnDeselected);
+        }
+
+        private void FingerUpHandler(LeanFinger finger)
+        {
+            this.selectable.SelfSelected = false;
+            OnEndDrag();
+        }
+
+        private void FingerDownHandler(LeanFinger finger)
+        {
+            var boxArea = GetComponent<BoxArea>();
+
+            if (!boxArea.ContainsScreenPosition(finger.ScreenPosition, Camera.main))
+            {
+                return;
+            }
+
+            this.selectable.SelfSelected = true;
+            OnStartDrag();
         }
 
         void OnSelected(LeanSelect finger)
@@ -76,6 +98,7 @@ namespace Mimi.Interactions.Dragging
             {
                 Translate();
             }
+
             OnDrag();
         }
 
@@ -83,30 +106,33 @@ namespace Mimi.Interactions.Dragging
         {
             OnEndDrag();
         }
+
         protected override void OnDeactivated()
         {
             this.selectable.OnSelected.RemoveListener(OnSelected);
             LeanTouch.OnFingerUpdate -= OnMove;
+            LeanTouch.OnFingerDown -= FingerDownHandler;
+            LeanTouch.OnFingerUp -= FingerUpHandler;
             this.selectable.OnDeselected.RemoveListener(OnDeselected);
         }
 
-       /* private void Update()
-        {
-            List<LeanFinger> fingers = this.fingerFilter.UpdateAndGetFingers();
-            Vector2 screenDelta = LeanGesture.GetScreenDelta(fingers);
+        /* private void Update()
+         {
+             List<LeanFinger> fingers = this.fingerFilter.UpdateAndGetFingers();
+             Vector2 screenDelta = LeanGesture.GetScreenDelta(fingers);
 
-            if (screenDelta != Vector2.zero)
-            {
-                if (Transform is RectTransform)
-                {
-                    TranslateUI();
-                }
-                else
-                {
-                    Translate();
-                }
-            }
-        }*/
+             if (screenDelta != Vector2.zero)
+             {
+                 if (Transform is RectTransform)
+                 {
+                     TranslateUI();
+                 }
+                 else
+                 {
+                     Translate();
+                 }
+             }
+         }*/
 
         private void TranslateUI()
         {

@@ -8,6 +8,7 @@ public class ScaleObjectHighlight : MonoBehaviour
     [SerializeField] private float duration = 0.5f;
     [SerializeField] private Ease ease = Ease.Linear;
     [SerializeField] private bool enableHighlight = true;
+    private Vector3 defaultScale = Vector3.one;
     private Tween scalingTween;
 
     public bool EnableHighlight
@@ -30,6 +31,8 @@ public class ScaleObjectHighlight : MonoBehaviour
 
     private void OnDisable()
     {
+        this.highlightTarget.localScale = this.defaultScale;
+
         this.scalingTween?.Kill();
     }
 }
