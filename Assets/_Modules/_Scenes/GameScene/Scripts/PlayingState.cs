@@ -2,6 +2,7 @@ using System.Threading;
 using _Modules._UI.LoseView.Scripts;
 using _Modules.Gameflow_Events_.Scripts;
 using Cysharp.Threading.Tasks;
+using Games;
 using GameScenes;
 using Lean.Touch;
 using LeveLoaders;
@@ -23,6 +24,7 @@ namespace Mimi
         [SerializeField] private GameObject winCamera;
 
         private LevelInfo currentLevel;
+        private HintPlayer hintPlayer;
         private LevelInfo nextLevel;
         private GameObject levelRoot;
         private LevelPlayer levelPlayer;
@@ -42,6 +44,7 @@ namespace Mimi
             Context.EventSubscriber.Subscribe<NextLevelClicked>(NextLevelHandler).AddToBag(this.eventBag);
             Context.EventSubscriber.Subscribe<LevelTryAgain>(TryAgainLevelHandler).AddToBag(this.eventBag);
             Context.EventSubscriber.Subscribe<SelectLevel>(SelectLevelHandler).AddToBag(this.eventBag);
+            Context.EventSubscriber.Subscribe<UseHint>(UseHintHandler).AddToBag(this.eventBag);
 
             Messenger.AddListener(EventKey.LevelWin, LevelWinHandler);
 
@@ -49,6 +52,12 @@ namespace Mimi
 
             Context.LifeSystem.RunTimer();
             PlayLevel(Context.RuntimeState.CurrentLevelOrder.Value);
+        }
+
+        private async UniTask UseHintHandler(UseHint useHint, CancellationToken cancellationToken)
+        {
+            this.hintPlayer.ShowNextHint();
+            await UniTask.CompletedTask;
         }
 
         private void LevelWinHandler()
@@ -133,6 +142,7 @@ namespace Mimi
             this.winCamera.SetActive(false);
             GameObject levelPrefab = await this.levelLoader.Load(currentLevelInfo.Id);
             this.levelRoot = ServiceLocator.Global.Get<IPoolService>().Spawn(levelPrefab);
+            this.hintPlayer = this.levelRoot.GetComponent<HintPlayer>();
             this.levelPlayer = this.levelRoot.GetComponent<LevelPlayer>();
             ShowGameplayView();
 
