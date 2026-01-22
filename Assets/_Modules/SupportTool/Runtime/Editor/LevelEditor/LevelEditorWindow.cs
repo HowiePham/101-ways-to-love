@@ -136,7 +136,7 @@ public class LevelEditorWindow : EditorWindow
 
         if (GUILayout.Button("Generate Level Hint", GUILayout.Height(30)))
         {
-            TrueAction[] trueActions = FindObjectsByType<TrueAction>(FindObjectsSortMode.InstanceID);
+            TrueAction[] trueActions = FindObjectsByType<TrueAction>(FindObjectsSortMode.None);
             var hintPlayer = this.levelEditor.GetComponent<HintPlayer>();
             this.hintGenerator.Generate(trueActions, this.levelEditor.HintParent);
             hintPlayer.GetHints();

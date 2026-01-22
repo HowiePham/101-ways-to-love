@@ -26,6 +26,8 @@ public class TappingHint : BaseHint
 
     protected override async UniTask OnExecuting(CancellationToken cancellationToken)
     {
+        this.hintGraphic.SetActive(true);
+
         try
         {
             await UniTask.WaitUntil(() =>
