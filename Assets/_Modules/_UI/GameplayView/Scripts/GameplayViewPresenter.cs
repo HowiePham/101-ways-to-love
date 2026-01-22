@@ -56,6 +56,7 @@ public class GameplayViewPresenter : BaseViewPresenter
 
         this.gameplayView.OnSettingClicked += SettingClickedHandler;
         this.gameplayView.OnSkipClicked += SkipClickedHandler;
+        this.gameplayView.OnHintClicked += HintClickedHandler;
 
         this.eventSubscriber.Subscribe<LevelResumed>(ResumeGameplay).AddToBag(this.eventBag);
         this.eventSubscriber.Subscribe<LifeUpdated>(OnLifeUpdate).AddToBag(this.eventBag);
@@ -73,6 +74,11 @@ public class GameplayViewPresenter : BaseViewPresenter
 #endif
     }
 
+    private void HintClickedHandler()
+    {
+        this.eventPublisher.PublishAsync(new UseHint());
+    }
+
     private async UniTask ResumeGameplay(LevelResumed levelResumed, CancellationToken cancellationToken)
     {
     }
@@ -83,6 +89,8 @@ public class GameplayViewPresenter : BaseViewPresenter
 
         this.gameplayView.OnSettingClicked -= SettingClickedHandler;
         this.gameplayView.OnSkipClicked -= SkipClickedHandler;
+        this.gameplayView.OnHintClicked -= HintClickedHandler;
+
         this.eventBag.Dispose();
         Messenger.RemoveListener(EventKey.LevelWin, ShowWinView);
         Messenger.RemoveListener(EventKey.ActionFailed, ActionFailedHandler);
