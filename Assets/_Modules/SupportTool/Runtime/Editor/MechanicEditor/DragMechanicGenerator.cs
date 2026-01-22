@@ -18,13 +18,13 @@ public class DragMechanicGenerator : MechanicGenerator
         GameObject draggableObject;
         if (menuName.Contains("2Result"))
         {
-            draggableObject = CreateDraggableObject(objectName,interactableObjectParent);
+            draggableObject = CreateDraggableObject(objectName, interactableObjectParent);
             CreateDragDuoResult(menuName, draggableObject, skeletonAnimation, boxInteractionParent);
 
             return;
         }
 
-        draggableObject = CreateDraggableObject(objectName,interactableObjectParent);
+        draggableObject = CreateDraggableObject(objectName, interactableObjectParent);
         SetParent(draggableObject.transform, interactableObjectParent.transform);
         CreateDragSingleResult(menuName, draggableObject, skeletonAnimation, boxInteractionParent);
     }
@@ -75,7 +75,8 @@ public class DragMechanicGenerator : MechanicGenerator
         insideArea2D.SetField("checkTransform", draggableObject.transform, AccessModifier.Private);
         insideArea2D.SetField("targetArea", boxArea, AccessModifier.Private);
 
-        var gameObjects = new GameObject[] { draggableObject, boxInteractionParent };
+        var disableWhileRunningAnimParent = GameObject.Find("DisableWhileRunningAnimation");
+        var gameObjects = new GameObject[] { draggableObject, boxInteractionParent, disableWhileRunningAnimParent };
         HandleSetActiveCommandInMechanic(blueprintObject, gameObjects);
         HandleAnimInMechanic(blueprintObject, draggableObject, skeletonAnimation, suffix);
 
