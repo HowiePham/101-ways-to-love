@@ -8,13 +8,14 @@ namespace Mimi.VisualActions.Dragging
     {
         [SerializeField] private Transform checkTransform;
         [SerializeField] private BaseArea targetArea;
+        public Transform CheckTransform => this.checkTransform;
+        public BaseArea TargetArea => this.targetArea;
 
         public override bool Validate()
         {
-            if (!this.targetArea.Active) return false;
-            Vector3 checkPos = this.checkTransform.position;
-            //Debug.Log("hello "+this.targetArea.ContainsWorldSpace(checkPos));
-            return this.targetArea.ContainsWorldSpace(checkPos);
+            if (!this.TargetArea.Active) return false;
+            Vector3 checkPos = this.CheckTransform.position;
+            return this.TargetArea.ContainsWorldSpace(checkPos);
         }
     }
 }

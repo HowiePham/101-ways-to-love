@@ -20,10 +20,12 @@ namespace Mimi.VisualActions.Tapping
 
         public IEnumerable<Vector3> Waypoints { private set; get; }
 
+        public BaseArea Target => this.target;
+
         protected override async UniTask OnInitializing()
         {
             await base.OnInitializing();
-            Waypoints = new[] { this.target.Center };
+            Waypoints = new[] { this.Target.Center };
         }
 
         protected override async UniTask OnExecuting(CancellationToken cancellationToken)
@@ -45,12 +47,12 @@ namespace Mimi.VisualActions.Tapping
 
         private void FingerTapHandler(LeanFinger finger)
         {
-            if (!this.target.Active || finger.IsOverGui)
+            if (!this.Target.Active || finger.IsOverGui)
             {
                 return;
             }
 
-            if (!this.target.ContainsScreenPosition(finger.ScreenPosition, Camera.main))
+            if (!this.Target.ContainsScreenPosition(finger.ScreenPosition, Camera.main))
             {
                 return;
             }
