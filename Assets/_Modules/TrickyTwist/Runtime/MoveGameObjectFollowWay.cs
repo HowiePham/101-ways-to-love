@@ -28,7 +28,16 @@ public class MoveGameObjectFollowWay : MonoBehaviour
 
         this.movingTween = this.moveObject.DOPath(path, this.duration, this.pathType)
             .SetLoops(-1, LoopType.Yoyo)
-            .SetEase(this.ease);
+            .SetEase(this.ease)
+            .OnWaypointChange(waypointIndex =>
+            {
+                if (waypointIndex < path.Length)
+                {
+                    Vector3 direction = path[waypointIndex] - this.moveObject.position;
+                    float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+                    this.moveObject.DORotate(new Vector3(0, angle, 0), 0);
+                }
+            });
     }
 
     private void Update()
