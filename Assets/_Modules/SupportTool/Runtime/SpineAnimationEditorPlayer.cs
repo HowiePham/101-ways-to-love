@@ -37,7 +37,7 @@ public class SpineAnimationEditorPlayer : MonoBehaviour
             if (Mathf.Abs(this.currentTime - value) > 0.001f)
             {
                 this.currentTime = value;
-                UpdateAnimation();
+                UpdateTrackingTime();
             }
         }
     }
@@ -80,15 +80,18 @@ public class SpineAnimationEditorPlayer : MonoBehaviour
         {
             this.trackEntry = this.SkeletonAnimation.AnimationState.SetAnimation(0, this.animationName, false);
         }
+    }
 
+    private void UpdateTrackingTime()
+    {
         if (this.trackEntry != null && this.CurrentTime != this.previousTime)
         {
             if (this.SkeletonAnimation.state == null) return;
             this.trackEntry.TrackTime = this.CurrentTime;
             this.SkeletonAnimation.Update(this.CurrentTime);
-            this.SkeletonAnimation.state.Update(this.CurrentTime);
+            // this.SkeletonAnimation.state.Update(this.CurrentTime);
             this.SkeletonAnimation.LateUpdate();
-            this.SkeletonAnimation.skeleton.Update(this.CurrentTime);
+            // this.SkeletonAnimation.skeleton.Update(this.CurrentTime);
             this.previousTime = this.CurrentTime;
         }
     }
