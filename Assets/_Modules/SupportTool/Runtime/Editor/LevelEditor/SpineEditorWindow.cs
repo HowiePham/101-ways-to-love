@@ -4,6 +4,7 @@ using Spine;
 using Spine.Unity;
 using UnityEditor;
 using UnityEngine;
+using Animation = Spine.Animation;
 
 public class SpineEditorWindow : EditorWindow
 {
@@ -20,7 +21,7 @@ public class SpineEditorWindow : EditorWindow
     {
         var window = GetWindow<SpineEditorWindow>(true, "Spine Editor", true);
         window.minSize = new Vector2(300, 300);
-        window.maxSize = new Vector2(1000, 1200);
+        window.maxSize = new Vector2(2000, 1200);
         window.ShowPopup();
 
         this.currentTime = 0;
@@ -64,6 +65,11 @@ public class SpineEditorWindow : EditorWindow
             this.spineAnimationEditor.AddEventKeyAtCurrentTime();
         }
 
+        EditorGUILayout.EndHorizontal();
+        EditorGUILayout.Space(20);
+
+        EditorGUILayout.BeginHorizontal();
+        DrawTimelineSection();
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.EndScrollView();
@@ -145,6 +151,186 @@ public class SpineEditorWindow : EditorWindow
         }
 
         EditorGUILayout.EndHorizontal();
+    }
+
+    private void DrawTimelineSection()
+    {
+        GUILayout.BeginVertical("Box");
+
+        var mainAnim = this.spineAnimationEditor.SkeletonAnimation;
+        Animation currentAnimation = null;
+        EventTimeline eventTimeline = null;
+
+        if (mainAnim != null && mainAnim.skeletonDataAsset != null)
+        {
+            string currentAnimName = this.spineAnimationEditor.AnimationName;
+
+            if (!string.IsNullOrEmpty(currentAnimName))
+            {
+                var skeletonData = mainAnim.skeletonDataAsset.GetSkeletonData(true);
+
+                if (skeletonData != null)
+                {
+                    currentAnimation = skeletonData.FindAnimation(currentAnimName);
+
+                    if (currentAnimation != null)
+                    {
+                        foreach (var timeline in currentAnimation.Timelines)
+                        {
+                            if (timeline is EventTimeline et)
+                            {
+                                eventTimeline = et;
+                                // Debug.Log($"Found EventTimeline with {et.Events.Length} events");
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (currentAnimation == null)
+        {
+            GUILayout.EndVertical();
+            return;
+        }
+
+        float duration = currentAnimation.Duration;
+        float timelineWidth = position.width - 60;
+        float timelineHeight = 60;
+
+        Rect timelineRect = GUILayoutUtility.GetRect(timelineWidth, timelineHeight);
+
+        EditorGUI.DrawRect(timelineRect, new Color(0.2f, 0.2f, 0.2f, 1f));
+
+        DrawTimeMarkers(timelineRect, duration);
+
+        if (eventTimeline != null && eventTimeline.Events.Length > 0)
+        {
+            DrawEventMarkers(timelineRect, eventTimeline, duration);
+        }
+
+        if (this.spineAnimationEditor.TrackEntry != null)
+        {
+            DrawPlayhead(timelineRect, this.spineAnimationEditor.TrackEntry.TrackTime, duration);
+        }
+
+        GUILayout.EndVertical();
+    }
+
+    private void DrawTimeMarkers(Rect timelineRect, float duration)
+    {
+        float interval = 0.5f;
+        int numMarkers = Mathf.CeilToInt(duration / interval);
+
+        for (int i = 0; i <= numMarkers; i++)
+        {
+            float time = i * interval;
+            if (time > duration) break;
+
+            float x = timelineRect.x + (time / duration) * timelineRect.width;
+
+            Rect lineRect = new Rect(x, timelineRect.y, 1, timelineRect.height);
+            EditorGUI.DrawRect(lineRect, new Color(0.4f, 0.4f, 0.4f, 0.5f));
+
+            GUIStyle labelStyle = new GUIStyle(GUI.skin.label);
+            labelStyle.fontSize = 9;
+            labelStyle.normal.textColor = Color.gray;
+            labelStyle.alignment = TextAnchor.UpperCenter;
+
+            Rect labelRect = new Rect(x - 20, timelineRect.y + 2, 40, 15);
+            GUI.Label(labelRect, $"{time:F1}s", labelStyle);
+        }
+    }
+
+    private void DrawEventMarkers(Rect timelineRect, EventTimeline eventTimeline, float duration)
+    {
+        for (int i = 0; i < eventTimeline.Events.Length; i++)
+        {
+            var evt = eventTimeline.Events[i];
+
+            if (evt.Time > duration)
+            {
+                continue;
+            }
+
+            float normalizedTime = evt.Time / duration;
+            float x = timelineRect.x + normalizedTime * timelineRect.width;
+
+            float markerWidth = 8;
+            float markerHeight = 20;
+            Rect markerRect = new Rect(
+                x - markerWidth / 2,
+                timelineRect.y + timelineRect.height / 2 - markerHeight / 2,
+                markerWidth,
+                markerHeight
+            );
+
+            EditorGUI.DrawRect(markerRect, new Color(0.6f, 0.3f, 0.8f, 1f));
+            Handles.BeginGUI();
+            Handles.color = new Color(0.8f, 0.5f, 1f, 1f);
+            Handles.DrawSolidRectangleWithOutline(markerRect, Color.clear, Handles.color);
+            Handles.EndGUI();
+
+            GUIStyle labelStyle = new GUIStyle(GUI.skin.label);
+            labelStyle.fontSize = 9;
+            labelStyle.normal.textColor = Color.white;
+            labelStyle.alignment = TextAnchor.LowerCenter;
+            labelStyle.fontStyle = FontStyle.Bold;
+
+            Vector2 labelSize = labelStyle.CalcSize(new GUIContent(evt.Data.Name));
+            Rect labelRect = new Rect(
+                x - labelSize.x / 2,
+                timelineRect.y - 15,
+                labelSize.x,
+                15
+            );
+
+            EditorGUI.DrawRect(new Rect(labelRect.x - 2, labelRect.y, labelRect.width + 4, labelRect.height),
+                new Color(0.1f, 0.1f, 0.1f, 0.8f));
+            GUI.Label(labelRect, evt.Data.Name, labelStyle);
+
+            if (markerRect.Contains(UnityEngine.Event.current.mousePosition))
+            {
+                GUIStyle tooltipStyle = new GUIStyle(GUI.skin.box);
+                tooltipStyle.normal.textColor = Color.white;
+                tooltipStyle.fontSize = 10;
+                tooltipStyle.alignment = TextAnchor.MiddleCenter;
+
+                string eventInfo = $"{evt.Data.Name}\n{evt.Time:F3}s";
+                Vector2 tooltipSize = tooltipStyle.CalcSize(new GUIContent(eventInfo));
+                Rect tooltipRect = new Rect(
+                    x - tooltipSize.x / 2,
+                    timelineRect.y + timelineRect.height + 5,
+                    tooltipSize.x + 10,
+                    tooltipSize.y + 5
+                );
+
+                EditorGUI.DrawRect(tooltipRect, new Color(0.1f, 0.1f, 0.1f, 0.95f));
+                GUI.Label(tooltipRect, eventInfo, tooltipStyle);
+            }
+        }
+    }
+
+    private void DrawPlayhead(Rect timelineRect, float currentTime, float duration)
+    {
+        float normalizedTime = currentTime / duration;
+        float x = timelineRect.x + normalizedTime * timelineRect.width;
+
+        Rect playheadRect = new Rect(x - 1, timelineRect.y, 2, timelineRect.height);
+        EditorGUI.DrawRect(playheadRect, new Color(1f, 0.3f, 0.3f, 0.8f));
+
+        Vector3[] trianglePoints = new Vector3[]
+        {
+            new Vector3(x, timelineRect.y),
+            new Vector3(x - 6, timelineRect.y - 8),
+            new Vector3(x + 6, timelineRect.y - 8)
+        };
+
+        Handles.BeginGUI();
+        Handles.color = new Color(1f, 0.3f, 0.3f, 1f);
+        Handles.DrawAAConvexPolygon(trianglePoints);
+        Handles.EndGUI();
     }
 
     private void ExportToSpineJson()
