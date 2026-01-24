@@ -21,7 +21,7 @@ public class SpineAnimationEditorPlayer : MonoBehaviour
     private float currentTime = 0.0f;
 
     private string previousAnimationName;
-    private TrackEntry anim;
+    private TrackEntry trackEntry;
 
     public SkeletonAnimation SkeletonAnimation
     {
@@ -37,7 +37,7 @@ public class SpineAnimationEditorPlayer : MonoBehaviour
             if (Mathf.Abs(this.currentTime - value) > 0.001f)
             {
                 this.currentTime = value;
-                UpdateAnimation();
+                UpdateTrackingTime();
             }
         }
     }
@@ -49,6 +49,10 @@ public class SpineAnimationEditorPlayer : MonoBehaviour
         get => this.eventKeyName;
         set => this.eventKeyName = value;
     }
+
+    public string AnimationName => this.animationName;
+
+    public TrackEntry TrackEntry => this.trackEntry;
 
     private void OnValidate()
     {
@@ -66,25 +70,28 @@ public class SpineAnimationEditorPlayer : MonoBehaviour
 
         if (this.animationName != this.previousAnimationName)
         {
-            this.anim = this.SkeletonAnimation.AnimationState.SetAnimation(0, this.animationName, false);
-            this.maxRange = this.anim.Animation.Duration * 0.5f;
+            this.trackEntry = this.SkeletonAnimation.AnimationState.SetAnimation(0, this.animationName, false);
+            this.maxRange = this.trackEntry.Animation.Duration * 0.5f;
             this.CurrentTime = 0.0f;
             this.previousTime = -1.0f;
             this.previousAnimationName = this.animationName;
         }
-        else if (this.anim == null && !string.IsNullOrEmpty(this.animationName))
+        else if (this.trackEntry == null && !string.IsNullOrEmpty(this.animationName))
         {
-            this.anim = this.SkeletonAnimation.AnimationState.SetAnimation(0, this.animationName, false);
+            this.trackEntry = this.SkeletonAnimation.AnimationState.SetAnimation(0, this.animationName, false);
         }
+    }
 
-        if (this.anim != null && this.CurrentTime != this.previousTime)
+    private void UpdateTrackingTime()
+    {
+        if (this.trackEntry != null && this.CurrentTime != this.previousTime)
         {
             if (this.SkeletonAnimation.state == null) return;
-            this.anim.TrackTime = this.CurrentTime;
+            this.trackEntry.TrackTime = this.CurrentTime;
             this.SkeletonAnimation.Update(this.CurrentTime);
-            this.SkeletonAnimation.state.Update(this.CurrentTime);
+            // this.SkeletonAnimation.state.Update(this.CurrentTime);
             this.SkeletonAnimation.LateUpdate();
-            this.SkeletonAnimation.skeleton.Update(this.CurrentTime);
+            // this.SkeletonAnimation.skeleton.Update(this.CurrentTime);
             this.previousTime = this.CurrentTime;
         }
     }
@@ -97,7 +104,7 @@ public class SpineAnimationEditorPlayer : MonoBehaviour
             return;
         }
 
-        if (this.anim == null || string.IsNullOrEmpty(this.animationName))
+        if (this.trackEntry == null || string.IsNullOrEmpty(this.animationName))
         {
             Debug.LogError("No animation is currently playing!");
             return;
@@ -111,7 +118,7 @@ public class SpineAnimationEditorPlayer : MonoBehaviour
             Debug.Log($"Created new EventData: {this.EventKeyName}");
         }
 
-        Animation animation = this.anim.Animation;
+        Animation animation = this.trackEntry.Animation;
         ExposedList<Timeline> timelines = animation.Timelines;
 
         EventTimeline eventTimeline = null;
@@ -127,7 +134,7 @@ public class SpineAnimationEditorPlayer : MonoBehaviour
             }
         }
 
-        float currentTrackTime = this.anim.TrackTime;
+        float currentTrackTime = this.trackEntry.TrackTime;
         var newEvent = new Event(currentTrackTime, eventData);
 
         if (eventTimeline == null)
