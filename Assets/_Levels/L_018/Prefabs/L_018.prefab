@@ -29,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 1018685539752021927}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2.39, y: -2.77, z: 0}
+  m_LocalPosition: {x: 2.14, y: -1.7, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -124,6 +124,160 @@ MonoBehaviour:
   target: {fileID: 2452357802340475989}
   prefix: BoxDestination_Drag_True
   removeString: Draggable
+--- !u!1 &1388396638657623661
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4997623036339484623}
+  - component: {fileID: 9023712191710384249}
+  - component: {fileID: 2556248411519646029}
+  - component: {fileID: 6199571211184508427}
+  - component: {fileID: 1513497182512743639}
+  - component: {fileID: 3514624578939265067}
+  m_Layer: 0
+  m_Name: Spine_Gymer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4997623036339484623
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1388396638657623661}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5877455098837670248}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9023712191710384249
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1388396638657623661}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8bb19d5bd0b42faa62b5fe31ec59152, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 2452357802340475989}
+  prefix: Spine
+  removeString: Draggable
+--- !u!114 &2556248411519646029
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1388396638657623661}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76186420506a489494cdc57d8f79c8f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skeletonAnimation: {fileID: 3514624578939265067}
+--- !u!33 &6199571211184508427
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1388396638657623661}
+  m_Mesh: {fileID: 0}
+--- !u!23 &1513497182512743639
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1388396638657623661}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 8b7c49308d82b1d4d85663ca3a3337f6, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 100
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &3514624578939265067
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1388396638657623661}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d247ba06193faa74d9335f5481b2b56c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skeletonDataAsset: {fileID: 11400000, guid: 4bc5655821cf5984da3117d3dc51aa72, type: 2}
+  initialSkinName: 
+  initialFlipX: 0
+  initialFlipY: 0
+  updateWhenInvisible: 3
+  separatorSlotNames: []
+  zSpacing: 0
+  useClipping: 1
+  immutableTriangles: 0
+  pmaVertexColors: 1
+  clearStateOnDisable: 0
+  tintBlack: 0
+  singleSubmesh: 0
+  fixDrawOrder: 0
+  addNormals: 0
+  calculateTangents: 0
+  maskInteraction: 0
+  maskMaterials:
+    materialsMaskDisabled: []
+    materialsInsideMask: []
+    materialsOutsideMask: []
+  disableRenderingOnOverride: 1
+  _animationName: action1
+  loop: 1
+  timeScale: 1
 --- !u!1 &2135881751651104152
 GameObject:
   m_ObjectHideFlags: 0
@@ -153,7 +307,7 @@ Transform:
   m_GameObject: {fileID: 2135881751651104152}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2.39, y: -2.77, z: 0}
+  m_LocalPosition: {x: 2.14, y: -1.7, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -277,7 +431,7 @@ Transform:
   m_GameObject: {fileID: 5205768623483101481}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2.39, y: -2.77, z: 0}
+  m_LocalPosition: {x: 2.14, y: -1.7, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -599,6 +753,10 @@ PrefabInstance:
       value: CheckInsideArea_ChumBongBay
       objectReference: {fileID: 0}
     - target: {fileID: 1725230485220451236, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
+      propertyPath: animation
+      value: action1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1725230485220451236, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
       propertyPath: skeletonAnimation
       value: 
       objectReference: {fileID: 6463555994985274561}
@@ -611,12 +769,16 @@ PrefabInstance:
       value: Drag_False_ChumBongBay
       objectReference: {fileID: 0}
     - target: {fileID: 4330146481096361610, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
+      propertyPath: animation
+      value: action2_bongbay
+      objectReference: {fileID: 0}
+    - target: {fileID: 4330146481096361610, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
       propertyPath: skeletonAnimation
       value: 
       objectReference: {fileID: 6463555994985274561}
     - target: {fileID: 5316005728760477819, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
       propertyPath: gameObjects.Array.size
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5316005728760477819, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
       propertyPath: 'gameObjects.Array.data[0]'
@@ -626,6 +788,10 @@ PrefabInstance:
       propertyPath: 'gameObjects.Array.data[1]'
       value: 
       objectReference: {fileID: 4646504222784052802}
+    - target: {fileID: 5316005728760477819, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
+      propertyPath: 'gameObjects.Array.data[2]'
+      value: 
+      objectReference: {fileID: 1615077466524932141}
     - target: {fileID: 6129806715872333776, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
       propertyPath: targetArea
       value: 
@@ -636,7 +802,7 @@ PrefabInstance:
       objectReference: {fileID: 3020878773017230982}
     - target: {fileID: 7244370691823078220, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
       propertyPath: gameObjects.Array.size
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7244370691823078220, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
       propertyPath: 'gameObjects.Array.data[0]'
@@ -646,6 +812,10 @@ PrefabInstance:
       propertyPath: 'gameObjects.Array.data[1]'
       value: 
       objectReference: {fileID: 4646504222784052802}
+    - target: {fileID: 7244370691823078220, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
+      propertyPath: 'gameObjects.Array.data[2]'
+      value: 
+      objectReference: {fileID: 1615077466524932141}
     - target: {fileID: 8317058356796643416, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
       propertyPath: m_Name
       value: PlayAndWaitAnim_1_ChumBongBay
@@ -769,9 +939,17 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 6186682137398882790}
     - target: {fileID: 2598374304000995064, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
+      propertyPath: animation
+      value: action2_boy
+      objectReference: {fileID: 0}
+    - target: {fileID: 2598374304000995064, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
       propertyPath: skeletonAnimation
       value: 
       objectReference: {fileID: 6463555994985274561}
+    - target: {fileID: 3591870667429252695, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
+      propertyPath: animation
+      value: action2_boy2
+      objectReference: {fileID: 0}
     - target: {fileID: 3591870667429252695, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
       propertyPath: skeletonAnimation
       value: 
@@ -790,11 +968,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7281638907048261764, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 1.18
       objectReference: {fileID: 0}
     - target: {fileID: 7281638907048261764, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -1.54
       objectReference: {fileID: 0}
     - target: {fileID: 7888149533098179239, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
       propertyPath: m_LocalPosition.x
@@ -838,7 +1016,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8633933547285153191, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
       propertyPath: gameObjects.Array.size
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8633933547285153191, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
       propertyPath: 'gameObjects.Array.data[0]'
@@ -848,6 +1026,10 @@ PrefabInstance:
       propertyPath: 'gameObjects.Array.data[1]'
       value: 
       objectReference: {fileID: 4646504222784052802}
+    - target: {fileID: 8633933547285153191, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
+      propertyPath: 'gameObjects.Array.data[2]'
+      value: 
+      objectReference: {fileID: 1615077466524932141}
     - target: {fileID: 9027213350944740336, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
       propertyPath: m_Name
       value: CheckInsideArea_Gymer
@@ -1113,6 +1295,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7756851102787594369, guid: 77b33504dcc19a941a4ece2a723f7ce6, type: 3}
+      propertyPath: skeletonDataAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 18c0f829fa93ab944b512f88a7e5e3ae, type: 2}
+    - target: {fileID: 8866235693956036009, guid: 77b33504dcc19a941a4ece2a723f7ce6, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 791982f64c2a34a49894032a93ec0e80, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -1128,7 +1318,7 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8091033231341096406, guid: 77b33504dcc19a941a4ece2a723f7ce6, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6544587828027044052}
-    - targetCorrespondingSourceObject: {fileID: 8091033231341096406, guid: 77b33504dcc19a941a4ece2a723f7ce6, type: 3}
+    - targetCorrespondingSourceObject: {fileID: 5114325637331391303, guid: 77b33504dcc19a941a4ece2a723f7ce6, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6186682137398882790}
     - targetCorrespondingSourceObject: {fileID: 3182794269766423435, guid: 77b33504dcc19a941a4ece2a723f7ce6, type: 3}
@@ -1151,6 +1341,11 @@ PrefabInstance:
       addedObject: {fileID: 7452221286582740188}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 77b33504dcc19a941a4ece2a723f7ce6, type: 3}
+--- !u!1 &1615077466524932141 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2629855283828305005, guid: 77b33504dcc19a941a4ece2a723f7ce6, type: 3}
+  m_PrefabInstance: {fileID: 3609343818395153472}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &2179031463043950539 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3182794269766423435, guid: 77b33504dcc19a941a4ece2a723f7ce6, type: 3}
@@ -1185,6 +1380,11 @@ MonoBehaviour:
 --- !u!4 &6718926801266805125 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8009822669391134149, guid: 77b33504dcc19a941a4ece2a723f7ce6, type: 3}
+  m_PrefabInstance: {fileID: 3609343818395153472}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &8426035915255604999 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5114325637331391303, guid: 77b33504dcc19a941a4ece2a723f7ce6, type: 3}
   m_PrefabInstance: {fileID: 3609343818395153472}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &5843417566842454215
@@ -1284,7 +1484,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 4782797306997406102}
+    m_TransformParent: {fileID: 8426035915255604999}
     m_Modifications:
     - target: {fileID: 848073819641458707, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1292,7 +1492,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 848073819641458707, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.17
+      value: 1.17
       objectReference: {fileID: 0}
     - target: {fileID: 848073819641458707, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1332,7 +1532,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2483360238437534040, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
       propertyPath: m_Size.y
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 4594328731360598776, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
       propertyPath: size.x
@@ -1340,8 +1540,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4594328731360598776, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
       propertyPath: size.y
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 5025490481928546718, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
+      propertyPath: 'graphics.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2556248411519646029}
     - target: {fileID: 6520461475559934217, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
       propertyPath: m_Name
       value: Sprite_Gymer
@@ -1351,13 +1555,22 @@ PrefabInstance:
       value: Draggable_Gymer
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 6520461475559934217, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 1121288833701550237, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4997623036339484623}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
 --- !u!1 &2452357802340475989 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8941882117890696608, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
+  m_PrefabInstance: {fileID: 6782267130460209653}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &5877455098837670248 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1121288833701550237, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
   m_PrefabInstance: {fileID: 6782267130460209653}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &6186682137398882790 stripped
@@ -1418,6 +1631,10 @@ PrefabInstance:
       value: CheckInsideArea_NuocTangLuc
       objectReference: {fileID: 0}
     - target: {fileID: 1725230485220451236, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
+      propertyPath: animation
+      value: action1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1725230485220451236, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
       propertyPath: skeletonAnimation
       value: 
       objectReference: {fileID: 6463555994985274561}
@@ -1430,12 +1647,16 @@ PrefabInstance:
       value: Drag_False_NuocTangLuc
       objectReference: {fileID: 0}
     - target: {fileID: 4330146481096361610, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
+      propertyPath: animation
+      value: action2_nuoctangluc
+      objectReference: {fileID: 0}
+    - target: {fileID: 4330146481096361610, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
       propertyPath: skeletonAnimation
       value: 
       objectReference: {fileID: 6463555994985274561}
     - target: {fileID: 5316005728760477819, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
       propertyPath: gameObjects.Array.size
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5316005728760477819, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
       propertyPath: 'gameObjects.Array.data[0]'
@@ -1445,6 +1666,10 @@ PrefabInstance:
       propertyPath: 'gameObjects.Array.data[1]'
       value: 
       objectReference: {fileID: 4646504222784052802}
+    - target: {fileID: 5316005728760477819, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
+      propertyPath: 'gameObjects.Array.data[2]'
+      value: 
+      objectReference: {fileID: 1615077466524932141}
     - target: {fileID: 6129806715872333776, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
       propertyPath: targetArea
       value: 
@@ -1455,7 +1680,7 @@ PrefabInstance:
       objectReference: {fileID: 6544587828027044052}
     - target: {fileID: 7244370691823078220, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
       propertyPath: gameObjects.Array.size
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7244370691823078220, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
       propertyPath: 'gameObjects.Array.data[0]'
@@ -1465,6 +1690,10 @@ PrefabInstance:
       propertyPath: 'gameObjects.Array.data[1]'
       value: 
       objectReference: {fileID: 4646504222784052802}
+    - target: {fileID: 7244370691823078220, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
+      propertyPath: 'gameObjects.Array.data[2]'
+      value: 
+      objectReference: {fileID: 1615077466524932141}
     - target: {fileID: 8317058356796643416, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
       propertyPath: m_Name
       value: PlayAndWaitAnim_1_NuocTangLuc
