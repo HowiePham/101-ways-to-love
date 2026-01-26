@@ -44,24 +44,17 @@ public class LevelGenerator
 
     private GameObject CreateStaticObject(Transform psdLayer, string textureAddress)
     {
-        GameObject staticObject = Object.Instantiate(psdLayer.gameObject, psdLayer.position, psdLayer.rotation);
         var objectTextureAddress = $"{textureAddress}/{psdLayer.gameObject.name}.png";
         Debug.Log(objectTextureAddress);
-        var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(objectTextureAddress);
+        var newSprite = AssetDatabase.LoadAssetAtPath<Sprite>(objectTextureAddress);
 
-        if (texture == null)
+        if (newSprite == null)
         {
             Debug.LogError($"Texture {objectTextureAddress} not found");
             return null;
         }
 
-        var newSprite = Sprite.Create(
-            texture,
-            new Rect(0, 0, texture.width, texture.height),
-            new Vector2(0.5f, 0.5f),
-            100f
-        );
-
+        GameObject staticObject = Object.Instantiate(psdLayer.gameObject, psdLayer.position, psdLayer.rotation);
         var spriteRenderer = staticObject.GetComponent<SpriteRenderer>();
         spriteRenderer.sprite = newSprite;
 
