@@ -3,6 +3,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Lean.Touch;
+using Mimi.Actor.Graphic.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using VisualFlow;
@@ -10,6 +11,7 @@ using VisualFlow;
 public class DraggingHint : BaseHint
 {
     [SerializeField, Required] private BaseHintGraphic hintGraphic;
+    [SerializeField, Required] private MonoCompositeGraphic hintedObjectGraphic;
     [SerializeField, MinValue(0.1f)] private float moveDuration;
     [SerializeField] private Transform[] pathPoints;
     private Vector3[] path;
@@ -24,6 +26,7 @@ public class DraggingHint : BaseHint
     {
         await base.OnInitializing();
         this.hintGraphic.SetActive(false);
+        this.hintedObjectGraphic.gameObject.SetActive(false);
         GetPath();
     }
 
@@ -34,6 +37,25 @@ public class DraggingHint : BaseHint
         {
             Transform point = this.pathPoints[i];
             this.path[i] = point.position;
+        }
+    }
+
+    public void SetGraphics(BaseMonoGraphic[] graphics)
+    {
+        var newGraphics = new BaseMonoGraphic[graphics.Length];
+        for (var i = 0; i < graphics.Length; i++)
+        {
+            BaseMonoGraphic graphic = graphics[i];
+            BaseMonoGraphic newGraphic = Instantiate(graphic, this.hintedObjectGraphic.transform);
+            newGraphics[i] = newGraphic;
+        }
+
+        this.hintedObjectGraphic.SetGraphics(newGraphics);
+
+        foreach (BaseMonoGraphic graphic in this.hintedObjectGraphic.GetGraphics())
+        {
+            graphic.SetSortingOrder(799);
+            graphic.SetAlpha(0.6f);
         }
     }
 
@@ -48,6 +70,7 @@ public class DraggingHint : BaseHint
     {
         this.hintGraphic.transform.position = this.path[0];
         this.hintGraphic.SetActive(true);
+        this.hintedObjectGraphic.gameObject.SetActive(true);
         Sequence sequence = DOTween.Sequence(gameObject);
         sequence.Append(this.hintGraphic.transform.DOPath(this.path, this.moveDuration))
             .SetLoops(-1, LoopType.Restart);

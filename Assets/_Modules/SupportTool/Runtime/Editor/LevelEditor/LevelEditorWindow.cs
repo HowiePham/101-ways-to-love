@@ -139,11 +139,9 @@ public class LevelEditorWindow : EditorWindow
             TrueAction[] trueActions = FindObjectsByType<TrueAction>(FindObjectsSortMode.None);
             var hintPlayer = this.levelEditor.GetComponent<HintPlayer>();
 
-            for (int i = 0; i < this.levelEditor.HintParent.childCount; i++)
+            for (int i = this.levelEditor.HintParent.childCount - 1; i >= 0; i--)
             {
-                GameObject hintObject = this.levelEditor.HintParent.GetChild(i).gameObject;
-                Destroy(hintObject);
-                i--;
+                DestroyImmediate(this.levelEditor.HintParent.GetChild(i).gameObject);
             }
 
             this.hintGenerator.Generate(trueActions, this.levelEditor.HintParent);
