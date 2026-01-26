@@ -62,6 +62,7 @@ public class GameplayViewPresenter : BaseViewPresenter
         this.eventSubscriber.Subscribe<LifeUpdated>(OnLifeUpdate).AddToBag(this.eventBag);
         this.eventSubscriber.Subscribe<RecoveryLifeTimerUpdated>(OnRecoveryTimerUpdate).AddToBag(this.eventBag);
         Messenger.AddListener(EventKey.LevelWin, ShowWinView);
+        Messenger.AddListener(EventKey.ActionDone, UpdateStepPoint);
         Messenger.AddListener(EventKey.ActionFailed, ActionFailedHandler);
 
         ShowLevelInfo();
@@ -74,6 +75,11 @@ public class GameplayViewPresenter : BaseViewPresenter
 #endif
     }
 
+    public void InitStepPoint(int stepNumber)
+    {
+        this.gameplayView.InitStepPoint(stepNumber);
+    }
+
     private void HintClickedHandler()
     {
         this.eventPublisher.PublishAsync(new UseHint());
@@ -81,6 +87,11 @@ public class GameplayViewPresenter : BaseViewPresenter
 
     private async UniTask ResumeGameplay(LevelResumed levelResumed, CancellationToken cancellationToken)
     {
+    }
+
+    private void UpdateStepPoint()
+    {
+        this.gameplayView.UpdateStepPoint();
     }
 
     protected override void OnHide()
@@ -93,6 +104,7 @@ public class GameplayViewPresenter : BaseViewPresenter
 
         this.eventBag.Dispose();
         Messenger.RemoveListener(EventKey.LevelWin, ShowWinView);
+        Messenger.RemoveListener(EventKey.ActionDone, UpdateStepPoint);
         Messenger.RemoveListener(EventKey.ActionFailed, ActionFailedHandler);
 
 #if DEVELOPMENT

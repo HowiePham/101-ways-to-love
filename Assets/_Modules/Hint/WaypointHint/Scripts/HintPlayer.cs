@@ -14,6 +14,7 @@ namespace Games
         private List<BaseHint> availableHints;
 
         public bool HasHint => this.availableHints.Count > 0;
+        public int HintStepNumber => this.hints.Length;
 
         private readonly CancellationTokenSource tokenSource = new();
 

@@ -156,6 +156,7 @@ namespace Mimi
             Debug.Log($"--- (PRESENTER) Showing Gameplay View");
             var gameplayViewPresenter = this.Presenter.GetViewPresenter<GameplayViewPresenter>();
             gameplayViewPresenter.Show();
+            gameplayViewPresenter.InitStepPoint(this.hintPlayer.HintStepNumber);
         }
     }
 }
