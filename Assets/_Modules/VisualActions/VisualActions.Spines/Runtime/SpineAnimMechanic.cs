@@ -6,6 +6,7 @@ namespace Mimi.VisualActions.Spines
     public abstract class SpineAnimMechanic : VisualAction
     {
         [SerializeField] protected SkeletonAnimation skeletonAnimation;
+
         [SerializeField, SpineAnimation(dataField = "skeletonAnimation")]
         protected new string animation;
 
@@ -22,6 +23,11 @@ namespace Mimi.VisualActions.Spines
         protected bool HasAnimation()
         {
             return SkeletonAnimation.SkeletonDataAsset != null && !string.IsNullOrEmpty(this.Animation);
+        }
+
+        public void SetAnimationAction(string animation)
+        {
+            this.animation = animation;
         }
     }
 }
