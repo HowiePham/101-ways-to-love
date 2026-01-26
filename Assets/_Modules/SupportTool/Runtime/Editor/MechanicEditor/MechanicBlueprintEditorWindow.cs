@@ -52,7 +52,7 @@ public class MechanicBlueprintEditorWindow : EditorWindow
         if (clicked)
         {
             onClick?.Invoke();
-            Close();
+            // Close();
         }
     }
 
