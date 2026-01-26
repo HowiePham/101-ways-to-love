@@ -1,11 +1,15 @@
 using System.Linq;
+using Economy.Resources;
 using Games;
 using Mimi.Games.InitSteps;
 using Mimi.Games.Plugins;
 using Mimi.Games.ProjectConfigs;
+using Mimi.Loot.Currencies;
+using Mimi.Loots;
 using Mimi.Prototypes.Events;
 using Mimi.Prototypes.LevelManagement;
 using Sirenix.OdinInspector;
+using UnityEngine;
 
 namespace Mimi.Prototypes
 {
@@ -14,11 +18,16 @@ namespace Mimi.Prototypes
         public ILevelRepository LevelRepository { private set; get; }
         public ILevelOrder LevelOrder { private set; get; }
         public LifeSystem LifeSystem { private set; get; }
+        public IResourceCollection ResourceCollection { private set; get; }
+        private CompositeLootProcessor lootProcessor;
+        private CompositeLootFactory lootFactory;
 
         protected override void CreateServices()
         {
             CreateLevelServices();
             InitLifeSystem();
+            InitResourceSystem();
+            InitLootSystem();
         }
 
         protected override void AddInitSteps(IGameInitiator gameInitiator, ProjectConfig projectConfig)
@@ -34,6 +43,22 @@ namespace Mimi.Prototypes
             LevelRepository = new SheetLevelRepository(GetDataSheet<SheetLevelModel>("LevelRepo"));
             var levelIdOrders = GetDataSheet<SheetOrderModel>().Select(x => x.Id).Distinct();
             LevelOrder = new LinearLevelOrder(LevelRepository, levelIdOrders);
+        }
+
+        private void InitResourceSystem()
+        {
+            ResourceCollection = new ResourceCollection();
+            IResource coinResource = new Resource("Coin");
+            ResourceCollection.AddResource(coinResource);
+        }
+
+        private void InitLootSystem()
+        {
+            this.lootFactory = new CompositeLootFactory();
+            this.lootFactory.AddFactory("Currency", new CurrencyLootFactory());
+
+            this.lootProcessor = new CompositeLootProcessor();
+            this.lootProcessor.AddProcessor("Currency", new CurrencyLootProcessor(ResourceCollection));
         }
 
         private void InitLifeSystem()
