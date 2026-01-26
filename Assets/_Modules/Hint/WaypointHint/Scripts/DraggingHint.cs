@@ -58,15 +58,10 @@ public class DraggingHint : BaseHint
         }
     }
 
-    protected override async UniTask OnEnter(CancellationToken cancellationToken)
-    {
-        await base.OnEnter(cancellationToken);
-        LeanTouch.OnFingerDown += FingerDownHandler;
-        LeanTouch.OnFingerUp += FingerUpHandler;
-    }
-
     protected override async UniTask OnExecuting(CancellationToken cancellationToken)
     {
+        await base.OnExecuting(cancellationToken);
+
         this.hintGraphic.transform.position = this.path[0];
         EnableHint(true);
         Sequence sequence = DOTween.Sequence(gameObject);
@@ -83,27 +78,16 @@ public class DraggingHint : BaseHint
         }
         finally
         {
-            LeanTouch.OnFingerDown -= FingerDownHandler;
-            LeanTouch.OnFingerUp -= FingerUpHandler;
-            this.hintGraphic.enabled = false;
+            StopListeningEvent();
             EnableHint(false);
             DOTween.Kill(this.gameObject);
         }
     }
 
-    private void EnableHint(bool enable)
+    protected override void EnableHint(bool enable)
     {
         this.hintGraphic.SetActive(enable);
         this.hintedObjectGraphic.gameObject.SetActive(enable);
-    }
-
-    private void FingerUpHandler(LeanFinger finger)
-    {
-        this.hintGraphic.enabled = true;
-    }
-
-    private void FingerDownHandler(LeanFinger finger)
-    {
-        this.hintGraphic.enabled = false;
+        this.hintGraphic.enabled = enable;
     }
 }
