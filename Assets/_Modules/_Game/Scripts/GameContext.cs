@@ -6,10 +6,8 @@ using Mimi.Games.Plugins;
 using Mimi.Games.ProjectConfigs;
 using Mimi.Loot.Currencies;
 using Mimi.Loots;
-using Mimi.Prototypes.Events;
 using Mimi.Prototypes.LevelManagement;
 using Sirenix.OdinInspector;
-using UnityEngine;
 
 namespace Mimi.Prototypes
 {
