@@ -1,6 +1,8 @@
 using System.Threading;
+using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Lean.Touch;
+using Mimi.Prototypes.Events;
 using Mimi.VisualActions;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -19,25 +21,39 @@ namespace VisualFlow
 
         protected void FingerUpHandler(LeanFinger finger)
         {
-            EnableHint(true);
+            ActiveHint();
         }
 
         protected void FingerDownHandler(LeanFinger finger)
         {
-            EnableHint(false);
+            DisableHint();
         }
 
         protected override async UniTask OnExecuting(CancellationToken cancellationToken)
         {
             LeanTouch.OnFingerDown += FingerDownHandler;
             LeanTouch.OnFingerUp += FingerUpHandler;
+            Messenger.AddListener(EventKey.AnimationComplete, ActiveHint);
+            Messenger.AddListener(EventKey.AnimationStart, DisableHint);
             await UniTask.CompletedTask;
+        }
+
+        private void DisableHint()
+        {
+            EnableHint(false);
+        }
+
+        private void ActiveHint()
+        {
+            EnableHint(true);
         }
 
         protected virtual void StopListeningEvent()
         {
             LeanTouch.OnFingerDown -= FingerDownHandler;
             LeanTouch.OnFingerUp -= FingerUpHandler;
+            Messenger.RemoveListener(EventKey.AnimationComplete, ActiveHint);
+            Messenger.RemoveListener(EventKey.AnimationStart, DisableHint);
         }
     }
 }
