@@ -1,3 +1,4 @@
+using Mimi.Actor.Graphic.Core;
 using Mimi.Reflection.Extensions;
 using Mimi.VisualActions;
 using Mimi.VisualActions.Dragging;
@@ -45,6 +46,10 @@ public class HintGenerator
 
         hint.PathPoints[0].position = targetObject.position;
         hint.PathPoints[1].position = targetBox.transform.position;
+
+        var monoCompositeGraphic = targetObject.GetComponentInChildren<MonoCompositeGraphic>();
+        BaseMonoGraphic[] draggableObjectGraphics = monoCompositeGraphic.GetGraphics();
+        hint.SetGraphics(draggableObjectGraphics);
     }
 
     private void HandleTappingHint(TrueAction trueAction, GameObject hintBlueprint)
