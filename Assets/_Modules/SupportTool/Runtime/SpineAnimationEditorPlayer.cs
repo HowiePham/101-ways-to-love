@@ -63,7 +63,7 @@ public class SpineAnimationEditorPlayer : MonoBehaviour
     {
         if (this.SkeletonAnimation == null)
         {
-            this.SkeletonAnimation = GetComponent<SkeletonAnimation>();
+            // this.SkeletonAnimation = GetComponent<SkeletonAnimation>();
         }
 
         if (this.SkeletonAnimation == null) return;
