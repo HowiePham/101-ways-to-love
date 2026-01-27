@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
+using System.Text.RegularExpressions;
 using Spine;
 using Spine.Unity;
 using UnityEditor;
@@ -40,7 +42,6 @@ public class SpineEditorWindow : EditorWindow
 
         EditorGUILayout.BeginHorizontal();
         DrawSkeletonAnimationSection();
-
         EditorGUILayout.EndHorizontal();
         EditorGUILayout.Space(10);
 
@@ -64,7 +65,6 @@ public class SpineEditorWindow : EditorWindow
         {
             this.spineAnimationEditor.AddEventKeyAtCurrentTime();
         }
-
         EditorGUILayout.EndHorizontal();
         EditorGUILayout.Space(20);
 
@@ -180,7 +180,6 @@ public class SpineEditorWindow : EditorWindow
                             if (timeline is EventTimeline et)
                             {
                                 eventTimeline = et;
-                                // Debug.Log($"Found EventTimeline with {et.Events.Length} events");
                                 break;
                             }
                         }
@@ -200,7 +199,6 @@ public class SpineEditorWindow : EditorWindow
         float timelineHeight = 60;
 
         Rect timelineRect = GUILayoutUtility.GetRect(timelineWidth, timelineHeight);
-
         EditorGUI.DrawRect(timelineRect, new Color(0.2f, 0.2f, 0.2f, 1f));
 
         DrawTimeMarkers(timelineRect, duration);
@@ -314,39 +312,33 @@ public class SpineEditorWindow : EditorWindow
 
     private void DrawPlayhead(Rect timelineRect, float currentTime, float duration)
     {
-        float normalizedTime = currentTime / duration;
-        float x = timelineRect.x + normalizedTime * timelineRect.width;
+        float x = timelineRect.x + (currentTime / duration) * timelineRect.width;
 
         Rect playheadRect = new Rect(x - 1, timelineRect.y, 2, timelineRect.height);
-        EditorGUI.DrawRect(playheadRect, new Color(1f, 0.3f, 0.3f, 0.8f));
+        EditorGUI.DrawRect(playheadRect, Color.red);
 
-        Vector3[] trianglePoints = new Vector3[]
-        {
-            new Vector3(x, timelineRect.y),
-            new Vector3(x - 6, timelineRect.y - 8),
-            new Vector3(x + 6, timelineRect.y - 8)
-        };
+        Vector3[] trianglePoints = new Vector3[3];
+        trianglePoints[0] = new Vector3(x - 5, timelineRect.y, 0);
+        trianglePoints[1] = new Vector3(x + 5, timelineRect.y, 0);
+        trianglePoints[2] = new Vector3(x, timelineRect.y + 8, 0);
 
-        Handles.BeginGUI();
-        Handles.color = new Color(1f, 0.3f, 0.3f, 1f);
+        Handles.color = Color.red;
         Handles.DrawAAConvexPolygon(trianglePoints);
-        Handles.EndGUI();
     }
 
     private void ExportToSpineJson()
     {
         var skeletonDataAsset = this.spineAnimationEditor.SkeletonAnimation.skeletonDataAsset;
-
-        if (skeletonDataAsset == null)
+        if (skeletonDataAsset == null || skeletonDataAsset.skeletonJSON == null)
         {
-            Debug.LogError("SkeletonDataAsset is null!");
+            Debug.LogError("Skeleton Data Asset or Skeleton JSON is null!");
             return;
         }
 
-        var textAsset = skeletonDataAsset.skeletonJSON;
+        TextAsset textAsset = skeletonDataAsset.skeletonJSON;
         if (textAsset == null)
         {
-            Debug.LogError("Cannot find Spine JSON file!");
+            Debug.LogError("TextAsset from SkeletonDataAsset is null!");
             return;
         }
 
@@ -363,14 +355,13 @@ public class SpineEditorWindow : EditorWindow
         AssetDatabase.Refresh();
 
         Debug.Log($"✓ Exported Spine JSON with events to: {newPath}");
-        Debug.LogWarning("Next steps:\n1. Reimport this JSON in Spine Editor\n2. Or update your SkeletonDataAsset to point to this new file");
     }
 
     private string UpdateSpineJsonWithEvents(string jsonContent)
     {
         var skeletonData = this.spineAnimationEditor.SkeletonAnimation.Skeleton.Data;
 
-        // Collect all unique event names from all animations
+        // Collect all unique event names
         HashSet<string> allEventNames = new HashSet<string>();
         foreach (var animation in skeletonData.Animations)
         {
@@ -386,44 +377,77 @@ public class SpineEditorWindow : EditorWindow
             }
         }
 
-        // Build events section if there are any events
-        string eventsSection = "";
+        // Build properly formatted events section
+        StringBuilder eventsSection = new StringBuilder();
         if (allEventNames.Count > 0)
         {
-            var eventsBuilder = new System.Text.StringBuilder();
-            eventsBuilder.Append("\"events\": {");
-
-            bool firstEvent = true;
+            eventsSection.Append("\"events\": {\n");
+            bool first = true;
             foreach (var eventName in allEventNames)
             {
-                if (!firstEvent) eventsBuilder.Append(",");
-                eventsBuilder.Append($"\"{eventName}\":{{}}");
-                firstEvent = false;
+                if (!first) eventsSection.Append(",\n");
+                eventsSection.Append($"\t\"{eventName}\": {{}}");
+                first = false;
             }
-
-            eventsBuilder.Append("}");
-            eventsSection = eventsBuilder.ToString();
+            eventsSection.Append("\n}");
         }
 
         // Find animations section
         int animationsStart = jsonContent.IndexOf("\"animations\"");
         if (animationsStart == -1)
         {
-            Debug.LogError("Cannot find 'animations' section in JSON!");
+            Debug.LogError("Cannot find 'animations' section!");
             return jsonContent;
         }
 
-        // Build animations section with events
-        var animBuilder = new System.Text.StringBuilder();
-        animBuilder.Append("\"animations\": {");
+        // Get content before animations
+        string beforeAnimations = jsonContent.Substring(0, animationsStart);
+        
+        // Remove trailing comma/whitespace
+        beforeAnimations = beforeAnimations.TrimEnd();
+        if (beforeAnimations.EndsWith(","))
+        {
+            beforeAnimations = beforeAnimations.Substring(0, beforeAnimations.Length - 1);
+        }
+
+        // Build animations section
+        StringBuilder animationsSection = BuildAnimationsSection(skeletonData, jsonContent, animationsStart);
+
+        // Find content after animations
+        int animBraceStart = jsonContent.IndexOf("{", animationsStart + "\"animations\"".Length);
+        int animBraceEnd = FindMatchingBrace(jsonContent, animBraceStart);
+        string afterAnimations = jsonContent.Substring(animBraceEnd + 1);
+
+        // Assemble final JSON
+        StringBuilder finalJson = new StringBuilder();
+        finalJson.Append(beforeAnimations);
+        
+        // Add events section if we have events
+        if (eventsSection.Length > 0)
+        {
+            finalJson.Append(",\n");
+            finalJson.Append(eventsSection);
+        }
+        
+        finalJson.Append(",\n");
+        finalJson.Append(animationsSection);
+        finalJson.Append(afterAnimations);
+
+        return finalJson.ToString();
+    }
+
+    private StringBuilder BuildAnimationsSection(SkeletonData skeletonData, string originalJson, int animationsStart)
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.Append("\"animations\": {");
 
         bool firstAnim = true;
         foreach (var animation in skeletonData.Animations)
         {
-            if (!firstAnim) animBuilder.Append(",");
-            animBuilder.Append($"\n  \"{animation.Name}\": {{");
+            if (!firstAnim) builder.Append(",");
+            builder.Append($"\n  \"{animation.Name}\": {{");
 
-            // Find EventTimeline
+            // Get EventTimeline for this animation
             EventTimeline eventTimeline = null;
             foreach (var timeline in animation.Timelines)
             {
@@ -434,127 +458,142 @@ public class SpineEditorWindow : EditorWindow
                 }
             }
 
-            // Copy old animation data (bones, slots, etc.)
-            string animKey = $"\"{animation.Name}\":";
-            int animStart = jsonContent.IndexOf(animKey, animationsStart);
+            // Extract original animation content (bones, slots, etc.)
+            string originalAnimContent = ExtractOriginalAnimationContent(originalJson, animation.Name, animationsStart);
 
-            bool hasOldContent = false;
-            string oldAnimContent = "";
-
-            if (animStart != -1)
+            // Add original content
+            bool hasContent = !string.IsNullOrWhiteSpace(originalAnimContent);
+            if (hasContent)
             {
-                int braceStart = jsonContent.IndexOf("{", animStart + animKey.Length);
-                if (braceStart != -1)
-                {
-                    int braceEnd = FindMatchingBrace(jsonContent, braceStart);
-                    oldAnimContent = jsonContent.Substring(braceStart + 1, braceEnd - braceStart - 1).Trim();
-
-                    // Remove old events section if exists
-                    int oldEventsIndex = oldAnimContent.IndexOf("\"events\"");
-                    if (oldEventsIndex != -1)
-                    {
-                        int eventsStart = oldEventsIndex;
-                        int eventsEnd = FindEventsSectionEnd(oldAnimContent, oldEventsIndex);
-                        oldAnimContent = oldAnimContent.Remove(eventsStart, eventsEnd - eventsStart);
-                        oldAnimContent = oldAnimContent.Trim().TrimEnd(',');
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(oldAnimContent))
-                    {
-                        hasOldContent = true;
-                    }
-                }
+                builder.Append("\n");
+                builder.Append(originalAnimContent);
             }
 
-            // Add existing content
-            if (hasOldContent)
-            {
-                animBuilder.Append("\n").Append(oldAnimContent);
-                if (eventTimeline != null && eventTimeline.Events.Length > 0)
-                    animBuilder.Append(",");
-            }
-
-            // Add events section for this animation
+            // Add events if present
             if (eventTimeline != null && eventTimeline.Events.Length > 0)
             {
-                animBuilder.Append("\n    \"events\": [");
-                var events = eventTimeline.Events;
-                for (int i = 0; i < events.Length; i++)
+                if (hasContent)
                 {
-                    var evt = events[i];
-                    if (i > 0) animBuilder.Append(",");
-                    animBuilder.Append($"\n      {{\"time\": {evt.Time:F4}, \"name\": \"{evt.Data.Name}\"");
-
-                    if (evt.Int != 0) animBuilder.Append($", \"int\": {evt.Int}");
-                    if (evt.Float != 0) animBuilder.Append($", \"float\": {evt.Float:F4}");
-                    if (!string.IsNullOrEmpty(evt.String)) animBuilder.Append($", \"string\": \"{evt.String}\"");
-
-                    animBuilder.Append("}");
+                    builder.Append(",");
                 }
-
-                animBuilder.Append("\n    ]");
+                builder.Append("\n    \"events\": [");
+                
+                for (int i = 0; i < eventTimeline.Events.Length; i++)
+                {
+                    var evt = eventTimeline.Events[i];
+                    if (i > 0) builder.Append(",");
+                    
+                    builder.Append($"\n      {{\"time\": {evt.Time:F4}, \"name\": \"{evt.Data.Name}\"");
+                    
+                    if (evt.Int != 0) builder.Append($", \"int\": {evt.Int}");
+                    if (evt.Float != 0) builder.Append($", \"float\": {evt.Float:F4}");
+                    if (!string.IsNullOrEmpty(evt.String)) builder.Append($", \"string\": \"{evt.String}\"");
+                    
+                    builder.Append("}");
+                }
+                
+                builder.Append("\n    ]");
             }
 
-            animBuilder.Append("\n  }");
+            builder.Append("\n  }");
             firstAnim = false;
         }
 
-        animBuilder.Append("\n}");
+        builder.Append("\n}");
+        return builder;
+    }
 
-        // Find where to insert events section (before animations)
-        string beforeAnimations = jsonContent.Substring(0, animationsStart).TrimEnd(',', ' ', '\n', '\r', '\t');
+    private string ExtractOriginalAnimationContent(string json, string animName, int animationsStart)
+    {
+        string animKey = $"\"{animName}\":";
+        int animStart = json.IndexOf(animKey, animationsStart);
+        
+        if (animStart == -1) return "";
 
-        int animationsEnd = FindMatchingBrace(jsonContent, animationsStart + "\"animations\":".Length);
-        string afterAnimations = jsonContent.Substring(animationsEnd + 1);
+        int braceStart = json.IndexOf("{", animStart + animKey.Length);
+        if (braceStart == -1) return "";
 
-        // Build final JSON
-        System.Text.StringBuilder finalJson = new System.Text.StringBuilder();
-        finalJson.Append(beforeAnimations);
+        int braceEnd = FindMatchingBrace(json, braceStart);
+        string content = json.Substring(braceStart + 1, braceEnd - braceStart - 1);
 
-        // Add events section if we have events
-        if (!string.IsNullOrEmpty(eventsSection))
+        // Remove any existing events section
+        content = RemoveEventsSection(content);
+
+        // Clean up trailing commas and whitespace
+        content = content.Trim().TrimEnd(',');
+
+        return content;
+    }
+
+    private string RemoveEventsSection(string content)
+    {
+        int eventsIndex = content.IndexOf("\"events\"");
+        if (eventsIndex == -1) return content;
+
+        // Find the start of the events array
+        int arrayStart = content.IndexOf("[", eventsIndex);
+        if (arrayStart == -1) return content;
+
+        // Find the matching closing bracket
+        int arrayEnd = FindMatchingBracket(content, arrayStart);
+        if (arrayEnd == -1) return content;
+
+        // Remove the entire events section including any trailing comma
+        int removeStart = eventsIndex;
+        int removeEnd = arrayEnd + 1;
+
+        // Check for comma after the events section
+        while (removeEnd < content.Length && char.IsWhiteSpace(content[removeEnd]))
         {
-            finalJson.Append(",\n");
-            finalJson.Append(eventsSection);
+            removeEnd++;
+        }
+        if (removeEnd < content.Length && content[removeEnd] == ',')
+        {
+            removeEnd++;
         }
 
-        finalJson.Append(",\n");
-        finalJson.Append(animBuilder.ToString());
-        finalJson.Append(afterAnimations);
+        // Check for comma before the events section
+        int checkStart = removeStart - 1;
+        while (checkStart >= 0 && char.IsWhiteSpace(content[checkStart]))
+        {
+            checkStart--;
+        }
+        if (checkStart >= 0 && content[checkStart] == ',')
+        {
+            removeStart = checkStart;
+        }
 
-        return finalJson.ToString();
+        return content.Remove(removeStart, removeEnd - removeStart);
     }
 
     private int FindMatchingBrace(string json, int startIndex)
     {
+        return FindMatchingChar(json, startIndex, '{', '}');
+    }
+
+    private int FindMatchingBracket(string json, int startIndex)
+    {
+        return FindMatchingChar(json, startIndex, '[', ']');
+    }
+
+    private int FindMatchingChar(string text, int startIndex, char openChar, char closeChar)
+    {
         int depth = 1;
         bool inString = false;
-        char stringChar = '\0';
 
-        for (int i = startIndex + 1; i < json.Length; i++)
+        for (int i = startIndex + 1; i < text.Length; i++)
         {
-            char c = json[i];
+            char c = text[i];
 
-            // Handle string boundaries
-            if ((c == '"' || c == '\'') && (i == 0 || json[i - 1] != '\\'))
+            if (c == '"' && (i == 0 || text[i - 1] != '\\'))
             {
-                if (!inString)
-                {
-                    inString = true;
-                    stringChar = c;
-                }
-                else if (c == stringChar)
-                {
-                    inString = false;
-                }
-
-                continue;
+                inString = !inString;
             }
 
             if (!inString)
             {
-                if (c == '{') depth++;
-                else if (c == '}')
+                if (c == openChar) depth++;
+                else if (c == closeChar)
                 {
                     depth--;
                     if (depth == 0) return i;
@@ -562,60 +601,6 @@ public class SpineEditorWindow : EditorWindow
             }
         }
 
-        return json.Length - 1;
-    }
-
-    private int FindEventsSectionEnd(string content, int eventsIndex)
-    {
-        int bracketStart = content.IndexOf('[', eventsIndex);
-        if (bracketStart == -1) return eventsIndex;
-
-        int depth = 1;
-        bool inString = false;
-        char stringChar = '\0';
-
-        for (int i = bracketStart + 1; i < content.Length; i++)
-        {
-            char c = content[i];
-
-            if ((c == '"' || c == '\'') && (i == 0 || content[i - 1] != '\\'))
-            {
-                if (!inString)
-                {
-                    inString = true;
-                    stringChar = c;
-                }
-                else if (c == stringChar)
-                {
-                    inString = false;
-                }
-
-                continue;
-            }
-
-            if (!inString)
-            {
-                if (c == '[') depth++;
-                else if (c == ']')
-                {
-                    depth--;
-                    if (depth == 0)
-                    {
-                        // Find next comma or closing brace
-                        for (int j = i + 1; j < content.Length; j++)
-                        {
-                            if (content[j] == ',' || content[j] == '}')
-                                return content[j] == ',' ? j + 1 : j;
-                            if (!char.IsWhiteSpace(content[j]))
-                                return i + 1;
-                        }
-
-                        return i + 1;
-                    }
-                }
-            }
-        }
-
-        return content.Length;
+        return text.Length - 1;
     }
 }
