@@ -31,6 +31,25 @@ namespace Games
         public async UniTask ShowNextHint()
         {
             if (!HasHint) return;
+
+            var hintRunning = false;
+            foreach (BaseHint hint in this.availableHints)
+            {
+                if (!hint.IsExecuting)
+                {
+                    continue;
+                }
+
+                hintRunning = true;
+                break;
+            }
+
+            if (hintRunning)
+            {
+                await UniTask.CompletedTask;
+                return;
+            }
+
             for (int i = 0; i < this.availableHints.Count; i++)
             {
                 if (this.availableHints[i].Completed)
