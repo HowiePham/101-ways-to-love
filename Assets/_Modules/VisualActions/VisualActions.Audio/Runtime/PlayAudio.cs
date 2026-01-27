@@ -24,6 +24,11 @@ namespace Mimi.VisualActions.Audio
 
         void PlaySound()
         {
+            if (string.IsNullOrEmpty(this.soundKey) || this.audioPlayer == null)
+            {
+                return;
+            }
+
             if (this.playSound)
             {
                 this.audioPlayer.PlaySound(this.soundKey, this.volume, this.pitch);
