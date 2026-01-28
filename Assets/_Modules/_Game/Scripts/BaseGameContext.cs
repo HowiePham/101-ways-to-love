@@ -173,6 +173,12 @@ namespace Mimi.Prototypes
             SaveManager.AddSaveLoadStrategy(new GameSaver(this), new GameLoader(this));
         }
 
+
+        public void StopSound(string soundKey)
+        {
+            this.audioService.StopSound(soundKey);
+        }
+
         protected override void OnPause(bool pause)
         {
             base.OnPause(pause);
