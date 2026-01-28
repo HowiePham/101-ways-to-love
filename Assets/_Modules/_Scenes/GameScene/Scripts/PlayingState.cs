@@ -24,8 +24,9 @@ namespace Mimi
         [SerializeField, SoundKey] private string interactingSoundKey;
         [SerializeField, SoundKey] private string bgmSoundKey;
         [SerializeField] private GameObject winCamera;
-        [SerializeField] private string[] levelGeneralSoundKeys;
+        [SerializeField] private int[] levelTutorials;
 
+        private string[] levelGeneralSoundKeys;
         private LevelInfo currentLevel;
         private HintPlayer hintPlayer;
         private LevelInfo nextLevel;
@@ -137,10 +138,10 @@ namespace Mimi
             Debug.Log($"--- (LEVEL) Playing level : {levelOrder}");
             this.currentLevel = Context.LevelOrder.GetByOrder(levelOrder);
             this.nextLevel = Context.LevelOrder.GetNextLevel(levelOrder);
-            await PlayLevel(this.currentLevel);
+            await PlayLevel(this.currentLevel, levelOrder);
         }
 
-        private async UniTask PlayLevel(LevelInfo currentLevelInfo)
+        private async UniTask PlayLevel(LevelInfo currentLevelInfo, int levelOrder)
         {
             this.winCamera.SetActive(false);
             GameObject levelPrefab = await this.levelLoader.Load(currentLevelInfo.Id);
@@ -151,10 +152,27 @@ namespace Mimi
             UpdateLevelGeneralSound();
             ShowGameplayView();
             this.Context.StopSound(this.bgmSoundKey);
+            if (CanShowTutorial(levelOrder + 1))
+            {
+                this.hintPlayer.ShowNextHint();
+            }
 
             await UniTask.Delay(500);
             await Context.EventPublisher.PublishAsync(new LevelStarted(currentLevelInfo.Id));
             await this.levelPlayer.Play();
+        }
+
+        private bool CanShowTutorial(int currentLevelOrder)
+        {
+            foreach (int levelOrder in this.levelTutorials)
+            {
+                if (levelOrder == currentLevelOrder)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private void ShowGameplayView()
