@@ -73,7 +73,7 @@ public class SkeletonAnimationEditorSection : EditorSection
 
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("Action:", GUILayout.Width(50));
-            EditorGUILayout.PropertyField(animProp, GUIContent.none);
+            EditorGUILayout.PropertyField(animProp, GUIContent.none, true);
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.Space(5);
 

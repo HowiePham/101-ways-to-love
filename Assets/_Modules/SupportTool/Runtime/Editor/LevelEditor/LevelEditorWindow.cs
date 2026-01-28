@@ -9,11 +9,13 @@ public class LevelEditorWindow : EditorWindow
     private InteractableObjectEditorSection interactableObjectEditorSection;
     private SkeletonAnimationEditorSection skeletonAnimationEditorSection;
     private InteractingBoxEditorSection boxEditorSection;
+    private SoundEditorSection soundEditorSection;
     private LevelGenerator levelGenerator;
     private HintGenerator hintGenerator;
     private GameObject psdImporter;
     private Vector2 scrollPosition;
     private bool showStaticObjects = true;
+    private bool showSoundEditor = true;
     private bool showInteractableObjects = true;
     private bool showInteractingBoxes = true;
     private bool showAnimation = true;
@@ -73,6 +75,10 @@ public class LevelEditorWindow : EditorWindow
         EditorGUILayout.Space(20);
 
         this.scrollPosition = EditorGUILayout.BeginScrollView(this.scrollPosition);
+
+        this.soundEditorSection = new SoundEditorSection(this.levelEditor);
+        DrawSection("Level Sound", ref this.showSoundEditor, this.soundEditorSection);
+        EditorGUILayout.Space(20);
 
         this.staticObjectEditorSection = new StaticObjectEditorSection(this.levelEditor);
         DrawSection("Static Objects", ref this.showStaticObjects, this.staticObjectEditorSection);

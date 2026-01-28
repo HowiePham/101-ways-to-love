@@ -16,6 +16,12 @@ namespace Mimi.VisualActions.Audio
 
         [SerializeField] private BaseAudioServiceSO audioPlayer;
 
+        public float Volume => this.volume;
+
+        public float Pitch => this.pitch;
+
+        public string SoundKey => this.soundKey;
+
         protected override async UniTask OnExecuting(CancellationToken cancellationToken)
         {
             await UniTask.CompletedTask;
@@ -24,18 +30,18 @@ namespace Mimi.VisualActions.Audio
 
         void PlaySound()
         {
-            if (string.IsNullOrEmpty(this.soundKey) || this.audioPlayer == null)
+            if (string.IsNullOrEmpty(this.SoundKey) || this.audioPlayer == null)
             {
                 return;
             }
 
             if (this.playSound)
             {
-                this.audioPlayer.PlaySound(this.soundKey, this.volume, this.pitch);
+                this.audioPlayer.PlaySound(this.SoundKey, this.Volume, this.Pitch);
             }
             else
             {
-                this.audioPlayer.StopSound(this.soundKey);
+                this.audioPlayer.StopSound(this.SoundKey);
             }
         }
     }

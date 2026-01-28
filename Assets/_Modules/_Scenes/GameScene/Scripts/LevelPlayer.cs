@@ -1,4 +1,6 @@
 using Cysharp.Threading.Tasks;
+using Mimi.Audio;
+using Mimi.VisualActions.Audio;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -8,6 +10,9 @@ namespace GameScenes
     public class LevelPlayer : MonoBehaviour
     {
         [SerializeField] private Timeline timeline;
+        [SerializeField] private PlayAudio[] levelGeneralAudio;
+
+        public PlayAudio[] LevelGeneralAudio => this.levelGeneralAudio;
 
         public async UniTask Play()
         {
