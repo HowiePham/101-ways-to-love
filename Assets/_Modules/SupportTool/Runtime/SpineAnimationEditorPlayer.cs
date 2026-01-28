@@ -1,9 +1,6 @@
-using System.Collections.Generic;
-using System.IO;
 using Sirenix.OdinInspector;
 using Spine;
 using Spine.Unity;
-using UnityEditor;
 using UnityEngine;
 using Animation = Spine.Animation;
 using Event = Spine.Event;
@@ -179,4 +176,100 @@ public class SpineAnimationEditorPlayer : MonoBehaviour
             Debug.Log($"Added event '{this.EventKeyName}' at time {currentTrackTime:F3}s (Total: {newEvents.Length} events)");
         }
     }
+    
+    public void RemoveEventKeyAtCurrentTime()
+{
+    if (string.IsNullOrEmpty(this.EventKeyName))
+    {
+        Debug.LogError("EventKeyName has to be set!");
+        return;
+    }
+
+    if (this.trackEntry == null || string.IsNullOrEmpty(this.animationName))
+    {
+        Debug.LogError("No animation is currently playing!");
+        return;
+    }
+
+    Animation animation = this.trackEntry.Animation;
+    ExposedList<Timeline> timelines = animation.Timelines;
+
+    EventTimeline eventTimeline = null;
+    int timelineIndex = -1;
+
+    // Tìm EventTimeline
+    for (int i = 0; i < timelines.Count; i++)
+    {
+        if (timelines.Items[i] is EventTimeline et)
+        {
+            eventTimeline = et;
+            timelineIndex = i;
+            break;
+        }
+    }
+
+    if (eventTimeline == null)
+    {
+        Debug.LogWarning("No EventTimeline found in this animation!");
+        return;
+    }
+
+    float currentTrackTime = this.trackEntry.TrackTime;
+    float tolerance = 0.05f; // Độ chênh lệch thời gian chấp nhận được (50ms)
+
+    // Tìm event gần nhất với current time
+    int eventToRemoveIndex = -1;
+    float closestTimeDiff = float.MaxValue;
+
+    for (int i = 0; i < eventTimeline.Events.Length; i++)
+    {
+        float timeDiff = Mathf.Abs(eventTimeline.Events[i].Time - currentTrackTime);
+        if (timeDiff < tolerance && timeDiff < closestTimeDiff)
+        {
+            if (eventTimeline.Events[i].Data.Name == this.EventKeyName)
+            {
+                eventToRemoveIndex = i;
+                closestTimeDiff = timeDiff;
+            }
+        }
+    }
+
+    if (eventToRemoveIndex == -1)
+    {
+        Debug.LogWarning($"No event '{this.EventKeyName}' found near time {currentTrackTime:F3}s (tolerance: {tolerance}s)");
+        return;
+    }
+
+    // Tạo mảng mới không chứa event cần xóa
+    int eventCount = eventTimeline.Events.Length;
+    var oldEvents = eventTimeline.Events;
+    var newEvents = new Event[eventCount - 1];
+
+    int newIndex = 0;
+    for (int i = 0; i < eventCount; i++)
+    {
+        if (i != eventToRemoveIndex)
+        {
+            newEvents[newIndex++] = oldEvents[i];
+        }
+    }
+
+    // Tạo EventTimeline mới
+    if (newEvents.Length > 0)
+    {
+        var newTimeline = new EventTimeline(newEvents.Length);
+        for (int i = 0; i < newEvents.Length; i++)
+        {
+            newTimeline.SetFrame(i, newEvents[i]);
+        }
+        timelines.Items[timelineIndex] = newTimeline;
+        Debug.Log($"Removed event '{this.EventKeyName}' at time {oldEvents[eventToRemoveIndex].Time:F3}s (Remaining: {newEvents.Length} events)");
+    }
+    else
+    {
+        // Nếu không còn event nào, xóa luôn EventTimeline
+        timelines.RemoveAt(timelineIndex);
+        Debug.Log($"Removed last event '{this.EventKeyName}' and removed EventTimeline");
+    }
+}
 }

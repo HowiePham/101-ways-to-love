@@ -65,6 +65,14 @@ public class SpineEditorWindow : EditorWindow
         {
             this.spineAnimationEditor.AddEventKeyAtCurrentTime();
         }
+
+        EditorGUILayout.EndHorizontal();
+        EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("Remove Event Key", GUILayout.Height(30)))
+        {
+            this.spineAnimationEditor.RemoveEventKeyAtCurrentTime();
+        }
+
         EditorGUILayout.EndHorizontal();
         EditorGUILayout.Space(20);
 
@@ -148,6 +156,18 @@ public class SpineEditorWindow : EditorWindow
             }
 
             ExportToSpineJson();
+        }
+
+        if (GUILayout.Button("Override Spine Json", GUILayout.Height(30)))
+        {
+            if (this.spineAnimationEditor == null ||
+                this.spineAnimationEditor.SkeletonAnimation == null ||
+                this.spineAnimationEditor.SkeletonAnimation.skeletonDataAsset == null)
+            {
+                return;
+            }
+
+            OverrideSpineJson();
         }
 
         EditorGUILayout.EndHorizontal();
@@ -357,6 +377,37 @@ public class SpineEditorWindow : EditorWindow
         Debug.Log($"✓ Exported Spine JSON with events to: {newPath}");
     }
 
+    public void OverrideSpineJson()
+    {
+        var skeletonDataAsset = this.spineAnimationEditor.SkeletonAnimation.skeletonDataAsset;
+        if (skeletonDataAsset == null || skeletonDataAsset.skeletonJSON == null)
+        {
+            Debug.LogError("Skeleton Data Asset or Skeleton JSON is null!");
+            return;
+        }
+
+        TextAsset textAsset = skeletonDataAsset.skeletonJSON;
+        if (textAsset == null)
+        {
+            Debug.LogError("TextAsset from SkeletonDataAsset is null!");
+            return;
+        }
+
+        string originalJsonPath = AssetDatabase.GetAssetPath(textAsset);
+        string jsonContent = File.ReadAllText(originalJsonPath);
+
+        string modifiedJson = UpdateSpineJsonWithEvents(jsonContent);
+
+        string directory = Path.GetDirectoryName(originalJsonPath);
+        string fileName = Path.GetFileNameWithoutExtension(originalJsonPath) + ".json";
+        string newPath = Path.Combine(directory, fileName);
+
+        File.WriteAllText(newPath, modifiedJson);
+        AssetDatabase.Refresh();
+
+        Debug.Log($"✓ Exported Spine JSON with events to: {newPath}");
+    }
+
     private string UpdateSpineJsonWithEvents(string jsonContent)
     {
         var skeletonData = this.spineAnimationEditor.SkeletonAnimation.Skeleton.Data;
@@ -389,6 +440,7 @@ public class SpineEditorWindow : EditorWindow
                 eventsSection.Append($"\t\"{eventName}\": {{}}");
                 first = false;
             }
+
             eventsSection.Append("\n}");
         }
 
@@ -402,7 +454,7 @@ public class SpineEditorWindow : EditorWindow
 
         // Get content before animations
         string beforeAnimations = jsonContent.Substring(0, animationsStart);
-        
+
         // Remove trailing comma/whitespace
         beforeAnimations = beforeAnimations.TrimEnd();
         if (beforeAnimations.EndsWith(","))
@@ -421,14 +473,14 @@ public class SpineEditorWindow : EditorWindow
         // Assemble final JSON
         StringBuilder finalJson = new StringBuilder();
         finalJson.Append(beforeAnimations);
-        
+
         // Add events section if we have events
         if (eventsSection.Length > 0)
         {
             finalJson.Append(",\n");
             finalJson.Append(eventsSection);
         }
-        
+
         finalJson.Append(",\n");
         finalJson.Append(animationsSection);
         finalJson.Append(afterAnimations);
@@ -476,22 +528,23 @@ public class SpineEditorWindow : EditorWindow
                 {
                     builder.Append(",");
                 }
+
                 builder.Append("\n    \"events\": [");
-                
+
                 for (int i = 0; i < eventTimeline.Events.Length; i++)
                 {
                     var evt = eventTimeline.Events[i];
                     if (i > 0) builder.Append(",");
-                    
+
                     builder.Append($"\n      {{\"time\": {evt.Time:F4}, \"name\": \"{evt.Data.Name}\"");
-                    
+
                     if (evt.Int != 0) builder.Append($", \"int\": {evt.Int}");
                     if (evt.Float != 0) builder.Append($", \"float\": {evt.Float:F4}");
                     if (!string.IsNullOrEmpty(evt.String)) builder.Append($", \"string\": \"{evt.String}\"");
-                    
+
                     builder.Append("}");
                 }
-                
+
                 builder.Append("\n    ]");
             }
 
@@ -507,7 +560,7 @@ public class SpineEditorWindow : EditorWindow
     {
         string animKey = $"\"{animName}\":";
         int animStart = json.IndexOf(animKey, animationsStart);
-        
+
         if (animStart == -1) return "";
 
         int braceStart = json.IndexOf("{", animStart + animKey.Length);
@@ -547,6 +600,7 @@ public class SpineEditorWindow : EditorWindow
         {
             removeEnd++;
         }
+
         if (removeEnd < content.Length && content[removeEnd] == ',')
         {
             removeEnd++;
@@ -558,6 +612,7 @@ public class SpineEditorWindow : EditorWindow
         {
             checkStart--;
         }
+
         if (checkStart >= 0 && content[checkStart] == ',')
         {
             removeStart = checkStart;
