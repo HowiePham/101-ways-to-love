@@ -170,6 +170,8 @@ namespace Mimi
             PlayAudio[] levelPlayerLevelGeneralAudio = this.levelPlayer.LevelGeneralAudio;
             this.levelGeneralSoundKeys = new string[levelPlayerLevelGeneralAudio.Length];
 
+            Debug.Log($"--- (GAME) Update Level {this.currentLevel.Id} Sound: {levelPlayerLevelGeneralAudio.Length}");
+
             for (int i = 0; i < levelPlayerLevelGeneralAudio.Length; i++)
             {
                 var audio = levelPlayerLevelGeneralAudio[i];
@@ -191,7 +193,7 @@ namespace Mimi
                     continue;
                 }
 
-                this.Context.StopSound(this.bgmSoundKey);
+                this.Context.StopSound(soundKey);
             }
         }
     }
