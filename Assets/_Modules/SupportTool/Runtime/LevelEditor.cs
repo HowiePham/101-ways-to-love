@@ -1,11 +1,13 @@
+using System;
 using System.Collections.Generic;
+using GameScenes;
+using Mimi.VisualActions.Audio;
 using Mimi.VisualActions.Spines;
 using Spine.Unity;
 using UnityEngine;
 
 public class LevelEditor : MonoBehaviour
 {
-#if UNITY_EDITOR
     [SerializeField] private Transform staticObjectParent;
     [SerializeField] private Transform interactableObjectParent;
     [SerializeField] private Transform boxInteractingObjectParent;
@@ -18,6 +20,7 @@ public class LevelEditor : MonoBehaviour
     private List<GameObject> interactableObjects;
     private SpineAnimMechanic[] spineAnimMechanics;
     private InteractingBox[] interactingBoxes;
+    private PlayAudio[] levelSounds;
     public List<GameObject> StaticObjects => this.staticObjects;
     public SkeletonAnimation SkeletonAnimation => this.skeletonAnimation;
     public List<GameObject> InteractableObjects => this.interactableObjects;
@@ -25,8 +28,7 @@ public class LevelEditor : MonoBehaviour
     public InteractingBox[] InteractingBoxes => this.interactingBoxes;
     public Transform RootSequenceParent => this.rootSequenceParent;
     public Transform HintParent => this.hintParent;
-
-    public Transform GeneralLevelSound => this.generalLevelSound;
+    public PlayAudio[] LevelSounds => this.levelSounds;
 
     public void PrepareData()
     {
@@ -34,6 +36,7 @@ public class LevelEditor : MonoBehaviour
         this.staticObjects = new List<GameObject>();
         this.interactingBoxes = this.boxInteractingObjectParent.GetComponentsInChildren<InteractingBox>();
         this.spineAnimMechanics = this.RootSequenceParent.GetComponentsInChildren<SpineAnimMechanic>();
+        this.levelSounds = this.generalLevelSound.GetComponentsInChildren<PlayAudio>();
 
         foreach (Transform child in this.interactableObjectParent)
         {
@@ -60,5 +63,4 @@ public class LevelEditor : MonoBehaviour
             this.interactableObjects.Add(child.gameObject);
         }
     }
-#endif
 }

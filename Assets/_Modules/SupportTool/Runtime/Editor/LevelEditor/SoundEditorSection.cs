@@ -11,23 +11,17 @@ public class SoundEditorSection : EditorSection
 
     public override void DrawSection()
     {
-        Transform levelSoundParent = this.levelEditor.GeneralLevelSound;
-        PlayAudio[] levelSounds = levelSoundParent.GetComponentsInChildren<PlayAudio>();
+        PlayAudio[] levelSounds = this.levelEditor.LevelSounds;
 
-        foreach (PlayAudio playAudio in levelSounds)
+        for (var i = 0; i < levelSounds.Length; i++)
         {
+            PlayAudio playAudio = levelSounds[i];
             EditorGUILayout.LabelField($"{playAudio.gameObject.name}", EditorStyles.boldLabel);
             if (GUILayout.Button("Select in Hierarchy", GUILayout.Width(150)))
             {
                 Selection.activeGameObject = playAudio.gameObject;
                 EditorGUIUtility.PingObject(playAudio.gameObject);
             }
-            // EditorGUILayout.BeginHorizontal();
-            // var serializedObject = new SerializedObject(playAudio);
-            // SerializedProperty soundKeyProp = serializedObject.FindProperty("soundKey");
-            // EditorGUILayout.LabelField("Sound Key:", GUILayout.Width(100));
-            // EditorGUILayout.PropertyField(soundKeyProp, GUIContent.none);
-            // EditorGUILayout.EndHorizontal();
 
             DrawVolumeSection(playAudio);
             DrawPitchSection(playAudio);

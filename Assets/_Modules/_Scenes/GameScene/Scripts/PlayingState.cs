@@ -14,14 +14,17 @@ using Mimi.Prototypes.Events;
 using Mimi.Prototypes.LevelManagement;
 using Mimi.Prototypes.Pooling;
 using Mimi.ServiceLocators;
+using Mimi.VisualActions.Audio;
 using UnityEngine;
 
 namespace Mimi
 {
     public class PlayingState : BaseSceneState
     {
-        [SerializeField, SoundKey] private string soundKey;
+        [SerializeField, SoundKey] private string interactingSoundKey;
+        [SerializeField, SoundKey] private string bgmSoundKey;
         [SerializeField] private GameObject winCamera;
+        [SerializeField] private string[] levelGeneralSoundKeys;
 
         private LevelInfo currentLevel;
         private HintPlayer hintPlayer;
@@ -67,7 +70,7 @@ namespace Mimi
 
         private void ClickSoundHandler(LeanFinger finger)
         {
-            this.Context.AudioService.PlaySound(this.soundKey);
+            this.Context.AudioService.PlaySound(this.interactingSoundKey);
         }
 
         private async UniTask SelectLevelHandler(SelectLevel selectLevel, CancellationToken cancellationToken)
@@ -144,6 +147,8 @@ namespace Mimi
             this.levelRoot = ServiceLocator.Global.Get<IPoolService>().Spawn(levelPrefab);
             this.hintPlayer = this.levelRoot.GetComponent<HintPlayer>();
             this.levelPlayer = this.levelRoot.GetComponent<LevelPlayer>();
+            TurnOffOldLevelGeneralSound();
+            UpdateLevelGeneralSound();
             ShowGameplayView();
 
             await UniTask.Delay(500);
@@ -157,6 +162,36 @@ namespace Mimi
             var gameplayViewPresenter = this.Presenter.GetViewPresenter<GameplayViewPresenter>();
             gameplayViewPresenter.Show();
             gameplayViewPresenter.InitStepPoint(this.hintPlayer.HintStepNumber);
+        }
+
+        private void UpdateLevelGeneralSound()
+        {
+            PlayAudio[] levelPlayerLevelGeneralAudio = this.levelPlayer.LevelGeneralAudio;
+            this.levelGeneralSoundKeys = new string[levelPlayerLevelGeneralAudio.Length];
+
+            for (int i = 0; i < levelPlayerLevelGeneralAudio.Length; i++)
+            {
+                var audio = levelPlayerLevelGeneralAudio[i];
+                this.levelGeneralSoundKeys[i] = audio.SoundKey;
+            }
+        }
+
+        private void TurnOffOldLevelGeneralSound()
+        {
+            if (this.levelGeneralSoundKeys.Length <= 0)
+            {
+                return;
+            }
+
+            foreach (string soundKey in this.levelGeneralSoundKeys)
+            {
+                if (string.IsNullOrEmpty(soundKey))
+                {
+                    continue;
+                }
+
+                this.Context.AudioService.PlaySound(soundKey, 0);
+            }
         }
     }
 }
