@@ -1,7 +1,5 @@
 using System.Collections.Generic;
-using Mimi.Interactions.Dragging;
 using Mimi.VisualActions.Spines;
-using Sirenix.OdinInspector;
 using Spine.Unity;
 using UnityEngine;
 
@@ -13,6 +11,7 @@ public class LevelEditor : MonoBehaviour
     [SerializeField] private Transform boxInteractingObjectParent;
     [SerializeField] private Transform rootSequenceParent;
     [SerializeField] private Transform hintParent;
+    [SerializeField] private Transform generalLevelSound;
     [SerializeField] private SkeletonAnimation skeletonAnimation;
     [SerializeField] private string interactableTag;
     private List<GameObject> staticObjects;
@@ -25,8 +24,9 @@ public class LevelEditor : MonoBehaviour
     public SpineAnimMechanic[] SpineAnimMechanics => this.spineAnimMechanics;
     public InteractingBox[] InteractingBoxes => this.interactingBoxes;
     public Transform RootSequenceParent => this.rootSequenceParent;
-
     public Transform HintParent => this.hintParent;
+
+    public Transform GeneralLevelSound => this.generalLevelSound;
 
     public void PrepareData()
     {
