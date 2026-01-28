@@ -150,6 +150,7 @@ namespace Mimi
             TurnOffOldLevelGeneralSound();
             UpdateLevelGeneralSound();
             ShowGameplayView();
+            this.Context.StopSound(this.bgmSoundKey);
 
             await UniTask.Delay(500);
             await Context.EventPublisher.PublishAsync(new LevelStarted(currentLevelInfo.Id));
@@ -178,7 +179,7 @@ namespace Mimi
 
         private void TurnOffOldLevelGeneralSound()
         {
-            if (this.levelGeneralSoundKeys.Length <= 0)
+            if (this.levelGeneralSoundKeys == null || this.levelGeneralSoundKeys.Length <= 0)
             {
                 return;
             }
@@ -190,7 +191,7 @@ namespace Mimi
                     continue;
                 }
 
-                this.Context.AudioService.PlaySound(soundKey, 0);
+                this.Context.StopSound(this.bgmSoundKey);
             }
         }
     }
