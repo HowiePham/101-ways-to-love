@@ -7,6 +7,7 @@ public class StepPoint : MonoBehaviour
     [SerializeField] private GameObject doneImageObject;
     [SerializeField] private TMP_Text stepText;
     [SerializeField] private bool isChecked;
+    [SerializeField] private Vector3 maxScale;
     public bool IsChecked => this.isChecked;
 
     public void SetStepText(string stepText)
@@ -22,8 +23,10 @@ public class StepPoint : MonoBehaviour
         if (isDone)
         {
             Sequence sequence = DOTween.Sequence();
-            sequence.Append(this.doneImageObject.transform.DOScale(new Vector3(1.2f, 1.2f, 1.2f), 0.4f));
-            sequence.Append(this.doneImageObject.transform.DOScale(new Vector3(1f, 1f, 1f), 0.4f));
+            sequence.Append(this.doneImageObject.transform.DOScale(this.maxScale, 0.4f));
+            sequence.Join(this.stepText.transform.DOScale(this.maxScale, 0.4f));
+            sequence.Append(this.doneImageObject.transform.DOScale(Vector3.one, 0.4f));
+            sequence.Join(this.stepText.transform.DOScale(Vector3.one, 0.4f));
             sequence.Play();
         }
     }
