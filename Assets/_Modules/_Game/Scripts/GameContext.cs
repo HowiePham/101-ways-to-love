@@ -16,6 +16,7 @@ namespace Mimi.Prototypes
         public ILevelRepository LevelRepository { private set; get; }
         public ILevelOrder LevelOrder { private set; get; }
         public LifeSystem LifeSystem { private set; get; }
+        public LevelConfig HintLevelConfig { private set; get; }
         public IResourceCollection ResourceCollection { private set; get; }
         private CompositeLootProcessor lootProcessor;
         private CompositeLootFactory lootFactory;

@@ -53,7 +53,6 @@ public class GameplayViewPresenter : BaseViewPresenter
     protected override void OnShow()
     {
         base.OnShow();
-
         this.gameplayView.OnSettingClicked += SettingClickedHandler;
         this.gameplayView.OnSkipClicked += SkipClickedHandler;
         this.gameplayView.OnHintClicked += HintClickedHandler;
@@ -66,6 +65,8 @@ public class GameplayViewPresenter : BaseViewPresenter
         Messenger.AddListener(EventKey.ActionFailed, ActionFailedHandler);
 
         ShowLevelInfo();
+        this.gameplayView.SetActiveTutorialStepUI(this.runtimeState.CurrentLevelOrder == 0);
+
         // this.numberBasedLifeView.SetLifeCount(this.lifeSystem.CurrentLifeCount);
         // this.numberBasedLifeView.SetTimeRemaining(this.lifeSystem.GetRemainingTime());
 
@@ -97,6 +98,8 @@ public class GameplayViewPresenter : BaseViewPresenter
     protected override void OnHide()
     {
         base.OnHide();
+
+        this.gameplayView.SetActiveTutorialStepUI(false);
 
         this.gameplayView.OnSettingClicked -= SettingClickedHandler;
         this.gameplayView.OnSkipClicked -= SkipClickedHandler;
