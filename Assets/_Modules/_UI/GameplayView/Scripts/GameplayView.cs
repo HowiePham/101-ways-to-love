@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using DG.Tweening;
+using DG.Tweening.Core;
+using DG.Tweening.Plugins.Options;
 using Mimi.Prototypes.UI;
 using TMPro;
 using UnityEngine;
@@ -16,11 +18,13 @@ public class GameplayView : BaseView
 
     [Header("StepUI")] [SerializeField] private Transform stepPanel;
     [SerializeField] private StepPoint stepPointPrefab;
+    [SerializeField] private RectTransform stepTutorialUI;
 
     [Header("Button")] [SerializeField] private Button settingBtn;
     [SerializeField] private Button skipBtn;
     [SerializeField] private Button hintBtn;
 
+    private TweenerCore<Vector2, Vector2, VectorOptions> tutorialStepUITween;
     private List<StepPoint> stepPoints;
     public Action OnSettingClicked;
     public Action OnSkipClicked;
@@ -30,6 +34,7 @@ public class GameplayView : BaseView
     {
         base.Initialize();
         this.wrongSignal.gameObject.SetActive(false);
+        this.stepTutorialUI.gameObject.SetActive(false);
         this.wrongSignal.localScale = Vector3.zero;
         this.stepPoints = new List<StepPoint>();
 
@@ -41,6 +46,23 @@ public class GameplayView : BaseView
     public void SetLevelCurrent(string level)
     {
         this.levelTextCurrent.text = "Level " + level;
+    }
+
+    public void SetActiveTutorialStepUI(bool value)
+    {
+        this.stepTutorialUI.gameObject.SetActive(value);
+
+        if (value)
+        {
+            this.tutorialStepUITween = this.stepTutorialUI.DOAnchorPosY(this.stepTutorialUI.anchoredPosition.y - 15f, .75f)
+                .SetLoops(-1, LoopType.Yoyo)
+                .SetEase(Ease.InOutQuad);
+        }
+        else if (this.tutorialStepUITween != null)
+        {
+            this.tutorialStepUITween.Kill();
+            this.tutorialStepUITween = null;
+        }
     }
 
     public void ShowWrongSignal()
