@@ -23,7 +23,7 @@ namespace Mimi.Prototypes
         protected override void CreateServices()
         {
             CreateLevelServices();
-            InitLifeSystem();
+            // InitLifeSystem();
             InitResourceSystem();
             InitLootSystem();
         }
