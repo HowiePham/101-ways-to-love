@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
@@ -10,30 +11,35 @@ namespace Games
     public class HintPlayer : MonoBehaviour
     {
         [SerializeField] private BaseHint[] hints;
+        private bool levelTutorial;
 
-        private List<BaseHint> availableHints;
-
-        public bool HasHint => this.availableHints.Count > 0;
+        public bool HasHint => this.hints.Length > 0;
         public int HintStepNumber => this.hints.Length;
 
         private readonly CancellationTokenSource tokenSource = new();
 
         private void Start()
         {
-            this.availableHints = new List<BaseHint>(this.hints);
+            Init();
+        }
 
-            foreach (BaseHint hint in this.availableHints)
+        public async UniTask Init()
+        {
+            foreach (BaseHint hint in this.hints)
             {
-                hint.Initialize();
+                await hint.Initialize();
             }
         }
 
         public async UniTask ShowNextHint()
         {
+            Debug.Log($"--- (Hint) Has hint: {HasHint}");
+
             if (!HasHint) return;
 
+            Debug.Log($"--- (Hint) Showing next hint!");
             var hintRunning = false;
-            foreach (BaseHint hint in this.availableHints)
+            foreach (BaseHint hint in this.hints)
             {
                 if (!hint.IsExecuting)
                 {
@@ -46,17 +52,27 @@ namespace Games
 
             if (hintRunning)
             {
+                Debug.Log($"--- (Hint) Hint is running");
+
                 await UniTask.CompletedTask;
                 return;
             }
 
-            for (int i = 0; i < this.availableHints.Count; i++)
+            for (int i = 0; i < this.hints.Length; i++)
             {
-                if (this.availableHints[i].Completed)
-                    this.availableHints.Remove(this.availableHints[i]);
-            }
+                if (!this.hints[i].IsInitialized)
+                {
+                    Debug.Log($"--- (Hint) await hint initialized");
+                    await UniTask.WaitUntil(() => this.hints[i].IsInitialized);
+                }
 
-            await this.availableHints[0].Execute(this.tokenSource.Token);
+                if (this.hints[i].Completed)
+                {
+                    continue;
+                }
+
+                await this.hints[i].Execute(this.tokenSource.Token);
+            }
         }
 
         public void CancelHint()
