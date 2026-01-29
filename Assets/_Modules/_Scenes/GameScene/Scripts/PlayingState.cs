@@ -157,7 +157,7 @@ namespace Mimi
                 this.hintPlayer.ShowNextHint();
             }
 
-            await UniTask.Delay(500);
+            // await UniTask.Delay(500);
             await Context.EventPublisher.PublishAsync(new LevelStarted(currentLevelInfo.Id));
             await this.levelPlayer.Play();
         }
