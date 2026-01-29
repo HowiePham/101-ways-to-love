@@ -66,8 +66,8 @@ public class GameplayViewPresenter : BaseViewPresenter
         Messenger.AddListener(EventKey.ActionFailed, ActionFailedHandler);
 
         ShowLevelInfo();
-        this.numberBasedLifeView.SetLifeCount(this.lifeSystem.CurrentLifeCount);
-        this.numberBasedLifeView.SetTimeRemaining(this.lifeSystem.GetRemainingTime());
+        // this.numberBasedLifeView.SetLifeCount(this.lifeSystem.CurrentLifeCount);
+        // this.numberBasedLifeView.SetTimeRemaining(this.lifeSystem.GetRemainingTime());
 
 #if DEVELOPMENT
         var cheatViewPresenter = this.ScenePresenter.GetViewPresenter<CheatViewPresenter>();
@@ -147,8 +147,8 @@ public class GameplayViewPresenter : BaseViewPresenter
 
     private void ActionFailedHandler()
     {
-        this.gameplayView.ShowWrongSignal();
-        this.eventPublisher.PublishAsync(new LifeUsing());
+        // this.gameplayView.ShowWrongSignal();
+        // this.eventPublisher.PublishAsync(new LifeUsing());
     }
 
     private void SettingClickedHandler()

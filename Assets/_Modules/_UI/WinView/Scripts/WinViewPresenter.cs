@@ -21,7 +21,7 @@ namespace _Modules._UI.WinView.Scripts
         protected override void AddViews()
         {
             this.winView = AddView<WinView>();
-            this.currencyView = AddView<CurrencyView>();
+            // this.currencyView = AddView<CurrencyView>();
         }
 
         protected override void AddChildren()
@@ -34,7 +34,7 @@ namespace _Modules._UI.WinView.Scripts
 
             this.winView.OnContinueClicked += ContinueClickedHandler;
             this.winView.OnReplayClicked += ReplayClickedHandler;
-            this.currencyView.OnAddCurrencyClicked += AddCurrencyClickedHandler;
+            // this.currencyView.OnAddCurrencyClicked += AddCurrencyClickedHandler;
         }
 
         protected override void OnHide()
@@ -43,7 +43,7 @@ namespace _Modules._UI.WinView.Scripts
 
             this.winView.OnContinueClicked -= ContinueClickedHandler;
             this.winView.OnReplayClicked -= ReplayClickedHandler;
-            this.currencyView.OnAddCurrencyClicked -= AddCurrencyClickedHandler;
+            // this.currencyView.OnAddCurrencyClicked -= AddCurrencyClickedHandler;
         }
 
         private void AddCurrencyClickedHandler()

@@ -33,11 +33,8 @@ namespace Games
 
         public async UniTask ShowNextHint()
         {
-            Debug.Log($"--- (Hint) Has hint: {HasHint}");
-
             if (!HasHint) return;
 
-            Debug.Log($"--- (Hint) Showing next hint!");
             var hintRunning = false;
             foreach (BaseHint hint in this.hints)
             {
@@ -52,8 +49,6 @@ namespace Games
 
             if (hintRunning)
             {
-                Debug.Log($"--- (Hint) Hint is running");
-
                 await UniTask.CompletedTask;
                 return;
             }
@@ -62,7 +57,6 @@ namespace Games
             {
                 if (!this.hints[i].IsInitialized)
                 {
-                    Debug.Log($"--- (Hint) await hint initialized");
                     await UniTask.WaitUntil(() => this.hints[i].IsInitialized);
                 }
 
