@@ -73,6 +73,7 @@ public class GameplayView : BaseView
             {
                 stepPoint.gameObject.SetActive(true);
                 stepPoint.SetDoneUI(false);
+                stepPoint.SetStepText($"{count + 1}");
                 count++;
                 continue;
             }

@@ -1,11 +1,18 @@
 using DG.Tweening;
+using TMPro;
 using UnityEngine;
 
 public class StepPoint : MonoBehaviour
 {
     [SerializeField] private GameObject doneImageObject;
+    [SerializeField] private TMP_Text stepText;
     [SerializeField] private bool isChecked;
     public bool IsChecked => this.isChecked;
+
+    public void SetStepText(string stepText)
+    {
+        this.stepText.text = stepText;
+    }
 
     public void SetDoneUI(bool isDone)
     {
