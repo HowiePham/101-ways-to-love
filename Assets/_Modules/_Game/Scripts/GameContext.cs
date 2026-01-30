@@ -1,5 +1,4 @@
 using System.Linq;
-using Economy.Resources;
 using Games;
 using Mimi.Games.InitSteps;
 using Mimi.Games.Plugins;
