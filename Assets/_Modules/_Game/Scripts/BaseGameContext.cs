@@ -159,6 +159,8 @@ namespace Mimi.Prototypes
         {
             var currencyRepo = new ResourceCollection();
             PlayerResources = currencyRepo;
+            IResource coinResource = new Resource("Coin");
+            PlayerResources.AddResource(coinResource);
         }
 
         public void CreateAudioService()
