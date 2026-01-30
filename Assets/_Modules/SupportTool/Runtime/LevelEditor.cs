@@ -14,6 +14,7 @@ public class LevelEditor : MonoBehaviour
     [SerializeField] private Transform rootSequenceParent;
     [SerializeField] private Transform hintParent;
     [SerializeField] private Transform generalLevelSound;
+    [SerializeField] private Transform spineLevelSound;
     [SerializeField] private SkeletonAnimation skeletonAnimation;
     [SerializeField] private string interactableTag;
     private List<GameObject> staticObjects;
@@ -29,6 +30,8 @@ public class LevelEditor : MonoBehaviour
     public Transform RootSequenceParent => this.rootSequenceParent;
     public Transform HintParent => this.hintParent;
     public PlayAudio[] LevelSounds => this.levelSounds;
+
+    public Transform SpineLevelSound => this.spineLevelSound;
 
     public void PrepareData()
     {

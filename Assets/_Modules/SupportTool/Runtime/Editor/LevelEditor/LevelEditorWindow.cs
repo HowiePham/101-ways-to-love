@@ -1,3 +1,4 @@
+using DarkTonic.MasterAudio;
 using Games;
 using UnityEditor;
 using UnityEngine;
@@ -128,32 +129,52 @@ public class LevelEditorWindow : EditorWindow
 
         if (GUILayout.Button("Generate Level Sound", GUILayout.Height(30)))
         {
-            var creatingPlaySoundSpine = FindAnyObjectByType<CreatePlaySoundSpine>();
-
-            if (creatingPlaySoundSpine == null)
-            {
-                Debug.LogError($"Do not have any Sound Spine Generator!");
-            }
-            else
-            {
-                creatingPlaySoundSpine.Generate();
-            }
+            GenerateLevelSound();
         }
 
         if (GUILayout.Button("Generate Level Hint", GUILayout.Height(30)))
         {
-            TrueAction[] trueActions = FindObjectsByType<TrueAction>(FindObjectsSortMode.None);
-            var hintPlayer = this.levelEditor.GetComponent<HintPlayer>();
-
-            for (int i = this.levelEditor.HintParent.childCount - 1; i >= 0; i--)
-            {
-                DestroyImmediate(this.levelEditor.HintParent.GetChild(i).gameObject);
-            }
-
-            this.hintGenerator.Generate(trueActions, this.levelEditor.HintParent);
-            hintPlayer.GetHints();
+            GenerateLevelHint();
         }
 
         EditorGUILayout.EndHorizontal();
+    }
+
+    private void GenerateLevelHint()
+    {
+        TrueAction[] trueActions = FindObjectsByType<TrueAction>(FindObjectsSortMode.None);
+        var hintPlayer = this.levelEditor.GetComponent<HintPlayer>();
+
+        for (int i = this.levelEditor.HintParent.childCount - 1; i >= 0; i--)
+        {
+            DestroyImmediate(this.levelEditor.HintParent.GetChild(i).gameObject);
+        }
+
+        this.hintGenerator.Generate(trueActions, this.levelEditor.HintParent);
+        hintPlayer.GetHints();
+    }
+
+    private void GenerateLevelSound()
+    {
+        var creatingPlaySoundSpine = this.levelEditor.SpineLevelSound.GetComponent<CreatePlaySoundSpine>();
+        for (int i = this.levelEditor.SpineLevelSound.childCount - 1; i >= 0; i--)
+        {
+            DestroyImmediate(this.levelEditor.SpineLevelSound.GetChild(i).gameObject);
+        }
+
+        var dynamicSoundGroupCreator = this.levelEditor.GetComponentInChildren<DynamicSoundGroupCreator>();
+        if (dynamicSoundGroupCreator != null)
+        {
+            DestroyImmediate(dynamicSoundGroupCreator.gameObject);
+        }
+
+        if (creatingPlaySoundSpine == null)
+        {
+            Debug.LogError($"Do not have any Sound Spine Generator!");
+        }
+        else
+        {
+            creatingPlaySoundSpine.Generate();
+        }
     }
 }
