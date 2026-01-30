@@ -1,0 +1,36 @@
+pluginManagement {
+    repositories {
+        **ARTIFACTORYREPOSITORY**
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+    }
+}
+
+include ':launcher', ':unityLibrary'
+**INCLUDES**
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
+    repositories {
+        **ARTIFACTORYREPOSITORY**
+        google()
+        mavenCentral()
+// Android Resolver Repos Start
+        def unityProjectPath = $/file:///**DIR_UNITYPROJECT**/$.replace("\\", "/")
+        maven {
+            url "https://aws.oss.sonatype.org/content/repositories/releases/" // Packages/com.mimi.plugins.aps/Sdk/Amazon/Scripts/Editor/AmazonDependencies.xml:10
+        }
+        maven {
+            url (unityProjectPath + "/Assets/GeneratedLocalRepo/Firebase/m2repository") // Packages/com.google.firebase.app/Firebase/Editor/AppDependencies.xml:22, Packages/com.google.firebase.crashlytics/Firebase/Editor/CrashlyticsDependencies.xml:20, Packages/com.google.firebase.remote-config/Firebase/Editor/RemoteConfigDependencies.xml:20, Packages/com.google.firebase.analytics/Firebase/Editor/AnalyticsDependencies.xml:18
+        }
+        maven {
+            url "https://maven.google.com/" // Packages/com.mimi.plugins.google-mobile-ads/Sdk/GoogleMobileAds/Editor/GoogleMobileAdsDependencies.xml:7, Packages/com.mimi.plugins.google-mobile-ads/Sdk/GoogleMobileAds/Editor/GoogleMobileAdsDependencies.xml:12, Packages/com.mimi.plugins.google-mobile-ads/Sdk/GoogleMobileAds/Editor/GoogleMobileAdsDependencies.xml:17, Packages/com.mimi.plugins.google-mobile-ads/Sdk/GoogleMobileAds/Editor/GoogleUmpDependencies.xml:7
+        }
+        mavenLocal()
+// Android Resolver Repos End
+        flatDir {
+            dirs "${project(':unityLibrary').projectDir}/libs"
+        }
+    }
+}
