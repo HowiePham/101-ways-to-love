@@ -152,10 +152,9 @@ namespace Mimi
             UpdateLevelGeneralSound();
             ShowGameplayView();
             this.Context.StopSound(this.bgmSoundKey);
-            if (CanShowTutorial(levelOrder + 1))
-            {
-                this.hintPlayer.ShowNextHint();
-            }
+
+            await this.hintPlayer.Init();
+            this.hintPlayer.SetLevelTutorial(CanShowTutorial(levelOrder + 1));
 
             // await UniTask.Delay(500);
             await Context.EventPublisher.PublishAsync(new LevelStarted(currentLevelInfo.Id));
