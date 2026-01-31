@@ -7,4 +7,6 @@
     public const string PlayAgain = "playagain";
     public const string AnimationStart = "animationstart";
     public const string AnimationComplete = "animationcomplete";
+    public const string ResetAction = "resetaction";
+    public const string DoneIntro = "doneintro";
 }

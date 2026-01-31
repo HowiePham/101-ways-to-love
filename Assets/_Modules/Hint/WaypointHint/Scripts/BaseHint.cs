@@ -31,10 +31,10 @@ namespace VisualFlow
 
         protected override async UniTask OnExecuting(CancellationToken cancellationToken)
         {
+            Messenger.AddListener(EventKey.ResetAction, ActiveHint);
+            Messenger.AddListener(EventKey.AnimationStart, DisableHint);
             LeanTouch.OnFingerDown += FingerDownHandler;
             LeanTouch.OnFingerUp += FingerUpHandler;
-            Messenger.AddListener(EventKey.AnimationComplete, ActiveHint);
-            Messenger.AddListener(EventKey.AnimationStart, DisableHint);
             await UniTask.CompletedTask;
         }
 
@@ -52,7 +52,7 @@ namespace VisualFlow
         {
             LeanTouch.OnFingerDown -= FingerDownHandler;
             LeanTouch.OnFingerUp -= FingerUpHandler;
-            Messenger.RemoveListener(EventKey.AnimationComplete, ActiveHint);
+            Messenger.RemoveListener(EventKey.ResetAction, ActiveHint);
             Messenger.RemoveListener(EventKey.AnimationStart, DisableHint);
         }
     }

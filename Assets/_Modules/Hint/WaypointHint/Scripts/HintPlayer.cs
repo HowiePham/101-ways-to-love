@@ -16,11 +16,13 @@ namespace Games
         public bool HasHint => this.hints.Length > 0;
         public int HintStepNumber => this.hints.Length;
 
+        public bool LevelTutorial => this.levelTutorial;
+
         private readonly CancellationTokenSource tokenSource = new();
 
-        private void Start()
+        public void SetLevelTutorial(bool levelTutorial)
         {
-            Init();
+            this.levelTutorial = levelTutorial;
         }
 
         public async UniTask Init()
