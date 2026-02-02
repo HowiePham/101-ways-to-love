@@ -161,6 +161,6 @@ public class GameplayViewPresenter : BaseViewPresenter
 
     private void SkipClickedHandler()
     {
-        this.eventPublisher.PublishAsync(new NextLevelClicked());
+        this.eventPublisher.PublishAsync(new SkipLevel());
     }
 }

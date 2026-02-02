@@ -9,6 +9,7 @@ using LeveLoaders;
 using Mimi.Audio;
 using Mimi.Events;
 using Mimi.Games;
+using Mimi.Games.Events;
 using Mimi.Prototypes;
 using Mimi.Prototypes.Events;
 using Mimi.Prototypes.LevelManagement;
@@ -46,6 +47,7 @@ namespace Mimi
             Context.EventSubscriber.Subscribe<StageCompleted>(StageCompletedHandler).AddToBag(this.eventBag);
             Context.EventSubscriber.Subscribe<StageFailed>(StageFailedHandler).AddToBag(this.eventBag);
             Context.EventSubscriber.Subscribe<NextLevelClicked>(NextLevelHandler).AddToBag(this.eventBag);
+            Context.EventSubscriber.Subscribe<SkipLevel>(SkipLevelHandler).AddToBag(this.eventBag);
             Context.EventSubscriber.Subscribe<LevelTryAgain>(TryAgainLevelHandler).AddToBag(this.eventBag);
             Context.EventSubscriber.Subscribe<SelectLevel>(SelectLevelHandler).AddToBag(this.eventBag);
             Context.EventSubscriber.Subscribe<UseHint>(UseHintHandler).AddToBag(this.eventBag);
@@ -56,6 +58,12 @@ namespace Mimi
 
             // Context.LifeSystem.RunTimer();
             PlayLevel(Context.RuntimeState.CurrentLevelOrder.Value);
+        }
+
+        private async UniTask SkipLevelHandler(SkipLevel skipLevel, CancellationToken cancellation)
+        {
+            await UniTask.CompletedTask;
+            Messenger.Broadcast(EventKey.LevelWin);
         }
 
         private async UniTask UseHintHandler(UseHint useHint, CancellationToken cancellationToken)
