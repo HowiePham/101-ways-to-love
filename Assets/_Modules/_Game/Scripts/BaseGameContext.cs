@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
-using _Modules.Ads;
+// using _Modules.Ads;
 using Cysharp.Threading.Tasks;
 using Economy.Resources;
 using Firebase.Analytics;
-using GoogleMobileAds.Api;
+// using GoogleMobileAds.Api;
 using Mimi.Ads.Adapters;
-using Mimi.Ads.Adapters.Admob;
+// using Mimi.Ads.Adapters.Admob;
 using Mimi.Ads.Adapters.Extensions.Amazons.Maxs;
 using Mimi.Ads.Adapters.Extensions.FirebaseAdRevenue;
 using Mimi.Ads.Adapters.Max;
@@ -38,7 +38,7 @@ namespace Mimi.Prototypes
         [SerializeField] private BaseAudioServiceSO audioService;
         [SerializeField] private DialogManager dialogManager;
         public RuntimeState RuntimeState { private set; get; }
-        public ConsentHandler ConsentHandler { private set; get; }
+        // public ConsentHandler ConsentHandler { private set; get; }
         public bool IsAdmobConsentUpdateCompleted { private set; get; }
         public DialogManager DialogManager => this.dialogManager;
         public IResourceCollection PlayerResources { private set; get; }
@@ -144,10 +144,10 @@ namespace Mimi.Prototypes
             CreateSaveService();
             CreateAnalyticService();
 
-            await InitAdmobConsent();
-            LogInitializeEvent("init_admob_consent");
-            await InitGoogleMobileAds();
-            LogInitializeEvent("init_gma");
+            // await InitAdmobConsent();
+            // LogInitializeEvent("init_admob_consent");
+            // await InitGoogleMobileAds();
+            // LogInitializeEvent("init_gma");
             await InitAdsService();
             LogInitializeEvent("init_ads");
 
@@ -227,29 +227,29 @@ namespace Mimi.Prototypes
             FirebaseAnalytics.LogEvent(eventName);
         }
 
-        private async UniTask InitGoogleMobileAds()
-        {
-            if (Application.isEditor)
-            {
-                return;
-            }
-
-            // if (IsRemoveAds)
-            // {
-            //     return;
-            // }
-
-            bool completed = false;
-            MobileAds.Initialize(status => { completed = true; });
-            await UniTask.WaitUntil(() => completed);
-        }
-
-        private async UniTask InitAdmobConsent()
-        {
-            this.ConsentHandler = new ConsentHandler();
-            await this.ConsentHandler.InitAdmobConsent();
-            this.IsAdmobConsentUpdateCompleted = true;
-        }
+        // private async UniTask InitGoogleMobileAds()
+        // {
+        //     if (Application.isEditor)
+        //     {
+        //         return;
+        //     }
+        //
+        //     // if (IsRemoveAds)
+        //     // {
+        //     //     return;
+        //     // }
+        //
+        //     bool completed = false;
+        //     MobileAds.Initialize(status => { completed = true; });
+        //     await UniTask.WaitUntil(() => completed);
+        // }
+        //
+        // private async UniTask InitAdmobConsent()
+        // {
+        //     this.ConsentHandler = new ConsentHandler();
+        //     await this.ConsentHandler.InitAdmobConsent();
+        //     this.IsAdmobConsentUpdateCompleted = true;
+        // }
 
         private async UniTask InitAdsService()
         {
@@ -280,8 +280,8 @@ namespace Mimi.Prototypes
                 {
                     if (RemoteConfig.GetValue(ConfigKey.UseAdmobBanner).Boolean)
                     {
-                        Ads.SetBanner(
-                            new FirebaseMeasureRevenueBanner(new AdmobBanner(AdmobBannerId)));
+                        // Ads.SetBanner(
+                        //     new FirebaseMeasureRevenueBanner(new AdmobBanner(AdmobBannerId)));
                     }
                     else
                     {
@@ -321,8 +321,8 @@ namespace Mimi.Prototypes
                 }
                 else
                 {
-                    Ads.SetAppOpen(
-                        new FirebaseMeasureRevenueAppOpen(new AdmobAppOpen(AdmobAOAUnitId)));
+                    // Ads.SetAppOpen(
+                    //     new FirebaseMeasureRevenueAppOpen(new AdmobAppOpen(AdmobAOAUnitId)));
                 }
             }
             else
