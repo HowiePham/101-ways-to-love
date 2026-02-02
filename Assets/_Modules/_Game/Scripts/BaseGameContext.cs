@@ -148,8 +148,8 @@ namespace Mimi.Prototypes
             // LogInitializeEvent("init_admob_consent");
             // await InitGoogleMobileAds();
             // LogInitializeEvent("init_gma");
-            await InitAdsService();
-            LogInitializeEvent("init_ads");
+            // await InitAdsService();
+            // LogInitializeEvent("init_ads");
 
             CreateServices();
         }
