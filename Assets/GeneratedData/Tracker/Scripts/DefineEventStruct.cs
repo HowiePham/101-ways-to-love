@@ -42,6 +42,7 @@ public struct Feature_LEVEL_START : IEventData{
 
 	 public EVENT_NAME eventName { get; set; }
 	 public string level{ get; set; }
+	 public string level_mode{ get; set; }
 }
 
 public struct Feature_LEVEL_COMPLETE : IEventData{
@@ -51,6 +52,16 @@ public struct Feature_LEVEL_COMPLETE : IEventData{
 	 public EVENT_NAME eventName { get; set; }
 	 public string level{ get; set; }
 	 public string timeplayed{ get; set; }
+}
+
+public struct Feature_LEVEL_END : IEventData{
+	 public enum EVENT_NAME {
+		 level_end}
+
+	 public EVENT_NAME eventName { get; set; }
+	 public string level{ get; set; }
+	 public string level_mode{ get; set; }
+	 public string success{ get; set; }
 }
 
 public struct Feature_HINT : IEventData{
