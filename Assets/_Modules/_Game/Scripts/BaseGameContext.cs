@@ -1,13 +1,19 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
+// using _Modules.Ads;
 using Cysharp.Threading.Tasks;
 using Economy.Resources;
+using Firebase.Analytics;
+// using GoogleMobileAds.Api;
 using Mimi.Ads.Adapters;
+// using Mimi.Ads.Adapters.Admob;
+using Mimi.Ads.Adapters.Extensions.Amazons.Maxs;
+using Mimi.Ads.Adapters.Extensions.FirebaseAdRevenue;
+using Mimi.Ads.Adapters.Max;
 using Mimi.Analytics.Sessions;
+using Mimi.Analytics.Tracking.Firebase;
 using Mimi.Analytics.Tracking.Trackers;
-using Mimi.Audio;
-using Mimi.Audio.MasterAudios;
 using Mimi.Configs;
 using Mimi.DataSources.GoogleSheet;
 using Mimi.Events;
@@ -32,7 +38,8 @@ namespace Mimi.Prototypes
         [SerializeField] private BaseAudioServiceSO audioService;
         [SerializeField] private DialogManager dialogManager;
         public RuntimeState RuntimeState { private set; get; }
-
+        // public ConsentHandler ConsentHandler { private set; get; }
+        public bool IsAdmobConsentUpdateCompleted { private set; get; }
         public DialogManager DialogManager => this.dialogManager;
         public IResourceCollection PlayerResources { private set; get; }
         public ISessionRecorder SessionRecorder { private set; get; }
@@ -49,9 +56,26 @@ namespace Mimi.Prototypes
 
         public LevelConfig RateConfig { get; } = new();
         public LevelConfig ShowInterstitialLevelConfig { get; } = new();
+        public bool IsRemoveAds => false;
 
         private readonly CompositePlugin globalPluginContainer = new CompositePlugin();
         private IPluginConfigInjector projectPluginInjector;
+        private MaxMrec maxMrec;
+        private bool isMrecFirstSuccessLoad;
+
+        private const string MaxSDKKey = "OBxrqJJrFUnTguh-MKCJDDMfXuiQUo_ALm8Eydwh70knZsGl3mLMVXR5UBsA_CSWI2gbdgRZl77STkOI0oJJhx";
+        private const string TabletAmazonBannerId = "2e627403-846f-4f4e-8a28-24313ed5c55b";
+        private const string PhoneAmazonUnitId = "f9c1c176-9bc7-41aa-ad4d-deb88828b696";
+        private const string AdmobBannerId = "ca-app-pub-8798190451324475/6313636297";
+        private const string AdmobAOAUnitId = "ca-app-pub-8798190451324475/4832373554";
+        private const string AmazonMaxId = "39793f24-f3f0-481a-ad9a-c9f0d502106d";
+        private const string AmazonInterUnitId = "9910d126-a213-456e-9f31-55b05ce74415";
+        private const string AmazonRewardUnitId = "16d044a0-13af-4eb3-896c-538705396a12";
+        private const string MaxAOAUnitId = "21f5ad5aaaf88635";
+        private const string MaxInterUnityId = "4f15292379c2dcd7";
+        private const string MaxRewardUnitId = "05d9aa972c44c9f4";
+        private const string MaxBannerUnitId = "9e6983ad6c080dcd";
+        private const string MaxMrecUnitId = "b49467cc3497768f";
 
         protected override async UniTask OnInitializing()
         {
@@ -118,7 +142,25 @@ namespace Mimi.Prototypes
             CreatePlayerResourceService();
             CreateGameData();
             CreateSaveService();
+            CreateAnalyticService();
+
+            // await InitAdmobConsent();
+            // LogInitializeEvent("init_admob_consent");
+            // await InitGoogleMobileAds();
+            // LogInitializeEvent("init_gma");
+            // await InitAdsService();
+            // LogInitializeEvent("init_ads");
+
             CreateServices();
+        }
+
+        private void CreateAnalyticService()
+        {
+            AnalyticTracker = new ReflectionTracker(new FirebaseTrackingProvider());
+
+#if UNITY_EDITOR
+            AnalyticTracker = new NullTracker();
+#endif
         }
 
         private void CreateGameData()
@@ -159,6 +201,8 @@ namespace Mimi.Prototypes
         {
             var currencyRepo = new ResourceCollection();
             PlayerResources = currencyRepo;
+            IResource coinResource = new Resource("Coin");
+            PlayerResources.AddResource(coinResource);
         }
 
         public void CreateAudioService()
@@ -173,6 +217,185 @@ namespace Mimi.Prototypes
             SaveManager.AddSaveLoadStrategy(new GameSaver(this), new GameLoader(this));
         }
 
+        protected void LogInitializeEvent(string eventName)
+        {
+            if (!this.SessionRecorder.IsFirstSession)
+            {
+                return;
+            }
+
+            FirebaseAnalytics.LogEvent(eventName);
+        }
+
+        // private async UniTask InitGoogleMobileAds()
+        // {
+        //     if (Application.isEditor)
+        //     {
+        //         return;
+        //     }
+        //
+        //     // if (IsRemoveAds)
+        //     // {
+        //     //     return;
+        //     // }
+        //
+        //     bool completed = false;
+        //     MobileAds.Initialize(status => { completed = true; });
+        //     await UniTask.WaitUntil(() => completed);
+        // }
+        //
+        // private async UniTask InitAdmobConsent()
+        // {
+        //     this.ConsentHandler = new ConsentHandler();
+        //     await this.ConsentHandler.InitAdmobConsent();
+        //     this.IsAdmobConsentUpdateCompleted = true;
+        // }
+
+        private async UniTask InitAdsService()
+        {
+            if (Debug.isDebugBuild)
+            {
+                // Ads = DebugAdAdapter.Instance;
+                // Ads = new AdminToolAdapter(DebugAdAdapter.Instance);
+                Ads.SetInterstitial(EditorInterstitialAdapter.Instance);
+                Ads.SetRewardVideo(EditorRewardVideoAdapter.Instance);
+                return;
+            }
+
+            MaxSdk.SetHasUserConsent(true);
+            MaxSdk.SetDoNotSell(false);
+            // SingularSDK.TrackingOptIn();
+
+#if DEVELOPMENT
+            MaxSdkCallbacks.OnSdkInitializedEvent += (MaxSdkBase.SdkConfiguration sdkConfiguration) => { MaxSdk.ShowMediationDebugger(); };
+#endif
+
+            var amazonMaxAdapter = new AmazonMaxAdapter(AmazonMaxId, new MaxAdapter(MaxSDKKey, SystemInfo.deviceUniqueIdentifier));
+            Ads = amazonMaxAdapter;
+            await Ads.Initialize();
+
+            if (!IsRemoveAds)
+            {
+                if (RemoteConfig.GetValue(ConfigKey.ShowBanner).Boolean)
+                {
+                    if (RemoteConfig.GetValue(ConfigKey.UseAdmobBanner).Boolean)
+                    {
+                        // Ads.SetBanner(
+                        //     new FirebaseMeasureRevenueBanner(new AdmobBanner(AdmobBannerId)));
+                    }
+                    else
+                    {
+                        Ads.SetBanner(
+                            new FirebaseMeasureRevenueBanner(new AmazonMaxBanner(TabletAmazonBannerId,
+                                PhoneAmazonUnitId, MaxBannerUnitId)));
+                    }
+                }
+                else
+                {
+                    Ads.SetBanner(NullBannerAdapter.Instance);
+                }
+
+                if (RemoteConfig.GetValue(ConfigKey.ShowInterstitial).Boolean)
+                {
+                    Ads.SetInterstitial(
+                        new FirebaseMeasureRevenueInterstitial(new AmazonMaxInterstitial(AmazonInterUnitId,
+                            MaxInterUnityId)));
+                }
+
+                if (RemoteConfig.GetValue(ConfigKey.ShowMREC).Boolean)
+                {
+                    CreateMrecWithCustomPosition();
+                }
+                else
+                {
+                    Ads.SetMrec(NullMrecAdapter.Instance);
+                }
+
+                // var appOpenRequestStrategy = new ExponentialCooldown(999, 2, InternetMonitor);
+
+                if (RemoteConfig.GetValue(ConfigKey.UseMaxAoa).Boolean)
+                {
+                    Ads.SetAppOpen(
+                        new FirebaseMeasureRevenueAppOpen(
+                            new MaxAppOpen(MaxAOAUnitId)));
+                }
+                else
+                {
+                    // Ads.SetAppOpen(
+                    //     new FirebaseMeasureRevenueAppOpen(new AdmobAppOpen(AdmobAOAUnitId)));
+                }
+            }
+            else
+            {
+                Ads.SetInterstitial(EditorInterstitialAdapter.Instance);
+            }
+
+            Ads.AppOpen.Load();
+
+            if (RemoteConfig.GetValue(ConfigKey.ShowRewarded).Boolean)
+            {
+                // var rewardVideoRequestStrategy = new ExponentialCooldown(999, 2, InternetMonitor);
+                Ads.SetRewardVideo(
+                    new FirebaseMeasureRevenueRewardVideo(new AmazonMaxRewardVideo(
+                        AmazonRewardUnitId,
+                        MaxRewardUnitId)));
+            }
+
+            else
+            {
+                Ads.SetRewardVideo(EditorRewardVideoAdapter.Instance);
+            }
+
+#if DEVELOPMENT
+            if (PlayerPrefs.GetInt("RemoveAdsCheat", 0) != 0)
+            {
+                Ads.SetRewardVideo(EditorRewardVideoAdapter.Instance);
+            }
+#endif
+
+            // Ads.Banner.OnImpressionSuccess += AdsImpressionHandler;
+            // Ads.Interstitial.OnImpressionSuccess += AdsImpressionHandler;
+            // Ads.Mrec.OnImpressionSuccess += AdsImpressionHandler;
+            // Ads.RewardVideo.OnImpressionSuccess += AdsImpressionHandler;
+            // Ads.AppOpen.OnImpressionSuccess += AdsImpressionHandler;
+            Ads.Mrec.OnLoadSucceeded += () =>
+            {
+                CalculateMrecPos();
+                this.isMrecFirstSuccessLoad = true;
+            };
+
+            // EventPublisher.PublishAsync(new InitAdCompleted());
+        }
+
+        private void CreateMrecWithCustomPosition()
+        {
+            this.maxMrec = new MaxMrec(MaxMrecUnitId, 42, 484);
+
+            Ads.SetMrec(new FirebaseAdRevenueMrec(this.maxMrec));
+        }
+
+        private void CalculateMrecPos()
+        {
+            if (IsRemoveAds) return;
+            var screenWidth = Screen.width / MaxSdkUtils.GetScreenDensity();
+            var screenHeight = Screen.height / MaxSdkUtils.GetScreenDensity();
+            var mrecRect = MaxSdk.GetMRecLayout(MaxMrecUnitId);
+            int posX = 0;
+            int posY = 0;
+
+            if (!this.isMrecFirstSuccessLoad)
+            {
+                posX = Mathf.CeilToInt((screenWidth - 300) / 2);
+                posY = Mathf.CeilToInt(screenHeight - 250 - 100f);
+            }
+            else
+            {
+                posX = Mathf.CeilToInt((screenWidth - mrecRect.width) / 2);
+                posY = Mathf.CeilToInt(screenHeight - mrecRect.height - 100f);
+            }
+
+            this.maxMrec.SetPosition(posX, posY);
+        }
 
         public void StopSound(string soundKey)
         {

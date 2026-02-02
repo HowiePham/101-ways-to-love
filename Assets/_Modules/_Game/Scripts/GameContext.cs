@@ -1,5 +1,4 @@
 using System.Linq;
-using Economy.Resources;
 using Games;
 using Mimi.Games.InitSteps;
 using Mimi.Games.Plugins;
@@ -17,7 +16,6 @@ namespace Mimi.Prototypes
         public ILevelOrder LevelOrder { private set; get; }
         public LifeSystem LifeSystem { private set; get; }
         public LevelConfig HintLevelConfig { private set; get; }
-        public IResourceCollection ResourceCollection { private set; get; }
         private CompositeLootProcessor lootProcessor;
         private CompositeLootFactory lootFactory;
 
@@ -25,7 +23,6 @@ namespace Mimi.Prototypes
         {
             CreateLevelServices();
             // InitLifeSystem();
-            InitResourceSystem();
             InitLootSystem();
         }
 
@@ -44,20 +41,13 @@ namespace Mimi.Prototypes
             LevelOrder = new LinearLevelOrder(LevelRepository, levelIdOrders);
         }
 
-        private void InitResourceSystem()
-        {
-            ResourceCollection = new ResourceCollection();
-            IResource coinResource = new Resource("Coin");
-            ResourceCollection.AddResource(coinResource);
-        }
-
         private void InitLootSystem()
         {
             this.lootFactory = new CompositeLootFactory();
             this.lootFactory.AddFactory("Currency", new CurrencyLootFactory());
 
             this.lootProcessor = new CompositeLootProcessor();
-            this.lootProcessor.AddProcessor("Currency", new CurrencyLootProcessor(ResourceCollection));
+            this.lootProcessor.AddProcessor("Currency", new CurrencyLootProcessor(PlayerResources));
         }
 
         private void InitLifeSystem()

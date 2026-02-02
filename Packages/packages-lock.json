@@ -1,5 +1,48 @@
 {
   "dependencies": {
+    "com.google.external-dependency-manager": {
+      "version": "1.2.186",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://gapustudio.net/upm"
+    },
+    "com.google.firebase.analytics": {
+      "version": "13.3.0",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.google.firebase.app": "13.3.0"
+      },
+      "url": "https://gapustudio.net/upm"
+    },
+    "com.google.firebase.app": {
+      "version": "13.3.0",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.google.external-dependency-manager": "1.2.186"
+      },
+      "url": "https://gapustudio.net/upm"
+    },
+    "com.google.firebase.crashlytics": {
+      "version": "13.3.0",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.google.firebase.app": "13.3.0"
+      },
+      "url": "https://gapustudio.net/upm"
+    },
+    "com.google.firebase.remote-config": {
+      "version": "13.3.0",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.google.firebase.app": "13.3.0"
+      },
+      "url": "https://gapustudio.net/upm"
+    },
     "com.mimi.actions.async": {
       "version": "0.1.7",
       "depth": 0,
@@ -19,10 +62,53 @@
       "url": "https://gapustudio.net/upm"
     },
     "com.mimi.ads.adapters": {
-      "version": "0.1.39",
+      "version": "0.1.46",
       "depth": 0,
       "source": "registry",
       "dependencies": {},
+      "url": "https://gapustudio.net/upm"
+    },
+    "com.mimi.ads.adapters.extensions.amazon": {
+      "version": "0.1.19",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.mimi.ads.adapters": "0.1.45",
+        "com.mimi.devops.util": "0.1.16",
+        "com.mimi.plugins.aps": "2.0.0"
+      },
+      "url": "https://gapustudio.net/upm"
+    },
+    "com.mimi.ads.adapters.extensions.amazon.max": {
+      "version": "0.1.6",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.mimi.ads.adapters.extensions.amazon": "0.1.12",
+        "com.mimi.ads.adapters.max": "0.1.64",
+        "com.mimi.plugins.aps": "2.0.0",
+        "com.mimi.plugins.aps.max": "2.0.0"
+      },
+      "url": "https://gapustudio.net/upm"
+    },
+    "com.mimi.ads.adapters.extensions.firebase-ad-revenue": {
+      "version": "0.1.10",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.mimi.ads.adapters": "0.1.38",
+        "com.google.firebase.analytics": "12.1.0"
+      },
+      "url": "https://gapustudio.net/upm"
+    },
+    "com.mimi.ads.adapters.max": {
+      "version": "0.1.64",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.mimi.ads.adapters": "0.1.44",
+        "com.mimi.max.importer": "0.1.2"
+      },
       "url": "https://gapustudio.net/upm"
     },
     "com.mimi.analytics.sessions": {
@@ -31,6 +117,17 @@
       "source": "registry",
       "dependencies": {
         "com.mimi.persistence.localprefs": "0.1.0"
+      },
+      "url": "https://gapustudio.net/upm"
+    },
+    "com.mimi.analytics.tracking.firebase": {
+      "version": "0.1.11",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.mimi.analytics.tracking.trackers": "0.1.10",
+        "com.mimi.analytics.tracking.providers": "0.1.2",
+        "com.google.firebase.analytics": "10.2.0"
       },
       "url": "https://gapustudio.net/upm"
     },
@@ -93,6 +190,16 @@
       "source": "registry",
       "dependencies": {
         "com.mimi.plugins.unitask": "2.5.5"
+      },
+      "url": "https://gapustudio.net/upm"
+    },
+    "com.mimi.configs.firebase": {
+      "version": "0.1.19",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.mimi.configs.core": "0.1.14",
+        "com.google.firebase.remote-config": "12.1.0"
       },
       "url": "https://gapustudio.net/upm"
     },
@@ -181,6 +288,15 @@
       "source": "registry",
       "dependencies": {
         "com.mimi.event-bus": "0.1.0"
+      },
+      "url": "https://gapustudio.net/upm"
+    },
+    "com.mimi.facebook-sdk.importer": {
+      "version": "0.1.0",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.mimi.plugins.facebook-sdk": "16.0.0"
       },
       "url": "https://gapustudio.net/upm"
     },
@@ -277,6 +393,15 @@
       "dependencies": {},
       "url": "https://gapustudio.net/upm"
     },
+    "com.mimi.max.importer": {
+      "version": "0.1.6",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.mimi.devops.util": "0.1.16"
+      },
+      "url": "https://gapustudio.net/upm"
+    },
     "com.mimi.operation-result": {
       "version": "0.1.0",
       "depth": 0,
@@ -307,6 +432,24 @@
       "dependencies": {},
       "url": "https://gapustudio.net/upm"
     },
+    "com.mimi.plugins.aps": {
+      "version": "2.0.0",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.test-framework": "1.1.33"
+      },
+      "url": "https://gapustudio.net/upm"
+    },
+    "com.mimi.plugins.aps.max": {
+      "version": "2.0.0",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.mimi.plugins.aps": "2.0.0"
+      },
+      "url": "https://gapustudio.net/upm"
+    },
     "com.mimi.plugins.dotween": {
       "version": "1.2.765",
       "depth": 0,
@@ -316,6 +459,13 @@
     },
     "com.mimi.plugins.esotericsoftware.spine.spine-unity": {
       "version": "3.8.0",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://gapustudio.net/upm"
+    },
+    "com.mimi.plugins.facebook-sdk": {
+      "version": "18.0.0",
       "depth": 0,
       "source": "registry",
       "dependencies": {},
@@ -337,6 +487,13 @@
     },
     "com.mimi.plugins.master-audio": {
       "version": "2022.0.5",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://gapustudio.net/upm"
+    },
+    "com.mimi.plugins.max": {
+      "version": "8.5.1",
       "depth": 0,
       "source": "registry",
       "dependencies": {},
