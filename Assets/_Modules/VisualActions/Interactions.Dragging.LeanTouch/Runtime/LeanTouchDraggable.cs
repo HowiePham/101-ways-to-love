@@ -69,7 +69,7 @@ namespace Mimi.Interactions.Dragging
         {
             var boxArea = GetComponent<BoxArea>();
 
-            if (!boxArea.ContainsScreenPosition(finger.ScreenPosition, Camera.main))
+            if (finger.IsOverGui || !boxArea.ContainsScreenPosition(finger.ScreenPosition, Camera.main))
             {
                 return;
             }
