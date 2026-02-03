@@ -54,6 +54,58 @@ MonoBehaviour:
   animation: action2
   timeScale: 1
   track: 0
+--- !u!1 &2612134094678241027
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8181479804978470397}
+  - component: {fileID: 3275196795054978875}
+  m_Layer: 0
+  m_Name: SetActive_On
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8181479804978470397
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2612134094678241027}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2353013464136129991}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3275196795054978875
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2612134094678241027}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e9e684be3dc42a782496667df140c62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  onExit:
+    m_PersistentCalls:
+      m_Calls: []
+  gameObjects: []
+  status: 1
 --- !u!1 &3002586240630248274
 GameObject:
   m_ObjectHideFlags: 0
@@ -211,7 +263,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8046924057383360292, guid: ee9ecb5859a3efa478780a175f32ecbe, type: 3}
       propertyPath: m_Name
-      value: Drag_NoResult Variant
+      value: Drag_NoResult
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -225,6 +277,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6586629906638475751, guid: ee9ecb5859a3efa478780a175f32ecbe, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6072840753649390501}
+    - targetCorrespondingSourceObject: {fileID: 6586629906638475751, guid: ee9ecb5859a3efa478780a175f32ecbe, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8181479804978470397}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ee9ecb5859a3efa478780a175f32ecbe, type: 3}
 --- !u!4 &2353013464136129991 stripped
