@@ -5,6 +5,7 @@ using UnityEngine;
 public class StepPoint : MonoBehaviour
 {
     [SerializeField] private GameObject doneImageObject;
+    [SerializeField] private GameObject bridgeImageObject;
     [SerializeField] private TMP_Text stepText;
     [SerializeField] private bool isChecked;
     [SerializeField] private Vector3 maxScale;
@@ -15,6 +16,11 @@ public class StepPoint : MonoBehaviour
         this.stepText.text = stepText;
     }
 
+    public void SetActiveBridgeImage(bool active)
+    {
+        this.bridgeImageObject.SetActive(active);
+    }
+    
     public void SetDoneUI(bool isDone)
     {
         this.doneImageObject.SetActive(isDone);

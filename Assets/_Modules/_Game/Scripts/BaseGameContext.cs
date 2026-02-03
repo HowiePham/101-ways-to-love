@@ -37,7 +37,9 @@ namespace Mimi.Prototypes
         [SerializeField] private SheetAsset localizeAsset;
         [SerializeField] private BaseAudioServiceSO audioService;
         [SerializeField] private DialogManager dialogManager;
+
         public RuntimeState RuntimeState { private set; get; }
+
         // public ConsentHandler ConsentHandler { private set; get; }
         public bool IsAdmobConsentUpdateCompleted { private set; get; }
         public DialogManager DialogManager => this.dialogManager;
@@ -88,6 +90,7 @@ namespace Mimi.Prototypes
             RuntimeState = RuntimeState.Get();
             await CreateCoreServices();
             SaveManager.Load();
+            CreateServices();
             IGameInitiator gameInitiator = new ReportProgressGameInitiator(EventPublisher);
             AddDefaultInitSteps(gameInitiator, projectConfig);
             AddInitSteps(gameInitiator, projectConfig);
@@ -143,6 +146,7 @@ namespace Mimi.Prototypes
             CreateGameData();
             CreateSaveService();
             CreateAnalyticService();
+            CreateAudioService();
 
             // await InitAdmobConsent();
             // LogInitializeEvent("init_admob_consent");
@@ -150,8 +154,6 @@ namespace Mimi.Prototypes
             // LogInitializeEvent("init_gma");
             // await InitAdsService();
             // LogInitializeEvent("init_ads");
-
-            CreateServices();
         }
 
         private void CreateAnalyticService()
@@ -204,11 +206,11 @@ namespace Mimi.Prototypes
             IResource coinResource = new Resource("Coin");
             PlayerResources.AddResource(coinResource);
         }
-
-        public void CreateAudioService()
+        
+        private void CreateAudioService()
         {
-            AudioService = new AudioServiceAdapter(this.audioService);
-            ServiceLocator.Global.Register(AudioService);
+            this.AudioService = new AudioServiceAdapter(this.audioService);
+            ServiceLocator.Global.Register(this.AudioService);
         }
 
         private void CreateSaveService()

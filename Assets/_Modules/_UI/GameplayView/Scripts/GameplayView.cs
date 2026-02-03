@@ -86,16 +86,17 @@ public class GameplayView : BaseView
             }
         }
 
-        var count = 0;
+        var count = 1;
         for (int i = 0; i < this.stepPoints.Count; i++)
         {
             StepPoint stepPoint = this.stepPoints[i];
 
-            if (count < stepNumber)
+            if (count <= stepNumber)
             {
                 stepPoint.gameObject.SetActive(true);
                 stepPoint.SetDoneUI(false);
-                stepPoint.SetStepText($"{count + 1}");
+                stepPoint.SetStepText($"{count}");
+                stepPoint.SetActiveBridgeImage(count < stepNumber);
                 count++;
                 continue;
             }
