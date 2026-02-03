@@ -18,6 +18,8 @@ namespace GameScenes
         [SerializeField, SpineAnimation(dataField = "skeletonAnimation")]
         protected new string winAnimation;
 
+        [SerializeField] private bool loopWinAnim = true;
+
         public PlayAudio[] LevelGeneralAudio => this.levelGeneralAudio;
 
         public async UniTask Play()
@@ -28,7 +30,7 @@ namespace GameScenes
         public async UniTask EndLevel()
         {
             var levelEditor = GetComponent<LevelEditor>();
-            this.skeletonAnimation.AnimationState.SetAnimation(0, this.winAnimation, false);
+            this.skeletonAnimation.AnimationState.SetAnimation(0, this.winAnimation, this.loopWinAnim);
 
             levelEditor.BoxInteractingObjectParent.gameObject.SetActive(false);
             levelEditor.InteractableObjectParent.gameObject.SetActive(false);
