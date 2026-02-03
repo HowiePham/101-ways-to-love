@@ -37,7 +37,9 @@ namespace Mimi.Prototypes
         [SerializeField] private SheetAsset localizeAsset;
         [SerializeField] private BaseAudioServiceSO audioService;
         [SerializeField] private DialogManager dialogManager;
+
         public RuntimeState RuntimeState { private set; get; }
+
         // public ConsentHandler ConsentHandler { private set; get; }
         public bool IsAdmobConsentUpdateCompleted { private set; get; }
         public DialogManager DialogManager => this.dialogManager;

@@ -1,6 +1,7 @@
 using Mimi.Events.AsyncBus;
 using Mimi.Games.Events;
 using Mimi.Persistence.LocalPrefs;
+using Mimi.Prototypes;
 using Mimi.Prototypes.SaveLoad;
 using Mimi.Prototypes.UI;
 using UnityEngine;
@@ -11,14 +12,17 @@ public class SettingViewPresenter : BaseViewPresenter
     private readonly IAsyncPublisher eventPublisher;
     private readonly ILocalPrefs localPrefs;
     private readonly SettingModel settingModel;
+    private readonly RuntimeState runtimeState;
     private readonly ISaveManager saveManager;
 
-    public SettingViewPresenter(BaseScenePresenter scenePresenter, Transform transform, IAsyncPublisher eventPublisher, SettingModel settingModel, ISaveManager saveManager) : base(scenePresenter,
+    public SettingViewPresenter(BaseScenePresenter scenePresenter, Transform transform, IAsyncPublisher eventPublisher, SettingModel settingModel, ISaveManager saveManager,
+        RuntimeState runtimeState) : base(scenePresenter,
         transform)
     {
         this.eventPublisher = eventPublisher;
         this.settingModel = settingModel;
         this.saveManager = saveManager;
+        this.runtimeState = runtimeState;
     }
 
     protected override void AddViews()
@@ -50,7 +54,7 @@ public class SettingViewPresenter : BaseViewPresenter
         this.settingView.OnMusicClicked -= MusicClickedHandler;
         this.settingView.OnSoundClicked -= SoundClickedHandler;
         this.settingView.OnVibrationClicked -= VibrationClickedHandler;
-        
+
         this.saveManager.Save();
     }
 
@@ -76,7 +80,8 @@ public class SettingViewPresenter : BaseViewPresenter
     {
         Debug.Log($"--- (SETTING) Close Setting Panel");
 
-        this.eventPublisher.PublishAsync(new LevelResumed("1"));
+        int currentLevelOrder = this.runtimeState.CurrentLevelOrder.Value + 1;
+        this.eventPublisher.PublishAsync(new LevelResumed(currentLevelOrder.ToString()));
         Hide();
     }
 }
