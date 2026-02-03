@@ -36,5 +36,49 @@ public struct Feature_SESSION_START : IEventData{
 	 public EVENT_NAME eventName { get; set; }
 }
 
+public struct Feature_LEVEL_START : IEventData{
+	 public enum EVENT_NAME {
+		 level_start}
+
+	 public EVENT_NAME eventName { get; set; }
+	 public string level{ get; set; }
+	 public string level_mode{ get; set; }
+}
+
+public struct Feature_LEVEL_COMPLETE : IEventData{
+	 public enum EVENT_NAME {
+		 level_complete}
+
+	 public EVENT_NAME eventName { get; set; }
+	 public string level{ get; set; }
+	 public string timeplayed{ get; set; }
+}
+
+public struct Feature_LEVEL_END : IEventData{
+	 public enum EVENT_NAME {
+		 level_end}
+
+	 public EVENT_NAME eventName { get; set; }
+	 public string level{ get; set; }
+	 public string level_mode{ get; set; }
+	 public string success{ get; set; }
+}
+
+public struct Feature_HINT : IEventData{
+	 public enum EVENT_NAME {
+		 hint}
+
+	 public EVENT_NAME eventName { get; set; }
+	 public string level{ get; set; }
+}
+
+public struct Feature_SKIP : IEventData{
+	 public enum EVENT_NAME {
+		 skip}
+
+	 public EVENT_NAME eventName { get; set; }
+	 public string level{ get; set; }
+}
+
 	}
 

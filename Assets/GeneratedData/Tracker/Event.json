@@ -33,6 +33,58 @@
     {
       "eventName": "session_start",
       "parameters": []
+    },
+    {
+      "eventName": "level_start",
+      "parameters": [
+        {
+          "keyName": "level"
+        },
+        {
+          "keyName": "level_mode"
+        }
+      ]
+    },
+    {
+      "eventName": "level_complete",
+      "parameters": [
+        {
+          "keyName": "level"
+        },
+        {
+          "keyName": "timeplayed"
+        }
+      ]
+    },
+    {
+      "eventName": "level_end",
+      "parameters": [
+        {
+          "keyName": "level"
+        },
+        {
+          "keyName": "level_mode"
+        },
+        {
+          "keyName": "success"
+        }
+      ]
+    },
+    {
+      "eventName": "hint",
+      "parameters": [
+        {
+          "keyName": "level"
+        }
+      ]
+    },
+    {
+      "eventName": "skip",
+      "parameters": [
+        {
+          "keyName": "level"
+        }
+      ]
     }
   ]
 }

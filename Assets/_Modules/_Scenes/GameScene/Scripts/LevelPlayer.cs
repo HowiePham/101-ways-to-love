@@ -1,7 +1,9 @@
 using Cysharp.Threading.Tasks;
 using Mimi.Audio;
 using Mimi.VisualActions.Audio;
+using Mimi.VisualActions.Spines;
 using Sirenix.OdinInspector;
+using Spine.Unity;
 using UnityEngine;
 
 namespace GameScenes
@@ -11,6 +13,10 @@ namespace GameScenes
     {
         [SerializeField] private Timeline timeline;
         [SerializeField] private PlayAudio[] levelGeneralAudio;
+        [SerializeField] private SkeletonAnimation skeletonAnimation;
+
+        [SerializeField, SpineAnimation(dataField = "skeletonAnimation")]
+        protected new string winAnimation;
 
         public PlayAudio[] LevelGeneralAudio => this.levelGeneralAudio;
 
@@ -19,10 +25,39 @@ namespace GameScenes
             await this.timeline.Play();
         }
 
+        public async UniTask EndLevel()
+        {
+            var levelEditor = GetComponent<LevelEditor>();
+            this.skeletonAnimation.AnimationState.SetAnimation(0, this.winAnimation, false);
+
+            levelEditor.BoxInteractingObjectParent.gameObject.SetActive(false);
+            levelEditor.InteractableObjectParent.gameObject.SetActive(false);
+            levelEditor.DisableWhileRunningAnimation.gameObject.SetActive(false);
+            levelEditor.HintParent.gameObject.SetActive(false);
+        }
+
         [Button]
         private async void StartPlay()
         {
             await Play();
+        }
+
+        [Button]
+        private void GetWinAnimation()
+        {
+            // var trueAnimLoops = FindObjectsByType<PlaySpineAnim>(FindObjectsSortMode.None);
+            var trueAnimLoops = GetComponentsInChildren<PlaySpineAnim>();
+
+            foreach (PlaySpineAnim spineAnim in trueAnimLoops)
+            {
+                if (!spineAnim.gameObject.name.Contains("LoopAnim_True"))
+                {
+                    continue;
+                }
+
+                this.winAnimation = spineAnim.Animation;
+                return;
+            }
         }
 
         public void Cancel()
