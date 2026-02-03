@@ -25,7 +25,6 @@ namespace Mimi
         [SerializeField, SoundKey] private string interactingSoundKey;
         [SerializeField, SoundKey] private string bgmSoundKey;
         [SerializeField] private GameObject winCamera;
-        [SerializeField] private int[] levelTutorials;
 
         private string[] levelGeneralSoundKeys;
         private LevelInfo currentLevel;
@@ -172,15 +171,7 @@ namespace Mimi
 
         private bool CanShowTutorial(int currentLevelOrder)
         {
-            foreach (int levelOrder in this.levelTutorials)
-            {
-                if (levelOrder == currentLevelOrder)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return this.Context.HintLevelConfig.HasLevel(currentLevelOrder.ToString());
         }
 
         private void ShowGameplayView()

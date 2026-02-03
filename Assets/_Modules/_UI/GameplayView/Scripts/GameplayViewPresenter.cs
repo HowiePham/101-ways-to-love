@@ -19,6 +19,7 @@ public class GameplayViewPresenter : BaseViewPresenter
     private readonly IAsyncSubscriber eventSubscriber;
     private readonly DisposableBag eventBag = new DisposableBag();
     private readonly RuntimeState runtimeState;
+    private readonly LevelConfig hintLevelConfig;
     private readonly LifeSystem lifeSystem;
 
     private GameplayView gameplayView;
@@ -30,14 +31,15 @@ public class GameplayViewPresenter : BaseViewPresenter
 
     private const float TimeStep = 1f;
 
-    public GameplayViewPresenter(BaseScenePresenter scenePresenter, Transform transform, IAsyncPublisher eventPublisher, IAsyncSubscriber eventSubscriber, RuntimeState runtimeState,
-        LifeSystem lifeSystem) :
+    public GameplayViewPresenter(BaseScenePresenter scenePresenter, Transform transform, IAsyncPublisher eventPublisher, IAsyncSubscriber eventSubscriber,
+        RuntimeState runtimeState, LifeSystem lifeSystem, LevelConfig hintLevelConfig) :
         base(scenePresenter, transform)
     {
         this.eventPublisher = eventPublisher;
         this.eventSubscriber = eventSubscriber;
         this.runtimeState = runtimeState;
         this.lifeSystem = lifeSystem;
+        this.hintLevelConfig = hintLevelConfig;
     }
 
     protected override void AddViews()
@@ -61,9 +63,11 @@ public class GameplayViewPresenter : BaseViewPresenter
         this.eventSubscriber.Subscribe<LifeUpdated>(OnLifeUpdate).AddToBag(this.eventBag);
         this.eventSubscriber.Subscribe<RecoveryLifeTimerUpdated>(OnRecoveryTimerUpdate).AddToBag(this.eventBag);
         Messenger.AddListener(EventKey.LevelWin, ShowWinView);
+        Messenger.AddListener(EventKey.ShowHint, HintClickedHandler);
         Messenger.AddListener(EventKey.ActionDone, UpdateStepPoint);
         Messenger.AddListener(EventKey.ActionFailed, ActionFailedHandler);
 
+        HandleHintButtonVisible();
         ShowLevelInfo();
 
         // this.numberBasedLifeView.SetLifeCount(this.lifeSystem.CurrentLifeCount);
@@ -75,6 +79,13 @@ public class GameplayViewPresenter : BaseViewPresenter
 #endif
     }
 
+    private void HandleHintButtonVisible()
+    {
+        int currentLevelOrder = this.runtimeState.CurrentLevelOrder.Value + 1;
+        bool isHintLevel = this.hintLevelConfig.HasLevel(currentLevelOrder.ToString());
+        this.gameplayView.SetActiveHintButton(!isHintLevel);
+    }
+
     public void InitStepPoint(int stepNumber)
     {
         this.gameplayView.InitStepPoint(stepNumber);
@@ -82,6 +93,7 @@ public class GameplayViewPresenter : BaseViewPresenter
 
     private void HintClickedHandler()
     {
+        this.gameplayView.SetActiveHintButton(false);
         this.eventPublisher.PublishAsync(new UseHint());
     }
 
@@ -104,6 +116,7 @@ public class GameplayViewPresenter : BaseViewPresenter
 
         this.eventBag.Dispose();
         Messenger.RemoveListener(EventKey.LevelWin, ShowWinView);
+        Messenger.RemoveListener(EventKey.ShowHint, HintClickedHandler);
         Messenger.RemoveListener(EventKey.ActionDone, UpdateStepPoint);
         Messenger.RemoveListener(EventKey.ActionFailed, ActionFailedHandler);
 

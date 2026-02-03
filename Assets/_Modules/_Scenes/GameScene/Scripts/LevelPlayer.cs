@@ -14,10 +14,8 @@ namespace GameScenes
         [SerializeField] private Timeline timeline;
         [SerializeField] private PlayAudio[] levelGeneralAudio;
         [SerializeField] private SkeletonAnimation skeletonAnimation;
-
         [SerializeField, SpineAnimation(dataField = "skeletonAnimation")]
         protected new string winAnimation;
-
         [SerializeField] private bool loopWinAnim = true;
 
         public PlayAudio[] LevelGeneralAudio => this.levelGeneralAudio;
@@ -47,7 +45,6 @@ namespace GameScenes
         [Button]
         private void GetWinAnimation()
         {
-            // var trueAnimLoops = FindObjectsByType<PlaySpineAnim>(FindObjectsSortMode.None);
             var trueAnimLoops = GetComponentsInChildren<PlaySpineAnim>();
 
             foreach (PlaySpineAnim spineAnim in trueAnimLoops)
