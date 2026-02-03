@@ -14,15 +14,17 @@ public class SettingViewPresenter : BaseViewPresenter
     private readonly SettingModel settingModel;
     private readonly RuntimeState runtimeState;
     private readonly ISaveManager saveManager;
+    private readonly IAudioService audioService;
 
     public SettingViewPresenter(BaseScenePresenter scenePresenter, Transform transform, IAsyncPublisher eventPublisher, SettingModel settingModel, ISaveManager saveManager,
-        RuntimeState runtimeState) : base(scenePresenter,
+        RuntimeState runtimeState, IAudioService audioService) : base(scenePresenter,
         transform)
     {
         this.eventPublisher = eventPublisher;
         this.settingModel = settingModel;
         this.saveManager = saveManager;
         this.runtimeState = runtimeState;
+        this.audioService = audioService;
     }
 
     protected override void AddViews()
@@ -68,12 +70,14 @@ public class SettingViewPresenter : BaseViewPresenter
     {
         Debug.Log($"--- (SETTING) Sound Setting changed to: {value}");
         this.settingModel.SoundOn = value;
+        this.audioService.SetSoundVolPercentage(value ? 1 : 0);
     }
 
     private void MusicClickedHandler(bool value)
     {
         Debug.Log($"--- (SETTING) Music Setting changed to: {value}");
         this.settingModel.MusicOn = value;
+        this.audioService.SetMusicVolPercentage(value ? 1 : 0);
     }
 
     private void CloseClickedHandler()
