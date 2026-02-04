@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using MEC;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,6 +9,7 @@ namespace Mimi.Prototypes
 {
     public class BootView : MonoBehaviour
     {
+        [SerializeField] private RectTransform logo;
         [SerializeField] private Image loadingFillImage;
         [SerializeField] private GameObject[] loadingDotObjects;
 
@@ -14,10 +17,21 @@ namespace Mimi.Prototypes
 
         public void Show()
         {
+            RunLogoEffect();
+
             if (this.loadingDotObjects.Length > 0)
             {
                 this.animateDotHandle = Timing.RunCoroutine(_AnimateLoadingDots());
             }
+        }
+
+        private async UniTask RunLogoEffect()
+        {
+            this.logo.localScale = Vector3.zero;
+            await UniTask.WaitForSeconds(0.2f);
+            await this.logo.DOScale(1.2f, 0.4f).SetEase(Ease.InOutQuad).AsyncWaitForCompletion();
+            await this.logo.DOScale(1f, 0.2f).SetEase(Ease.InOutQuad).AsyncWaitForCompletion();
+            this.logo.DOScale(1.05f, 0.4f).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo);
         }
 
         public void Hide()

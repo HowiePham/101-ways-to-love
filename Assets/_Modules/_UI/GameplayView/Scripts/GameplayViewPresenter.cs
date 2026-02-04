@@ -3,14 +3,12 @@ using _Modules._UI.CheatView.Scripts;
 using _Modules._UI.WinView.Scripts;
 using Cysharp.Threading.Tasks;
 using MEC;
-using Mimi.Events;
 using Mimi.Events.AsyncBus;
 using Mimi.Games;
 using Mimi.Games.Events;
 using Mimi.Prototypes;
 using Mimi.Prototypes.Events;
 using Mimi.Prototypes.UI;
-using Mimi.Rx.Variables;
 using UnityEngine;
 
 public class GameplayViewPresenter : BaseViewPresenter
@@ -58,6 +56,7 @@ public class GameplayViewPresenter : BaseViewPresenter
         this.gameplayView.OnSettingClicked += SettingClickedHandler;
         this.gameplayView.OnSkipClicked += SkipClickedHandler;
         this.gameplayView.OnHintClicked += HintClickedHandler;
+        this.gameplayView.OnRemoveAdsClicked += ShowRemoveAdsView;
 
         this.eventSubscriber.Subscribe<LevelResumed>(ResumeGameplay).AddToBag(this.eventBag);
         this.eventSubscriber.Subscribe<LifeUpdated>(OnLifeUpdate).AddToBag(this.eventBag);
@@ -68,6 +67,7 @@ public class GameplayViewPresenter : BaseViewPresenter
         Messenger.AddListener(EventKey.ActionFailed, ActionFailedHandler);
 
         HandleHintButtonVisible();
+        HandleSkipButtonVisible();
         ShowLevelInfo();
 
         // this.numberBasedLifeView.SetLifeCount(this.lifeSystem.CurrentLifeCount);
@@ -77,6 +77,11 @@ public class GameplayViewPresenter : BaseViewPresenter
         var cheatViewPresenter = this.ScenePresenter.GetViewPresenter<CheatViewPresenter>();
         cheatViewPresenter.Show();
 #endif
+    }
+
+    private void HandleSkipButtonVisible()
+    {
+        this.gameplayView.SetActiveSkipButton(true);
     }
 
     private void HandleHintButtonVisible()
@@ -113,6 +118,7 @@ public class GameplayViewPresenter : BaseViewPresenter
         this.gameplayView.OnSettingClicked -= SettingClickedHandler;
         this.gameplayView.OnSkipClicked -= SkipClickedHandler;
         this.gameplayView.OnHintClicked -= HintClickedHandler;
+        this.gameplayView.OnRemoveAdsClicked -= ShowRemoveAdsView;
 
         this.eventBag.Dispose();
         Messenger.RemoveListener(EventKey.LevelWin, ShowWinView);
@@ -175,5 +181,11 @@ public class GameplayViewPresenter : BaseViewPresenter
     private void SkipClickedHandler()
     {
         this.eventPublisher.PublishAsync(new SkipLevel());
+    }
+
+    private void ShowRemoveAdsView()
+    {
+        var removeAdsPresenter = this.ScenePresenter.GetViewPresenter<RemoveAdsViewPresenter>();
+        removeAdsPresenter.Show();
     }
 }

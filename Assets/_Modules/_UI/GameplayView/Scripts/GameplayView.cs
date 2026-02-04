@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using DG.Tweening.Core;
 using DG.Tweening.Plugins.Options;
@@ -23,12 +24,22 @@ public class GameplayView : BaseView
     [Header("Button")] [SerializeField] private Button settingBtn;
     [SerializeField] private Button skipBtn;
     [SerializeField] private Button hintBtn;
+    [SerializeField] private Button removeAdsButton;
+
+    [Header("Popup Effect")] [SerializeField]
+    private RectTransform[] showingEffectUIs;
+
+    [SerializeField] private Vector3 skipShowingPos;
+    [SerializeField] private Vector3 skipHidingPos;
+    [SerializeField] private Vector3 hintShowingPos;
+    [SerializeField] private Vector3 hintHidingPos;
 
     private TweenerCore<Vector2, Vector2, VectorOptions> tutorialStepUITween;
     private List<StepPoint> stepPoints;
     public Action OnSettingClicked;
     public Action OnSkipClicked;
     public Action OnHintClicked;
+    public Action OnRemoveAdsClicked;
 
     public override void Initialize()
     {
@@ -41,6 +52,17 @@ public class GameplayView : BaseView
         this.settingBtn.onClick.AddListener(() => this.OnSettingClicked?.Invoke());
         this.skipBtn.onClick.AddListener(() => this.OnSkipClicked?.Invoke());
         this.hintBtn.onClick.AddListener(() => this.OnHintClicked?.Invoke());
+        this.removeAdsButton.onClick.AddListener(() => OnRemoveAdsClicked?.Invoke());
+    }
+
+    public override void Show()
+    {
+        base.Show();
+
+        foreach (RectTransform uiItem in this.showingEffectUIs)
+        {
+            ScaleUIEffect(uiItem, 0.5f);
+        }
     }
 
     public void SetLevelCurrent(string level)
@@ -119,8 +141,51 @@ public class GameplayView : BaseView
         }
     }
 
-    public void SetActiveHintButton(bool value)
+    public void SetActiveHintButton(bool value, float delay = 0f)
     {
         this.hintBtn.gameObject.SetActive(value);
+
+        if (!value)
+        {
+            return;
+        }
+
+        MovingUIEffect(this.hintBtn.GetComponent<RectTransform>(), this.hintHidingPos, this.hintShowingPos, 1f, delay, true);
+    }
+
+    public void SetActiveSkipButton(bool value, float delay = 0f)
+    {
+        this.skipBtn.gameObject.SetActive(value);
+        
+        if (!value)
+        {
+            return;
+        }
+
+        MovingUIEffect(this.skipBtn.GetComponent<RectTransform>(), this.skipHidingPos, this.skipShowingPos, 1f, delay, true);
+    }
+
+    private async UniTask MovingUIEffect(RectTransform uiItem, Vector3 firstPos, Vector3 targetPos, float duration, float delay, bool driftingEffect)
+    {
+        uiItem.anchoredPosition = firstPos;
+        await UniTask.WaitForSeconds(delay);
+        if (driftingEffect)
+        {
+            var driftingPos = new Vector3(targetPos.x - 10f, targetPos.y, targetPos.z);
+            await uiItem.DOAnchorPos(driftingPos, duration).SetEase(Ease.InOutQuad).AsyncWaitForCompletion();
+            await uiItem.DOAnchorPos(targetPos, duration / 3).SetEase(Ease.InOutQuad).AsyncWaitForCompletion();
+        }
+        else
+        {
+            await uiItem.DOAnchorPos(targetPos, duration).SetEase(Ease.InOutQuad).AsyncWaitForCompletion();
+        }
+    }
+
+    private async UniTask ScaleUIEffect(RectTransform uiItem, float delay)
+    {
+        uiItem.localScale = Vector3.zero;
+        await UniTask.WaitForSeconds(delay);
+        await uiItem.DOScale(1.2f, 0.4f).SetEase(Ease.InOutQuad).AsyncWaitForCompletion();
+        await uiItem.DOScale(1f, 0.2f).SetEase(Ease.InOutQuad).AsyncWaitForCompletion();
     }
 }
