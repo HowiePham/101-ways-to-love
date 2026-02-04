@@ -66,8 +66,8 @@ public class GameplayViewPresenter : BaseViewPresenter
         Messenger.AddListener(EventKey.ActionDone, UpdateStepPoint);
         Messenger.AddListener(EventKey.ActionFailed, ActionFailedHandler);
 
-        HandleHintButtonVisible();
-        HandleSkipButtonVisible();
+        HandleHintButtonVisible(3f);
+        HandleSkipButtonVisible(5f);
         ShowLevelInfo();
 
         // this.numberBasedLifeView.SetLifeCount(this.lifeSystem.CurrentLifeCount);
@@ -79,16 +79,16 @@ public class GameplayViewPresenter : BaseViewPresenter
 #endif
     }
 
-    private void HandleSkipButtonVisible()
+    private void HandleSkipButtonVisible(float delay = 0)
     {
-        this.gameplayView.SetActiveSkipButton(true);
+        this.gameplayView.SetActiveSkipButton(true,delay);
     }
 
-    private void HandleHintButtonVisible()
+    private void HandleHintButtonVisible(float delay = 0)
     {
         int currentLevelOrder = this.runtimeState.CurrentLevelOrder.Value + 1;
         bool isHintLevel = this.hintLevelConfig.HasLevel(currentLevelOrder.ToString());
-        this.gameplayView.SetActiveHintButton(!isHintLevel);
+        this.gameplayView.SetActiveHintButton(!isHintLevel,delay);
     }
 
     public void InitStepPoint(int stepNumber)

@@ -73,7 +73,7 @@ public class GameplayView : BaseView
 
         await UniTask.WhenAll(scalingTask);
 
-        LoopScalingUIEffect(this.removeAdsButton.GetComponent<RectTransform>(), 1.1f, 0.5f);
+        LoopScalingUIEffect(this.removeAdsButton.GetComponent<RectTransform>(), 1.1f, 1f);
     }
 
     public void SetLevelCurrent(string level)
@@ -152,7 +152,7 @@ public class GameplayView : BaseView
         }
     }
 
-    public void SetActiveHintButton(bool value, float delay = 0f)
+    public async UniTask SetActiveHintButton(bool value, float delay = 0f)
     {
         this.hintBtn.gameObject.SetActive(value);
 
@@ -161,10 +161,11 @@ public class GameplayView : BaseView
             return;
         }
 
-        MovingUIEffect(this.hintBtn.GetComponent<RectTransform>(), this.hintHidingPos, this.hintShowingPos, 1f, delay, true);
+        await MovingUIEffect(this.hintBtn.GetComponent<RectTransform>(), this.hintHidingPos, this.hintShowingPos, 1f, delay, true);
+        LoopScalingUIEffect(this.hintBtn.GetComponent<RectTransform>(), 1.1f, 1f);
     }
 
-    public void SetActiveSkipButton(bool value, float delay = 0f)
+    public async UniTask SetActiveSkipButton(bool value, float delay = 0f)
     {
         this.skipBtn.gameObject.SetActive(value);
 
@@ -173,7 +174,8 @@ public class GameplayView : BaseView
             return;
         }
 
-        MovingUIEffect(this.skipBtn.GetComponent<RectTransform>(), this.skipHidingPos, this.skipShowingPos, 1f, delay, true);
+        await MovingUIEffect(this.skipBtn.GetComponent<RectTransform>(), this.skipHidingPos, this.skipShowingPos, 1f, delay, true);
+        LoopScalingUIEffect(this.skipBtn.GetComponent<RectTransform>(), 1.1f, 1f);
     }
 
     private async UniTask MovingUIEffect(RectTransform uiItem, Vector3 firstPos, Vector3 targetPos, float duration, float delay, bool driftingEffect)
