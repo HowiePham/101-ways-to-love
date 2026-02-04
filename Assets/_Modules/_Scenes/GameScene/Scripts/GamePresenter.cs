@@ -32,6 +32,8 @@ namespace Mimi.Prototypes
             Debug.Log($"--- (PRESENTER) Init LoseViewPresenter");
             var loseViewPresenter = new LoseViewPresenter(this, this.Transform, gameContext.EventPublisher);
             AddViewPresenter(loseViewPresenter);
+            var removeAdsViewPresenter = new RemoveAdsViewPresenter(this, this.Transform);
+            AddViewPresenter(removeAdsViewPresenter);
 
 #if DEVELOPMENT
             var cheatViewPresenter = new CheatViewPresenter(this, this.Transform, gameContext.EventPublisher);

@@ -3,14 +3,12 @@ using _Modules._UI.CheatView.Scripts;
 using _Modules._UI.WinView.Scripts;
 using Cysharp.Threading.Tasks;
 using MEC;
-using Mimi.Events;
 using Mimi.Events.AsyncBus;
 using Mimi.Games;
 using Mimi.Games.Events;
 using Mimi.Prototypes;
 using Mimi.Prototypes.Events;
 using Mimi.Prototypes.UI;
-using Mimi.Rx.Variables;
 using UnityEngine;
 
 public class GameplayViewPresenter : BaseViewPresenter
