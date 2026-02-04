@@ -59,10 +59,21 @@ public class GameplayView : BaseView
     {
         base.Show();
 
-        foreach (RectTransform uiItem in this.showingEffectUIs)
+        HandleUIEffect();
+    }
+
+    private async UniTask HandleUIEffect()
+    {
+        var scalingTask = new UniTask[this.showingEffectUIs.Length];
+        for (var i = 0; i < this.showingEffectUIs.Length; i++)
         {
-            ScaleUIEffect(uiItem, 0.5f);
+            RectTransform uiItem = this.showingEffectUIs[i];
+            scalingTask[i] = ScaleUIEffect(uiItem, 0.5f);
         }
+
+        await UniTask.WhenAll(scalingTask);
+
+        LoopScalingUIEffect(this.removeAdsButton.GetComponent<RectTransform>(), 1.1f, 0.5f);
     }
 
     public void SetLevelCurrent(string level)
@@ -156,7 +167,7 @@ public class GameplayView : BaseView
     public void SetActiveSkipButton(bool value, float delay = 0f)
     {
         this.skipBtn.gameObject.SetActive(value);
-        
+
         if (!value)
         {
             return;
@@ -187,5 +198,12 @@ public class GameplayView : BaseView
         await UniTask.WaitForSeconds(delay);
         await uiItem.DOScale(1.2f, 0.4f).SetEase(Ease.InOutQuad).AsyncWaitForCompletion();
         await uiItem.DOScale(1f, 0.2f).SetEase(Ease.InOutQuad).AsyncWaitForCompletion();
+    }
+
+    private async UniTask LoopScalingUIEffect(RectTransform uiItem, float targetValue, float delay)
+    {
+        uiItem.localScale = Vector3.one;
+        await UniTask.WaitForSeconds(delay);
+        uiItem.DOScale(targetValue, 0.4f).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo);
     }
 }
