@@ -67,6 +67,7 @@ public class GameplayViewPresenter : BaseViewPresenter
         Messenger.AddListener(EventKey.ActionFailed, ActionFailedHandler);
 
         HandleHintButtonVisible();
+        HandleSkipButtonVisible();
         ShowLevelInfo();
 
         // this.numberBasedLifeView.SetLifeCount(this.lifeSystem.CurrentLifeCount);
@@ -76,6 +77,11 @@ public class GameplayViewPresenter : BaseViewPresenter
         var cheatViewPresenter = this.ScenePresenter.GetViewPresenter<CheatViewPresenter>();
         cheatViewPresenter.Show();
 #endif
+    }
+
+    private void HandleSkipButtonVisible()
+    {
+        this.gameplayView.SetActiveSkipButton(true);
     }
 
     private void HandleHintButtonVisible()

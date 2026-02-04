@@ -29,6 +29,11 @@ public class GameplayView : BaseView
     [Header("Popup Effect")] [SerializeField]
     private RectTransform[] showingEffectUIs;
 
+    [SerializeField] private Vector3 skipShowingPos;
+    [SerializeField] private Vector3 skipHidingPos;
+    [SerializeField] private Vector3 hintShowingPos;
+    [SerializeField] private Vector3 hintHidingPos;
+
     private TweenerCore<Vector2, Vector2, VectorOptions> tutorialStepUITween;
     private List<StepPoint> stepPoints;
     public Action OnSettingClicked;
@@ -136,14 +141,44 @@ public class GameplayView : BaseView
         }
     }
 
-    public void SetActiveHintButton(bool value)
+    public void SetActiveHintButton(bool value, float delay = 0f)
     {
         this.hintBtn.gameObject.SetActive(value);
+
+        if (!value)
+        {
+            return;
+        }
+
+        MovingUIEffect(this.hintBtn.GetComponent<RectTransform>(), this.hintHidingPos, this.hintShowingPos, 1f, delay, true);
     }
 
-    public void SetActiveSkipButton(bool value)
+    public void SetActiveSkipButton(bool value, float delay = 0f)
     {
         this.skipBtn.gameObject.SetActive(value);
+        
+        if (!value)
+        {
+            return;
+        }
+
+        MovingUIEffect(this.skipBtn.GetComponent<RectTransform>(), this.skipHidingPos, this.skipShowingPos, 1f, delay, true);
+    }
+
+    private async UniTask MovingUIEffect(RectTransform uiItem, Vector3 firstPos, Vector3 targetPos, float duration, float delay, bool driftingEffect)
+    {
+        uiItem.anchoredPosition = firstPos;
+        await UniTask.WaitForSeconds(delay);
+        if (driftingEffect)
+        {
+            var driftingPos = new Vector3(targetPos.x - 10f, targetPos.y, targetPos.z);
+            await uiItem.DOAnchorPos(driftingPos, duration).SetEase(Ease.InOutQuad).AsyncWaitForCompletion();
+            await uiItem.DOAnchorPos(targetPos, duration / 3).SetEase(Ease.InOutQuad).AsyncWaitForCompletion();
+        }
+        else
+        {
+            await uiItem.DOAnchorPos(targetPos, duration).SetEase(Ease.InOutQuad).AsyncWaitForCompletion();
+        }
     }
 
     private async UniTask ScaleUIEffect(RectTransform uiItem, float delay)
