@@ -27,9 +27,11 @@ namespace Mimi.Prototypes
             DontDestroyOnLoad(this);
         }
 
-        public async void StartLoading()
+        public async UniTask StartLoading()
         {
             this.bootView.Show();
+            await this.bootView.RunLogoEffect();
+            await this.bootView.ShowLoadingBarEffect();
             await Load();
             this.gameContext.EventPublisher.PublishAsync(new BootGameCompleted());
             this.bootView.Hide();
@@ -40,7 +42,7 @@ namespace Mimi.Prototypes
         {
             float loadingSecs = Application.isEditor ? 1f : fakeLoadingSecs;
             float loadingPercentage = 0f;
-            
+
             UniTask fakeLoadingBarProgress = DOTween.To(() => loadingPercentage,
                 value =>
                 {
