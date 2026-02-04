@@ -35,6 +35,7 @@ namespace _Modules._UI.WinView.Scripts
             this.winView.OnContinueClicked += ContinueClickedHandler;
             this.winView.OnReplayClicked += ReplayClickedHandler;
             this.winView.OnRemoveAdsClicked += ShowRemoveAdsView;
+            this.winView.OnSettingClicked += SettingClickedHandler;
             // this.currencyView.OnAddCurrencyClicked += AddCurrencyClickedHandler;
         }
 
@@ -45,6 +46,7 @@ namespace _Modules._UI.WinView.Scripts
             this.winView.OnContinueClicked -= ContinueClickedHandler;
             this.winView.OnReplayClicked -= ReplayClickedHandler;
             this.winView.OnRemoveAdsClicked -= ShowRemoveAdsView;
+            this.winView.OnSettingClicked -= SettingClickedHandler;
             // this.currencyView.OnAddCurrencyClicked -= AddCurrencyClickedHandler;
         }
 
@@ -61,16 +63,20 @@ namespace _Modules._UI.WinView.Scripts
 
         private void ContinueClickedHandler()
         {
-            Debug.Log($"--- (WIN) Continue Clicked");
             this.eventPublisher.PublishAsync(new NextLevelClicked());
             Hide();
         }
 
         private void ReplayClickedHandler()
         {
-            Debug.Log($"--- (WIN) Replay Clicked");
             this.eventPublisher.PublishAsync(new LevelTryAgain());
             Hide();
+        }
+
+        private void SettingClickedHandler()
+        {
+            var settingViewPresenter = this.ScenePresenter.GetViewPresenter<SettingViewPresenter>();
+            settingViewPresenter.Show();
         }
     }
 }
