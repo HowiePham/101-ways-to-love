@@ -11,11 +11,13 @@ namespace _Modules._UI.WinView.Scripts
         [SerializeField] private RectTransform resultView;
         [SerializeField] private CanvasGroup continueBtnGroup;
         [SerializeField] private CanvasGroup replayBtnGroup;
+        [SerializeField] private Button removeAdsButton;
         [SerializeField] private Button continueButton;
         [SerializeField] private Button replayButton;
 
         public Action OnContinueClicked;
         public Action OnReplayClicked;
+        public Action OnRemoveAdsClicked;
 
         public override void Initialize()
         {
@@ -23,6 +25,7 @@ namespace _Modules._UI.WinView.Scripts
 
             this.continueButton.onClick.AddListener(() => OnContinueClicked?.Invoke());
             this.replayButton.onClick.AddListener(() => OnReplayClicked?.Invoke());
+            this.removeAdsButton.onClick.AddListener(() => OnRemoveAdsClicked?.Invoke());
         }
 
         public override async void Show()

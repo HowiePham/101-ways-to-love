@@ -23,12 +23,14 @@ public class GameplayView : BaseView
     [Header("Button")] [SerializeField] private Button settingBtn;
     [SerializeField] private Button skipBtn;
     [SerializeField] private Button hintBtn;
+    [SerializeField] private Button removeAdsButton;
 
     private TweenerCore<Vector2, Vector2, VectorOptions> tutorialStepUITween;
     private List<StepPoint> stepPoints;
     public Action OnSettingClicked;
     public Action OnSkipClicked;
     public Action OnHintClicked;
+    public Action OnRemoveAdsClicked;
 
     public override void Initialize()
     {
@@ -41,6 +43,7 @@ public class GameplayView : BaseView
         this.settingBtn.onClick.AddListener(() => this.OnSettingClicked?.Invoke());
         this.skipBtn.onClick.AddListener(() => this.OnSkipClicked?.Invoke());
         this.hintBtn.onClick.AddListener(() => this.OnHintClicked?.Invoke());
+        this.removeAdsButton.onClick.AddListener(() => OnRemoveAdsClicked?.Invoke());
     }
 
     public void SetLevelCurrent(string level)

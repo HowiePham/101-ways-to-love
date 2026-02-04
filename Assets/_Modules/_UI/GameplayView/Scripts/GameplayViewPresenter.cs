@@ -56,6 +56,7 @@ public class GameplayViewPresenter : BaseViewPresenter
         this.gameplayView.OnSettingClicked += SettingClickedHandler;
         this.gameplayView.OnSkipClicked += SkipClickedHandler;
         this.gameplayView.OnHintClicked += HintClickedHandler;
+        this.gameplayView.OnRemoveAdsClicked += ShowRemoveAdsView;
 
         this.eventSubscriber.Subscribe<LevelResumed>(ResumeGameplay).AddToBag(this.eventBag);
         this.eventSubscriber.Subscribe<LifeUpdated>(OnLifeUpdate).AddToBag(this.eventBag);
@@ -111,6 +112,7 @@ public class GameplayViewPresenter : BaseViewPresenter
         this.gameplayView.OnSettingClicked -= SettingClickedHandler;
         this.gameplayView.OnSkipClicked -= SkipClickedHandler;
         this.gameplayView.OnHintClicked -= HintClickedHandler;
+        this.gameplayView.OnRemoveAdsClicked -= ShowRemoveAdsView;
 
         this.eventBag.Dispose();
         Messenger.RemoveListener(EventKey.LevelWin, ShowWinView);
@@ -173,5 +175,11 @@ public class GameplayViewPresenter : BaseViewPresenter
     private void SkipClickedHandler()
     {
         this.eventPublisher.PublishAsync(new SkipLevel());
+    }
+
+    private void ShowRemoveAdsView()
+    {
+        var removeAdsPresenter = this.ScenePresenter.GetViewPresenter<RemoveAdsViewPresenter>();
+        removeAdsPresenter.Show();
     }
 }
