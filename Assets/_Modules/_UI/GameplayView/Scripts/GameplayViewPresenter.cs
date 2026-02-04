@@ -43,7 +43,7 @@ public class GameplayViewPresenter : BaseViewPresenter
     protected override void AddViews()
     {
         this.gameplayView = AddView<GameplayView>();
-        this.numberBasedLifeView = AddView<NumberBasedLifeView>();
+        // this.numberBasedLifeView = AddView<NumberBasedLifeView>();
     }
 
     protected override void AddChildren()
