@@ -27,6 +27,7 @@ namespace Mimi.Prototypes
         {
             HandleFirstAudio();
             CreateLevelServices();
+            InitHintLevelConfig();
             // InitLifeSystem();
             InitLootSystem();
         }
@@ -54,6 +55,12 @@ namespace Mimi.Prototypes
             LevelRepository = new SheetLevelRepository(GetDataSheet<SheetLevelModel>("LevelRepo"));
             var levelIdOrders = GetDataSheet<SheetOrderModel>().Select(x => x.Id).Distinct();
             LevelOrder = new LinearLevelOrder(LevelRepository, levelIdOrders);
+        }
+
+        private void InitHintLevelConfig()
+        {
+            this.HintLevelConfig = new LevelConfig();
+            this.HintLevelConfig.ParseConfig("1,5");
         }
 
         private void InitLootSystem()

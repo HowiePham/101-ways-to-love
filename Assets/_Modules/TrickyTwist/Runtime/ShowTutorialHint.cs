@@ -1,6 +1,7 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using Games;
+using Mimi.Prototypes.Events;
 using Mimi.VisualActions;
 using UnityEngine;
 
@@ -12,7 +13,7 @@ public class ShowTutorialHint : VisualAction
     {
         if (this.hintPlayer.LevelTutorial)
         {
-            this.hintPlayer.ShowNextHint();
+            Messenger.Broadcast(EventKey.ShowHint);
         }
 
         await UniTask.CompletedTask;

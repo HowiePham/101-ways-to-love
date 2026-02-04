@@ -9,4 +9,5 @@
     public const string AnimationComplete = "animationcomplete";
     public const string ResetAction = "resetaction";
     public const string DoneIntro = "doneintro";
+    public const string ShowHint = "showhint";
 }

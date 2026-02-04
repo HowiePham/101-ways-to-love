@@ -118,4 +118,9 @@ public class GameplayView : BaseView
             break;
         }
     }
+
+    public void SetActiveHintButton(bool value)
+    {
+        this.hintBtn.gameObject.SetActive(value);
+    }
 }
