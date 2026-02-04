@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using DG.Tweening.Core;
 using DG.Tweening.Plugins.Options;
@@ -44,6 +45,16 @@ public class GameplayView : BaseView
         this.skipBtn.onClick.AddListener(() => this.OnSkipClicked?.Invoke());
         this.hintBtn.onClick.AddListener(() => this.OnHintClicked?.Invoke());
         this.removeAdsButton.onClick.AddListener(() => OnRemoveAdsClicked?.Invoke());
+    }
+
+    public override void Show()
+    {
+        base.Show();
+
+        ScaleUIEffect(this.settingBtn.GetComponent<RectTransform>(), 0.5f);
+        ScaleUIEffect(this.removeAdsButton.GetComponent<RectTransform>(), 0.5f);
+        ScaleUIEffect(this.stepPanel.GetComponent<RectTransform>(), 0.5f);
+        ScaleUIEffect(this.levelTextCurrent.GetComponent<RectTransform>(), 0.5f);
     }
 
     public void SetLevelCurrent(string level)
@@ -125,5 +136,18 @@ public class GameplayView : BaseView
     public void SetActiveHintButton(bool value)
     {
         this.hintBtn.gameObject.SetActive(value);
+    }
+
+    public void SetActiveSkipButton(bool value)
+    {
+        this.skipBtn.gameObject.SetActive(value);
+    }
+
+    private async UniTask ScaleUIEffect(RectTransform uiItem, float delay)
+    {
+        uiItem.localScale = Vector3.zero;
+        await UniTask.WaitForSeconds(delay);
+        await uiItem.DOScale(1.2f, 0.4f).SetEase(Ease.InOutQuad).AsyncWaitForCompletion();
+        await uiItem.DOScale(1f, 0.2f).SetEase(Ease.InOutQuad).AsyncWaitForCompletion();
     }
 }
