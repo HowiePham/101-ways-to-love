@@ -1,4 +1,6 @@
 using System;
+using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Mimi.Prototypes.UI;
 using UnityEngine;
@@ -35,20 +37,35 @@ namespace _Modules._UI.WinView.Scripts
 
         public override async void Show()
         {
+            base.Show();
+
+            HandleUIEffect();
+        }
+
+        private async UniTask HandleUIEffect()
+        {
             this.resultView.localScale = Vector3.zero;
             this.continueBtnGroup.DOFade(0f, 0f);
             this.replayBtnGroup.DOFade(0f, 0f);
             this.removeAdsBtnGroup.DOFade(0f, 0f);
             this.settingBtnGroup.DOFade(0f, 0f);
 
-            base.Show();
-
             await DOTween.Sequence().Append(this.resultView.DOScale(1f, 0.4f)).AsyncWaitForCompletion();
 
-            this.continueBtnGroup.DOFade(1f, 0.5f);
-            this.replayBtnGroup.DOFade(1f, 0.5f);
-            this.removeAdsBtnGroup.DOFade(1f, 0.5f);
-            this.settingBtnGroup.DOFade(1f, 0.5f);
+            this.continueBtnGroup.DOFade(1f, 0.5f).AsyncWaitForCompletion();
+            this.replayBtnGroup.DOFade(1f, 0.5f).AsyncWaitForCompletion();
+            this.removeAdsBtnGroup.DOFade(1f, 0.5f).AsyncWaitForCompletion();
+            await this.settingBtnGroup.DOFade(1f, 0.5f).AsyncWaitForCompletion();
+
+            LoopScalingUIEffect(this.removeAdsButton.GetComponent<RectTransform>(), 1.1f, 0, 1f);
+            LoopScalingUIEffect(this.continueButton.GetComponent<RectTransform>(), 1.1f, 0, 1f);
+        }
+        
+        private async UniTask LoopScalingUIEffect(RectTransform uiItem, float targetValue, float delay, float duration)
+        {
+            uiItem.localScale = Vector3.one;
+            await UniTask.WaitForSeconds(delay);
+            uiItem.DOScale(targetValue, duration).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo);
         }
     }
 }
