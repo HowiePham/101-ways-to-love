@@ -32,6 +32,8 @@ namespace GameScenes
 
         public async UniTask EndLevel()
         {
+            Cancel();
+            
             var levelEditor = GetComponent<LevelEditor>();
             this.skeletonAnimation.AnimationState.SetAnimation(0, this.winAnimation, this.loopWinAnim);
 
