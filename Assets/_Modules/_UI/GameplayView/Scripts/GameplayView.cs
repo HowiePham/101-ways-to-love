@@ -73,7 +73,7 @@ public class GameplayView : BaseView
 
         await UniTask.WhenAll(scalingTask);
 
-        LoopScalingUIEffect(this.removeAdsButton.GetComponent<RectTransform>(), 1.1f, 1f);
+        LoopScalingUIEffect(this.removeAdsButton.GetComponent<RectTransform>(), 1.1f, 1f, 1f);
     }
 
     public void SetLevelCurrent(string level)
@@ -162,7 +162,7 @@ public class GameplayView : BaseView
         }
 
         await MovingUIEffect(this.hintBtn.GetComponent<RectTransform>(), this.hintHidingPos, this.hintShowingPos, 1f, delay, true);
-        LoopScalingUIEffect(this.hintBtn.GetComponent<RectTransform>(), 1.1f, 1f);
+        LoopScalingUIEffect(this.hintBtn.GetComponent<RectTransform>(), 1.1f, 1f, 1f);
     }
 
     public async UniTask SetActiveSkipButton(bool value, float delay = 0f)
@@ -175,7 +175,7 @@ public class GameplayView : BaseView
         }
 
         await MovingUIEffect(this.skipBtn.GetComponent<RectTransform>(), this.skipHidingPos, this.skipShowingPos, 1f, delay, true);
-        LoopScalingUIEffect(this.skipBtn.GetComponent<RectTransform>(), 1.1f, 1f);
+        LoopScalingUIEffect(this.skipBtn.GetComponent<RectTransform>(), 1.1f, 1f, 1f);
     }
 
     private async UniTask MovingUIEffect(RectTransform uiItem, Vector3 firstPos, Vector3 targetPos, float duration, float delay, bool driftingEffect)
@@ -185,7 +185,7 @@ public class GameplayView : BaseView
         if (driftingEffect)
         {
             var driftingPos = new Vector3(targetPos.x - 10f, targetPos.y, targetPos.z);
-            await uiItem.DOAnchorPos(driftingPos, duration).SetEase(Ease.InOutQuad).AsyncWaitForCompletion();
+            await uiItem.DOAnchorPos(driftingPos, duration * 2 / 3).SetEase(Ease.InOutQuad).AsyncWaitForCompletion();
             await uiItem.DOAnchorPos(targetPos, duration / 3).SetEase(Ease.InOutQuad).AsyncWaitForCompletion();
         }
         else
@@ -202,10 +202,10 @@ public class GameplayView : BaseView
         await uiItem.DOScale(1f, 0.2f).SetEase(Ease.InOutQuad).AsyncWaitForCompletion();
     }
 
-    private async UniTask LoopScalingUIEffect(RectTransform uiItem, float targetValue, float delay)
+    private async UniTask LoopScalingUIEffect(RectTransform uiItem, float targetValue, float delay, float duration)
     {
         uiItem.localScale = Vector3.one;
         await UniTask.WaitForSeconds(delay);
-        uiItem.DOScale(targetValue, 0.4f).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo);
+        uiItem.DOScale(targetValue, duration).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo);
     }
 }
