@@ -26,6 +26,9 @@ public class GameplayView : BaseView
     [SerializeField] private Button hintBtn;
     [SerializeField] private Button removeAdsButton;
 
+    [Header("Popup Effect")] [SerializeField]
+    private RectTransform[] showingEffectUIs;
+
     private TweenerCore<Vector2, Vector2, VectorOptions> tutorialStepUITween;
     private List<StepPoint> stepPoints;
     public Action OnSettingClicked;
@@ -51,10 +54,10 @@ public class GameplayView : BaseView
     {
         base.Show();
 
-        ScaleUIEffect(this.settingBtn.GetComponent<RectTransform>(), 0.5f);
-        ScaleUIEffect(this.removeAdsButton.GetComponent<RectTransform>(), 0.5f);
-        ScaleUIEffect(this.stepPanel.GetComponent<RectTransform>(), 0.5f);
-        ScaleUIEffect(this.levelTextCurrent.GetComponent<RectTransform>(), 0.5f);
+        foreach (RectTransform uiItem in this.showingEffectUIs)
+        {
+            ScaleUIEffect(uiItem, 0.5f);
+        }
     }
 
     public void SetLevelCurrent(string level)
