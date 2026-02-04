@@ -13,10 +13,15 @@ namespace GameScenes
     {
         [SerializeField] private Timeline timeline;
         [SerializeField] private PlayAudio[] levelGeneralAudio;
-        [SerializeField] private SkeletonAnimation skeletonAnimation;
+
+        [Header("Win Level Reference")] [SerializeField]
+        private SkeletonAnimation skeletonAnimation;
+
         [SerializeField, SpineAnimation(dataField = "skeletonAnimation")]
         protected new string winAnimation;
+
         [SerializeField] private bool loopWinAnim = true;
+        [SerializeField] private Transform winCameraDestination;
 
         public PlayAudio[] LevelGeneralAudio => this.levelGeneralAudio;
 
@@ -34,6 +39,24 @@ namespace GameScenes
             levelEditor.InteractableObjectParent.gameObject.SetActive(false);
             levelEditor.DisableWhileRunningAnimation.gameObject.SetActive(false);
             levelEditor.HintParent.gameObject.SetActive(false);
+
+            UpdateWinCameraPosition();
+        }
+
+        public void Cancel()
+        {
+            this.timeline.Cancel();
+        }
+
+        private void UpdateWinCameraPosition()
+        {
+            GameObject winCamera = GameObject.Find("WinCamera");
+            if (winCamera == null || this.winCameraDestination == null)
+            {
+                return;
+            }
+
+            winCamera.transform.position = this.winCameraDestination.transform.position;
         }
 
         [Button]
@@ -59,9 +82,19 @@ namespace GameScenes
             }
         }
 
-        public void Cancel()
+        [Button]
+        private void GetWinCameraDestination()
         {
-            this.timeline.Cancel();
+            Transform[] allChildren = GetComponentsInChildren<Transform>(true);
+
+            foreach (Transform child in allChildren)
+            {
+                if (child.name == "WinCameraDestination")
+                {
+                    this.winCameraDestination = child;
+                    break;
+                }
+            }
         }
     }
 }

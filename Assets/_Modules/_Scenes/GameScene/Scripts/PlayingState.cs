@@ -62,6 +62,7 @@ namespace Mimi
         private async UniTask SkipLevelHandler(SkipLevel skipLevel, CancellationToken cancellation)
         {
             await UniTask.CompletedTask;
+            this.winCamera.SetActive(true);
             this.levelPlayer.EndLevel();
             Messenger.Broadcast(EventKey.LevelWin);
         }
