@@ -27,9 +27,11 @@ namespace Mimi.Prototypes
             DontDestroyOnLoad(this);
         }
 
-        public async void StartLoading()
+        public async UniTask StartLoading()
         {
             this.bootView.Show();
+            await this.bootView.RunLogoEffect();
+            await this.bootView.ShowLoadingBarEffect();
             await Load();
             this.gameContext.EventPublisher.PublishAsync(new BootGameCompleted());
             this.bootView.Hide();
@@ -40,20 +42,20 @@ namespace Mimi.Prototypes
         {
             float loadingSecs = Application.isEditor ? 1f : fakeLoadingSecs;
             float loadingPercentage = 0f;
-            
+
             UniTask fakeLoadingBarProgress = DOTween.To(() => loadingPercentage,
                 value =>
                 {
                     loadingPercentage = value;
                     this.bootView.SetLoadingPercentage(loadingPercentage);
-                }, 0.2f, loadingSecs).AsyncWaitForCompletion().AsUniTask();
+                }, 0.8f, loadingSecs).AsyncWaitForCompletion().AsUniTask();
 
             UniTask waitForContextInitialized = UniTask.WaitUntil(() => this.gameContext.IsInitialized);
-            UniTask loadNextScene = this.gameContext.LoadSceneAsync(this.nextSceneType.Type);
             UniTask loadingProgress =
                 UniTask.WhenAll(fakeLoadingBarProgress, waitForContextInitialized);
 
             await loadingProgress;
+            UniTask loadNextScene = this.gameContext.LoadSceneAsync(this.nextSceneType.Type);
             await loadNextScene;
 
             await DOTween.To(() => loadingPercentage,
