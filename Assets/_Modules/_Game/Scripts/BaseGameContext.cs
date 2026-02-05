@@ -206,7 +206,7 @@ namespace Mimi.Prototypes
             IResource coinResource = new Resource("Coin");
             PlayerResources.AddResource(coinResource);
         }
-        
+
         private void CreateAudioService()
         {
             this.AudioService = new AudioServiceAdapter(this.audioService);

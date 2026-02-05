@@ -31,12 +31,16 @@ namespace Mimi.Services.ScriptableObject.Audio
         {
             WrapAudioPlayer?.SetSoundVolPercentage(percentage);
             this.soundVolPercentage = percentage;
+            
+            Debug.Log($"--- (AUDIO) New sound vol: {this.soundVolPercentage}");
         }
 
         public void SetMusicVolPercentage(float percentage)
         {
             WrapAudioPlayer?.SetMusicVolPercentage(percentage);
             this.musicVolPercentage = percentage;
+            
+            Debug.Log($"--- (AUDIO) New Music vol: {this.musicVolPercentage}");
         }
 
         public abstract void StopSound(string key);
