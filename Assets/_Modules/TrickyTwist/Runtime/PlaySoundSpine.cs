@@ -64,15 +64,15 @@ namespace VisualFlow
                 this.count++;
                 if (this.noLoop && !this.outPlaysound)
                 {
-                    // ServiceLocator.Get<IAudioService>().PlaySound(this.nameMusic);
-                    this.AudioPlayer.PlaySound(this.nameMusic);
+                    ServiceLocator.Get<IAudioService>().PlaySound(this.nameMusic);
+                    // this.AudioPlayer.PlaySound(this.nameMusic);
                     this.outPlaysound = true;
                 }
 
                 if (!this.outPlaysound)
                 {
-                    // ServiceLocator.Get<IAudioService>().PlaySound(this.nameMusic);
-                    this.AudioPlayer.PlaySound(this.nameMusic);
+                    ServiceLocator.Get<IAudioService>().PlaySound(this.nameMusic);
+                    // this.AudioPlayer.PlaySound(this.nameMusic);
                 }
             }
         }

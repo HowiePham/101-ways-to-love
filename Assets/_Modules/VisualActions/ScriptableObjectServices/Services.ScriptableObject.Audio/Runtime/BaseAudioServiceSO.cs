@@ -21,7 +21,6 @@ namespace Mimi.Services.ScriptableObject.Audio
         public void PlaySound(string key, float volumePercentage = 1, float pitch = 1)
         {
             WrapAudioPlayer?.PlaySound(key, volumePercentage, pitch);
-
         }
 
         public void SetSoundVolPercentage(float percentage)
