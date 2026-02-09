@@ -59,6 +59,12 @@ public class HintGenerator
         hint.SetField("hintedAction", actionCondition, AccessModifier.Private);
 
         var tapArea = actionCondition.GetComponent<TapArea>();
+        if (tapArea == null)
+        {
+            hint.transform.position = Vector3.zero;
+            return;
+        }
+
         hint.transform.position = tapArea.Target.transform.position;
     }
 
