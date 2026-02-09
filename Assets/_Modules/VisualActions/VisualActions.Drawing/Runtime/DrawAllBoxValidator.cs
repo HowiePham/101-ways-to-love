@@ -59,7 +59,7 @@ namespace VisualActions.Drawing
                 Transform pointTrans = this.checkBoxRoot.GetChild(i);
                 var bound = new Bounds(pointTrans.position, this.checkBoxSize);
                 var boundState = new CheckBoundState(bound);
-                this.detectBounds.Add(boundState);
+                bounds.Add(boundState);
             }
 
             return bounds;
