@@ -7,6 +7,7 @@ public class BoxSnapping : MonoBehaviour
     [SerializeField] private GameObject[] snappingObjects;
     [SerializeField] private bool startingObjectState;
     [SerializeField] private SnappingEffect[] snappingEffects;
+    [SerializeField] private SnappingBoxCheckingEffect[] checkingEffects;
     private int count;
 
     private void Start()
@@ -14,6 +15,28 @@ public class BoxSnapping : MonoBehaviour
         foreach (GameObject snappingObj in this.snappingObjects)
         {
             snappingObj.SetActive(this.startingObjectState);
+        }
+    }
+
+    public async UniTask ShowCheckingEffect()
+    {
+        GameObject snappingObject = this.snappingObjects[this.count];
+
+        for (int i = 0; i < this.checkingEffects.Length; i++)
+        {
+            SnappingBoxCheckingEffect effect = this.checkingEffects[i];
+            await effect.ShowEffect(snappingObject.transform);
+        }
+    }
+
+    public async UniTask HideCheckingEffect()
+    {
+        GameObject snappingObject = this.snappingObjects[this.count];
+
+        for (int i = 0; i < this.checkingEffects.Length; i++)
+        {
+            SnappingBoxCheckingEffect effect = this.checkingEffects[i];
+            await effect.HideEffect(snappingObject.transform);
         }
     }
 
@@ -39,5 +62,11 @@ public class BoxSnapping : MonoBehaviour
     private void GetAllSnappingEffects()
     {
         this.snappingEffects = GetComponentsInChildren<SnappingEffect>();
+    }
+
+    [Button]
+    private void GetAllCheckingEffects()
+    {
+        this.checkingEffects = GetComponentsInChildren<SnappingBoxCheckingEffect>();
     }
 }

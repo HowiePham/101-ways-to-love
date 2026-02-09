@@ -3,6 +3,7 @@ using Cysharp.Threading.Tasks;
 using Mimi.Audio;
 using Mimi.Prototypes;
 using Mimi.ServiceLocators;
+using Mimi.Services.ScriptableObject.Audio;
 using Spine.Unity;
 using UnityEngine;
 
@@ -10,6 +11,7 @@ public class ShowSpineBlinkSnapEffect : SnappingEffect
 {
     [SerializeField] private SkeletonAnimation blinkEffect;
     [SerializeField, SoundKey] private string soundKey;
+    [SerializeField] private BaseAudioServiceSO audioService;
     [SerializeField] private int track;
     [SerializeField] private float timeScale = 1f;
 
@@ -30,7 +32,12 @@ public class ShowSpineBlinkSnapEffect : SnappingEffect
         this.blinkEffect.transform.position = target.position;
 
         // var audioService = ServiceLocator.Global.Get<IAudioService>();
-        // if (audioService != null) audioService.PlaySound(this.soundKey);
+        if (this.audioService != null)
+        {
+            this.audioService.StopSound(this.soundKey);
+            this.audioService.PlaySound(this.soundKey);
+        }
+
         this.blinkEffect.timeScale = this.timeScale;
         this.blinkEffect.AnimationState.SetAnimation(this.track, this.animation, false);
         try
