@@ -29,7 +29,7 @@ public class TapTimingBar : TimingBarAction
             return;
         }
 
-        this.timingBar.StopRunning();
+        this.timingBar.TapTiming();
         this.sameResult = this.trueTimingAction == this.timingBar.IsTrueTiming();
     }
 }

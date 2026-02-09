@@ -95,6 +95,12 @@ public class IndicatorBasedTimingBar : TimingBar
         this.isRunning = false;
     }
 
+    public override void TapTiming()
+    {
+        StopRunning();
+        ScaleUIEffect(this.indicator, 1.2f, 0.75f, true);
+    }
+
     public override void ResetBar()
     {
         this.currentTime = 0f;
@@ -135,5 +141,18 @@ public class IndicatorBasedTimingBar : TimingBar
         }
 
         await uiItem.DOScale(targetValue, 0.2f).SetEase(Ease.InOutQuad).AsyncWaitForCompletion();
+    }
+
+    private async UniTask ScaleUIEffect(RectTransform uiItem, float targetValue, float duration, bool scaleBack = false)
+    {
+        Vector3 originalScale = uiItem.localScale;
+        if (scaleBack)
+        {
+            await uiItem.DOScale(targetValue, duration / 2).SetEase(Ease.InOutQuad).AsyncWaitForCompletion();
+            await uiItem.DOScale(originalScale, duration / 2).SetEase(Ease.InOutQuad).AsyncWaitForCompletion();
+            return;
+        }
+
+        await uiItem.DOScale(targetValue, duration).SetEase(Ease.InOutQuad).AsyncWaitForCompletion();
     }
 }
