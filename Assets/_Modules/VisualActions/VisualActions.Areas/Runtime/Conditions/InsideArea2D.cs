@@ -1,4 +1,3 @@
-using Mimi.VisualActions;
 using UnityEngine;
 using VisualActions.Areas;
 
@@ -6,8 +5,8 @@ namespace Mimi.VisualActions.Dragging
 {
     public class InsideArea2D : VisualCondition
     {
-        [SerializeField] private Transform checkTransform;
-        [SerializeField] private BaseArea targetArea;
+        [SerializeField] protected Transform checkTransform;
+        [SerializeField] protected BaseArea targetArea;
         public Transform CheckTransform => this.checkTransform;
         public BaseArea TargetArea => this.targetArea;
 
