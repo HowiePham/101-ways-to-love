@@ -1,4 +1,7 @@
-﻿using DG.Tweening;
+﻿using Cysharp.Threading.Tasks;
+using DG.Tweening;
+using DG.Tweening.Core;
+using DG.Tweening.Plugins.Options;
 using Mimi.Interactions.Dragging;
 using Mimi.Interactions.Dragging.DraggableExtensions;
 using UnityEngine;
@@ -9,9 +12,12 @@ namespace Mimi.VisualActions.Interactions.Draggable.Extensions
     {
         [SerializeField] private Vector3 targetRotation;
         [SerializeField] private float timeRotate = 0.2f;
+        [SerializeField] private float startDelay;
+        [SerializeField] private float endDelay;
         [SerializeField] private Ease ease;
 
         private Vector3 originalRotation;
+
         public override void Init(BaseDraggable draggable)
         {
             base.Init(draggable);
@@ -20,7 +26,13 @@ namespace Mimi.VisualActions.Interactions.Draggable.Extensions
 
         public override void StartDrag()
         {
-            BaseDraggable.Transform.DORotate(targetRotation, timeRotate).SetEase(this.ease);
+            RotateObject(this.targetRotation, this.startDelay);
+        }
+
+        private async UniTask RotateObject(Vector3 rotation, float delay = 0f)
+        {
+            await UniTask.WaitForSeconds(delay);
+            this.BaseDraggable.Transform.DORotate(rotation, this.timeRotate).SetEase(this.ease);
         }
 
         public override void Drag()
@@ -29,7 +41,7 @@ namespace Mimi.VisualActions.Interactions.Draggable.Extensions
 
         public override void EndDrag()
         {
-            BaseDraggable.Transform.DORotate(originalRotation, timeRotate).SetEase(this.ease);
+            RotateObject(this.originalRotation, this.endDelay);
         }
     }
 }
