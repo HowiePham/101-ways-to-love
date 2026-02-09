@@ -31,11 +31,11 @@ public class ShowSpineBlinkSnapEffect : SnappingEffect
         this.blinkEffect.gameObject.SetActive(true);
         this.blinkEffect.transform.position = target.position;
 
-        // var audioService = ServiceLocator.Global.Get<IAudioService>();
+        var audioService = ServiceLocator.Global.Get<IAudioService>();
         if (this.audioService != null)
         {
             this.audioService.StopSound(this.soundKey);
-            this.audioService.PlaySound(this.soundKey);
+            audioService.PlaySound(this.soundKey);
         }
 
         this.blinkEffect.timeScale = this.timeScale;
