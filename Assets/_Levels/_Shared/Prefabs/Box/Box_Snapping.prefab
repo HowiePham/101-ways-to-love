@@ -1,5 +1,78 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &699711564460622369
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 4889599044664730275}
+    m_Modifications:
+    - target: {fileID: 7638605211896521972, guid: f5b63e6b556a2674b811f33b916fd2da, type: 3}
+      propertyPath: m_Name
+      value: ShowBlinkSnappingEffect
+      objectReference: {fileID: 0}
+    - target: {fileID: 7713777558198861054, guid: f5b63e6b556a2674b811f33b916fd2da, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7713777558198861054, guid: f5b63e6b556a2674b811f33b916fd2da, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7713777558198861054, guid: f5b63e6b556a2674b811f33b916fd2da, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7713777558198861054, guid: f5b63e6b556a2674b811f33b916fd2da, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7713777558198861054, guid: f5b63e6b556a2674b811f33b916fd2da, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7713777558198861054, guid: f5b63e6b556a2674b811f33b916fd2da, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7713777558198861054, guid: f5b63e6b556a2674b811f33b916fd2da, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7713777558198861054, guid: f5b63e6b556a2674b811f33b916fd2da, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7713777558198861054, guid: f5b63e6b556a2674b811f33b916fd2da, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7713777558198861054, guid: f5b63e6b556a2674b811f33b916fd2da, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: f5b63e6b556a2674b811f33b916fd2da, type: 3}
+--- !u!114 &951754784771025883 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 324417617993837050, guid: f5b63e6b556a2674b811f33b916fd2da, type: 3}
+  m_PrefabInstance: {fileID: 699711564460622369}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 849ef8d5450144a59ddd823880c80ebc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &7113726037325397727 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7713777558198861054, guid: f5b63e6b556a2674b811f33b916fd2da, type: 3}
+  m_PrefabInstance: {fileID: 699711564460622369}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2737258777775674577
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -77,6 +150,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7361109641477437042, guid: 72c5e0679ffb1ad4e8bfb04ca087d4ec, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3282400218932552287}
+    - targetCorrespondingSourceObject: {fileID: 7361109641477437042, guid: 72c5e0679ffb1ad4e8bfb04ca087d4ec, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7113726037325397727}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 7281910630315468780, guid: 72c5e0679ffb1ad4e8bfb04ca087d4ec, type: 3}
       insertIndex: 1
@@ -104,6 +180,7 @@ MonoBehaviour:
   snappingEffects:
   - {fileID: 6796343823013013219}
   - {fileID: 7798915396241407254}
+  - {fileID: 951754784771025883}
 --- !u!4 &4889599044664730275 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7361109641477437042, guid: 72c5e0679ffb1ad4e8bfb04ca087d4ec, type: 3}

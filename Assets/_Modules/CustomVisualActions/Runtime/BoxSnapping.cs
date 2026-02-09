@@ -23,17 +23,16 @@ public class BoxSnapping : MonoBehaviour
         {
             return;
         }
-        
+
         GameObject snappingObject = this.snappingObjects[this.count];
+        this.count++;
         snappingObject.SetActive(true);
 
         for (int i = 0; i < this.snappingEffects.Length; i++)
         {
-            SnappingEffect effect =  this.snappingEffects[i];
+            SnappingEffect effect = this.snappingEffects[i];
             await effect.RunEffect(snappingObject.transform);
         }
-        
-        this.count++;
     }
 
     [Button]
