@@ -85,8 +85,8 @@ namespace VisualFlow
 
         private void OnDisable()
         {
-            // ServiceLocator.Get<IAudioService>().PlaySound(this.nameMusic, 0f);
-            this.AudioPlayer.StopSound(this.nameMusic);
+            ServiceLocator.Get<IAudioService>().PlaySound(this.nameMusic, 0f);
+            // this.AudioPlayer.StopSound(this.nameMusic);
         }
         
 #if UNITY_EDITOR
