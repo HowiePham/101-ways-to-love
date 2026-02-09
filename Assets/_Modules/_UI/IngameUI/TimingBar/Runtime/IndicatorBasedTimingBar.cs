@@ -7,6 +7,8 @@ public class IndicatorBasedTimingBar : TimingBar
 {
     [SerializeField] private RectTransform indicator;
     [SerializeField] private RectTransform runningArea;
+    [SerializeField] private GameObject failedFX;
+    [SerializeField] private GameObject trueFX;
     private float minPosition;
     private float maxPosition;
     private float currentTime;
@@ -82,6 +84,7 @@ public class IndicatorBasedTimingBar : TimingBar
 
     public override void StartRunning()
     {
+        ResetBar();
         this.isRunning = true;
     }
 
@@ -99,10 +102,24 @@ public class IndicatorBasedTimingBar : TimingBar
     {
         StopRunning();
         ScaleUIEffect(this.indicator, 1.2f, 0.75f, true);
+
+        if (IsTrueTiming())
+        {
+            this.failedFX.SetActive(false);
+            this.trueFX.SetActive(true);
+        }
+        else
+        {
+            this.trueFX.SetActive(false);
+            this.failedFX.SetActive(true);
+        }
     }
 
     public override void ResetBar()
     {
+        this.failedFX.SetActive(false);
+        this.trueFX.SetActive(false);
+
         this.currentTime = 0f;
         this.indicator.anchoredPosition = new Vector2(this.minPosition, this.indicator.anchoredPosition.y);
     }
