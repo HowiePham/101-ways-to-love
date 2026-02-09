@@ -1,7 +1,6 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using Lean.Touch;
-using Mimi.VisualActions;
 using UnityEngine;
 
 public class TapTimingBar : TimingBarAction

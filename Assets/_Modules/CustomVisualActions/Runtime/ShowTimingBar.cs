@@ -1,11 +1,9 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using Mimi.VisualActions;
 using UnityEngine;
 
-public class ShowTimingBar : VisualAction
+public class ShowTimingBar : TimingBarAction
 {
-    [SerializeField] private TimingBar timingBar;
     [SerializeField] private bool waitShowingDone = true;
 
     protected override async UniTask OnExecuting(CancellationToken cancellationToken)
