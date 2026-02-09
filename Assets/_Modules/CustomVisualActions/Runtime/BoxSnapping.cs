@@ -56,6 +56,11 @@ public class BoxSnapping : MonoBehaviour
             SnappingEffect effect = this.snappingEffects[i];
             await effect.RunEffect(snappingObject.transform);
         }
+
+        foreach (SnappingBoxCheckingEffect checkingEffect in this.checkingEffects)
+        {
+            await checkingEffect.HideEffect(snappingObject.transform);
+        }
     }
 
     [Button]

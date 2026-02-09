@@ -10,7 +10,7 @@ public class ShowSnappingObjectShadow : SnappingBoxCheckingEffect
         var targetRenderer = target.GetComponent<SpriteRenderer>();
         this.objectShadow.gameObject.SetActive(true);
         this.objectShadow.sprite = targetRenderer.sprite;
-        this.objectShadow.sortingOrder = targetRenderer.sortingOrder;
+        this.objectShadow.sortingOrder = targetRenderer.sortingOrder - 1;
         this.objectShadow.transform.position = target.position;
     }
 
