@@ -4,6 +4,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using Mimi.Actions;
 using Mimi.Logging;
+using Mimi.VisualActions;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Events;
