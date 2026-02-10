@@ -11,12 +11,13 @@ namespace Games
     public class HintPlayer : MonoBehaviour
     {
         [SerializeField] private BaseHint[] hints;
+        [SerializeField] private int totalStep;
         private bool levelTutorial;
 
         public bool HasHint => this.hints.Length > 0;
-        public int HintStepNumber => this.hints.Length;
-
         public bool LevelTutorial => this.levelTutorial;
+
+        public int TotalStep => this.totalStep;
 
         private readonly CancellationTokenSource tokenSource = new();
 
@@ -86,6 +87,7 @@ namespace Games
         public void GetHints()
         {
             this.hints = GetComponentsInChildren<BaseHint>();
+            this.totalStep = this.hints.Length;
         }
     }
 }
