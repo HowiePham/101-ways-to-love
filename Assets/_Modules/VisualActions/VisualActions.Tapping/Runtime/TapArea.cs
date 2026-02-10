@@ -14,12 +14,10 @@ namespace Mimi.VisualActions.Tapping
     public class TapArea : VisualAction, IWaypointAction
     {
         [SerializeField, InlineEditor(InlineEditorModes.FullEditor), Required]
-        private BaseArea target;
+        protected BaseArea target;
 
-        private bool complete;
-
-        public IEnumerable<Vector3> Waypoints { private set; get; }
-
+        protected bool complete;
+        public IEnumerable<Vector3> Waypoints { protected set; get; }
         public BaseArea Target => this.target;
 
         protected override async UniTask OnInitializing()
@@ -45,7 +43,7 @@ namespace Mimi.VisualActions.Tapping
             }
         }
 
-        private void FingerTapHandler(LeanFinger finger)
+        protected virtual void FingerTapHandler(LeanFinger finger)
         {
             if (!this.Target.Active || finger.IsOverGui)
             {

@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using Lean.Touch;
@@ -26,6 +27,11 @@ public class TapTimingBar : TimingBarAction
     {
         LeanTouch.OnFingerDown -= FingerDownHandler;
         return base.OnExit(cancellationToken);
+    }
+
+    private void OnDisable()
+    {
+        LeanTouch.OnFingerDown -= FingerDownHandler;
     }
 
     private void FingerDownHandler(LeanFinger finger)
