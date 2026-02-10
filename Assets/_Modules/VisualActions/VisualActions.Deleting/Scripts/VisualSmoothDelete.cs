@@ -12,23 +12,23 @@ namespace Mimi.VisualActions.Deleting
     [TypeInfoBox("Manages smooth erasing/scratching effect for SpriteRenderer using scratch card mechanics.")]
     public class VisualSmoothDelete : VisualAction
     {
-        [SerializeField] private Vector3 brushHeaderOffset;
-        [SerializeField] private bool isResetOnRelease = false;
-        [SerializeField, Required] private ScratchCard scratchCard;
-        [SerializeField] private EraseProgress eraseProgress;
-        [SerializeField, Required] private SpriteRenderer maskSpriteRenderer;
+        [SerializeField] protected Vector3 brushHeaderOffset;
+        [SerializeField] protected bool isResetOnRelease = false;
+        [SerializeField, Required] protected ScratchCard scratchCard;
+        [SerializeField] protected EraseProgress eraseProgress;
+        [SerializeField, Required] protected SpriteRenderer maskSpriteRenderer;
         [SerializeField, Range(0f, 1f)] public float targetDeletePercentage = 0.8f;
-        [SerializeField, Required] private Texture brushMaskTexture;
-        [SerializeField] private Vector2 eraseTextureScale = Vector2.one;
-        [SerializeField] private bool scratchSurfaceSpriteHasAlpha = true;
-        [SerializeField, Required] private Shader maskShader;
-        [SerializeField, Required] private Shader brushShader;
-        [SerializeField, Required] private Shader maskProgressShader;
-        [SerializeField, Required] private Shader maskProgressCutOffShader;
-        [SerializeField] private ScratchCard.ScratchMode scratchMode = ScratchCard.ScratchMode.Erase;
-        [SerializeField] private MonoSmoothDeleteExtension smoothDeleteExtension;
-        private Material eraserMaterial;
-        private bool isFingerDowned;
+        [SerializeField, Required] protected Texture brushMaskTexture;
+        [SerializeField] protected Vector2 eraseTextureScale = Vector2.one;
+        [SerializeField] protected bool scratchSurfaceSpriteHasAlpha = true;
+        [SerializeField, Required] protected Shader maskShader;
+        [SerializeField, Required] protected Shader brushShader;
+        [SerializeField, Required] protected Shader maskProgressShader;
+        [SerializeField, Required] protected Shader maskProgressCutOffShader;
+        [SerializeField] protected ScratchCard.ScratchMode scratchMode = ScratchCard.ScratchMode.Erase;
+        [SerializeField] protected MonoSmoothDeleteExtension smoothDeleteExtension;
+        protected Material eraserMaterial;
+        protected bool isFingerDowned;
         
         public Texture BrushMaskTexture => this.brushMaskTexture;
         public Vector2 EraseSize => eraseTextureScale;
@@ -38,7 +38,7 @@ namespace Mimi.VisualActions.Deleting
         public bool IsDeleteComplete => scratchMode == ScratchCard.ScratchMode.Erase
             ? DeleteProgress >= this.targetDeletePercentage
             : DeleteProgress <= this.targetDeletePercentage;
-        public Vector3[] Path { private set; get; }
+        public Vector3[] Path { protected set; get; }
         public event Action<Vector3> OnStartDelete;
         public event Action OnStopDelete;
         public event Action<Vector3> OnDeleting;
@@ -58,7 +58,7 @@ namespace Mimi.VisualActions.Deleting
             }
         }
         
-        private bool completable = true;
+        protected bool completable = true;
 
         /// <summary>
         /// Initializes scratch card with materials, shaders, and extensions.
@@ -192,7 +192,7 @@ namespace Mimi.VisualActions.Deleting
         /// Handles touch update for erasing at position.
         /// </summary>
         /// <param name="finger">The LeanFinger input data.</param>
-        private void FingerUpdateHandler(LeanFinger finger)
+        protected virtual  void FingerUpdateHandler(LeanFinger finger)
         {
             if (!this.isFingerDowned) return;
             if (finger.IsOverGui) return;
@@ -211,7 +211,7 @@ namespace Mimi.VisualActions.Deleting
         /// Handles touch release, stops delete and resets if needed.
         /// </summary>
         /// <param name="finger">The LeanFinger input data.</param>
-        private void FingerUpHandler(LeanFinger finger)
+        protected virtual  void FingerUpHandler(LeanFinger finger)
         {
             if (finger.IsOverGui) return;
             OnStopDelete?.Invoke();
@@ -244,7 +244,7 @@ namespace Mimi.VisualActions.Deleting
         /// Handles touch down, starts delete at position.
         /// </summary>
         /// <param name="finger">The LeanFinger input data.</param>
-        private void FingerDownHandler(LeanFinger finger)
+        protected virtual void FingerDownHandler(LeanFinger finger)
         {
             if (finger.IsOverGui) return;
             this.isFingerDowned = true;
