@@ -10,14 +10,14 @@ public class FollowHand : MonoBehaviour
 
     private void Start()
     {
-        LeanTouch.OnFingerOld += StartDragging;
+        LeanTouch.OnFingerDown += StartDragging;
         LeanTouch.OnFingerUp += StopDragging;
         LeanTouch.OnFingerUpdate += MoveFollowHand;
     }
 
     private void OnDisable()
     {
-        LeanTouch.OnFingerOld -= StartDragging;
+        LeanTouch.OnFingerDown -= StartDragging;
         LeanTouch.OnFingerUp -= StopDragging;
         LeanTouch.OnFingerUpdate -= MoveFollowHand;
     }
