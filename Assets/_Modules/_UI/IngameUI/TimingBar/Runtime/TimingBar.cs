@@ -11,6 +11,7 @@ public abstract class TimingBar : MonoBehaviour
 
     [Button]
     public abstract UniTask Show();
+
     [Button]
     public abstract UniTask Hide();
 
@@ -22,10 +23,15 @@ public abstract class TimingBar : MonoBehaviour
 
     [Button]
     public abstract void StopRunning();
+
     [Button]
     public abstract void TapTiming();
+
     [Button]
     public abstract void ResetBar();
+
+    [Button]
+    public abstract void RandomTrueArea();
 
     public abstract bool IsTrueTiming();
 }

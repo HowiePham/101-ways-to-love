@@ -9,6 +9,7 @@ public class IndicatorBasedTimingBar : TimingBar
     [SerializeField] private RectTransform runningArea;
     [SerializeField] private GameObject failedFX;
     [SerializeField] private GameObject trueFX;
+    [SerializeField] private float indicatorEffectDuration;
     private float minPosition;
     private float maxPosition;
     private float currentTime;
@@ -69,17 +70,17 @@ public class IndicatorBasedTimingBar : TimingBar
         this.indicator.localScale = Vector3.zero;
         ResetBar();
 
-        ScaleUIEffect(this.timingBarContainer, 1f, true);
-        await ScaleUIEffect(this.trueArea, 1f, true);
+        ScaleUIEffect(this.timingBarContainer, 1f, 0.4f, true, 0f);
+        await ScaleUIEffect(this.trueArea, 1f, 0.4f, false, 0f);
 
-        await ScaleUIEffect(this.indicator, 1f, true);
+        await ScaleUIEffect(this.indicator, 1f, 0.4f, true, 0f);
     }
 
     public override async UniTask Hide()
     {
-        ScaleUIEffect(this.timingBarContainer, 0f);
-        ScaleUIEffect(this.trueArea, 0f);
-        ScaleUIEffect(this.indicator, 0f);
+        ScaleUIEffect(this.timingBarContainer, 0f, 0.4f, false, 0f);
+        ScaleUIEffect(this.trueArea, 0f, 0.4f, false, 0f);
+        ScaleUIEffect(this.indicator, 0f, 0.4f, false, 0f);
     }
 
     public override void StartRunning()
@@ -101,7 +102,7 @@ public class IndicatorBasedTimingBar : TimingBar
     public override void TapTiming()
     {
         StopRunning();
-        ScaleUIEffect(this.indicator, 1.2f, 0.75f, true);
+        ScaleUIEffect(this.indicator, 1.2f, this.indicatorEffectDuration, true);
 
         if (IsTrueTiming())
         {
@@ -122,6 +123,22 @@ public class IndicatorBasedTimingBar : TimingBar
 
         this.currentTime = 0f;
         this.indicator.anchoredPosition = new Vector2(this.minPosition, this.indicator.anchoredPosition.y);
+    }
+
+    public override void RandomTrueArea()
+    {
+        if (this.trueArea == null || this.runningArea == null)
+        {
+            return;
+        }
+
+        float trueAreaWidth = this.trueArea.rect.width;
+
+        float minRandomX = this.minPosition + (trueAreaWidth / 2f);
+        float maxRandomX = this.maxPosition - (trueAreaWidth / 2f);
+
+        float randomX = Random.Range(minRandomX, maxRandomX);
+        this.trueArea.anchoredPosition = new Vector2(randomX, this.trueArea.anchoredPosition.y);
     }
 
     [Button]
@@ -148,16 +165,16 @@ public class IndicatorBasedTimingBar : TimingBar
         return indicatorX >= trueAreaLeft && indicatorX <= trueAreaRight;
     }
 
-    private async UniTask ScaleUIEffect(RectTransform uiItem, float targetValue, bool popEffect = false, float delay = 0f)
+    private async UniTask ScaleUIEffect(RectTransform uiItem, float targetValue, float duration, bool popEffect, float delay)
     {
         uiItem.localScale = Vector3.zero;
         await UniTask.WaitForSeconds(delay);
         if (popEffect)
         {
-            await uiItem.DOScale(targetValue + 0.2f, 0.4f).SetEase(Ease.InOutQuad).AsyncWaitForCompletion();
+            await uiItem.DOScale(targetValue + 0.2f, duration).SetEase(Ease.InOutQuad).AsyncWaitForCompletion();
         }
 
-        await uiItem.DOScale(targetValue, 0.2f).SetEase(Ease.InOutQuad).AsyncWaitForCompletion();
+        await uiItem.DOScale(targetValue, duration).SetEase(Ease.InOutQuad).AsyncWaitForCompletion();
     }
 
     private async UniTask ScaleUIEffect(RectTransform uiItem, float targetValue, float duration, bool scaleBack = false)
