@@ -15,11 +15,16 @@ public class LevelEditorWindow : EditorWindow
     private HintGenerator hintGenerator;
     private GameObject psdImporter;
     private Vector2 scrollPosition;
-    private bool showStaticObjects = true;
-    private bool showSoundEditor = true;
-    private bool showInteractableObjects = true;
-    private bool showInteractingBoxes = true;
-    private bool showAnimation = true;
+    private int selectedTab = 0;
+
+    private readonly string[] tabNames = new string[]
+    {
+        "Sound",
+        "Static Objects",
+        "Interactable Objects",
+        "Interacting Boxes",
+        "Animation"
+    };
 
     public void Initialize(LevelEditor editor)
     {
@@ -48,6 +53,7 @@ public class LevelEditorWindow : EditorWindow
         EditorGUILayout.LabelField("Level Editor", EditorStyles.boldLabel);
         EditorGUILayout.Space(10);
 
+        // --- PSD Section ---
         EditorGUILayout.BeginVertical("box");
         EditorGUILayout.LabelField("PSD: ", EditorStyles.boldLabel);
 
@@ -73,48 +79,50 @@ public class LevelEditorWindow : EditorWindow
 
         EditorGUILayout.EndVertical();
 
-        EditorGUILayout.Space(20);
+        EditorGUILayout.Space(10);
+
+        this.selectedTab = GUILayout.Toolbar(this.selectedTab, this.tabNames, GUILayout.Height(28));
+
+        EditorGUILayout.Space(5);
 
         this.scrollPosition = EditorGUILayout.BeginScrollView(this.scrollPosition);
 
-        this.soundEditorSection = new SoundEditorSection(this.levelEditor);
-        DrawSection("Level Sound", ref this.showSoundEditor, this.soundEditorSection);
-        EditorGUILayout.Space(20);
-
-        this.staticObjectEditorSection = new StaticObjectEditorSection(this.levelEditor);
-        DrawSection("Static Objects", ref this.showStaticObjects, this.staticObjectEditorSection);
-
-        EditorGUILayout.Space(20);
-
-        this.interactableObjectEditorSection = new InteractableObjectEditorSection(this.levelEditor);
-        DrawSection("Interactable Objects", ref this.showInteractableObjects, this.interactableObjectEditorSection);
-
-        EditorGUILayout.Space(20);
-
-        this.boxEditorSection = new InteractingBoxEditorSection(this.levelEditor);
-        DrawSection("Interacting Boxes", ref this.showInteractingBoxes, this.boxEditorSection);
-
-        EditorGUILayout.Space(20);
-
-        this.skeletonAnimationEditorSection = new SkeletonAnimationEditorSection(this.levelEditor);
-        DrawSection("Animation", ref this.showAnimation, this.skeletonAnimationEditorSection);
-
-        EditorGUILayout.EndScrollView();
-        EditorGUILayout.Space(10);
-
-        DrawBottomButtons();
-    }
-
-    private void DrawSection(string sectionName, ref bool sectionToggle, EditorSection editorSection)
-    {
         EditorGUILayout.BeginVertical("box");
-        sectionToggle = EditorGUILayout.Foldout(sectionToggle, sectionName, true, EditorStyles.foldoutHeader);
-        if (sectionToggle)
+
+        switch (this.selectedTab)
         {
-            editorSection.DrawSection();
+            case 0:
+                this.soundEditorSection = new SoundEditorSection(this.levelEditor);
+                this.soundEditorSection.DrawSection();
+                break;
+
+            case 1:
+                this.staticObjectEditorSection = new StaticObjectEditorSection(this.levelEditor);
+                this.staticObjectEditorSection.DrawSection();
+                break;
+
+            case 2:
+                this.interactableObjectEditorSection = new InteractableObjectEditorSection(this.levelEditor);
+                this.interactableObjectEditorSection.DrawSection();
+                break;
+
+            case 3:
+                this.boxEditorSection = new InteractingBoxEditorSection(this.levelEditor);
+                this.boxEditorSection.DrawSection();
+                break;
+
+            case 4:
+                this.skeletonAnimationEditorSection = new SkeletonAnimationEditorSection(this.levelEditor);
+                this.skeletonAnimationEditorSection.DrawSection();
+                break;
         }
 
         EditorGUILayout.EndVertical();
+
+        EditorGUILayout.EndScrollView();
+
+        EditorGUILayout.Space(10);
+        DrawBottomButtons();
     }
 
     private void DrawBottomButtons()
