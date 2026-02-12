@@ -17,6 +17,8 @@ namespace GameScenes
         [Header("Win Level Reference")] [SerializeField]
         private SkeletonAnimation skeletonAnimation;
 
+        [SerializeField] private GameObject levelUIRoot;
+
         [SerializeField, SpineAnimation(dataField = "skeletonAnimation")]
         protected new string winAnimation;
 
@@ -33,7 +35,8 @@ namespace GameScenes
         public async UniTask EndLevel()
         {
             Cancel();
-            
+
+            this.levelUIRoot.SetActive(false);
             var levelEditor = GetComponent<LevelEditor>();
             this.skeletonAnimation.AnimationState.SetAnimation(0, this.winAnimation, this.loopWinAnim);
 
