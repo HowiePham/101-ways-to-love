@@ -29,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 134650668314196488}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.06, y: -0.48, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -79,7 +79,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 5, y: 5}
   m_EdgeRadius: 0
 --- !u!114 &8127004675711490165
 MonoBehaviour:
@@ -93,7 +93,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: baa6ed95937f4ff5a544ae51cc6ada55, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  size: {x: 1, y: 1}
+  size: {x: 5, y: 5}
   boxCollider: {fileID: 9214502479176182369}
 --- !u!114 &7155594908596075010
 MonoBehaviour:
@@ -153,7 +153,7 @@ Transform:
   m_GameObject: {fileID: 2536604883077450152}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.06, y: -0.48, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -217,7 +217,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: baa6ed95937f4ff5a544ae51cc6ada55, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  size: {x: 1, y: 1}
+  size: {x: 5, y: 5}
   boxCollider: {fileID: 3206918469427353706}
 --- !u!114 &2096826012631986151
 MonoBehaviour:
@@ -277,7 +277,7 @@ Transform:
   m_GameObject: {fileID: 3039727356179632153}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.06, y: -0.48, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -341,7 +341,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: baa6ed95937f4ff5a544ae51cc6ada55, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  size: {x: 1, y: 1}
+  size: {x: 5, y: 5}
   boxCollider: {fileID: 1395212709550772219}
 --- !u!114 &365135021803844240
 MonoBehaviour:
@@ -355,8 +355,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb7cf003cd11b3e4cbf47fc62689b896, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
-  followTarget: 0
+  target: {fileID: 800191480932883071}
+  followTarget: 1
 --- !u!114 &2205089914264058423
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -476,9 +476,17 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 7028627408881634199}
     - target: {fileID: 2598374304000995064, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
+      propertyPath: animation
+      value: action4_nhen
+      objectReference: {fileID: 0}
+    - target: {fileID: 2598374304000995064, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
       propertyPath: skeletonAnimation
       value: 
       objectReference: {fileID: 7369574239509573441}
+    - target: {fileID: 3591870667429252695, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
+      propertyPath: animation
+      value: action5
+      objectReference: {fileID: 0}
     - target: {fileID: 3591870667429252695, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
       propertyPath: skeletonAnimation
       value: 
@@ -742,14 +750,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7756851102787594369, guid: 77b33504dcc19a941a4ece2a723f7ce6, type: 3}
+      propertyPath: skeletonDataAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 8f9958893c079944cb5e5eca1f987057, type: 2}
     - target: {fileID: 7951086386032803133, guid: 77b33504dcc19a941a4ece2a723f7ce6, type: 3}
       propertyPath: winAnimation
-      value: action3
+      value: action5
       objectReference: {fileID: 0}
     - target: {fileID: 7951086386032803133, guid: 77b33504dcc19a941a4ece2a723f7ce6, type: 3}
       propertyPath: winCameraDestination
       value: 
       objectReference: {fileID: 7841773258410555168}
+    - target: {fileID: 8866235693956036009, guid: 77b33504dcc19a941a4ece2a723f7ce6, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: ef33efaca96633b4aa3439f0c1e40ce7, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -1061,6 +1077,10 @@ PrefabInstance:
       value: CheckInsideArea_TuaVit
       objectReference: {fileID: 0}
     - target: {fileID: 1725230485220451236, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
+      propertyPath: animation
+      value: action1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1725230485220451236, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
       propertyPath: skeletonAnimation
       value: 
       objectReference: {fileID: 7369574239509573441}
@@ -1068,9 +1088,17 @@ PrefabInstance:
       propertyPath: m_Name
       value: LoopIdleAnim_1_TuaVit
       objectReference: {fileID: 0}
+    - target: {fileID: 3649423760867004279, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
+      propertyPath: skeletonAnimation
+      value: 
+      objectReference: {fileID: 7369574239509573441}
     - target: {fileID: 3916638830560073412, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
       propertyPath: m_Name
       value: Drag_False_TuaVit
+      objectReference: {fileID: 0}
+    - target: {fileID: 4330146481096361610, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
+      propertyPath: animation
+      value: action3_tuavit
       objectReference: {fileID: 0}
     - target: {fileID: 4330146481096361610, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
       propertyPath: skeletonAnimation
@@ -1366,6 +1394,10 @@ PrefabInstance:
       value: CheckInsideArea_Snack
       objectReference: {fileID: 0}
     - target: {fileID: 1725230485220451236, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
+      propertyPath: animation
+      value: action1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1725230485220451236, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
       propertyPath: skeletonAnimation
       value: 
       objectReference: {fileID: 7369574239509573441}
@@ -1373,9 +1405,17 @@ PrefabInstance:
       propertyPath: m_Name
       value: LoopIdleAnim_1_Snack
       objectReference: {fileID: 0}
+    - target: {fileID: 3649423760867004279, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
+      propertyPath: skeletonAnimation
+      value: 
+      objectReference: {fileID: 7369574239509573441}
     - target: {fileID: 3916638830560073412, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
       propertyPath: m_Name
       value: Drag_False_Snack
+      objectReference: {fileID: 0}
+    - target: {fileID: 4330146481096361610, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
+      propertyPath: animation
+      value: action2_snack
       objectReference: {fileID: 0}
     - target: {fileID: 4330146481096361610, guid: 644ea588444aa9a4aa4c0284adf0b19a, type: 3}
       propertyPath: skeletonAnimation
