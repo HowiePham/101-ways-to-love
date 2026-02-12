@@ -1,12 +1,13 @@
 using Lean.Touch;
 using Mimi.VisualActions.Deleting;
 using UnityEngine;
+using VisualFlow;
 
-public class SmoothDeleteWithActiveObject : VisualSmoothDelete
+public class SmoothDeleteWithActiveObject : SmoothDelete
 {
     [SerializeField] private GameObject eraseObject;
 
-    protected override void FingerDownHandler(LeanFinger finger)
+    public override void FingerDownHandler(LeanFinger finger)
     {
         base.FingerDownHandler(finger);
         if (finger.IsOverGui) return;
@@ -14,7 +15,7 @@ public class SmoothDeleteWithActiveObject : VisualSmoothDelete
         this.eraseObject.SetActive(true);
     }
 
-    protected override void FingerUpHandler(LeanFinger finger)
+    public override void FingerUpHandler(LeanFinger finger)
     {
         base.FingerUpHandler(finger);
         if (finger.IsOverGui) return;
@@ -22,7 +23,7 @@ public class SmoothDeleteWithActiveObject : VisualSmoothDelete
         this.eraseObject.SetActive(false);
     }
 
-    protected override void FingerUpdateHandler(LeanFinger finger)
+    public override void FingerUpdateHandler(LeanFinger finger)
     {
         base.FingerUpdateHandler(finger);
 
