@@ -10,9 +10,20 @@ public class JumpByTween : VisualAction
     [SerializeField] private Transform targetPos;
     [SerializeField] private float duration;
     [SerializeField] private float jumpForce;
+    [SerializeField] private Ease ease = Ease.Linear;
+    [SerializeField] private bool completeAfterMove;
 
     protected override async UniTask OnExecuting(CancellationToken cancellationToken)
     {
-        await this.moveObject.DOJump(this.targetPos.position, this.jumpForce, 1, this.duration).AsyncWaitForCompletion();
+        if (this.completeAfterMove)
+        {
+            await this.moveObject.DOJump(this.targetPos.position, this.jumpForce, 1, this.duration).SetEase(this.ease).AsyncWaitForCompletion();
+        }
+        else
+        {
+            this.moveObject.DOJump(this.targetPos.position, this.jumpForce, 1, this.duration).SetEase(this.ease);
+        }
+
+        await UniTask.CompletedTask;
     }
 }
