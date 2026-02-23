@@ -2787,6 +2787,77 @@ MonoBehaviour:
   rotateX: 0
   rotateY: 0
   rotateZ: 1
+--- !u!1 &8826414720269712161
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2215951502064495194}
+  - component: {fileID: 2246545173626095961}
+  - component: {fileID: 6818560133670882084}
+  m_Layer: 0
+  m_Name: LoopIdleAnim_1_GoiTua
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2215951502064495194
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8826414720269712161}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5689569755366764907}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2246545173626095961
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8826414720269712161}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 638ecc3fe96540e0adb45fcfee556903, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  onExit:
+    m_PersistentCalls:
+      m_Calls: []
+  skeletonAnimation: {fileID: 5837534567719560319}
+  animation: action2_ChanGoi_win
+  timeScale: 1
+  track: 0
+  loop: 1
+--- !u!114 &6818560133670882084
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8826414720269712161}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8bb19d5bd0b42faa62b5fe31ec59152, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 9064354265412926519}
+  prefix: LoopIdleAnim_1
+  removeString: Draggable
 --- !u!1 &8901322284669367049
 GameObject:
   m_ObjectHideFlags: 0
@@ -3657,7 +3728,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7951086386032803133, guid: 77b33504dcc19a941a4ece2a723f7ce6, type: 3}
       propertyPath: winAnimation
-      value: action2_ChanGoi2
+      value: action2_ChanGoi_win
       objectReference: {fileID: 0}
     - target: {fileID: 7951086386032803133, guid: 77b33504dcc19a941a4ece2a723f7ce6, type: 3}
       propertyPath: winCameraDestination
@@ -4110,30 +4181,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 6048426919107821883}
     m_Modifications:
-    - target: {fileID: 696866656087300455, guid: 21749ae8a6619b04e8bcc312e69393ba, type: 3}
-      propertyPath: skeletonAnimation
-      value: 
-      objectReference: {fileID: 5837534567719560319}
-    - target: {fileID: 1689884152720729896, guid: 21749ae8a6619b04e8bcc312e69393ba, type: 3}
-      propertyPath: m_Name
-      value: CheckTapArea_ConRuoi
-      objectReference: {fileID: 0}
-    - target: {fileID: 1977723571919977276, guid: 21749ae8a6619b04e8bcc312e69393ba, type: 3}
-      propertyPath: skeletonAnimation
-      value: 
-      objectReference: {fileID: 5696754629029109155}
-    - target: {fileID: 3038637245890626278, guid: 21749ae8a6619b04e8bcc312e69393ba, type: 3}
-      propertyPath: target
-      value: 
-      objectReference: {fileID: 198858880546661387}
-    - target: {fileID: 6935684735595250842, guid: 21749ae8a6619b04e8bcc312e69393ba, type: 3}
-      propertyPath: m_Name
-      value: PlayAndWaitAnim_ConRuoi
-      objectReference: {fileID: 0}
-    - target: {fileID: 8538438916000241810, guid: 21749ae8a6619b04e8bcc312e69393ba, type: 3}
-      propertyPath: m_Name
-      value: LoopAnim_True_1_ConRuoi
-      objectReference: {fileID: 0}
     - target: {fileID: 79568495716573115, guid: 3acd38c1a4e59c94ca7bcb25e7168160, type: 3}
       propertyPath: target
       value: 
@@ -4210,6 +4257,30 @@ PrefabInstance:
       propertyPath: skeletonAnimation
       value: 
       objectReference: {fileID: 5696754629029109155}
+    - target: {fileID: 696866656087300455, guid: 21749ae8a6619b04e8bcc312e69393ba, type: 3}
+      propertyPath: skeletonAnimation
+      value: 
+      objectReference: {fileID: 5837534567719560319}
+    - target: {fileID: 1689884152720729896, guid: 21749ae8a6619b04e8bcc312e69393ba, type: 3}
+      propertyPath: m_Name
+      value: CheckTapArea_ConRuoi
+      objectReference: {fileID: 0}
+    - target: {fileID: 1977723571919977276, guid: 21749ae8a6619b04e8bcc312e69393ba, type: 3}
+      propertyPath: skeletonAnimation
+      value: 
+      objectReference: {fileID: 5696754629029109155}
+    - target: {fileID: 3038637245890626278, guid: 21749ae8a6619b04e8bcc312e69393ba, type: 3}
+      propertyPath: target
+      value: 
+      objectReference: {fileID: 198858880546661387}
+    - target: {fileID: 6935684735595250842, guid: 21749ae8a6619b04e8bcc312e69393ba, type: 3}
+      propertyPath: m_Name
+      value: PlayAndWaitAnim_ConRuoi
+      objectReference: {fileID: 0}
+    - target: {fileID: 8538438916000241810, guid: 21749ae8a6619b04e8bcc312e69393ba, type: 3}
+      propertyPath: m_Name
+      value: LoopAnim_True_1_ConRuoi
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 1261327361827559787, guid: 21749ae8a6619b04e8bcc312e69393ba, type: 3}
@@ -4444,7 +4515,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 4038147803959873399, guid: 30130a07194e4614eb29abe2b8e35781, type: 3}
+      insertIndex: 0
+      addedObject: {fileID: 2215951502064495194}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 30130a07194e4614eb29abe2b8e35781, type: 3}
 --- !u!4 &5689569755366764907 stripped
