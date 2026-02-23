@@ -36,6 +36,7 @@ public class GameplayView : BaseView
 
     private TweenerCore<Vector2, Vector2, VectorOptions> tutorialStepUITween;
     private Dictionary<RectTransform, TweenerCore<Vector3, Vector3, VectorOptions>> loopScalingTweens;
+    private Dictionary<RectTransform, TweenerCore<Vector3, Vector3, VectorOptions>> movingTweens;
     private List<StepPoint> stepPoints;
     private RectTransform RemoveAdsRect => this.removeAdsButton.GetComponent<RectTransform>();
     private RectTransform HintBtnRect => this.hintBtn.GetComponent<RectTransform>();
@@ -73,9 +74,13 @@ public class GameplayView : BaseView
     {
         base.Hide();
 
-        KillLoopScalingEffect(this.RemoveAdsRect);
-        KillLoopScalingEffect(this.HintBtnRect);
-        KillLoopScalingEffect(this.SkipBtnRect);
+        // KillLoopScalingEffect(this.RemoveAdsRect);
+        // KillLoopScalingEffect(this.HintBtnRect);
+        // KillLoopScalingEffect(this.SkipBtnRect);
+        DOTween.Kill(this.HintBtnRect);
+        DOTween.Kill(this.SkipBtnRect);
+        DOTween.Kill(this.RemoveAdsRect);
+        
     }
 
     private async UniTask HandleUIEffect()
@@ -177,6 +182,7 @@ public class GameplayView : BaseView
             return;
         }
 
+        // DOTween.Kill(this.HintBtnRect);
         await MovingUIEffect(this.HintBtnRect, this.hintHidingPos, this.hintShowingPos, 1f, delay, true);
         LoopScalingUIEffect(this.HintBtnRect.GetComponent<RectTransform>(), 1.1f, 1f, 1f);
     }
@@ -190,15 +196,16 @@ public class GameplayView : BaseView
             return;
         }
 
+        // DOTween.Kill(this.SkipBtnRect);
         await MovingUIEffect(this.SkipBtnRect, this.skipHidingPos, this.skipShowingPos, 1f, delay, true);
         LoopScalingUIEffect(this.SkipBtnRect, 1.1f, 1f, 1f);
     }
 
-    private async UniTask MovingUIEffect(RectTransform uiItem, Vector3 firstPos, Vector3 targetPos, float duration, float delay, bool driftingEffect)
+    private async UniTask MovingUIEffect(RectTransform uiItem, Vector3 firstPos, Vector3 targetPos, float duration, float delay, bool bounceEffect)
     {
         uiItem.anchoredPosition = firstPos;
         await UniTask.WaitForSeconds(delay);
-        if (driftingEffect)
+        if (bounceEffect)
         {
             var driftingPos = new Vector3(targetPos.x - 10f, targetPos.y, targetPos.z);
             await uiItem.DOAnchorPos(driftingPos, duration * 2 / 3).SetEase(Ease.InOutQuad).AsyncWaitForCompletion();
