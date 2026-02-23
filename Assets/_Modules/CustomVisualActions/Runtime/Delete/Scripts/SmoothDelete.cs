@@ -33,8 +33,8 @@ namespace VisualFlow
         [SerializeField, Required] protected Shader maskShader;
         [SerializeField, Required] protected Shader brushShader;
         [SerializeField, Required] protected Shader maskProgressShader;
-
         [SerializeField] protected ScratchMode scratchMode;
+        [SerializeField] protected bool resetIfDeleteNotComplete = true;
 
         protected Sprite scratchSprite;
         protected Color[] spritePixels;
@@ -412,7 +412,7 @@ namespace VisualFlow
             OnStopDelete?.Invoke();
             this.isFingerDowned = false;
             this.isCompleted = IsDeleteComplete;
-            if (!this.isCompleted)
+            if (!this.isCompleted && this.resetIfDeleteNotComplete)
             {
                 if (this.scratchMode == ScratchMode.Restore)
                 {
@@ -429,6 +429,10 @@ namespace VisualFlow
                 }
 
                 // Messenger.Broadcast(EventKey.Interaction);
+            }
+            else if (this.isCompleted && this.scratchMode == ScratchMode.Erase)
+            {
+                this.maskSpriteRenderer.gameObject.SetActive(false);
             }
         }
 
