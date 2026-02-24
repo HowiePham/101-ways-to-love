@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using GameScenes;
 using Mimi.VisualActions.Audio;
 using Mimi.VisualActions.Spines;
 using Spine.Unity;

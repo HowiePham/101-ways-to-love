@@ -53,7 +53,6 @@ public class LevelEditorWindow : EditorWindow
         EditorGUILayout.LabelField("Level Editor", EditorStyles.boldLabel);
         EditorGUILayout.Space(10);
 
-        // --- PSD Section ---
         EditorGUILayout.BeginVertical("box");
         EditorGUILayout.LabelField("PSD: ", EditorStyles.boldLabel);
 
@@ -145,6 +144,11 @@ public class LevelEditorWindow : EditorWindow
             GenerateLevelHint();
         }
 
+        if (GUILayout.Button("Generate Level Doc", GUILayout.Height(30)))
+        {
+            GenerateLevelDoc();
+        }
+
         EditorGUILayout.EndHorizontal();
     }
 
@@ -160,6 +164,40 @@ public class LevelEditorWindow : EditorWindow
 
         this.hintGenerator.Generate(trueActions, this.levelEditor.HintParent);
         hintPlayer.GetHints();
+    }
+
+    private void GenerateLevelDoc()
+    {
+        Transform[] allChildren = this.levelEditor.RootSequenceParent.GetComponentsInChildren<Transform>();
+
+        var sb = new System.Text.StringBuilder();
+        sb.AppendLine("Name");
+
+        Transform root = this.levelEditor.RootSequenceParent;
+
+        foreach (Transform child in allChildren)
+        {
+            if (child == root) continue;
+
+            sb.AppendLine($"{child.name}");
+        }
+
+        string filePath = System.IO.Path.Combine(Application.persistentDataPath, $"{this.levelEditor.gameObject.name}.csv");
+        System.IO.File.WriteAllText(filePath, sb.ToString(), System.Text.Encoding.UTF8);
+        Debug.Log($"Exported to: {filePath}");
+    }
+
+    private string GetRelativePath(Transform child, Transform root)
+    {
+        string path = child.name;
+        Transform current = child.parent;
+        while (current != null && current != root)
+        {
+            path = current.name + "/" + path;
+            current = current.parent;
+        }
+
+        return path;
     }
 
     private void GenerateLevelSound()
