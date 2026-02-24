@@ -80,11 +80,13 @@ public class GameplayView : BaseView
         DOTween.Kill(this.HintBtnRect);
         DOTween.Kill(this.SkipBtnRect);
         DOTween.Kill(this.RemoveAdsRect);
-        
     }
 
     private async UniTask HandleUIEffect()
     {
+        this.HintBtnRect.localScale = Vector3.zero;
+        this.SkipBtnRect.localScale = Vector3.zero;
+
         var scalingTask = new UniTask[this.showingEffectUIs.Length];
         for (var i = 0; i < this.showingEffectUIs.Length; i++)
         {
@@ -94,7 +96,7 @@ public class GameplayView : BaseView
 
         await UniTask.WhenAll(scalingTask);
 
-        LoopScalingUIEffect(this.RemoveAdsRect, 1.1f, 1f, 1f);
+        // LoopScalingUIEffect(this.RemoveAdsRect, 1.1f, 1f, 1f);
     }
 
     public void SetLevelCurrent(string level)
@@ -182,8 +184,7 @@ public class GameplayView : BaseView
             return;
         }
 
-        // DOTween.Kill(this.HintBtnRect);
-        await MovingUIEffect(this.HintBtnRect, this.hintHidingPos, this.hintShowingPos, 1f, delay, true);
+        await ScaleUIEffect(this.HintBtnRect, delay);
         LoopScalingUIEffect(this.HintBtnRect.GetComponent<RectTransform>(), 1.1f, 1f, 1f);
     }
 
@@ -196,8 +197,7 @@ public class GameplayView : BaseView
             return;
         }
 
-        // DOTween.Kill(this.SkipBtnRect);
-        await MovingUIEffect(this.SkipBtnRect, this.skipHidingPos, this.skipShowingPos, 1f, delay, true);
+        await ScaleUIEffect(this.SkipBtnRect, delay);
         LoopScalingUIEffect(this.SkipBtnRect, 1.1f, 1f, 1f);
     }
 
