@@ -35,6 +35,8 @@ public class LevelEditor : MonoBehaviour
 
     public Transform DisableWhileRunningAnimation => this.disableWhileRunningAnimation;
 
+    public Transform StaticObjectParent => this.staticObjectParent;
+
     public void PrepareData()
     {
         this.interactableObjects = new List<GameObject>();
@@ -53,7 +55,7 @@ public class LevelEditor : MonoBehaviour
             this.interactableObjects.Add(child.gameObject);
         }
 
-        foreach (Transform child in this.staticObjectParent)
+        foreach (Transform child in this.StaticObjectParent)
         {
             this.staticObjects.Add(child.gameObject);
         }

@@ -168,16 +168,43 @@ public class LevelEditorWindow : EditorWindow
 
     private void GenerateLevelDoc()
     {
-        Transform[] allChildren = this.levelEditor.RootSequenceParent.GetComponentsInChildren<Transform>();
-
         var sb = new System.Text.StringBuilder();
-        sb.AppendLine("Name");
+        sb.AppendLine("STATIC_OBJECT");
 
-        Transform root = this.levelEditor.RootSequenceParent;
+        foreach (Transform child in this.levelEditor.StaticObjectParent)
+        {
+            if (child == this.levelEditor.StaticObjectParent) continue;
+
+            sb.AppendLine($"{child.name}");
+        }
+
+        sb.AppendLine();
+        sb.AppendLine("INTERACTABLE_OBJECT");
+
+        foreach (Transform child in this.levelEditor.InteractableObjectParent)
+        {
+            if (child == this.levelEditor.InteractableObjectParent) continue;
+
+            sb.AppendLine($"{child.name}");
+        }
+
+        sb.AppendLine();
+        sb.AppendLine("ANIMATION");
+
+        Transform[] allChildren = this.levelEditor.SkeletonAnimation.transform.GetComponentsInChildren<Transform>();
 
         foreach (Transform child in allChildren)
         {
-            if (child == root) continue;
+            sb.AppendLine($"{child.name}");
+        }
+        
+        sb.AppendLine();
+        sb.AppendLine("ROOT_SEQUENCE_LOGIC");
+        allChildren = this.levelEditor.RootSequenceParent.GetComponentsInChildren<Transform>();
+
+        foreach (Transform child in allChildren)
+        {
+            if (child == this.levelEditor.RootSequenceParent) continue;
 
             sb.AppendLine($"{child.name}");
         }
