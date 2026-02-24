@@ -20,6 +20,11 @@ public class BoxSnapping : MonoBehaviour
 
     public async UniTask ShowCheckingEffect()
     {
+        if (this.count >= this.snappingEffects.Length)
+        {
+            return;
+        }
+
         GameObject snappingObject = this.snappingObjects[this.count];
 
         for (int i = 0; i < this.checkingEffects.Length; i++)
@@ -31,6 +36,11 @@ public class BoxSnapping : MonoBehaviour
 
     public async UniTask HideCheckingEffect()
     {
+        if (this.count >= this.snappingEffects.Length)
+        {
+            return;
+        }
+
         GameObject snappingObject = this.snappingObjects[this.count];
 
         for (int i = 0; i < this.checkingEffects.Length; i++)
