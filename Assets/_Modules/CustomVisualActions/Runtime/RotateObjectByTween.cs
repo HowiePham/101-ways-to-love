@@ -16,11 +16,11 @@ public class RotateObjectByTween : VisualAction
     {
         if (this.completeAfterRotating)
         {
-            await this.rotateObject.DORotate(this.rotateAxis, this.duration).SetEase(this.ease).AsyncWaitForCompletion();
+            await this.rotateObject.DORotate(this.rotateAxis, this.duration, RotateMode.FastBeyond360).SetEase(this.ease).AsyncWaitForCompletion();
         }
         else
         {
-            this.rotateObject.DORotate(this.rotateAxis, this.duration).SetEase(this.ease);
+            this.rotateObject.DORotate(this.rotateAxis, this.duration, RotateMode.FastBeyond360).SetEase(this.ease);
         }
 
         await UniTask.CompletedTask;
