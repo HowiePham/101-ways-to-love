@@ -5,6 +5,7 @@ public class InsideSnappingArea2D : InsideArea2D
 {
     private BoxSnapping boxSnapping;
     private LeanSelectable leanSelectable;
+    private bool isInside = false;
 
     private void Start()
     {
@@ -19,12 +20,14 @@ public class InsideSnappingArea2D : InsideArea2D
             return;
         }
 
-        if (Validate())
+        if (Validate() && !this.isInside)
         {
+            this.isInside = true;
             this.boxSnapping.ShowCheckingEffect();
         }
-        else
+        else if (!Validate() && this.isInside)
         {
+            this.isInside = false;
             this.boxSnapping.HideCheckingEffect();
         }
     }
