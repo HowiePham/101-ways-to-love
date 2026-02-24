@@ -1,6 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
+using Lean.Common;
 using Lean.Touch;
 using Mimi.Prototypes.Events;
 using Mimi.VisualActions;
@@ -14,10 +15,21 @@ namespace VisualFlow
     {
         [SerializeField, Required] protected VisualAction hintedAction;
 
+        protected LeanSelectByFinger leanSelectByFinger;
         public bool Completed => this.hintedAction.Completed;
 
         protected VisualAction HintedAction => this.hintedAction;
         protected abstract void EnableHint(bool enable);
+
+        protected override async UniTask OnInitializing()
+        {
+            await base.OnInitializing();
+
+            if (this.leanSelectByFinger == null)
+            {
+                this.leanSelectByFinger = FindAnyObjectByType<LeanSelectByFinger>();
+            }
+        }
 
         protected void FingerUpHandler(LeanFinger finger)
         {
@@ -26,7 +38,6 @@ namespace VisualFlow
 
         protected void FingerDownHandler(LeanFinger finger)
         {
-            DisableHint();
         }
 
         protected override async UniTask OnExecuting(CancellationToken cancellationToken)
@@ -34,8 +45,14 @@ namespace VisualFlow
             Messenger.AddListener(EventKey.ResetAction, ActiveHint);
             Messenger.AddListener(EventKey.AnimationStart, DisableHint);
             LeanTouch.OnFingerDown += FingerDownHandler;
+            this.leanSelectByFinger.OnSelected.AddListener(OnSelectedHandler);
             LeanTouch.OnFingerUp += FingerUpHandler;
             await UniTask.CompletedTask;
+        }
+
+        private void OnSelectedHandler(LeanSelectable leanSelectable)
+        {
+            DisableHint();
         }
 
         private void DisableHint()
@@ -54,6 +71,7 @@ namespace VisualFlow
             LeanTouch.OnFingerUp -= FingerUpHandler;
             Messenger.RemoveListener(EventKey.ResetAction, ActiveHint);
             Messenger.RemoveListener(EventKey.AnimationStart, DisableHint);
+            this.leanSelectByFinger.OnSelected.RemoveListener(OnSelectedHandler);
         }
     }
 }
