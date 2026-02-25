@@ -64,6 +64,7 @@ namespace VisualFlow
                 this.count++;
                 if (this.noLoop && !this.outPlaysound)
                 {
+                    this.audioPlayer.StopSound(this.nameMusic);
                     ServiceLocator.Get<IAudioService>().PlaySound(this.nameMusic);
                     // this.AudioPlayer.PlaySound(this.nameMusic);
                     this.outPlaysound = true;
@@ -71,6 +72,7 @@ namespace VisualFlow
 
                 if (!this.outPlaysound)
                 {
+                    this.audioPlayer.StopSound(this.nameMusic);
                     ServiceLocator.Get<IAudioService>().PlaySound(this.nameMusic);
                     // this.AudioPlayer.PlaySound(this.nameMusic);
                 }
@@ -88,7 +90,7 @@ namespace VisualFlow
             ServiceLocator.Get<IAudioService>().PlaySound(this.nameMusic, 0f);
             // this.AudioPlayer.StopSound(this.nameMusic);
         }
-        
+
 #if UNITY_EDITOR
         private static IEnumerable<string> GetSoundGroups()
         {
