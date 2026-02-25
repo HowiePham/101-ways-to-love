@@ -13,18 +13,19 @@ public class DragMechanicGenerator : MechanicGenerator
     private const string DragTrueName = "Drag_True";
     private const string DragFalseName = "Drag_False";
 
-    public void CreateMechanic(string menuName, string objectName, SkeletonAnimation skeletonAnimation, GameObject interactableObjectParent, GameObject boxInteractionParent)
+    public void CreateMechanic(string menuName, string objectName, SkeletonAnimation skeletonAnimation, 
+        GameObject interactableObjectParent, GameObject boxInteractionParent, Sprite sprite)
     {
         GameObject draggableObject;
         if (menuName.Contains("2Result"))
         {
-            draggableObject = CreateDraggableObject(objectName, interactableObjectParent);
+            draggableObject = CreateDraggableObject(objectName, interactableObjectParent, sprite);
             CreateDragDuoResult(menuName, draggableObject, skeletonAnimation, boxInteractionParent);
 
             return;
         }
 
-        draggableObject = CreateDraggableObject(objectName, interactableObjectParent);
+        draggableObject = CreateDraggableObject(objectName, interactableObjectParent, sprite);
         SetParent(draggableObject.transform, interactableObjectParent.transform);
         CreateDragSingleResult(menuName, draggableObject, skeletonAnimation, boxInteractionParent);
     }
@@ -85,12 +86,18 @@ public class DragMechanicGenerator : MechanicGenerator
         AddAutoRenameComponent(insideArea2D.gameObject, draggableObject, $"{insideArea2D.name}", suffix);
     }
 
-    public GameObject CreateDraggableObject(string objectName, GameObject interactableObjectParent)
+    public GameObject CreateDraggableObject(string objectName, GameObject interactableObjectParent, Sprite sprite)
     {
         var draggableObjectTemplate = AssetDatabase.LoadAssetAtPath<GameObject>($"{this.draggableObjectBlueprintAddress}");
         var draggableObject = (GameObject)PrefabUtility.InstantiatePrefab(draggableObjectTemplate);
         draggableObject.name = $"Draggable_{objectName}";
         SetParent(draggableObject.transform, interactableObjectParent.transform);
+        var objectRenderer = draggableObject.GetComponentInChildren<SpriteRenderer>();
+
+        if (objectRenderer != null && sprite != null)
+        {
+            objectRenderer.sprite = sprite;
+        }
 
         return draggableObject;
     }
