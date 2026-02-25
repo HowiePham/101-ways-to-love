@@ -13,9 +13,11 @@ public class MechanicBlueprintEditorWindow : EditorWindow
     private AudioMechanicGenerator audioMechanicGenerator;
     private SetActiveMechanicGenerator setActiveMechanicGenerator;
     private int selectedTab = 0;
+    private Sprite sprite;
 
     private readonly string[] tabNames = new string[]
     {
+        "OBJECTS",
         "DRAG",
         "TAP",
         "MIX",
@@ -45,51 +47,114 @@ public class MechanicBlueprintEditorWindow : EditorWindow
         switch (this.tabNames[this.selectedTab])
         {
             case "DRAG":
-                DrawButton("Drag_True", () => OnMenuItemClicked("Drag_True"));
-                DrawButton("Drag_False", () => OnMenuItemClicked("Drag_False"));
-                DrawButton("Drag_NoResult", () => OnMenuItemClicked("Drag_NoResult"));
-                DrawButton("Drag_2_Result", () => OnMenuItemClicked("Drag_2Result"));
+                DrawSpriteSection();
                 EditorGUILayout.Space(10);
-                EditorGUILayout.LabelField("Help:", EditorStyles.boldLabel);
-                EditorGUILayout.LabelField("Drag_True/False: Tạo ra Mechanic Drag cho 1 vật dẫn đến kết quả True/False");
-                EditorGUILayout.LabelField("Drag_2_Result: Tạo ra Mechanic Drag cho 1 vật dẫn đến 1 trong 2 kết quả True/False trong Level");
+                DrawDraggingMechanicSection();
                 break;
 
             case "TAP":
-                DrawButton("Tap_True", () => OnMenuItemClicked("Tap_True"));
-                DrawButton("Tap_False", () => OnMenuItemClicked("Tap_False"));
-                DrawButton("Tap_NoResult", () => OnMenuItemClicked("Tap_NoResult"));
-                DrawButton("Tap_True_Moving", () => OnMenuItemClicked("Tap_True_Moving"));
+                DrawSpriteSection();
                 EditorGUILayout.Space(10);
-                EditorGUILayout.LabelField("Help:", EditorStyles.boldLabel);
-                EditorGUILayout.LabelField("Tap_True/False: Tạo ra Mechanic Tap cho 1 khu vực dẫn đến kết quả True/False");
-                EditorGUILayout.LabelField("Tap_True/False_Moving: Tạo ra Mechanic Tap cho 1 vật di chuyển dẫn đến kết quả True/False");
+                DrawTappingMechanicSection();
                 break;
 
             case "MIX":
-                DrawButton("Mix_Tap_Drag_True", () => OnMenuItemClicked("Mix_Tap_Drag_True"));
+                DrawSpriteSection();
                 EditorGUILayout.Space(10);
-                EditorGUILayout.LabelField("Help:", EditorStyles.boldLabel);
-                EditorGUILayout.LabelField("Mix_Tap_Drag_True/False: Tạo ra Mechanic có 2 step, Tap 1 khu vực, sau đó kéo 1 vật dẫn đến kết quả True/False");
+                DrawMixingMechanicSection();
                 break;
             case "ANIMATION":
-                DrawButton("PlayAndWaitAnim", () => OnMenuItemClicked("PlayAndWaitAnim"));
-                DrawButton("LoopAnim", () => OnMenuItemClicked("LoopAnim"));
-                DrawButton("PlayAndNotWaitAnim", () => OnMenuItemClicked("PlayAndNotWaitAnim"));
-                EditorGUILayout.Space(10);
-                EditorGUILayout.LabelField("Help:", EditorStyles.boldLabel);
+                DrawAnimationSection();
                 break;
             case "AUDIO":
-                DrawButton("PlayAudio", () => OnMenuItemClicked("PlayAudio"));
-                EditorGUILayout.Space(10);
-                EditorGUILayout.LabelField("Help:", EditorStyles.boldLabel);
+                DrawAudioSection();
                 break;
             case "SET_ACTIVE":
-                DrawButton("SetActive_On", () => OnMenuItemClicked("SetActive_On"));
-                DrawButton("SetActive_Off", () => OnMenuItemClicked("SetActive_Off"));
-                EditorGUILayout.Space(10);
-                EditorGUILayout.LabelField("Help:", EditorStyles.boldLabel);
+                DrawSettingActiveSection();
                 break;
+            case "OBJECTS":
+                DrawSpriteSection();
+                EditorGUILayout.Space(10);
+                DrawButton("Draggable_Object", () => OnMenuItemClicked("Draggable_Object"));
+                DrawButton("Static_Object", () => OnMenuItemClicked("Static_Object"));
+                break;
+        }
+    }
+
+    private void DrawSettingActiveSection()
+    {
+        DrawButton("SetActive_On", () => OnMenuItemClicked("SetActive_On"));
+        DrawButton("SetActive_Off", () => OnMenuItemClicked("SetActive_Off"));
+        EditorGUILayout.Space(10);
+        EditorGUILayout.LabelField("Help:", EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("SetActive_On: Active các Gameobject được chỉ định");
+        EditorGUILayout.LabelField("SetActive_Off: Disable các GameObject được chỉ định");
+    }
+
+    private void DrawAudioSection()
+    {
+        DrawButton("PlayAudio", () => OnMenuItemClicked("PlayAudio"));
+        EditorGUILayout.Space(10);
+        EditorGUILayout.LabelField("Help:", EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("PlayAudio: Chạy sound 1 lần");
+    }
+
+    private void DrawAnimationSection()
+    {
+        DrawButton("PlayAndWaitAnim", () => OnMenuItemClicked("PlayAndWaitAnim"));
+        DrawButton("LoopAnim", () => OnMenuItemClicked("LoopAnim"));
+        DrawButton("PlayAndNotWaitAnim", () => OnMenuItemClicked("PlayAndNotWaitAnim"));
+        EditorGUILayout.Space(10);
+        EditorGUILayout.LabelField("Help:", EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("PlayAndWaitAnim: Chạy 1 action của anim và đợi đến khi action này chạy hết");
+        EditorGUILayout.LabelField("LoopAnim: Chạy 1 action của anim dưới dạng loop và không phải đợi action này chạy hết");
+        EditorGUILayout.LabelField("PlayAndNotWaitAnim: Chạy 1 action của anim và không phải đợi action này chạy hết");
+    }
+
+    private void DrawMixingMechanicSection()
+    {
+        DrawButton("Mix_Tap_Drag_True", () => OnMenuItemClicked("Mix_Tap_Drag_True"));
+        EditorGUILayout.Space(10);
+        EditorGUILayout.LabelField("Help:", EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("Mix_Tap_Drag_True/False: Tạo ra Mechanic có 2 step, Tap 1 khu vực, sau đó kéo 1 vật dẫn đến kết quả True/False");
+    }
+
+    private void DrawTappingMechanicSection()
+    {
+        DrawButton("Tap_True", () => OnMenuItemClicked("Tap_True"));
+        DrawButton("Tap_False", () => OnMenuItemClicked("Tap_False"));
+        DrawButton("Tap_NoResult", () => OnMenuItemClicked("Tap_NoResult"));
+        DrawButton("Tap_True_Moving", () => OnMenuItemClicked("Tap_True_Moving"));
+        EditorGUILayout.Space(10);
+        EditorGUILayout.LabelField("Help:", EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("Tap_True/False: Tạo ra Mechanic Tap cho 1 khu vực dẫn đến kết quả True/False");
+        EditorGUILayout.LabelField("Tap_True/False_Moving: Tạo ra Mechanic Tap cho 1 vật di chuyển dẫn đến kết quả True/False");
+    }
+
+    private void DrawDraggingMechanicSection()
+    {
+        DrawButton("Drag_True", () => OnMenuItemClicked("Drag_True"));
+        DrawButton("Drag_False", () => OnMenuItemClicked("Drag_False"));
+        DrawButton("Drag_NoResult", () => OnMenuItemClicked("Drag_NoResult"));
+        DrawButton("Drag_2_Result", () => OnMenuItemClicked("Drag_2Result"));
+        EditorGUILayout.Space(10);
+        EditorGUILayout.LabelField("Help:", EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("Drag_True/False: Tạo ra Mechanic Drag cho 1 vật dẫn đến kết quả True/False");
+        EditorGUILayout.LabelField("Drag_2_Result: Tạo ra Mechanic Drag cho 1 vật dẫn đến 1 trong 2 kết quả True/False trong Level");
+    }
+
+    private void DrawSpriteSection()
+    {
+        EditorGUILayout.LabelField("Sprite:", GUILayout.Width(60));
+
+        var newSprite = (Sprite)EditorGUILayout.ObjectField(
+            this.sprite,
+            typeof(Sprite),
+            false
+        );
+        if (newSprite != this.sprite)
+        {
+            this.sprite = newSprite;
         }
     }
 
@@ -114,6 +179,7 @@ public class MechanicBlueprintEditorWindow : EditorWindow
 
         var skeletonAnimation = FindAnyObjectByType<SkeletonAnimation>();
         GameObject interactableObjectsParent = GameObject.Find("InteractableObjects");
+        GameObject staticObjectsParent = GameObject.Find("StaticObjects");
         GameObject boxInteractionParent = GameObject.Find("BoxInteraction");
 
         if (interactableObjectsParent == null || boxInteractionParent == null)
@@ -126,7 +192,7 @@ public class MechanicBlueprintEditorWindow : EditorWindow
         {
             case "DRAG":
                 this.dragMechanicGenerator = new DragMechanicGenerator();
-                this.dragMechanicGenerator.CreateMechanic(menuName, this.objectName, skeletonAnimation, interactableObjectsParent, boxInteractionParent);
+                this.dragMechanicGenerator.CreateMechanic(menuName, this.objectName, skeletonAnimation, interactableObjectsParent, boxInteractionParent, this.sprite);
                 break;
             case "TAP":
                 if (menuName.Contains("Moving"))
@@ -143,7 +209,7 @@ public class MechanicBlueprintEditorWindow : EditorWindow
                 break;
             case "MIX":
                 this.mixingMechanicGenerator = new MixingMechanicGenerator();
-                this.mixingMechanicGenerator.CreateMechanic(menuName, this.objectName, skeletonAnimation, interactableObjectsParent, boxInteractionParent);
+                this.mixingMechanicGenerator.CreateMechanic(menuName, this.objectName, skeletonAnimation, interactableObjectsParent, boxInteractionParent, this.sprite);
                 break;
             case "ANIMATION":
                 this.animationMechanicGenerator = new AnimationMechanicGenerator();
@@ -157,6 +223,24 @@ public class MechanicBlueprintEditorWindow : EditorWindow
             case "SET_ACTIVE":
                 this.setActiveMechanicGenerator = new SetActiveMechanicGenerator();
                 this.setActiveMechanicGenerator.CreateMechanic(menuName, this.objectName);
+                break;
+            case "OBJECTS":
+                if (menuName.Contains("Static"))
+                {
+                    var newStaticObj = new GameObject(this.objectName);
+                    newStaticObj.transform.SetParent(staticObjectsParent.transform);
+                    if (this.sprite != null)
+                    {
+                        var objectRenderer = newStaticObj.AddComponent<SpriteRenderer>();
+                        objectRenderer.sprite = this.sprite;
+                    }
+                }
+                else if (menuName.Contains("Draggable"))
+                {
+                    this.dragMechanicGenerator = new DragMechanicGenerator();
+                    this.dragMechanicGenerator.CreateDraggableObject(this.objectName, interactableObjectsParent, this.sprite);
+                }
+
                 break;
         }
     }

@@ -12,19 +12,19 @@ public class MixingMechanicGenerator : MechanicGenerator
     private TapMechanicGenerator tapMechanicGenerator;
     private DragMechanicGenerator dragMechanicGenerator;
 
-    public void CreateMechanic(string menuName, string objectName, SkeletonAnimation skeletonAnimation, GameObject interactableObjectParent, GameObject boxInteractionParent)
+    public void CreateMechanic(string menuName, string objectName, SkeletonAnimation skeletonAnimation, GameObject interactableObjectParent, GameObject boxInteractionParent,Sprite sprite)
     {
         if (menuName.Contains("Tap") && menuName.Contains("Drag"))
         {
             this.tapMechanicGenerator = new TapMechanicGenerator();
             this.dragMechanicGenerator = new DragMechanicGenerator();
 
-            CreateTapDragMechanic(menuName, objectName, skeletonAnimation, interactableObjectParent, boxInteractionParent);
+            CreateTapDragMechanic(menuName, objectName, skeletonAnimation, interactableObjectParent, boxInteractionParent,sprite);
         }
     }
 
     private void CreateTapDragMechanic(string menuName, string objectName, SkeletonAnimation skeletonAnimation,
-        GameObject interactableObjectParent, GameObject boxInteractionParent)
+        GameObject interactableObjectParent, GameObject boxInteractionParent,Sprite sprite)
     {
         var mechanicParent = new GameObject($"{menuName}_{objectName}");
         mechanicParent.AddComponent<VisualSequence>();
@@ -32,7 +32,7 @@ public class MixingMechanicGenerator : MechanicGenerator
         BoxArea tapArea = this.tapMechanicGenerator.CreateTapArea(objectName, boxInteractionParent);
         GameObject tapBlueprint = this.tapMechanicGenerator.CreateMechanic("Tap_Active", skeletonAnimation, tapArea, "TapArea");
 
-        GameObject draggableObject = this.dragMechanicGenerator.CreateDraggableObject(objectName, interactableObjectParent);
+        GameObject draggableObject = this.dragMechanicGenerator.CreateDraggableObject(objectName, interactableObjectParent,sprite);
         GameObject dragBlueprint = this.dragMechanicGenerator.CreateDragSingleResult("Drag_True", draggableObject, skeletonAnimation, boxInteractionParent);
         
         GameObject actionObject = CreateDisableTargetMechanic(draggableObject);
