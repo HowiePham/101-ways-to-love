@@ -5,6 +5,9 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using Lean.Common;
 using Lean.Touch;
+using Mimi.Prototypes;
+using Mimi.ServiceLocators;
+using Mimi.Services.ScriptableObject.Audio;
 using ScratchCardAsset;
 using ScratchCardAsset.Core;
 using Sirenix.OdinInspector;
@@ -36,6 +39,7 @@ namespace VisualFlow
         [SerializeField] protected ScratchMode scratchMode;
         [SerializeField] protected bool resetIfDeleteNotComplete = true;
         [SerializeField] protected float deleteProgress;
+        [SerializeField] protected BaseAudioServiceSO audioService;
 
         protected Sprite scratchSprite;
         protected Color[] spritePixels;
