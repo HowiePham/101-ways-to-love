@@ -3,6 +3,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using Mimi.Prototypes.Events;
 using Sirenix.OdinInspector;
+using Spine;
 using UnityEngine;
 
 namespace Mimi.VisualActions.Spines
@@ -25,11 +26,17 @@ namespace Mimi.VisualActions.Spines
             }
 
             Messenger.Broadcast("animationstart");
-            this.SkeletonAnimation.timeScale = this.timeScale;
-            this.SkeletonAnimation.AnimationState.SetAnimation(this.track, this.Animation, false);
+            TrackEntry currentEntry = this.skeletonAnimation.AnimationState.GetCurrent(this.track);
+            
+            if (!currentEntry.Animation.Name.Equals(this.Animation) || currentEntry.IsComplete)
+            {
+                this.SkeletonAnimation.timeScale = this.timeScale;
+                currentEntry = this.SkeletonAnimation.AnimationState.SetAnimation(this.track, this.Animation, false);
+            }
+
             try
             {
-                await UniTask.WaitUntil(() => IsAnimationComplete,
+                await UniTask.WaitUntil(() => currentEntry.IsComplete,
                     PlayerLoopTiming.Update, cancellationToken);
 
                 Messenger.Broadcast("animationcomplete");
