@@ -35,6 +35,7 @@ namespace VisualFlow
         [SerializeField, Required] protected Shader maskProgressShader;
         [SerializeField] protected ScratchMode scratchMode;
         [SerializeField] protected bool resetIfDeleteNotComplete = true;
+        [SerializeField] protected float deleteProgress;
 
         protected Sprite scratchSprite;
         protected Color[] spritePixels;
@@ -44,8 +45,8 @@ namespace VisualFlow
         protected Vector3 startPos;
 
         protected bool IsDeleteComplete => this.scratchMode == ScratchMode.Erase
-            ? DeleteProgress >= this.targetDeletePercentage
-            : DeleteProgress <= this.targetDeletePercentage;
+            ? this.deleteProgress >= this.targetDeletePercentage
+            : this.deleteProgress <= this.targetDeletePercentage;
 
         public Vector3[] Path { protected set; get; }
         public event Action<Vector3> OnStartDelete;
@@ -54,7 +55,7 @@ namespace VisualFlow
 
         protected float DeleteProgress => this.eraseProgress.GetProgress();
 
-        public bool IsBeingDeleted => DeleteProgress > 0f;
+        public bool IsBeingDeleted => this.deleteProgress > 0f;
 
         [SerializeField] protected Camera mainCamera;
 
@@ -403,6 +404,7 @@ namespace VisualFlow
             eraseCenter.z = 0f;
             OnDeleting?.Invoke(brushPos);
             prevFingerPosition = finger.ScreenPosition;
+            this.deleteProgress = this.eraseProgress.GetProgress();
         }
 
         public virtual void FingerUpHandler(LeanFinger finger)
