@@ -17,6 +17,7 @@ namespace VisualFlow
     {
         [SerializeField] private SkeletonAnimation skeletonAnimation;
         [SerializeField] private BaseAudioServiceSO audioPlayer;
+        [SerializeField] private bool stopSoundBeforePlay = true;
         private ServiceLocator ServiceLocator => ServiceLocator.Global;
 
         public SkeletonAnimation SkeletonAnimation
@@ -64,7 +65,11 @@ namespace VisualFlow
                 this.count++;
                 if (this.noLoop && !this.outPlaysound)
                 {
-                    this.audioPlayer.StopSound(this.nameMusic);
+                    if (this.stopSoundBeforePlay)
+                    {
+                        this.audioPlayer.StopSound(this.nameMusic);
+                    }
+
                     ServiceLocator.Get<IAudioService>().PlaySound(this.nameMusic);
                     // this.AudioPlayer.PlaySound(this.nameMusic);
                     this.outPlaysound = true;
@@ -72,7 +77,11 @@ namespace VisualFlow
 
                 if (!this.outPlaysound)
                 {
-                    this.audioPlayer.StopSound(this.nameMusic);
+                    if (this.stopSoundBeforePlay)
+                    {
+                        this.audioPlayer.StopSound(this.nameMusic);
+                    }
+                    
                     ServiceLocator.Get<IAudioService>().PlaySound(this.nameMusic);
                     // this.AudioPlayer.PlaySound(this.nameMusic);
                 }
