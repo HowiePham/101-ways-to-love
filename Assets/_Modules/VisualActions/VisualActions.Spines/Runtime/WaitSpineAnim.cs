@@ -27,11 +27,19 @@ namespace Mimi.VisualActions.Spines
 
             Messenger.Broadcast("animationstart");
             TrackEntry currentEntry = this.skeletonAnimation.AnimationState.GetCurrent(this.track);
-            
-            if (!currentEntry.Animation.Name.Equals(this.Animation) || currentEntry.IsComplete)
+
+            if (this.forcePlayAnim)
             {
                 this.SkeletonAnimation.timeScale = this.timeScale;
                 currentEntry = this.SkeletonAnimation.AnimationState.SetAnimation(this.track, this.Animation, false);
+            }
+            else
+            {
+                if (!currentEntry.Animation.Name.Equals(this.Animation) || currentEntry.IsComplete)
+                {
+                    this.SkeletonAnimation.timeScale = this.timeScale;
+                    currentEntry = this.SkeletonAnimation.AnimationState.SetAnimation(this.track, this.Animation, false);
+                }
             }
 
             try

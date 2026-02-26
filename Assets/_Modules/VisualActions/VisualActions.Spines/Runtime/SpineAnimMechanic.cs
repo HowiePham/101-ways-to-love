@@ -11,6 +11,7 @@ namespace Mimi.VisualActions.Spines
         protected new string animation;
 
         [SerializeField] protected float timeScale = 1f;
+        [SerializeField] protected bool forcePlayAnim;
 
         public string Animation => this.animation;
 
