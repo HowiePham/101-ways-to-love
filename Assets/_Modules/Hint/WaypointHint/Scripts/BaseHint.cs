@@ -31,12 +31,12 @@ namespace VisualFlow
             }
         }
 
-        protected void FingerUpHandler(LeanFinger finger)
+        protected virtual void FingerUpHandler(LeanFinger finger)
         {
             ActiveHint();
         }
 
-        protected void FingerDownHandler(LeanFinger finger)
+        protected virtual void FingerDownHandler(LeanFinger finger)
         {
         }
 
@@ -55,12 +55,12 @@ namespace VisualFlow
             DisableHint();
         }
 
-        private void DisableHint()
+        protected void DisableHint()
         {
             EnableHint(false);
         }
 
-        private void ActiveHint()
+        protected void ActiveHint()
         {
             EnableHint(true);
         }
