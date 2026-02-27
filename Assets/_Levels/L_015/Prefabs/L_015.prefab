@@ -276,6 +276,7 @@ MonoBehaviour:
       m_Calls: []
   skeletonAnimation: {fileID: 1482957626795179816}
   audioPlayer: {fileID: 11400000, guid: ca539802b2f42a34d9bbdb0eb278d4e3, type: 2}
+  stopSoundBeforePlaying: 0
   eventName: SFX_WOW
   nameMusic: SFX_WOW
   track: 0
@@ -530,6 +531,63 @@ MonoBehaviour:
   onExit:
     m_PersistentCalls:
       m_Calls: []
+--- !u!1 &3188514836221960897
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 710344803120467402}
+  - component: {fileID: 7632553513995986349}
+  m_Layer: 0
+  m_Name: FadeObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &710344803120467402
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3188514836221960897}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8178858634658143174}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7632553513995986349
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3188514836221960897}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6249b7532ced466b911cc587f7fe9c40, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  onExit:
+    m_PersistentCalls:
+      m_Calls: []
+  targets:
+  - {fileID: 3670051805688505522}
+  - {fileID: 686611834151002908}
+  startAlpha: 1
+  endAlpha: 0
+  ease: 0
+  duration: 0.5
 --- !u!1 &3513360380843884609
 GameObject:
   m_ObjectHideFlags: 0
@@ -904,6 +962,7 @@ MonoBehaviour:
       m_Calls: []
   skeletonAnimation: {fileID: 1482957626795179816}
   audioPlayer: {fileID: 11400000, guid: ca539802b2f42a34d9bbdb0eb278d4e3, type: 2}
+  stopSoundBeforePlaying: 0
   eventName: SFX_TicTacDOngHo
   nameMusic: SFX_TicTacDOngHo
   track: 0
@@ -961,6 +1020,7 @@ MonoBehaviour:
       m_Calls: []
   skeletonAnimation: {fileID: 1482957626795179816}
   audioPlayer: {fileID: 11400000, guid: ca539802b2f42a34d9bbdb0eb278d4e3, type: 2}
+  stopSoundBeforePlaying: 0
   eventName: SFX_TuaNguoc
   nameMusic: SFX_TuaNguoc
   track: 0
@@ -1895,6 +1955,7 @@ MonoBehaviour:
       m_Calls: []
   skeletonAnimation: {fileID: 1482957626795179816}
   audioPlayer: {fileID: 11400000, guid: ca539802b2f42a34d9bbdb0eb278d4e3, type: 2}
+  stopSoundBeforePlaying: 0
   eventName: SFX_GirlVaHoaHong
   nameMusic: SFX_GirlVaHoaHong
   track: 0
@@ -2397,6 +2458,7 @@ MonoBehaviour:
       m_Calls: []
   skeletonAnimation: {fileID: 1482957626795179816}
   audioPlayer: {fileID: 11400000, guid: ca539802b2f42a34d9bbdb0eb278d4e3, type: 2}
+  stopSoundBeforePlaying: 0
   eventName: Sfx_BoyScare
   nameMusic: Sfx_BoyScare
   track: 0
@@ -2508,7 +2570,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 9102866592625239312, guid: 21749ae8a6619b04e8bcc312e69393ba, type: 3}
+      insertIndex: 3
+      addedObject: {fileID: 710344803120467402}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 5375014427302388691, guid: 21749ae8a6619b04e8bcc312e69393ba, type: 3}
       insertIndex: -1
@@ -2697,6 +2762,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
+--- !u!212 &686611834151002908 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 1822424218480299595, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
+  m_PrefabInstance: {fileID: 1210862436738936151}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1948139294249557316 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 848073819641458707, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
@@ -2783,6 +2853,11 @@ PrefabInstance:
 --- !u!4 &2333109947032132330 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 848073819641458707, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
+  m_PrefabInstance: {fileID: 3144684103464282873}
+  m_PrefabAsset: {fileID: 0}
+--- !u!212 &3670051805688505522 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 1822424218480299595, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
   m_PrefabInstance: {fileID: 3144684103464282873}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &6319636522102722393 stripped
