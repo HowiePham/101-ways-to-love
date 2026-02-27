@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7598423854958475518}
   - component: {fileID: 8680730938665427594}
+  - component: {fileID: 6816452823335082063}
   m_Layer: 0
   m_Name: SmoothDeleteWithEraser
   m_TagString: Untagged
@@ -53,6 +54,20 @@ MonoBehaviour:
   onExit:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &6816452823335082063
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 797869697686946725}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73ce3d45b95a4cff8971ef5e6b668800, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  actionCondition: {fileID: 1159128029166178019}
+  mechanicType: 3
 --- !u!1 &1705043053571588910
 GameObject:
   m_ObjectHideFlags: 0
@@ -569,6 +584,9 @@ MonoBehaviour:
   brushShader: {fileID: 4800000, guid: efcd8dda2a6b7f9429d89ff2b5d7ebbe, type: 3}
   maskProgressShader: {fileID: 4800000, guid: 416d7cfe5d2da4988959de9a6c288abc, type: 3}
   scratchMode: 0
+  resetIfDeleteNotComplete: 1
+  deleteProgress: 0
+  audioService: {fileID: 0}
   mainCamera: {fileID: 0}
   selectable: {fileID: 0}
   eraseObject: {fileID: 2131631607567662133}

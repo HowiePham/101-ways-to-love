@@ -31,7 +31,21 @@ public class HintGenerator
                 HandleTappingHint(action, hintBlueprint);
                 hintBlueprint.transform.SetParent(hintParent);
             }
+            else if (action.MechanicType == MechanicType.Delete)
+            {
+                hintName = "Hint_Deleting";
+                GameObject hintBlueprint = CreateHintBlueprint(HintBlueprintAddress, hintName);
+                HandleDeletingHint(action, hintBlueprint);
+                hintBlueprint.transform.SetParent(hintParent);
+            }
         }
+    }
+
+    private void HandleDeletingHint(TrueAction trueAction, GameObject hintBlueprint)
+    {
+        var hint = hintBlueprint.GetComponent<DeletingHint>();
+        VisualAction actionCondition = trueAction.ActionCondition;
+        hint.SetField("hintedAction", actionCondition, AccessModifier.Private);
     }
 
     private void HandleDraggingHint(TrueAction trueAction, GameObject hintBlueprint)
