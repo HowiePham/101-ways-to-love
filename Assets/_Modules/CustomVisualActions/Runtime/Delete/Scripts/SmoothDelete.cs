@@ -409,6 +409,7 @@ namespace VisualFlow
             OnDeleting?.Invoke(brushPos);
             prevFingerPosition = finger.ScreenPosition;
             this.deleteProgress = this.eraseProgress.GetProgress();
+            this.isCompleted = this.IsDeleteComplete;
         }
 
         public virtual void FingerUpHandler(LeanFinger finger)
@@ -417,7 +418,12 @@ namespace VisualFlow
             // ServiceLocator.GetService<IAudioService>().StopSound(this.soundFX);
             OnStopDelete?.Invoke();
             this.isFingerDowned = false;
-            this.isCompleted = IsDeleteComplete;
+            CheckDeleteComplete(finger);
+        }
+
+        private void CheckDeleteComplete(LeanFinger finger)
+        {
+            this.isCompleted = this.IsDeleteComplete;
             if (!this.isCompleted && this.resetIfDeleteNotComplete)
             {
                 if (this.scratchMode == ScratchMode.Restore)
@@ -433,8 +439,6 @@ namespace VisualFlow
                 {
                     return;
                 }
-
-                // Messenger.Broadcast(EventKey.Interaction);
             }
             else if (this.isCompleted && this.scratchMode == ScratchMode.Erase)
             {
