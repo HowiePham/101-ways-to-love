@@ -61,7 +61,6 @@ namespace Mimi.Interactions.Dragging
 
         private void FingerUpHandler(LeanFinger finger)
         {
-            this.selectable.SelfSelected = false;
             OnEndDrag();
         }
 
@@ -74,7 +73,6 @@ namespace Mimi.Interactions.Dragging
                 return;
             }
 
-            this.selectable.SelfSelected = true;
             OnStartDrag();
         }
 
