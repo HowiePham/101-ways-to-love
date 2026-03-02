@@ -99,7 +99,7 @@ public class IndicatorBasedTimingBar : TimingBar
         this.isRunning = false;
     }
 
-    public override void TapTiming()
+    public override void TapTimingBar()
     {
         StopRunning();
         ScaleUIEffect(this.indicator, 1.2f, this.indicatorEffectDuration, true);

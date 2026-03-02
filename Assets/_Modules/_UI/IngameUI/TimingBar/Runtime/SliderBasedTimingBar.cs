@@ -78,7 +78,7 @@ public class SliderBasedTimingBar : TimingBar
         this.isRunning = false;
     }
 
-    public override void TapTiming()
+    public override void TapTimingBar()
     {
         StopRunning();
         ScaleUIEffect(this.timingBarContainer, 1.2f, this.feedbackEffectDuration, true);
