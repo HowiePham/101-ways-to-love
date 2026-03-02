@@ -11,6 +11,7 @@ public class JumpByTween : VisualAction
     [SerializeField] private float duration;
     [SerializeField] private float jumpForce;
     [SerializeField] private Ease ease = Ease.Linear;
+    [SerializeField] private bool turnOffObjectAfterJumping;
     [SerializeField] private bool completeAfterMove;
 
     protected override async UniTask OnExecuting(CancellationToken cancellationToken)
@@ -18,12 +19,23 @@ public class JumpByTween : VisualAction
         if (this.completeAfterMove)
         {
             await this.moveObject.DOJump(this.targetPos.position, this.jumpForce, 1, this.duration).SetEase(this.ease).AsyncWaitForCompletion();
+            if (this.turnOffObjectAfterJumping)
+            {
+                DisableObject();
+            }
         }
         else
         {
             this.moveObject.DOJump(this.targetPos.position, this.jumpForce, 1, this.duration).SetEase(this.ease);
+            Invoke(nameof(DisableObject), this.duration);
         }
 
+
         await UniTask.CompletedTask;
+    }
+
+    private void DisableObject()
+    {
+        this.moveObject.gameObject.SetActive(false);
     }
 }
