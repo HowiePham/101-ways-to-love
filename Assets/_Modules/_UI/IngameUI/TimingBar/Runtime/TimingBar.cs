@@ -25,7 +25,7 @@ public abstract class TimingBar : MonoBehaviour
     public abstract void StopRunning();
 
     [Button]
-    public abstract void TapTiming();
+    public abstract void TapTimingBar();
 
     [Button]
     public abstract void ResetBar();

@@ -5,14 +5,14 @@ using UnityEngine;
 
 public class BalanceIndicatorTimingBar : TimingBar
 {
-    [Header("References")]
-    [SerializeField] private RectTransform indicator;
+    [Header("References")] [SerializeField]
+    private RectTransform indicator;
+
     [SerializeField] private RectTransform runningArea;
     [SerializeField] private GameObject failedFX;
     [SerializeField] private GameObject trueFX;
 
-    [Header("Settings")]
-    [SerializeField] private float indicatorSpeed = 200f;
+    [Header("Settings")] [SerializeField] private float indicatorSpeed = 200f;
     [SerializeField] private float indicatorEffectDuration = 0.2f;
 
     private float minPosition;
@@ -30,7 +30,7 @@ public class BalanceIndicatorTimingBar : TimingBar
 
         float barWidth = this.runningArea.rect.width;
         this.minPosition = -barWidth / 2f;
-        this.maxPosition =  barWidth / 2f;
+        this.maxPosition = barWidth / 2f;
     }
 
     private void Update()
@@ -62,20 +62,20 @@ public class BalanceIndicatorTimingBar : TimingBar
     public override async UniTask Show()
     {
         this.timingBarContainer.localScale = Vector3.zero;
-        this.trueArea.localScale          = Vector3.zero;
-        this.indicator.localScale         = Vector3.zero;
+        this.trueArea.localScale = Vector3.zero;
+        this.indicator.localScale = Vector3.zero;
         ResetBar();
 
-        ScaleUIEffect(this.timingBarContainer, 1f, 0.4f, true,  0f);
-        await ScaleUIEffect(this.trueArea,     1f, 0.4f, false, 0f);
-        await ScaleUIEffect(this.indicator,    1f, 0.4f, true,  0f);
+        ScaleUIEffect(this.timingBarContainer, 1f, 0.4f, true, 0f);
+        await ScaleUIEffect(this.trueArea, 1f, 0.4f, false, 0f);
+        await ScaleUIEffect(this.indicator, 1f, 0.4f, true, 0f);
     }
 
     public override async UniTask Hide()
     {
         ScaleUIEffect(this.timingBarContainer, 0f, 0.4f, false, 0f);
-        ScaleUIEffect(this.trueArea,           0f, 0.4f, false, 0f);
-        ScaleUIEffect(this.indicator,          0f, 0.4f, false, 0f);
+        ScaleUIEffect(this.trueArea, 0f, 0.4f, false, 0f);
+        ScaleUIEffect(this.indicator, 0f, 0.4f, false, 0f);
         await UniTask.WaitForSeconds(0.4f);
     }
 
@@ -97,11 +97,11 @@ public class BalanceIndicatorTimingBar : TimingBar
 
 
     [Button]
-    public override void TapTiming()
+    public override void TapTimingBar()
     {
         this.direction = -this.direction;
     }
-    
+
     [Button]
     public void ConfirmTiming()
     {
@@ -124,12 +124,12 @@ public class BalanceIndicatorTimingBar : TimingBar
     {
         this.failedFX.SetActive(false);
         this.trueFX.SetActive(false);
-        
-        this.indicator.anchoredPosition = new Vector2(this.minPosition, this.indicator.anchoredPosition.y);
+
+        this.indicator.anchoredPosition = new Vector2((this.minPosition + this.maxPosition) / 2, this.indicator.anchoredPosition.y);
 
         SetInitialDirection();
     }
-    
+
     private void SetInitialDirection()
     {
         float currentX = this.indicator.anchoredPosition.x;
@@ -147,8 +147,8 @@ public class BalanceIndicatorTimingBar : TimingBar
         if (this.trueArea == null || this.runningArea == null) return;
 
         float trueAreaWidth = this.trueArea.rect.width;
-        float minRandomX    = this.minPosition + (trueAreaWidth / 2f);
-        float maxRandomX    = this.maxPosition - (trueAreaWidth / 2f);
+        float minRandomX = this.minPosition + (trueAreaWidth / 2f);
+        float maxRandomX = this.maxPosition - (trueAreaWidth / 2f);
 
         float randomX = Random.Range(minRandomX, maxRandomX);
         this.trueArea.anchoredPosition = new Vector2(randomX, this.trueArea.anchoredPosition.y);
@@ -162,12 +162,12 @@ public class BalanceIndicatorTimingBar : TimingBar
 
     public override bool IsTrueTiming()
     {
-        if (this.indicator == null || this.trueArea == null) return false;
+        if (this.indicator == null || this.trueArea == null || !this.isRunning) return false;
 
-        float indicatorX    = this.indicator.anchoredPosition.x;
-        float trueAreaX     = this.trueArea.anchoredPosition.x;
+        float indicatorX = this.indicator.anchoredPosition.x;
+        float trueAreaX = this.trueArea.anchoredPosition.x;
         float trueAreaWidth = this.trueArea.rect.width;
-        float trueAreaLeft  = trueAreaX - (trueAreaWidth / 2f);
+        float trueAreaLeft = trueAreaX - (trueAreaWidth / 2f);
         float trueAreaRight = trueAreaX + (trueAreaWidth / 2f);
 
         return indicatorX >= trueAreaLeft && indicatorX <= trueAreaRight;
@@ -188,8 +188,8 @@ public class BalanceIndicatorTimingBar : TimingBar
         Vector3 originalScale = uiItem.localScale;
         if (scaleBack)
         {
-            await uiItem.DOScale(targetValue,    duration / 2).SetEase(Ease.InOutQuad).AsyncWaitForCompletion();
-            await uiItem.DOScale(originalScale,  duration / 2).SetEase(Ease.InOutQuad).AsyncWaitForCompletion();
+            await uiItem.DOScale(targetValue, duration / 2).SetEase(Ease.InOutQuad).AsyncWaitForCompletion();
+            await uiItem.DOScale(originalScale, duration / 2).SetEase(Ease.InOutQuad).AsyncWaitForCompletion();
             return;
         }
 

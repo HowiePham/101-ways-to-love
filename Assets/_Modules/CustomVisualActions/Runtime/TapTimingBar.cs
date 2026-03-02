@@ -41,7 +41,7 @@ public class TapTimingBar : TimingBarAction
             return;
         }
 
-        this.timingBar.TapTiming();
+        this.timingBar.TapTimingBar();
         this.sameResult = this.trueTimingAction == this.timingBar.IsTrueTiming();
         if (!this.playSoundWhenTapTiming || string.IsNullOrEmpty(this.correctSoundKey) || string.IsNullOrEmpty(this.failedSoundKey))
         {
