@@ -25,6 +25,7 @@ public class GameplayView : BaseView
     [SerializeField] private Button skipBtn;
     [SerializeField] private Button hintBtn;
     [SerializeField] private Button removeAdsButton;
+    [SerializeField] private Button startLevelGameButton;
 
     [Header("Popup Effect")] [SerializeField]
     private RectTransform[] showingEffectUIs;
@@ -41,12 +42,14 @@ public class GameplayView : BaseView
     private RectTransform RemoveAdsRect => this.removeAdsButton.GetComponent<RectTransform>();
     private RectTransform HintBtnRect => this.hintBtn.GetComponent<RectTransform>();
     private RectTransform SkipBtnRect => this.skipBtn.GetComponent<RectTransform>();
+    private RectTransform StartLevelGameBtnRect => this.startLevelGameButton.GetComponent<RectTransform>();
 
 
     public Action OnSettingClicked;
     public Action OnSkipClicked;
     public Action OnHintClicked;
     public Action OnRemoveAdsClicked;
+    public Action OnStartLevelGameClicked;
 
     public override void Initialize()
     {
@@ -61,6 +64,7 @@ public class GameplayView : BaseView
         this.skipBtn.onClick.AddListener(() => this.OnSkipClicked?.Invoke());
         this.hintBtn.onClick.AddListener(() => this.OnHintClicked?.Invoke());
         this.removeAdsButton.onClick.AddListener(() => OnRemoveAdsClicked?.Invoke());
+        this.startLevelGameButton.onClick.AddListener(() => OnStartLevelGameClicked?.Invoke());
     }
 
     public override void Show()
@@ -186,6 +190,19 @@ public class GameplayView : BaseView
 
         await ScaleUIEffect(this.HintBtnRect, delay);
         LoopScalingUIEffect(this.HintBtnRect.GetComponent<RectTransform>(), 1.1f, 1f, 1f);
+    }
+
+    public async UniTask SetActiveStartLevelGameButton(bool value, float delay = 0f)
+    {
+        this.startLevelGameButton.gameObject.SetActive(value);
+
+        if (!value)
+        {
+            return;
+        }
+
+        await ScaleUIEffect(this.StartLevelGameBtnRect, delay);
+        LoopScalingUIEffect(this.StartLevelGameBtnRect.GetComponent<RectTransform>(), 1.1f, 1f, 1f);
     }
 
     public async UniTask SetActiveSkipButton(bool value, float delay = 0f)

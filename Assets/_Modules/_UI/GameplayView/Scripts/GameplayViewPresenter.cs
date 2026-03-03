@@ -57,14 +57,16 @@ public class GameplayViewPresenter : BaseViewPresenter
         this.gameplayView.OnSkipClicked += SkipClickedHandler;
         this.gameplayView.OnHintClicked += HintClickedHandler;
         this.gameplayView.OnRemoveAdsClicked += ShowRemoveAdsView;
+        this.gameplayView.OnStartLevelGameClicked += StartLevelGameClickedHandler;
 
         this.eventSubscriber.Subscribe<LevelResumed>(ResumeGameplay).AddToBag(this.eventBag);
         this.eventSubscriber.Subscribe<LifeUpdated>(OnLifeUpdate).AddToBag(this.eventBag);
         this.eventSubscriber.Subscribe<RecoveryLifeTimerUpdated>(OnRecoveryTimerUpdate).AddToBag(this.eventBag);
         Messenger.AddListener(EventKey.LevelWin, ShowWinView);
-        Messenger.AddListener(EventKey.ShowHint, HintClickedHandler);
         Messenger.AddListener(EventKey.ActionDone, UpdateStepPoint);
+        Messenger.AddListener(EventKey.ShowHint, HintClickedHandler);
         Messenger.AddListener(EventKey.ActionFailed, ActionFailedHandler);
+        Messenger.AddListener(EventKey.ShowStartLevelGameButton, ShowStartLevelGameButtonHandler);
 
         HandleHintButtonVisible(3f);
         HandleSkipButtonVisible(5f);
@@ -79,16 +81,27 @@ public class GameplayViewPresenter : BaseViewPresenter
 #endif
     }
 
+    private void ShowStartLevelGameButtonHandler()
+    {
+        this.gameplayView.SetActiveStartLevelGameButton(true);
+    }
+
+    private void StartLevelGameClickedHandler()
+    {
+        Messenger.Broadcast(EventKey.StartLevelGame);
+        this.gameplayView.SetActiveStartLevelGameButton(false);
+    }
+
     private void HandleSkipButtonVisible(float delay = 0)
     {
-        this.gameplayView.SetActiveSkipButton(true,delay);
+        this.gameplayView.SetActiveSkipButton(true, delay);
     }
 
     private void HandleHintButtonVisible(float delay = 0)
     {
         int currentLevelOrder = this.runtimeState.CurrentLevelOrder.Value + 1;
         bool isHintLevel = this.hintLevelConfig.HasLevel(currentLevelOrder.ToString());
-        this.gameplayView.SetActiveHintButton(!isHintLevel,delay);
+        this.gameplayView.SetActiveHintButton(!isHintLevel, delay);
     }
 
     public void InitStepPoint(int stepNumber)
@@ -119,12 +132,14 @@ public class GameplayViewPresenter : BaseViewPresenter
         this.gameplayView.OnSkipClicked -= SkipClickedHandler;
         this.gameplayView.OnHintClicked -= HintClickedHandler;
         this.gameplayView.OnRemoveAdsClicked -= ShowRemoveAdsView;
+        this.gameplayView.OnStartLevelGameClicked -= StartLevelGameClickedHandler;
 
         this.eventBag.Dispose();
         Messenger.RemoveListener(EventKey.LevelWin, ShowWinView);
-        Messenger.RemoveListener(EventKey.ShowHint, HintClickedHandler);
         Messenger.RemoveListener(EventKey.ActionDone, UpdateStepPoint);
+        Messenger.RemoveListener(EventKey.ShowHint, HintClickedHandler);
         Messenger.RemoveListener(EventKey.ActionFailed, ActionFailedHandler);
+        Messenger.RemoveListener(EventKey.ShowStartLevelGameButton, ShowStartLevelGameButtonHandler);
 
 #if DEVELOPMENT
         var cheatViewPresenter = this.ScenePresenter.GetViewPresenter<CheatViewPresenter>();
