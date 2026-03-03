@@ -278,7 +278,7 @@ Transform:
   m_GameObject: {fileID: 4044022925087820550}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 1.62, y: -5.03, z: 0}
+  m_LocalPosition: {x: 1.62, y: -3.0600002, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -535,7 +535,7 @@ Transform:
   m_GameObject: {fileID: 5917739473295246581}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.54, y: -0.22, z: 0}
+  m_LocalPosition: {x: -6.21, y: 1.75, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -631,7 +631,7 @@ MonoBehaviour:
   _animationName: action1
   loop: 1
   timeScale: 0
---- !u!1 &7790293120600346333
+--- !u!1 &6256279575112427935
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -639,37 +639,37 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4465452574078511777}
-  - component: {fileID: 1020877029642894913}
+  - component: {fileID: 1182653917086560187}
+  - component: {fileID: 8939652802221707159}
   m_Layer: 0
-  m_Name: aim_board
+  m_Name: ShootingCarnival
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4465452574078511777
+--- !u!4 &1182653917086560187
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7790293120600346333}
+  m_GameObject: {fileID: 6256279575112427935}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.81, y: -2.67, z: 0}
-  m_LocalScale: {x: 0.73, y: 0.73, z: 0.73}
+  m_LocalPosition: {x: -0.03, y: 2.2, z: 0}
+  m_LocalScale: {x: 1.45, y: 1.45, z: 1.45}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 2714327754042081723}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &1020877029642894913
+--- !u!212 &8939652802221707159
 SpriteRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7790293120600346333}
+  m_GameObject: {fileID: 6256279575112427935}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -706,8 +706,8 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 106
-  m_Sprite: {fileID: -975833616295326284, guid: 5159654ced0bb4640a735751e30f013f, type: 3}
+  m_SortingOrder: 1
+  m_Sprite: {fileID: 21300000, guid: 1ecd2d058f510b649a0fd6fe7dc47a4e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -801,13 +801,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8950459752723715246}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.39, y: -8.07, z: 0}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalPosition: {x: -2.71, y: -5.78, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7794650304006811754}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!33 &3983343129400245594
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -911,6 +911,18 @@ PrefabInstance:
       value: Tap_TimingBar_True
       objectReference: {fileID: 0}
     - target: {fileID: 554097612417068619, guid: 8f68228f4a292154784618f1acd99303, type: 3}
+      propertyPath: animation
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 554097612417068619, guid: 8f68228f4a292154784618f1acd99303, type: 3}
+      propertyPath: skeletonAnimation
+      value: 
+      objectReference: {fileID: 6481507818457190173}
+    - target: {fileID: 904803336689089280, guid: 8f68228f4a292154784618f1acd99303, type: 3}
+      propertyPath: animation
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 904803336689089280, guid: 8f68228f4a292154784618f1acd99303, type: 3}
       propertyPath: skeletonAnimation
       value: 
       objectReference: {fileID: 6481507818457190173}
@@ -950,6 +962,10 @@ PrefabInstance:
       propertyPath: timingBar
       value: 
       objectReference: {fileID: 7077889348546984443}
+    - target: {fileID: 7315022674540009867, guid: 8f68228f4a292154784618f1acd99303, type: 3}
+      propertyPath: animation
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 7315022674540009867, guid: 8f68228f4a292154784618f1acd99303, type: 3}
       propertyPath: skeletonAnimation
       value: 
@@ -1069,6 +1085,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: L_Dev_003
       objectReference: {fileID: 0}
+    - target: {fileID: 5874124426686002692, guid: 77b33504dcc19a941a4ece2a723f7ce6, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.56
+      objectReference: {fileID: 0}
     - target: {fileID: 5932056155213299720, guid: 77b33504dcc19a941a4ece2a723f7ce6, type: 3}
       propertyPath: m_Name
       value: Anim-Boy
@@ -1127,7 +1147,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8399988820848192073, guid: 77b33504dcc19a941a4ece2a723f7ce6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -7.26
+      value: -5.29
       objectReference: {fileID: 0}
     - target: {fileID: 8399988820848192073, guid: 77b33504dcc19a941a4ece2a723f7ce6, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1164,7 +1184,7 @@ PrefabInstance:
       addedObject: {fileID: 5362730409025283195}
     - targetCorrespondingSourceObject: {fileID: 1728279763684369959, guid: 77b33504dcc19a941a4ece2a723f7ce6, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 4465452574078511777}
+      addedObject: {fileID: 1182653917086560187}
     - targetCorrespondingSourceObject: {fileID: 1728279763684369959, guid: 77b33504dcc19a941a4ece2a723f7ce6, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5915943472792512496}
@@ -1373,7 +1393,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2402242779915495404, guid: d46bd7b7b0c0b7149b202c1f5732e6e0, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -3.66
+      value: -1.72
       objectReference: {fileID: 0}
     - target: {fileID: 2402242779915495404, guid: d46bd7b7b0c0b7149b202c1f5732e6e0, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
