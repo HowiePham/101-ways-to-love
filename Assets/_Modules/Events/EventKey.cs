@@ -10,4 +10,6 @@
     public const string ResetAction = "resetaction";
     public const string DoneIntro = "doneintro";
     public const string ShowHint = "showhint";
+    public const string ShowStartLevelGameButton = "showstartlevelgamebutton";
+    public const string StartLevelGame = "startlevelgame";
 }
