@@ -38,6 +38,7 @@ namespace VisualFlow
         [SerializeField, Required] protected Shader maskProgressShader;
         [SerializeField] protected ScratchMode scratchMode;
         [SerializeField] protected bool resetIfDeleteNotComplete = true;
+        [SerializeField] protected bool checkDeleteWhileDragging = false;
         [SerializeField] protected float deleteProgress;
         [SerializeField] protected BaseAudioServiceSO audioService;
 
@@ -114,14 +115,14 @@ namespace VisualFlow
         protected virtual Material InitScratchCardSurfaceMaterial()
         {
             Material scratchSurfaceMaterial = null;
-            if (this.scratchCard.SurfaceMaterial == null)
+            // if (this.scratchCard.SurfaceMaterial == null)
+            // {
+            scratchSurfaceMaterial = new Material(this.maskShader)
             {
-                scratchSurfaceMaterial = new Material(this.maskShader)
-                {
-                    mainTexture = this.maskSpriteRenderer.sprite.texture
-                };
-                this.scratchCard.SurfaceMaterial = scratchSurfaceMaterial;
-            }
+                mainTexture = this.maskSpriteRenderer.sprite.texture
+            };
+            this.scratchCard.SurfaceMaterial = scratchSurfaceMaterial;
+            // }
 
             return scratchSurfaceMaterial;
         }
@@ -349,6 +350,7 @@ namespace VisualFlow
             try
             {
                 InitScratchCard();
+
                 LeanTouch.OnFingerDown += FingerDownHandler;
                 LeanTouch.OnFingerUpdate += FingerUpdateHandler;
                 LeanTouch.OnFingerUp += FingerUpHandler;
@@ -386,7 +388,7 @@ namespace VisualFlow
         public virtual void FingerUpdateHandler(LeanFinger finger)
         {
             if (this.selectable != null && !this.selectable.IsSelected) return;
-            if (!this.isFingerDowned) return;
+            if (!this.isFingerDowned || this.IsPaused) return;
             if (finger.IsOverGui) return;
 
             if (isFirstDrag)
@@ -409,7 +411,11 @@ namespace VisualFlow
             OnDeleting?.Invoke(brushPos);
             prevFingerPosition = finger.ScreenPosition;
             this.deleteProgress = this.eraseProgress.GetProgress();
-            this.isCompleted = this.IsDeleteComplete;
+
+            if (this.checkDeleteWhileDragging)
+            {
+                this.isCompleted = this.IsDeleteComplete;
+            }
         }
 
         public virtual void FingerUpHandler(LeanFinger finger)
@@ -457,6 +463,13 @@ namespace VisualFlow
         {
             this.eraseProgress.ResetProgress();
             this.scratchCard.ResetRenderTexture();
+            this.maskSpriteRenderer.gameObject.SetActive(true);
+        }
+
+        public void ResetDeleteMaterial()
+        {
+            Debug.Log($"--- (DELETE) Mask Sprite Material: {this.maskSpriteRenderer.material}");
+            // this.maskSpriteRenderer.material = this.scratchCard.SurfaceMaterial;
         }
 
         public virtual void FingerDownHandler(LeanFinger finger)
