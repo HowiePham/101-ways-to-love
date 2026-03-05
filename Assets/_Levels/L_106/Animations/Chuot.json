@@ -1,0 +1,336 @@
+{
+"skeleton": {
+	"hash": "E5XB6Aw4vB4BYNJJd47AM1ju+Ng",
+	"spine": "3.8.99",
+	"x": -179.29,
+	"y": -4.48,
+	"width": 350,
+	"height": 286.08,
+	"images": "./images/",
+	"audio": ""
+},
+"bones": [
+	{ "name": "root" },
+	{ "name": "lv_33", "parent": "root", "x": -238.25, "y": -755.53 },
+	{ "name": "chuot_cai", "parent": "lv_33", "x": 226.91, "y": 822.32 },
+	{ "name": "MF_body", "parent": "chuot_cai", "x": 6.47, "y": 51.01 },
+	{ "name": "MF_body2", "parent": "MF_body", "length": 42.69, "rotation": 95.75, "x": 2.14, "y": 4.89 },
+	{ "name": "MF_body3", "parent": "MF_body2", "length": 41.57, "rotation": -4.49, "x": 42.69 },
+	{ "name": "MF_forem_L", "parent": "MF_body3", "length": 30.79, "rotation": -163.59, "x": 28.71, "y": -13.58 },
+	{ "name": "MF_arm_L", "parent": "MF_forem_L", "length": 24.4, "rotation": -17.67, "x": 30.05, "y": 0.24 },
+	{ "name": "M_hand-L", "parent": "MF_arm_L", "length": 11.84, "rotation": 26, "x": 23.36 },
+	{ "name": "MF_forem_R", "parent": "MF_body3", "length": 29.93, "rotation": 174.76, "x": 29.43, "y": 19.38 },
+	{ "name": "MF_arm_R", "parent": "MF_forem_R", "length": 23.34, "rotation": -16.88, "x": 29.43, "y": -0.29 },
+	{
+		"name": "MF_hand-R",
+		"parent": "chuot_cai",
+		"length": 10.39,
+		"rotation": -91.43,
+		"x": -26.6,
+		"y": 76.75,
+		"color": "ff3f00ff"
+	},
+	{ "name": "MF_mouth", "parent": "MF_body3", "length": 33.23, "rotation": -90.82, "x": 53.13, "y": -13.08 },
+	{ "name": "MF_mouth3", "parent": "MF_mouth", "length": 38.67, "rotation": -173.9, "x": -11.66, "y": 2.69 },
+	{ "name": "MF_eye", "parent": "MF_mouth", "length": 26.66, "rotation": 95.1, "x": -25.62, "y": 32.83 },
+	{ "name": "M_ir", "parent": "MF_eye", "x": 0.82, "y": 27.1 },
+	{ "name": "MF_ear_L", "parent": "MF_mouth", "length": 25.45, "rotation": 31.4, "x": -4.25, "y": 31.57 },
+	{ "name": "MF_thigh_R", "parent": "MF_body", "length": 28.72, "rotation": -97.23, "x": -10.69, "y": 15.7 },
+	{ "name": "MF_leg_R", "parent": "MF_thigh_R", "length": 25.56, "rotation": 15.36, "x": 28.32, "y": -0.26 },
+	{ "name": "MF_foot_R", "parent": "MF_leg_R", "length": 19.14, "rotation": -96.22, "x": 24.83, "y": -0.54 },
+	{ "name": "MF_thigh_L", "parent": "MF_body", "length": 27.16, "rotation": -96.29, "x": 8.66, "y": 14.85 },
+	{ "name": "MF_leg_L", "parent": "MF_thigh_L", "length": 25.69, "rotation": 12.95, "x": 26.53, "y": -0.07 },
+	{ "name": "MF_foot_L", "parent": "MF_leg_L", "length": 16.62, "rotation": -92.99, "x": 25.5, "y": 0.24 },
+	{ "name": "MF_tail", "parent": "MF_body", "length": 26.79, "rotation": -49.76, "x": 11.25, "y": 16.87 },
+	{ "name": "MF_tail2", "parent": "MF_tail", "length": 20.74, "rotation": 59.37, "x": 26.79 },
+	{ "name": "MF_tail3", "parent": "MF_tail2", "length": 25.26, "rotation": 75.39, "x": 20.74 },
+	{ "name": "brush", "parent": "MF_hand-R", "length": 39.99, "rotation": 34.98, "x": -20.34, "y": -20.87 },
+	{ "name": "target2", "parent": "chuot_cai", "x": 26.54, "y": 74.44, "color": "ff3f00ff" }
+],
+"slots": [
+	{ "name": "brush", "bone": "brush", "attachment": "brush" },
+	{ "name": "bathtub", "bone": "lv_33", "attachment": "bathtub" },
+	{ "name": "MF_ear_R", "bone": "MF_mouth", "attachment": "MF_ear_R" },
+	{ "name": "MF_ear_L", "bone": "MF_ear_L", "attachment": "MF_ear_L" },
+	{ "name": "MF_thigh_R", "bone": "MF_thigh_R", "attachment": "MF_thigh_R" },
+	{ "name": "MF_leg_R", "bone": "MF_leg_R", "attachment": "MF_leg_R" },
+	{ "name": "MF_foot_R", "bone": "MF_foot_R", "attachment": "MF_foot_R" },
+	{ "name": "MF_forem_R", "bone": "MF_forem_R", "attachment": "MF_forem_R" },
+	{ "name": "MF_arm_R", "bone": "MF_arm_R", "attachment": "MF_arm_R" },
+	{ "name": "MF_hand-R", "bone": "MF_hand-R", "attachment": "MF_hand-R" },
+	{ "name": "MF_tail", "bone": "MF_tail", "attachment": "MF_tail" },
+	{ "name": "MF_body", "bone": "MF_body", "attachment": "MF_body" },
+	{ "name": "MF_thigh_L", "bone": "MF_thigh_L", "attachment": "MF_thigh_L" },
+	{ "name": "MF_leg_L", "bone": "MF_leg_L", "attachment": "MF_leg_L" },
+	{ "name": "MF_foot_L", "bone": "MF_foot_L", "attachment": "MF_foot_L" },
+	{ "name": "MF_forem_L", "bone": "MF_forem_L", "attachment": "MF_forem_L" },
+	{ "name": "MF_arm_L", "bone": "MF_arm_L", "attachment": "MF_arm_L" },
+	{ "name": "M_hand-L", "bone": "M_hand-L", "attachment": "M_hand-L" },
+	{ "name": "MF_mouth", "bone": "MF_mouth3", "attachment": "MF_mouth" },
+	{ "name": "MF_head", "bone": "MF_mouth", "attachment": "MF_head" },
+	{ "name": "MF_eye", "bone": "MF_eye", "attachment": "MF_eye" },
+	{ "name": "M_ir", "bone": "M_ir", "attachment": "M_ir" },
+	{ "name": "MF_eye_close", "bone": "MF_eye" }
+],
+"ik": [
+	{
+		"name": "MF_hand-R",
+		"bones": [ "MF_forem_R", "MF_arm_R" ],
+		"target": "MF_hand-R",
+		"bendPositive": false
+	},
+	{
+		"name": "target",
+		"order": 1,
+		"bones": [ "MF_forem_L", "MF_arm_L" ],
+		"target": "target2",
+		"bendPositive": false
+	}
+],
+"skins": [
+	{
+		"name": "default",
+		"attachments": {
+			"MF_arm_L": {
+				"MF_arm_L": { "x": 11.01, "y": 0.75, "rotation": 90, "width": 16, "height": 38 }
+			},
+			"MF_arm_R": {
+				"MF_arm_R": { "x": 10.31, "y": 1.68, "rotation": 110.85, "width": 23, "height": 36 }
+			},
+			"MF_body": {
+				"MF_body": {
+					"type": "mesh",
+					"uvs": [ 1, 1, 0.5, 1, 0, 1, 0, 0.75, 0, 0.5, 0, 0.25, 0, 0, 0.5, 0, 1, 0, 1, 0.25, 1, 0.5, 1, 0.75, 0.5, 0.75, 0.5, 0.5, 0.5, 0.25 ],
+					"triangles": [ 5, 6, 7, 14, 5, 7, 4, 5, 14, 13, 4, 14, 3, 4, 13, 14, 7, 8, 9, 14, 8, 13, 14, 9, 10, 13, 9, 12, 13, 10, 12, 3, 13, 2, 3, 12, 1, 2, 12, 11, 12, 10, 1, 12, 11, 0, 1, 11 ],
+					"vertices": [ 2, 4, -6.8, -26.21, 0.99972, 5, -47.29, -30, 2.8E-4, 1, 4, -3.74, 4.14, 1, 1, 4, -0.69, 34.49, 1, 2, 4, 28.66, 31.53, 0.84417, 5, -16.45, 30.34, 0.15583, 2, 4, 58.01, 28.57, 0.11071, 5, 13.04, 29.69, 0.88929, 1, 5, 42.53, 29.03, 1, 1, 5, 72.02, 28.38, 1, 1, 5, 71.35, -2.11, 1, 1, 5, 70.68, -32.6, 1, 1, 5, 41.19, -31.95, 1, 2, 4, 51.9, -32.12, 0.1452, 5, 11.69, -31.3, 0.8548, 2, 4, 22.55, -29.16, 0.8112, 5, -17.8, -30.65, 0.1888, 1, 4, 25.61, 1.18, 1, 2, 4, 54.96, -1.77, 0.00144, 5, 12.37, -0.81, 0.99856, 1, 5, 41.86, -1.46, 1 ],
+					"hull": 12,
+					"edges": [ 0, 2, 2, 4, 4, 6, 6, 8, 8, 10, 10, 12, 12, 14, 14, 16, 16, 18, 18, 20, 20, 22, 22, 0 ],
+					"width": 61,
+					"height": 118
+				}
+			},
+			"MF_ear_L": {
+				"MF_ear_L": { "x": 17.11, "y": 1.72, "rotation": -31.85, "width": 38, "height": 36 }
+			},
+			"MF_ear_R": {
+				"MF_ear_R": { "x": -30.03, "y": 44.27, "rotation": -0.45, "width": 31, "height": 38 }
+			},
+			"MF_eye": {
+				"MF_eye": { "x": 0.36, "y": -0.54, "rotation": -95.55, "width": 71, "height": 30 }
+			},
+			"MF_eye_close": {
+				"MF_eye_close": { "x": 0.31, "y": -1.04, "rotation": -95.55, "width": 70, "height": 30 }
+			},
+			"MF_foot_L": {
+				"MF_foot_L": { "x": 9.91, "y": -1.26, "rotation": 176.33, "width": 30, "height": 14 }
+			},
+			"MF_foot_R": {
+				"MF_foot_R": { "x": 8.53, "y": -1.12, "rotation": 178.09, "width": 30, "height": 14 }
+			},
+			"MF_forem_L": {
+				"MF_forem_L": { "x": 15.12, "y": -0.52, "rotation": 72.33, "width": 22, "height": 42 }
+			},
+			"MF_forem_R": {
+				"MF_forem_R": { "x": 15.06, "y": 0.61, "rotation": 93.98, "width": 17, "height": 43 }
+			},
+			"MF_hand-R": {
+				"MF_hand-R": { "x": 5.93, "y": 0.61, "rotation": 91.43, "width": 23, "height": 22 }
+			},
+			"MF_head": {
+				"MF_head": { "x": -31.66, "y": 26.78, "rotation": -0.45, "width": 96, "height": 57 }
+			},
+			"MF_leg_L": {
+				"MF_leg_L": { "x": 8.7, "y": -0.3, "rotation": 83.35, "width": 15, "height": 36 }
+			},
+			"MF_leg_R": {
+				"MF_leg_R": { "x": 8.02, "y": 0.78, "rotation": 81.87, "width": 15, "height": 36 }
+			},
+			"MF_mouth": {
+				"MF_mouth": { "x": 17.91, "y": -3.5, "rotation": 173.45, "width": 60, "height": 32 }
+			},
+			"MF_tail": {
+				"MF_tail": {
+					"type": "mesh",
+					"uvs": [ 1, 0.22922, 0.91986, 0.17217, 0.88229, 0.28271, 0.94298, 0.47884, 0.94298, 0.7142, 0.89385, 0.81761, 0.78404, 0.93885, 0.65401, 1, 0.40839, 1, 0.24946, 0.91033, 0.12231, 0.74629, 0, 0.56086, 0, 0.28985, 0.1801, 0.20426, 0.25813, 0.36473, 0.32459, 0.56799, 0.41706, 0.72133, 0.58755, 0.72489, 0.69446, 0.61792, 0.69157, 0.42535, 0.64823, 0.20426, 0.74359, 0, 1, 0 ],
+					"triangles": [ 1, 21, 22, 20, 21, 1, 1, 22, 0, 2, 20, 1, 19, 20, 2, 19, 2, 3, 18, 19, 3, 18, 3, 4, 5, 18, 4, 6, 18, 5, 17, 18, 6, 7, 17, 6, 8, 16, 17, 7, 8, 17, 14, 11, 12, 14, 12, 13, 11, 14, 15, 10, 11, 15, 9, 10, 15, 9, 15, 16, 8, 9, 16 ],
+					"vertices": [ 1, 25, 26.27, -11.65, 1, 1, 25, 28.53, -6.79, 1, 1, 25, 23.17, -5.07, 1, 1, 25, 14.29, -9.38, 1, 1, 25, 3.27, -10.34, 1, 2, 24, 27.95, -3.76, 0.10746, 25, -1.82, -7.93, 0.89254, 2, 24, 20.72, -8.32, 0.85719, 25, -8.05, -2.08, 0.14281, 1, 24, 12.81, -9.89, 1, 2, 23, 32.62, -4.89, 0.22395, 24, -1.24, -7.51, 0.77605, 2, 23, 23.45, -9.21, 0.98842, 24, -9.62, -1.82, 0.01158, 1, 23, 12.8, -9.86, 1, 1, 23, 1.57, -9.64, 1, 1, 23, -8.16, -1.42, 1, 1, 23, -4.48, 9.16, 1, 1, 23, 4.2, 7.74, 1, 1, 23, 13.98, 4.51, 1, 2, 23, 22.95, 3.95, 0.69821, 24, 1.44, 5.32, 0.30179, 2, 24, 11.16, 3.5, 0.97183, 25, 0.97, 10.15, 0.02817, 2, 24, 18.12, 7.42, 0.16684, 25, 6.52, 4.41, 0.83316, 1, 25, 15.52, 5.36, 1, 1, 25, 25.66, 8.78, 1, 1, 25, 35.7, 4.1, 1, 1, 25, 37, -10.71, 1 ],
+					"hull": 23,
+					"edges": [ 24, 26, 26, 28, 28, 30, 30, 32, 32, 34, 34, 36, 36, 38, 38, 40, 42, 44, 40, 42, 0, 44, 0, 2, 2, 4, 4, 6, 6, 8, 8, 10, 10, 12, 12, 14, 14, 16, 16, 18, 18, 20, 22, 24, 20, 22 ],
+					"width": 58,
+					"height": 47
+				}
+			},
+			"MF_thigh_L": {
+				"MF_thigh_L": { "x": 12.88, "y": -2.37, "rotation": 96.29, "width": 20, "height": 39 }
+			},
+			"MF_thigh_R": {
+				"MF_thigh_R": { "x": 13.72, "y": -1.7, "rotation": 97.23, "width": 20, "height": 39 }
+			},
+			"M_hand-L": {
+				"M_hand-L": { "x": 4.94, "y": -0.47, "rotation": 64, "width": 22, "height": 22 }
+			},
+			"M_ir": {
+				"M_ir": { "x": -1.47, "y": -22.52, "rotation": -95.55, "width": 39, "height": 9 }
+			},
+			"bathtub": {
+				"bathtub": { "x": 233.96, "y": 856.55, "width": 350, "height": 211 }
+			},
+			"brush": {
+				"brush": { "x": -14.13, "y": 3.46, "rotation": 142.51, "width": 119, "height": 85 }
+			}
+		}
+	}
+],
+"events": {
+	"15_SFX_LaughMan": {},
+	"68_SFX_MouseScreaming": {},
+	"80_SFX_ManScreaming": {},
+	"139_SFX_Falling": {},
+	"0_SFX_Mouse": {},
+	"0_SFX_Unlock": {}
+},
+"animations": {
+	"action1": {
+		"slots": {
+			"MF_eye_close": {
+				"attachment": [
+					{ "time": 1.1, "name": "MF_eye_close" },
+					{ "time": 1.2667, "name": null },
+					{ "time": 2.7333, "name": "MF_eye_close" },
+					{ "time": 2.9, "name": null }
+				]
+			}
+		},
+		"bones": {
+			"MF_hand-R": {
+				"rotate": [
+					{ "angle": -151.14 }
+				],
+				"translate": [
+					{ "x": -32.6, "y": 85.66 },
+					{ "time": 0.2333, "x": -14.88, "y": 76.55 },
+					{ "time": 0.5, "x": -32.6, "y": 85.66 },
+					{ "time": 0.7333, "x": -14.88, "y": 76.55 },
+					{ "time": 1, "x": -32.6, "y": 85.66 },
+					{ "time": 1.3333, "x": -44.19, "y": 49.22 },
+					{ "time": 1.5333, "x": -25.94, "y": 55.31 },
+					{ "time": 1.7667, "x": -44.19, "y": 49.22 },
+					{ "time": 1.9667, "x": -25.94, "y": 55.31 },
+					{ "time": 2.2, "x": -44.19, "y": 49.22 },
+					{ "time": 2.4, "x": -25.94, "y": 55.31 },
+					{ "time": 2.6333, "x": -44.19, "y": 49.22 },
+					{ "time": 3, "x": -32.6, "y": 85.66 }
+				]
+			},
+			"MF_body": {
+				"translate": [
+					{ "x": -8.76 }
+				]
+			},
+			"target2": {
+				"translate": [
+					{ "x": -57.31, "y": 39.8, "curve": 0.25, "c3": 0.75 },
+					{ "time": 0.4, "x": -48.64, "y": 33.68, "curve": 0.25, "c3": 0.75 },
+					{ "time": 0.7333, "x": -57.31, "y": 39.8, "curve": 0.25, "c3": 0.75 },
+					{ "time": 1.1333, "x": -48.64, "y": 33.68, "curve": 0.25, "c3": 0.75 },
+					{ "time": 1.5, "x": -57.31, "y": 39.8, "curve": 0.25, "c3": 0.75 },
+					{ "time": 1.9, "x": -48.64, "y": 33.68, "curve": 0.25, "c3": 0.75 },
+					{ "time": 2.2333, "x": -57.31, "y": 39.8, "curve": 0.25, "c3": 0.75 },
+					{ "time": 2.6333, "x": -48.64, "y": 33.68, "curve": 0.25, "c3": 0.75 },
+					{ "time": 3, "x": -57.31, "y": 39.8 }
+				]
+			},
+			"MF_body2": {
+				"rotate": [
+					{ "angle": 1.67 }
+				]
+			},
+			"MF_body3": {
+				"rotate": [
+					{ "angle": 15.73, "curve": 0.25, "c3": 0.75 },
+					{ "time": 0.2667, "angle": 12.34, "curve": "stepped" },
+					{ "time": 1, "angle": 12.34 },
+					{ "time": 1.3333, "angle": -13.02, "curve": 0.25, "c3": 0.75 },
+					{ "time": 1.6667, "angle": -10.25, "curve": "stepped" },
+					{ "time": 2.6333, "angle": -10.25, "curve": 0.25, "c3": 0.75 },
+					{ "time": 3, "angle": 15.73 }
+				]
+			},
+			"brush": {
+				"rotate": [
+					{ "time": 1 },
+					{ "time": 1.3333, "angle": 45.29, "curve": "stepped" },
+					{ "time": 2.6333, "angle": 45.29 },
+					{ "time": 3 }
+				],
+				"translate": [
+					{ "time": 1 },
+					{ "time": 1.3333, "x": 15.72, "y": -11.59, "curve": "stepped" },
+					{ "time": 2.6333, "x": 15.72, "y": -11.59 },
+					{ "time": 3 }
+				]
+			},
+			"M_ir": {
+				"translate": [
+					{ "x": -6.29, "y": -2.17 }
+				]
+			},
+			"MF_mouth": {
+				"rotate": [
+					{ "curve": 0.25, "c3": 0.75 },
+					{ "time": 0.3, "angle": -8.62, "curve": 0.25, "c3": 0.75 },
+					{ "time": 0.6, "curve": 0.25, "c3": 0.75 },
+					{ "time": 0.9333, "angle": -8.62, "curve": 0.25, "c3": 0.75 },
+					{ "time": 1.2333, "curve": 0.25, "c3": 0.75 },
+					{ "time": 1.5333, "angle": -8.62, "curve": 0.25, "c3": 0.75 },
+					{ "time": 1.8333, "curve": 0.25, "c3": 0.75 },
+					{ "time": 2.1333, "angle": -8.62, "curve": 0.25, "c3": 0.75 },
+					{ "time": 2.4333, "curve": 0.25, "c3": 0.75 },
+					{ "time": 2.7333, "angle": -8.62, "curve": 0.25, "c3": 0.75 },
+					{ "time": 3 }
+				]
+			},
+			"MF_arm_R": {
+				"rotate": [
+					{ "angle": -23.28, "curve": "stepped" },
+					{ "time": 1, "angle": -23.28 },
+					{ "time": 2.6333, "angle": -22.52 },
+					{ "time": 3, "angle": -23.28 }
+				]
+			},
+			"MF_forem_R": {
+				"rotate": [
+					{ "angle": -144.23, "curve": "stepped" },
+					{ "time": 1, "angle": -144.23 },
+					{ "time": 2.6333, "angle": -55.28 },
+					{ "time": 3, "angle": -144.23 }
+				]
+			},
+			"MF_arm_L": {
+				"rotate": [
+					{ "angle": -88.87, "curve": "stepped" },
+					{ "time": 1, "angle": -88.87 },
+					{ "time": 2.6333, "angle": -56.05 },
+					{ "time": 3, "angle": -88.87 }
+				]
+			},
+			"MF_forem_L": {
+				"rotate": [
+					{ "angle": -51.64, "curve": "stepped" },
+					{ "time": 1, "angle": -51.64 },
+					{ "time": 2.6333, "angle": -52.68 },
+					{ "time": 3, "angle": -51.64 }
+				]
+			}
+		},
+		"drawOrder": [
+			{
+				"offsets": [
+					{ "slot": "brush", "offset": 7 },
+					{ "slot": "bathtub", "offset": 21 }
+				]
+			}
+		]
+	}
+}
+}
