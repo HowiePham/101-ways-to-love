@@ -20,11 +20,11 @@ namespace Mimi.Interactions.Dragging
         public bool IsInteractable { private set; get; }
         public Vector3 Position => movement.GetPosition();
         public Transform Transform { private set; get; }
-        
+
         public IGraphic Graphic => graphic;
         public IMovement Movement => movement;
-        
-        
+
+
         private Vector3 dragVelocity;
         private Vector3 dest;
 
@@ -44,11 +44,12 @@ namespace Mimi.Interactions.Dragging
             {
                 Debug.LogError($"Missing graphic component at {gameObject.name}");
             }
+
             if (this.positionProcessor == null)
             {
                 this.positionProcessor = gameObject.AddComponent<NullPositionProcessor>();
             }
-            
+
             Transform = transform;
             this.dest = Transform.position;
             this.IsInteractable = true;
@@ -61,6 +62,7 @@ namespace Mimi.Interactions.Dragging
                     this.draggableExtension = gameObject.AddComponent<NullMonoDraggableExtension>();
                 }
             }
+
             draggableExtension.Init(this);
             OnInit();
         }
@@ -72,12 +74,15 @@ namespace Mimi.Interactions.Dragging
             {
                 return (T)this.draggableExtension;
             }
+
             if (this.draggableExtension is IParentDraggableExtension parentDraggable)
             {
                 return (T)parentDraggable.GetExtension<T>();
             }
+
             return null;
         }
+
         private void OnEnable()
         {
             OnActivated();
@@ -102,12 +107,15 @@ namespace Mimi.Interactions.Dragging
                 OnDeactivated();
             }
         }
+
         protected abstract void OnInit();
         protected abstract void OnActivated();
         protected abstract void OnDeactivated();
+
         public void SetPosition(Vector3 targetPos)
         {
-            this.dest = this.positionProcessor.Process(targetPos);
+            // this.dest = this.positionProcessor.Process(targetPos);
+            this.transform.position = this.positionProcessor.Process(targetPos);
         }
 
         protected void OnStartDrag()
@@ -126,15 +134,15 @@ namespace Mimi.Interactions.Dragging
             IsSelected = false;
             this.draggableExtension.EndDrag();
         }
-        
 
-    private void LateUpdate()
-    {
-        if (!IsInteractable) return;
-        movement.SetPosition(Vector3.SmoothDamp(movement.GetPosition(), this.dest, ref this.dragVelocity,
-            this.smoothTime,
-            Mathf.Infinity, Time.deltaTime * this.speedScalar));
-            ;
-        }
+
+        // private void LateUpdate()
+        // {
+        //     if (!IsInteractable) return;
+        //     movement.SetPosition(Vector3.SmoothDamp(movement.GetPosition(), this.dest, ref this.dragVelocity,
+        //         this.smoothTime,
+        //         Mathf.Infinity, Time.deltaTime * this.speedScalar));
+        //         ;
+        //     }
     }
 }
