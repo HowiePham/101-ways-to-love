@@ -15,6 +15,7 @@ namespace Mimi.VisualActions.Interactions.Draggable.Extensions
         [SerializeField] private float startDelay;
         [SerializeField] private float endDelay;
         [SerializeField] private Ease ease;
+        [SerializeField] private bool runWhileDragging;
 
         private Vector3 originalRotation;
 
@@ -37,6 +38,12 @@ namespace Mimi.VisualActions.Interactions.Draggable.Extensions
 
         public override void Drag()
         {
+            if (!this.runWhileDragging)
+            {
+                return;
+            }
+
+            this.BaseDraggable.Transform.DORotate(this.targetRotation, 0f).SetEase(this.ease);
         }
 
         public override void EndDrag()

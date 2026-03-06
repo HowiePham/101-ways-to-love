@@ -131,6 +131,11 @@ namespace Mimi.Interactions.Dragging
 
         protected void OnEndDrag()
         {
+            if (!IsSelected)
+            {
+                return;
+            }
+            
             IsSelected = false;
             this.draggableExtension.EndDrag();
         }
