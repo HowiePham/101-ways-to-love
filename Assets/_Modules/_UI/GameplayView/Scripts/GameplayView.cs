@@ -84,6 +84,7 @@ public class GameplayView : BaseView
         DOTween.Kill(this.HintBtnRect);
         DOTween.Kill(this.SkipBtnRect);
         DOTween.Kill(this.RemoveAdsRect);
+        DOTween.Kill(this.StartLevelGameBtnRect);
     }
 
     private async UniTask HandleUIEffect()
