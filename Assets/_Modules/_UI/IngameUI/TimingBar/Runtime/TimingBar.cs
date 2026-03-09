@@ -5,6 +5,7 @@ using UnityEngine;
 public abstract class TimingBar : MonoBehaviour
 {
     [SerializeField] protected float cycleTime = 1.5f;
+    [SerializeField] protected float minCycleTime = 0.1f;
     [SerializeField] protected RectTransform trueArea;
     [SerializeField] protected RectTransform timingBarContainer;
     protected bool isRunning;
@@ -34,4 +35,17 @@ public abstract class TimingBar : MonoBehaviour
     public abstract void RandomTrueArea();
 
     public abstract bool IsTrueTiming();
+
+    public void IncreaseRunningSpeed(float value)
+    {
+        float newValue = this.cycleTime - value;
+        if (newValue <= this.minCycleTime)
+        {
+            newValue = this.minCycleTime;
+        }
+
+        this.cycleTime = newValue;
+    }
+
+    public abstract void DecreaseTrueAreaWidth(float value);
 }

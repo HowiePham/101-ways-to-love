@@ -1,10 +1,11 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
 
-public class HideTimingBar : TimingBarAction
+public class RandomTimingBarArea : TimingBarAction
 {
     protected override async UniTask OnExecuting(CancellationToken cancellationToken)
     {
-        this.timingBar.Hide();
+        this.timingBar.RandomTrueArea();
+        await UniTask.CompletedTask;
     }
 }
