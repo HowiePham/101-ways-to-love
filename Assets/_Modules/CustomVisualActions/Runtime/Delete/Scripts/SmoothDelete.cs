@@ -5,6 +5,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using Lean.Common;
 using Lean.Touch;
+using Mimi.Audio;
 using Mimi.Prototypes;
 using Mimi.ServiceLocators;
 using Mimi.Services.ScriptableObject.Audio;
@@ -40,7 +41,9 @@ namespace VisualFlow
         [SerializeField] protected bool resetIfDeleteNotComplete = true;
         [SerializeField] protected bool checkDeleteWhileDragging = false;
         [SerializeField] protected float deleteProgress;
-        [SerializeField] protected BaseAudioServiceSO audioService;
+
+        [Header("SFX")] [SerializeField] protected BaseAudioServiceSO audioService;
+        [SerializeField, SoundKey] private string soundKey;
 
         protected Sprite scratchSprite;
         protected Color[] spritePixels;
@@ -358,14 +361,12 @@ namespace VisualFlow
                 await UniTask.WaitUntil(() => this.isCompleted,
                     PlayerLoopTiming.Update,
                     cancellationToken);
-                //ServiceLocator.GetService<IAudioService>().PlaySound("SFX_Win");
             }
             catch (Exception e)
             {
             }
             finally
             {
-                // ServiceLocator.GetService<IVibrationService>().Play(50);
                 LeanTouch.OnFingerDown -= FingerDownHandler;
                 LeanTouch.OnFingerUpdate -= FingerUpdateHandler;
                 LeanTouch.OnFingerUp -= FingerUpHandler;
@@ -399,8 +400,7 @@ namespace VisualFlow
 
             if (finger.ScreenPosition != prevFingerPosition)
             {
-                // ServiceLocator.GetService<IAudioService>().PlaySound(this.soundFX);
-                // HapticFeedback.MediumFeedback();
+                PlayDeleteSound();
             }
 
             Vector3 fingerWorldPos = mainCamera.ScreenToWorldPoint(finger.ScreenPosition);
@@ -422,9 +422,20 @@ namespace VisualFlow
         {
             isFirstDrag = true;
             // ServiceLocator.GetService<IAudioService>().StopSound(this.soundFX);
+            this.audioService.StopSound(this.soundKey);
             OnStopDelete?.Invoke();
             this.isFingerDowned = false;
             CheckDeleteComplete(finger);
+        }
+
+        private void PlayDeleteSound()
+        {
+            if (string.IsNullOrEmpty(this.soundKey))
+            {
+                return;
+            }
+
+            this.audioService.PlaySound(this.soundKey);
         }
 
         private void CheckDeleteComplete(LeanFinger finger)
