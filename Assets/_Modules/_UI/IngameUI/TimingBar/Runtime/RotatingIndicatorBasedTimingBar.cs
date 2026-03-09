@@ -140,6 +140,11 @@ public class RotatingIndicatorBasedTimingBar : TimingBar
         return indicatorAngle <= this.trueAngleLimitation.y && indicatorAngle >= this.trueAngleLimitation.x;
     }
 
+    public override void DecreaseTrueAreaWidth(float value)
+    {
+        
+    }
+
     private float NormalizeAngle(float angle)
     {
         while (angle > 180f) angle -= 360f;

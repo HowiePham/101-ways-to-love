@@ -126,6 +126,13 @@ public class SliderBasedTimingBar : TimingBar
         return curVal >= this.minValue && curVal <= this.maxValue;
     }
 
+    public override void DecreaseTrueAreaWidth(float value)
+    {
+        Vector2 currentSize = this.trueArea.sizeDelta;
+        float newWidth = this.trueArea.sizeDelta.x - value;
+        this.trueArea.sizeDelta = new Vector2(newWidth, currentSize.y);
+    }
+
     private async UniTask ScaleUIEffect(RectTransform uiItem, float targetValue, float duration, bool popEffect, float delay)
     {
         uiItem.localScale = Vector3.zero;

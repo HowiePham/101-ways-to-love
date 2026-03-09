@@ -173,6 +173,11 @@ public class BalanceIndicatorTimingBar : TimingBar
         return indicatorX >= trueAreaLeft && indicatorX <= trueAreaRight;
     }
 
+    public override void DecreaseTrueAreaWidth(float value)
+    {
+        
+    }
+
     private async UniTask ScaleUIEffect(RectTransform uiItem, float targetValue, float duration, bool popEffect, float delay)
     {
         uiItem.localScale = Vector3.zero;
