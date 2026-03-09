@@ -1,6 +1,6 @@
 {
 "skeleton": {
-	"hash": "tmbZMvhNI3ieeCZKonE0FXiLYs4",
+	"hash": "76x1FVuJ9pj9+y4q1qfxlnzASCs",
 	"spine": "3.8.99",
 	"x": -905.06,
 	"y": -648.96,
@@ -607,6 +607,18 @@
 		}
 	}
 ],
+"events": {
+	"SFX_Boing": {},
+	"SFX_BoyNgacNhien3": {},
+	"SFX_CoinSpill": {},
+	"SFX_Cungban": {},
+	"SFX_Ding": {},
+	"SFX_Fizzy": {},
+	"SFX_ManLaugh_Win": {},
+	"SFX_ManScream3": {},
+	"SFX_TiengVaDapKimLoai": {},
+	"SFX_YeahBoy": {}
+},
 "animations": {
 	"action1": {
 		"slots": {
@@ -945,7 +957,11 @@
 					{ "x": 9.13, "y": -21.78 }
 				]
 			}
-		}
+		},
+		"events": [
+			{ "time": 0.1, "name": "SFX_TiengVaDapKimLoai" },
+			{ "time": 0.6333, "name": "SFX_TiengVaDapKimLoai" }
+		]
 	},
 	"action2_fail1": {
 		"slots": {
@@ -1613,7 +1629,14 @@
 					{ "x": 9.13, "y": -21.78 }
 				]
 			}
-		}
+		},
+		"events": [
+			{ "time": 0.1667, "name": "SFX_Cungban" },
+			{ "time": 0.4333, "name": "SFX_Boing" },
+			{ "time": 0.4333, "name": "SFX_Fizzy" },
+			{ "time": 0.4333, "name": "SFX_ManScream3" },
+			{ "time": 1.0333, "name": "SFX_BoyNgacNhien3" }
+		]
 	},
 	"action2_fail2": {
 		"slots": {
@@ -2293,7 +2316,14 @@
 					]
 				}
 			}
-		}
+		},
+		"events": [
+			{ "time": 0.1667, "name": "SFX_Cungban" },
+			{ "time": 0.4333, "name": "SFX_Boing" },
+			{ "time": 0.4333, "name": "SFX_Fizzy" },
+			{ "time": 0.4333, "name": "SFX_ManScream3" },
+			{ "time": 0.9333, "name": "SFX_BoyNgacNhien3" }
+		]
 	},
 	"action2_fail3": {
 		"slots": {
@@ -2973,7 +3003,14 @@
 					]
 				}
 			}
-		}
+		},
+		"events": [
+			{ "time": 0.1667, "name": "SFX_Cungban" },
+			{ "time": 0.4667, "name": "SFX_Boing" },
+			{ "time": 0.4667, "name": "SFX_Fizzy" },
+			{ "time": 0.4667, "name": "SFX_ManScream3" },
+			{ "time": 1, "name": "SFX_BoyNgacNhien3" }
+		]
 	},
 	"action2_win1": {
 		"slots": {
@@ -3361,7 +3398,11 @@
 					]
 				}
 			}
-		}
+		},
+		"events": [
+			{ "time": 0.5, "name": "SFX_TiengVaDapKimLoai" },
+			{ "time": 0.5, "name": "SFX_YeahBoy" }
+		]
 	},
 	"action2_win1_loop": {
 		"slots": {
@@ -3712,7 +3753,11 @@
 					]
 				}
 			}
-		}
+		},
+		"events": [
+			{ "name": "SFX_TiengVaDapKimLoai" },
+			{ "time": 0.7, "name": "SFX_TiengVaDapKimLoai" }
+		]
 	},
 	"action2_win2": {
 		"slots": {
@@ -4105,7 +4150,10 @@
 					]
 				}
 			}
-		}
+		},
+		"events": [
+			{ "time": 0.4333, "name": "SFX_TiengVaDapKimLoai" }
+		]
 	},
 	"action2_win2_loop": {
 		"slots": {
@@ -4456,7 +4504,11 @@
 					]
 				}
 			}
-		}
+		},
+		"events": [
+			{ "time": 0.0667, "name": "SFX_TiengVaDapKimLoai" },
+			{ "time": 0.6667, "name": "SFX_TiengVaDapKimLoai" }
+		]
 	},
 	"action2_win3": {
 		"slots": {
@@ -4961,6 +5013,13 @@
 					{ "slot": "static_bg_top", "offset": 60 }
 				]
 			}
+		],
+		"events": [
+			{ "time": 0.5, "name": "SFX_TiengVaDapKimLoai" },
+			{ "time": 0.6667, "name": "SFX_CoinSpill" },
+			{ "time": 0.6667, "name": "SFX_Ding" },
+			{ "time": 1, "name": "SFX_BoyNgacNhien3" },
+			{ "time": 1, "name": "SFX_YeahBoy" }
 		]
 	},
 	"action2_win3_loop": {
@@ -5259,6 +5318,9 @@
 					{ "slot": "static_bg_top", "offset": 60 }
 				]
 			}
+		],
+		"events": [
+			{ "name": "SFX_YeahBoy" }
 		]
 	}
 }
