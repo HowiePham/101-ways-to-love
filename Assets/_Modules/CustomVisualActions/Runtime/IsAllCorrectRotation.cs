@@ -12,12 +12,14 @@ namespace _Modules.VisualFlow.Mechanics.FindSortMatch
         {
             foreach (Transform rotateObject in this.rotateObjects)
             {
-                if (!Mathf.Approximately(rotateObject.eulerAngles.z, this.targetRotation.z))
+                if (rotateObject.eulerAngles.z != 0)
                 {
+                    Debug.Log($"--- (WAIT) Not Correct Rotation: {rotateObject.gameObject.name}");
                     return false;
                 }
             }
 
+            Debug.Log($"--- (WAIT) Correct all rotation");
             return true;
         }
     }
