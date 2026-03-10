@@ -1,4 +1,4 @@
-﻿using Mimi.Audio;
+using Mimi.Audio;
 using Mimi.Interactions.Dragging.DraggableExtensions;
 using Mimi.Services.ScriptableObject.Audio;
 using Mimi.VisualActions.Attribute;
@@ -6,19 +6,16 @@ using UnityEngine;
 
 namespace Mimi.VisualActions.Interactions.Draggable.Extensions
 {
-    public class PlaySoundExtension : MonoDraggableExtension
+    public class PlaySoundWhileDragging : MonoDraggableExtension
     {
-        [SoundKey] [SerializeField] private string selectSound;
-
-        [SoundKey] [SerializeField] private string deselectSound;
+        [SoundKey] [SerializeField] private string soundKey;
 
         [HideInBehaviourEditor] [SerializeField]
         private BaseAudioServiceSO audioService;
 
         public override void StartDrag()
         {
-            Debug.Log($"--- (DRAG) Start audio dragging");
-            audioService.PlaySound(selectSound);
+            this.audioService.PlaySound(this.soundKey);
         }
 
         public override void Drag()
@@ -27,7 +24,7 @@ namespace Mimi.VisualActions.Interactions.Draggable.Extensions
 
         public override void EndDrag()
         {
-            audioService.PlaySound(deselectSound);
+            this.audioService.StopSound(this.soundKey);
         }
     }
 }
