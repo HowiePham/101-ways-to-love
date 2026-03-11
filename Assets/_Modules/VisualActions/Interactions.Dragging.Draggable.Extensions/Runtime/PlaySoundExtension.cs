@@ -8,15 +8,13 @@ namespace Mimi.VisualActions.Interactions.Draggable.Extensions
 {
     public class PlaySoundExtension : MonoDraggableExtension
     {
-        [SoundKey]
-        [SerializeField] private string selectSound;
-        
-        [SoundKey]
-        [SerializeField] private string deselectSound;
-        
-        [HideInBehaviourEditor]
-        [SerializeField] private BaseAudioServiceSO audioService;
-        
+        [SoundKey] [SerializeField] private string selectSound;
+
+        [SoundKey] [SerializeField] private string deselectSound;
+
+        [HideInBehaviourEditor] [SerializeField]
+        private BaseAudioServiceSO audioService;
+
         public override void StartDrag()
         {
             Debug.Log($"--- (DRAG) Start audio dragging");
@@ -25,7 +23,6 @@ namespace Mimi.VisualActions.Interactions.Draggable.Extensions
 
         public override void Drag()
         {
-     
         }
 
         public override void EndDrag()
