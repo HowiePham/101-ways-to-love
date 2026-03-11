@@ -10,7 +10,7 @@ public class BoxSnapping : MonoBehaviour
     [SerializeField] private SnappingBoxCheckingEffect[] checkingEffects;
     private int count;
 
-    private void Start()
+    private void Awake()
     {
         foreach (GameObject snappingObj in this.snappingObjects)
         {
