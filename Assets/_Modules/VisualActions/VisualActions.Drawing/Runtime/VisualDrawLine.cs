@@ -16,6 +16,7 @@ namespace VisualActions.Drawing
         [SerializeField] private MonoLineRenderer lineRenderer;
         [SerializeField] private BaseDrawExtension drawExtension;
         [SerializeField] private BaseDrawResultValidator resultValidator;
+        [SerializeField] private Vector2 penOffset = new(0f, 0.8f);
 
         private bool done;
         private Camera renderCamera;
@@ -26,7 +27,6 @@ namespace VisualActions.Drawing
         public Vector3[] Path { private set; get; }
 
         private static GameObject pencilPrefab;
-        private static readonly Vector2 PenOffset = new(0f, 0.8f);
 
         protected override async UniTask OnInitializing()
         {
@@ -81,7 +81,7 @@ namespace VisualActions.Drawing
         {
             if (!this.fingerDown) return;
             Vector2 pos = this.renderCamera.ScreenToWorldPoint(finger.ScreenPosition);
-            Vector2 brushLine = pos + PenOffset;
+            Vector2 brushLine = pos + this.penOffset;
             this.pencilTrans.position = brushLine;
             this.pencilTrans.gameObject.SetActive(true);
             this.lineRenderer.AddPoint(brushLine);
