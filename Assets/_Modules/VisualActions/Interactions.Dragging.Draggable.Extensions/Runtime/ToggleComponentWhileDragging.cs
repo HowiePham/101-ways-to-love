@@ -3,14 +3,14 @@ using UnityEngine;
 
 namespace Mimi.VisualActions.Interactions.Draggable.Extensions
 {
-    public class ActiveOtherGameObjectWhenSelectExtension : MonoDraggableExtension
+    public class ToggleComponentWhileDragging : MonoDraggableExtension
     {
-        [SerializeField] private GameObject targetObj;
-        [SerializeField] private bool active;
+        [SerializeField] private Behaviour targetComponent;
+        [SerializeField] private bool enable;
 
         public override void StartDrag()
         {
-            this.targetObj.SetActive(this.active);
+            this.targetComponent.enabled = this.enable;
         }
 
         public override void Drag()
@@ -19,7 +19,7 @@ namespace Mimi.VisualActions.Interactions.Draggable.Extensions
 
         public override void EndDrag()
         {
-            this.targetObj.SetActive(!this.active);
+            this.targetComponent.enabled = !this.enable;
         }
     }
 }
