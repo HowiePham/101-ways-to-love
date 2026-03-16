@@ -68,16 +68,16 @@ namespace Mimi.Prototypes
         private const string MaxSDKKey = "OBxrqJJrFUnTguh-MKCJDDMfXuiQUo_ALm8Eydwh70knZsGl3mLMVXR5UBsA_CSWI2gbdgRZl77STkOI0oJJhx";
         private const string TabletAmazonBannerId = "2e627403-846f-4f4e-8a28-24313ed5c55b";
         private const string PhoneAmazonUnitId = "f9c1c176-9bc7-41aa-ad4d-deb88828b696";
-        private const string AdmobBannerId = "ca-app-pub-8798190451324475/6313636297";
+        private const string AdmobBannerId = "ca-app-pub-3485115086350845/9995674705";
         private const string AdmobAOAUnitId = "ca-app-pub-8798190451324475/4832373554";
         private const string AmazonMaxId = "39793f24-f3f0-481a-ad9a-c9f0d502106d";
         private const string AmazonInterUnitId = "9910d126-a213-456e-9f31-55b05ce74415";
         private const string AmazonRewardUnitId = "16d044a0-13af-4eb3-896c-538705396a12";
-        private const string MaxAOAUnitId = "21f5ad5aaaf88635";
-        private const string MaxInterUnityId = "4f15292379c2dcd7";
-        private const string MaxRewardUnitId = "05d9aa972c44c9f4";
-        private const string MaxBannerUnitId = "9e6983ad6c080dcd";
-        private const string MaxMrecUnitId = "b49467cc3497768f";
+        private const string MaxAOAUnitId = "839ace4d3390b69e";
+        private const string MaxInterUnityId = "a3941c80f707e5fb";
+        private const string MaxRewardUnitId = "40177fea94ba8247";
+        private const string MaxBannerUnitId = "3d6cf94b8b39a0b1";
+        private const string MaxMrecUnitId = "b21d09db69c6a7a5";
 
         protected override async UniTask OnInitializing()
         {
@@ -253,121 +253,121 @@ namespace Mimi.Prototypes
         //     this.IsAdmobConsentUpdateCompleted = true;
         // }
 
-//         private async UniTask InitAdsService()
-//         {
-//             if (Debug.isDebugBuild)
-//             {
-//                 // Ads = DebugAdAdapter.Instance;
-//                 // Ads = new AdminToolAdapter(DebugAdAdapter.Instance);
-//                 Ads.SetInterstitial(EditorInterstitialAdapter.Instance);
-//                 Ads.SetRewardVideo(EditorRewardVideoAdapter.Instance);
-//                 return;
-//             }
-//
-//             MaxSdk.SetHasUserConsent(true);
-//             MaxSdk.SetDoNotSell(false);
-//             // SingularSDK.TrackingOptIn();
-//
-// #if DEVELOPMENT
-//             MaxSdkCallbacks.OnSdkInitializedEvent += (MaxSdkBase.SdkConfiguration sdkConfiguration) => { MaxSdk.ShowMediationDebugger(); };
-// #endif
-//
-//             var amazonMaxAdapter = new AmazonMaxAdapter(AmazonMaxId, new MaxAdapter(MaxSDKKey, SystemInfo.deviceUniqueIdentifier));
-//             Ads = amazonMaxAdapter;
-//             await Ads.Initialize();
-//
-//             if (!IsRemoveAds)
-//             {
-//                 if (RemoteConfig.GetValue(ConfigKey.ShowBanner).Boolean)
-//                 {
-//                     if (RemoteConfig.GetValue(ConfigKey.UseAdmobBanner).Boolean)
-//                     {
-//                         // Ads.SetBanner(
-//                         //     new FirebaseMeasureRevenueBanner(new AdmobBanner(AdmobBannerId)));
-//                     }
-//                     else
-//                     {
-//                         Ads.SetBanner(
-//                             new FirebaseMeasureRevenueBanner(new AmazonMaxBanner(TabletAmazonBannerId,
-//                                 PhoneAmazonUnitId, MaxBannerUnitId)));
-//                     }
-//                 }
-//                 else
-//                 {
-//                     Ads.SetBanner(NullBannerAdapter.Instance);
-//                 }
-//
-//                 if (RemoteConfig.GetValue(ConfigKey.ShowInterstitial).Boolean)
-//                 {
-//                     Ads.SetInterstitial(
-//                         new FirebaseMeasureRevenueInterstitial(new AmazonMaxInterstitial(AmazonInterUnitId,
-//                             MaxInterUnityId)));
-//                 }
-//
-//                 if (RemoteConfig.GetValue(ConfigKey.ShowMREC).Boolean)
-//                 {
-//                     CreateMrecWithCustomPosition();
-//                 }
-//                 else
-//                 {
-//                     Ads.SetMrec(NullMrecAdapter.Instance);
-//                 }
-//
-//                 // var appOpenRequestStrategy = new ExponentialCooldown(999, 2, InternetMonitor);
-//
-//                 if (RemoteConfig.GetValue(ConfigKey.UseMaxAoa).Boolean)
-//                 {
-//                     Ads.SetAppOpen(
-//                         new FirebaseMeasureRevenueAppOpen(
-//                             new MaxAppOpen(MaxAOAUnitId)));
-//                 }
-//                 else
-//                 {
-//                     // Ads.SetAppOpen(
-//                     //     new FirebaseMeasureRevenueAppOpen(new AdmobAppOpen(AdmobAOAUnitId)));
-//                 }
-//             }
-//             else
-//             {
-//                 Ads.SetInterstitial(EditorInterstitialAdapter.Instance);
-//             }
-//
-//             Ads.AppOpen.Load();
-//
-//             if (RemoteConfig.GetValue(ConfigKey.ShowRewarded).Boolean)
-//             {
-//                 // var rewardVideoRequestStrategy = new ExponentialCooldown(999, 2, InternetMonitor);
-//                 Ads.SetRewardVideo(
-//                     new FirebaseMeasureRevenueRewardVideo(new AmazonMaxRewardVideo(
-//                         AmazonRewardUnitId,
-//                         MaxRewardUnitId)));
-//             }
-//
-//             else
-//             {
-//                 Ads.SetRewardVideo(EditorRewardVideoAdapter.Instance);
-//             }
-//
-// #if DEVELOPMENT
-//             if (PlayerPrefs.GetInt("RemoveAdsCheat", 0) != 0)
-//             {
-//                 Ads.SetRewardVideo(EditorRewardVideoAdapter.Instance);
-//             }
-// #endif
-//
-//             // Ads.Banner.OnImpressionSuccess += AdsImpressionHandler;
-//             // Ads.Interstitial.OnImpressionSuccess += AdsImpressionHandler;
-//             // Ads.Mrec.OnImpressionSuccess += AdsImpressionHandler;
-//             // Ads.RewardVideo.OnImpressionSuccess += AdsImpressionHandler;
-//             // Ads.AppOpen.OnImpressionSuccess += AdsImpressionHandler;
-//             Ads.Mrec.OnLoadSucceeded += () =>
-//             {
-//                 CalculateMrecPos();
-//                 this.isMrecFirstSuccessLoad = true;
-//             };
-//
-//             // EventPublisher.PublishAsync(new InitAdCompleted());
-//         }
+        private async UniTask InitAdsService()
+        {
+            if (Debug.isDebugBuild)
+            {
+                // Ads = DebugAdAdapter.Instance;
+                // Ads = new AdminToolAdapter(DebugAdAdapter.Instance);
+                Ads.SetInterstitial(EditorInterstitialAdapter.Instance);
+                Ads.SetRewardVideo(EditorRewardVideoAdapter.Instance);
+                return;
+            }
+
+            MaxSdk.SetHasUserConsent(true);
+            MaxSdk.SetDoNotSell(false);
+            // SingularSDK.TrackingOptIn();
+
+#if DEVELOPMENT
+            MaxSdkCallbacks.OnSdkInitializedEvent += (MaxSdkBase.SdkConfiguration sdkConfiguration) => { MaxSdk.ShowMediationDebugger(); };
+#endif
+
+            var amazonMaxAdapter = new AmazonMaxAdapter(AmazonMaxId, new MaxAdapter(MaxSDKKey, SystemInfo.deviceUniqueIdentifier));
+            Ads = amazonMaxAdapter;
+            await Ads.Initialize();
+
+            if (!IsRemoveAds)
+            {
+                if (RemoteConfig.GetValue(ConfigKey.ShowBanner).Boolean)
+                {
+                    if (RemoteConfig.GetValue(ConfigKey.UseAdmobBanner).Boolean)
+                    {
+                        // Ads.SetBanner(
+                        //     new FirebaseMeasureRevenueBanner(new AdmobBanner(AdmobBannerId)));
+                    }
+                    else
+                    {
+                        Ads.SetBanner(
+                            new FirebaseMeasureRevenueBanner(new AmazonMaxBanner(TabletAmazonBannerId,
+                                PhoneAmazonUnitId, MaxBannerUnitId)));
+                    }
+                }
+                else
+                {
+                    Ads.SetBanner(NullBannerAdapter.Instance);
+                }
+
+                if (RemoteConfig.GetValue(ConfigKey.ShowInterstitial).Boolean)
+                {
+                    Ads.SetInterstitial(
+                        new FirebaseMeasureRevenueInterstitial(new AmazonMaxInterstitial(AmazonInterUnitId,
+                            MaxInterUnityId)));
+                }
+
+                if (RemoteConfig.GetValue(ConfigKey.ShowMREC).Boolean)
+                {
+                    CreateMrecWithCustomPosition();
+                }
+                else
+                {
+                    Ads.SetMrec(NullMrecAdapter.Instance);
+                }
+
+                // var appOpenRequestStrategy = new ExponentialCooldown(999, 2, InternetMonitor);
+
+                if (RemoteConfig.GetValue(ConfigKey.UseMaxAoa).Boolean)
+                {
+                    Ads.SetAppOpen(
+                        new FirebaseMeasureRevenueAppOpen(
+                            new MaxAppOpen(MaxAOAUnitId)));
+                }
+                else
+                {
+                    // Ads.SetAppOpen(
+                    //     new FirebaseMeasureRevenueAppOpen(new AdmobAppOpen(AdmobAOAUnitId)));
+                }
+            }
+            else
+            {
+                Ads.SetInterstitial(EditorInterstitialAdapter.Instance);
+            }
+
+            Ads.AppOpen.Load();
+
+            if (RemoteConfig.GetValue(ConfigKey.ShowRewarded).Boolean)
+            {
+                // var rewardVideoRequestStrategy = new ExponentialCooldown(999, 2, InternetMonitor);
+                Ads.SetRewardVideo(
+                    new FirebaseMeasureRevenueRewardVideo(new AmazonMaxRewardVideo(
+                        AmazonRewardUnitId,
+                        MaxRewardUnitId)));
+            }
+
+            else
+            {
+                Ads.SetRewardVideo(EditorRewardVideoAdapter.Instance);
+            }
+
+#if DEVELOPMENT
+            if (PlayerPrefs.GetInt("RemoveAdsCheat", 0) != 0)
+            {
+                Ads.SetRewardVideo(EditorRewardVideoAdapter.Instance);
+            }
+#endif
+
+            // Ads.Banner.OnImpressionSuccess += AdsImpressionHandler;
+            // Ads.Interstitial.OnImpressionSuccess += AdsImpressionHandler;
+            // Ads.Mrec.OnImpressionSuccess += AdsImpressionHandler;
+            // Ads.RewardVideo.OnImpressionSuccess += AdsImpressionHandler;
+            // Ads.AppOpen.OnImpressionSuccess += AdsImpressionHandler;
+            Ads.Mrec.OnLoadSucceeded += () =>
+            {
+                CalculateMrecPos();
+                this.isMrecFirstSuccessLoad = true;
+            };
+
+            // EventPublisher.PublishAsync(new InitAdCompleted());
+        }
 
         private void CreateMrecWithCustomPosition()
         {
