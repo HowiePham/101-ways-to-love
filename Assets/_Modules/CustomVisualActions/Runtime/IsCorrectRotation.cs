@@ -22,12 +22,10 @@ namespace _Modules.VisualFlow.Mechanics.FindSortMatch
 
                 if (isCorrect)
                 {
-                    Debug.Log($"--- (WAIT) Correct Rotation: {this.rotateObject.gameObject.name}");
                     return true;
                 }
             }
 
-            Debug.Log($"--- (WAIT) Not Correct Rotation: {this.rotateObject.gameObject.name} --- {current.z}");
             return false;
         }
     }

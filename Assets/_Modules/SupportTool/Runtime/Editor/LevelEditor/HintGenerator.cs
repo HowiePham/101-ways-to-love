@@ -38,12 +38,26 @@ public class HintGenerator
                 HandleDeletingHint(action, hintBlueprint);
                 hintBlueprint.transform.SetParent(hintParent);
             }
+            else if (action.MechanicType == MechanicType.Draw)
+            {
+                hintName = "Hint_Drawing";
+                GameObject hintBlueprint = CreateHintBlueprint(HintBlueprintAddress, hintName);
+                HandleDrawingHint(action, hintBlueprint);
+                hintBlueprint.transform.SetParent(hintParent);
+            }
         }
     }
 
     private void HandleDeletingHint(TrueAction trueAction, GameObject hintBlueprint)
     {
         var hint = hintBlueprint.GetComponent<DeletingHint>();
+        VisualAction actionCondition = trueAction.ActionCondition;
+        hint.SetField("hintedAction", actionCondition, AccessModifier.Private);
+    }
+
+    private void HandleDrawingHint(TrueAction trueAction, GameObject hintBlueprint)
+    {
+        var hint = hintBlueprint.GetComponent<DrawingHint>();
         VisualAction actionCondition = trueAction.ActionCondition;
         hint.SetField("hintedAction", actionCondition, AccessModifier.Private);
     }

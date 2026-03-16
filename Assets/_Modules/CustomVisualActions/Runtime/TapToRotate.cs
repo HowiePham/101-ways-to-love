@@ -57,6 +57,11 @@ namespace _Modules.VisualFlow.Mechanics.FindSortMatch
 
         private async UniTask RotateEffect()
         {
+            if (!this.rotateObject.gameObject.activeInHierarchy || !this.tapArea.gameObject.activeInHierarchy)
+            {
+                return;
+            }
+
             if (!string.IsNullOrEmpty(this.soundKey))
             {
                 this.audioService.StopSound(this.soundKey);
