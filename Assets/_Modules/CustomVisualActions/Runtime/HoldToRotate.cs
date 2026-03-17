@@ -2,6 +2,8 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Lean.Touch;
+using Mimi.Audio;
+using Mimi.Services.ScriptableObject.Audio;
 using Mimi.VisualActions;
 using UnityEngine;
 using VisualActions.Areas;
@@ -13,6 +15,9 @@ public class HoldToRotate : VisualAction
     [SerializeField] private Vector3 targetRotation;
     [SerializeField] private float angleValue;
     [SerializeField] private float tolerance = 0.1f;
+    [SerializeField, SoundKey] private string soundKey;
+    [SerializeField] private BaseAudioServiceSO audioPlayer;
+
     private bool complete;
 
     protected override async UniTask OnExecuting(CancellationToken cancellationToken)
@@ -20,10 +25,27 @@ public class HoldToRotate : VisualAction
         this.complete = false;
         LeanTouch.OnFingerUpdate += FingerUpdateHandler;
         LeanTouch.OnFingerUp += FingerUpHandler;
+        LeanTouch.OnFingerDown += FingerDownHandler;
         await UniTask.WaitUntil(() => this.complete, cancellationToken: cancellationToken);
         LeanTouch.OnFingerUpdate -= FingerUpdateHandler;
         LeanTouch.OnFingerUp -= FingerUpHandler;
+        LeanTouch.OnFingerDown -= FingerDownHandler;
         await this.target.DORotate(this.targetRotation, 0.5f).SetEase(Ease.InOutQuad).AsyncWaitForCompletion();
+    }
+
+    private void FingerDownHandler(LeanFinger finger)
+    {
+        if (finger.IsOverGui || !this.area.ContainsScreenPosition(finger.ScreenPosition, Camera.main))
+        {
+            return;
+        }
+
+        if (string.IsNullOrEmpty(this.soundKey))
+        {
+            return;
+        }
+
+        this.audioPlayer.PlaySound(this.soundKey);
     }
 
     private void FingerUpHandler(LeanFinger finger)
@@ -31,6 +53,11 @@ public class HoldToRotate : VisualAction
         if (finger.IsOverGui)
         {
             return;
+        }
+
+        if (!string.IsNullOrEmpty(this.soundKey))
+        {
+            this.audioPlayer.StopSound(this.soundKey);
         }
 
         Vector3 current = this.target.eulerAngles;
