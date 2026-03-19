@@ -23,12 +23,11 @@ namespace Mimi.Prototypes
         private CompositeLootProcessor lootProcessor;
         private CompositeLootFactory lootFactory;
 
-        protected override void CreateServices()
+        public override void CreateServices()
         {
             HandleFirstAudio();
             CreateLevelServices();
             InitHintLevelConfig();
-            // InitLifeSystem();
             InitLootSystem();
         }
 
@@ -60,7 +59,7 @@ namespace Mimi.Prototypes
         private void InitHintLevelConfig()
         {
             this.HintLevelConfig = new LevelConfig();
-            this.HintLevelConfig.ParseConfig("1,5");
+            this.HintLevelConfig.ParseConfig(this.RemoteConfig.GetValue(ConfigKey.HintLevel).String);
         }
 
         private void InitLootSystem()

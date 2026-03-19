@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
@@ -94,7 +95,6 @@ namespace Mimi.Prototypes
             RuntimeState = RuntimeState.Get();
             await CreateCoreServices();
             SaveManager.Load();
-            CreateServices();
             IGameInitiator gameInitiator = new ReportProgressGameInitiator(EventPublisher);
             AddDefaultInitSteps(gameInitiator, projectConfig);
             AddInitSteps(gameInitiator, projectConfig);
@@ -134,7 +134,7 @@ namespace Mimi.Prototypes
         {
         }
 
-        protected abstract void CreateServices();
+        public abstract void CreateServices();
         protected abstract void AddInitSteps(IGameInitiator gameInitiator, ProjectConfig projectConfig);
         protected abstract void AddGlobalPlugins(CompositePlugin pluginInstaller);
 
@@ -425,6 +425,80 @@ namespace Mimi.Prototypes
             }
 
             this.maxMrec.SetPosition(posX, posY);
+        }
+
+        public async UniTask InitConfigService()
+        {
+            var isInitialized = false;
+
+#if !UNITY_EDITOR
+            RemoteConfig = new Mimi.Configs.Firebase.FirebaseConfigProvider(new PlayPrefCache());
+#else
+            RemoteConfig = NullConfigProvider.Instance;
+#endif
+
+            var blueprint = new ConfigBlueprint();
+            blueprint
+                .SetString(ConfigKey.LevelDevelopment, string.Empty)
+                .SetString(ConfigKey.LevelProduction, string.Empty)
+                .SetString(ConfigKey.ClientVersion, Application.version)
+                .SetFloat(ConfigKey.AdCooldown, 60f)
+                .SetString(ConfigKey.RateLevel, "5,35,65")
+                .SetString(ConfigKey.HintLevel, "1,5")
+                .SetBool(ConfigKey.IsShowAOA, true)
+                .SetBool(ConfigKey.RequireInternet, true)
+                .SetFloat(ConfigKey.InternetFailedDelay, 7f)
+                .SetString(ConfigKey.ShowAdLevels, "10")
+                .SetBool(ConfigKey.ResumeAds, true)
+                .SetBool(ConfigKey.RatingPopup, true)
+                .SetBool(ConfigKey.ShowAOA, true)
+                .SetBool(ConfigKey.ShowAOAFirstOpen, false)
+                .SetFloat(ConfigKey.CollapsibleCooldown, 30f)
+                .SetBool(ConfigKey.ShowCollapAd, true)
+                .SetBool(ConfigKey.ShowCollapAdManually, false)
+                .SetBool(ConfigKey.ShowBanner, true)
+                .SetBool(ConfigKey.ShowInterstitial, true)
+                .SetBool(ConfigKey.ShowMREC, true)
+                .SetBool(ConfigKey.ShowRewarded, true)
+                .SetBool(ConfigKey.UseAdmobBanner, false)
+                .SetBool(ConfigKey.UseMaxAoa, false)
+                .SetString(ConfigKey.HardLevel, "10,20,30,40,50,60,70,80,90,100,110,120")
+                .SetInt(ConfigKey.HardLevelBaseTime, 30)
+                .SetInt(ConfigKey.HardLevelAdditionalTime, 60)
+                .SetInt(ConfigKey.HardLevelWarningTime, 10)
+                .SetInt(ConfigKey.CooldownInterAfterShowReward, 30);
+
+            await RemoteConfig.SetDefaultValues(blueprint);
+
+            this.RemoteConfig.OnFetchError += (configFetchError) =>
+            {
+                isInitialized = true;
+                Debug.LogError($"[RemoteConfig] Fetching Error: " + configFetchError);
+            };
+
+            var timeOutSeconds = 4f;
+            var cts = new CancellationTokenSource();
+            cts.CancelAfterSlim(TimeSpan.FromSeconds(timeOutSeconds));
+
+            try
+            {
+                this.RemoteConfig.Fetch();
+                await UniTask.WaitUntil(() => isInitialized, cancellationToken: cts.Token);
+                Debug.Log("[RemoveConfig] Firebase Remote Config Initilized before timeout");
+            }
+            catch (OperationCanceledException ex)
+            {
+                if (ex.CancellationToken == cts.Token)
+                {
+                    Debug.Log("[RemoveConfig] Firebase Remote Config Initilized Timeout");
+                }
+
+                Debug.LogException(ex);
+            }
+            finally
+            {
+                cts.Dispose();
+            }
         }
 
         public void StopSound(string soundKey)

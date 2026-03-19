@@ -43,6 +43,17 @@ namespace Mimi.Prototypes
             float loadingSecs = Application.isEditor ? 1f : fakeLoadingSecs;
             float loadingPercentage = 0f;
 
+            UniTask loadConfigTask = DOTween.To(() => loadingPercentage,
+                value =>
+                {
+                    loadingPercentage = value;
+                    this.bootView.SetLoadingPercentage(loadingPercentage);
+                }, 0.1f, 2f).AsyncWaitForCompletion().AsUniTask();
+
+            UniTask fetchConfigTask = UniTask.WhenAll(loadConfigTask, this.gameContext.InitConfigService());
+            await fetchConfigTask;
+
+            this.gameContext.CreateServices();
             UniTask fakeLoadingBarProgress = DOTween.To(() => loadingPercentage,
                 value =>
                 {
