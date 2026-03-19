@@ -1,15 +1,19 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
+using _Modules.Ads;
 // using _Modules.Ads;
 using Cysharp.Threading.Tasks;
 using Economy.Resources;
 using Firebase.Analytics;
+using GoogleMobileAds.Api;
 // using GoogleMobileAds.Api;
 using Mimi.Ads.Adapters;
+using Mimi.Ads.Adapters.Admob;
 // using Mimi.Ads.Adapters.Admob;
 using Mimi.Ads.Adapters.Extensions.Amazons.Maxs;
 using Mimi.Ads.Adapters.Extensions.FirebaseAdRevenue;
+using Mimi.Ads.Adapters.Extensions.SingularAdRevenue;
 using Mimi.Ads.Adapters.Max;
 using Mimi.Analytics.Sessions;
 using Mimi.Analytics.Tracking.Firebase;
@@ -27,6 +31,7 @@ using Mimi.Prototypes.SaveLoad;
 using Mimi.Prototypes.UI;
 using Mimi.ServiceLocators;
 using Mimi.Services.ScriptableObject.Audio;
+using Singular;
 using UnityEngine;
 
 namespace Mimi.Prototypes
@@ -55,6 +60,7 @@ namespace Mimi.Prototypes
         public ILocalizationService Localization { private set; get; }
         public ILocalPrefs LocalPrefs { private set; get; }
         public GameData GameData { private set; get; }
+        public ConsentHandler ConsentHandler { private set; get; }
 
         public LevelConfig RateConfig { get; } = new();
         public LevelConfig ShowInterstitialLevelConfig { get; } = new();
@@ -148,10 +154,12 @@ namespace Mimi.Prototypes
             CreateAnalyticService();
             CreateAudioService();
 
-            // await InitAdmobConsent();
-            // LogInitializeEvent("init_admob_consent");
-            // await InitGoogleMobileAds();
-            // LogInitializeEvent("init_gma");
+            await InitAdmobConsent();
+            LogInitializeEvent("init_admob_consent");
+            await InitGoogleMobileAds();
+            LogInitializeEvent("init_gma");
+            SingularSDK.InitializeSingularSDK();
+            LogInitializeEvent("init_mmp");
             // await InitAdsService();
             // LogInitializeEvent("init_ads");
         }
@@ -226,32 +234,32 @@ namespace Mimi.Prototypes
                 return;
             }
 
-            FirebaseAnalytics.LogEvent(eventName);
+            // FirebaseAnalytics.LogEvent(eventName);
         }
 
-        // private async UniTask InitGoogleMobileAds()
-        // {
-        //     if (Application.isEditor)
-        //     {
-        //         return;
-        //     }
-        //
-        //     // if (IsRemoveAds)
-        //     // {
-        //     //     return;
-        //     // }
-        //
-        //     bool completed = false;
-        //     MobileAds.Initialize(status => { completed = true; });
-        //     await UniTask.WaitUntil(() => completed);
-        // }
-        //
-        // private async UniTask InitAdmobConsent()
-        // {
-        //     this.ConsentHandler = new ConsentHandler();
-        //     await this.ConsentHandler.InitAdmobConsent();
-        //     this.IsAdmobConsentUpdateCompleted = true;
-        // }
+        private async UniTask InitGoogleMobileAds()
+        {
+            if (Application.isEditor)
+            {
+                return;
+            }
+
+            // if (IsRemoveAds)
+            // {
+            //     return;
+            // }
+
+            bool completed = false;
+            MobileAds.Initialize(status => { completed = true; });
+            await UniTask.WaitUntil(() => completed);
+        }
+
+        private async UniTask InitAdmobConsent()
+        {
+            this.ConsentHandler = new ConsentHandler();
+            await this.ConsentHandler.InitAdmobConsent();
+            this.IsAdmobConsentUpdateCompleted = true;
+        }
 
         private async UniTask InitAdsService()
         {
@@ -282,14 +290,18 @@ namespace Mimi.Prototypes
                 {
                     if (RemoteConfig.GetValue(ConfigKey.UseAdmobBanner).Boolean)
                     {
-                        // Ads.SetBanner(
-                        //     new FirebaseMeasureRevenueBanner(new AdmobBanner(AdmobBannerId)));
+                        Ads.SetBanner(
+                            new FirebaseMeasureRevenueBanner(
+                                new SingularRevenueBanner(
+                                    new AdmobBanner(AdmobBannerId))));
                     }
                     else
                     {
                         Ads.SetBanner(
-                            new FirebaseMeasureRevenueBanner(new AmazonMaxBanner(TabletAmazonBannerId,
-                                PhoneAmazonUnitId, MaxBannerUnitId)));
+                            new FirebaseMeasureRevenueBanner(
+                                new SingularRevenueBanner(
+                                    new AmazonMaxBanner(TabletAmazonBannerId,
+                                        PhoneAmazonUnitId, MaxBannerUnitId))));
                     }
                 }
                 else
@@ -300,8 +312,10 @@ namespace Mimi.Prototypes
                 if (RemoteConfig.GetValue(ConfigKey.ShowInterstitial).Boolean)
                 {
                     Ads.SetInterstitial(
-                        new FirebaseMeasureRevenueInterstitial(new AmazonMaxInterstitial(AmazonInterUnitId,
-                            MaxInterUnityId)));
+                        new FirebaseMeasureRevenueInterstitial(
+                            new SingularRevenueInterstitial(
+                                new AmazonMaxInterstitial(AmazonInterUnitId,
+                                    MaxInterUnityId))));
                 }
 
                 if (RemoteConfig.GetValue(ConfigKey.ShowMREC).Boolean)
@@ -319,12 +333,15 @@ namespace Mimi.Prototypes
                 {
                     Ads.SetAppOpen(
                         new FirebaseMeasureRevenueAppOpen(
-                            new MaxAppOpen(MaxAOAUnitId)));
+                            new SingularRevenueAppOpen(
+                                new MaxAppOpen(MaxAOAUnitId))));
                 }
                 else
                 {
-                    // Ads.SetAppOpen(
-                    //     new FirebaseMeasureRevenueAppOpen(new AdmobAppOpen(AdmobAOAUnitId)));
+                    Ads.SetAppOpen(
+                        new FirebaseMeasureRevenueAppOpen(
+                            new SingularRevenueAppOpen(
+                                new AdmobAppOpen(AdmobAOAUnitId))));
                 }
             }
             else
@@ -338,9 +355,11 @@ namespace Mimi.Prototypes
             {
                 // var rewardVideoRequestStrategy = new ExponentialCooldown(999, 2, InternetMonitor);
                 Ads.SetRewardVideo(
-                    new FirebaseMeasureRevenueRewardVideo(new AmazonMaxRewardVideo(
-                        AmazonRewardUnitId,
-                        MaxRewardUnitId)));
+                    new FirebaseMeasureRevenueRewardVideo(
+                        new SingularRevenueRewardVideo(
+                            new AmazonMaxRewardVideo(
+                                AmazonRewardUnitId,
+                                MaxRewardUnitId))));
             }
 
             else
@@ -355,25 +374,38 @@ namespace Mimi.Prototypes
             }
 #endif
 
-            // Ads.Banner.OnImpressionSuccess += AdsImpressionHandler;
-            // Ads.Interstitial.OnImpressionSuccess += AdsImpressionHandler;
-            // Ads.Mrec.OnImpressionSuccess += AdsImpressionHandler;
-            // Ads.RewardVideo.OnImpressionSuccess += AdsImpressionHandler;
-            // Ads.AppOpen.OnImpressionSuccess += AdsImpressionHandler;
+            Ads.Banner.OnImpressionSuccess += AdsImpressionHandler;
+            Ads.Interstitial.OnImpressionSuccess += AdsImpressionHandler;
+            Ads.Mrec.OnImpressionSuccess += AdsImpressionHandler;
+            Ads.RewardVideo.OnImpressionSuccess += AdsImpressionHandler;
+            Ads.AppOpen.OnImpressionSuccess += AdsImpressionHandler;
             Ads.Mrec.OnLoadSucceeded += () =>
             {
                 CalculateMrecPos();
                 this.isMrecFirstSuccessLoad = true;
             };
 
-            // EventPublisher.PublishAsync(new InitAdCompleted());
+            EventPublisher.PublishAsync(new InitAdCompleted());
+        }
+
+        private static void AdsImpressionHandler(ImpressionData impressionData)
+        {
+            Parameter[] parameters =
+            {
+                new Parameter("ad_platform", "ApplovinMax"),
+                new Parameter("ad_source", impressionData.AdNetwork),
+                new Parameter("ad_format", impressionData.AdUnit),
+                new Parameter(FirebaseAnalytics.ParameterCurrency, "USD"),
+                new Parameter(FirebaseAnalytics.ParameterValue, impressionData.Revenue)
+            };
+            FirebaseAnalytics.LogEvent("ad_impression_mediation", parameters);
         }
 
         private void CreateMrecWithCustomPosition()
         {
             this.maxMrec = new MaxMrec(MaxMrecUnitId, 42, 484);
 
-            Ads.SetMrec(new FirebaseAdRevenueMrec(this.maxMrec));
+            Ads.SetMrec(new FirebaseAdRevenueMrec(new SingularRevenueMrec(this.maxMrec)));
         }
 
         private void CalculateMrecPos()
