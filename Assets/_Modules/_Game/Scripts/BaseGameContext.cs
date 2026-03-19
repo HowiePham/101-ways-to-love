@@ -278,7 +278,7 @@ namespace Mimi.Prototypes
             MaxSdkCallbacks.OnSdkInitializedEvent += (MaxSdkBase.SdkConfiguration sdkConfiguration) => { MaxSdk.ShowMediationDebugger(); };
 #endif
 
-            var amazonMaxAdapter = new AmazonMaxAdapter(AmazonMaxId, new MaxAdapter(MaxSDKKey, SystemInfo.deviceUniqueIdentifier));
+            // var amazonMaxAdapter = new AmazonMaxAdapter(AmazonMaxId, new MaxAdapter(MaxSDKKey, SystemInfo.deviceUniqueIdentifier));
             var admobAdapter = new AdmobAdapter();
             Ads = admobAdapter;
             await Ads.Initialize();
@@ -432,7 +432,8 @@ namespace Mimi.Prototypes
             var isInitialized = false;
 
 #if !UNITY_EDITOR
-            RemoteConfig = new Mimi.Configs.Firebase.FirebaseConfigProvider(new PlayPrefCache());
+            // RemoteConfig = new Mimi.Configs.Firebase.FirebaseConfigProvider(new PlayPrefCache());
+                        RemoteConfig = NullConfigProvider.Instance;
 #else
             RemoteConfig = NullConfigProvider.Instance;
 #endif
