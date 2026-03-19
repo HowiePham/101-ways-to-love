@@ -20,6 +20,7 @@ namespace Mimi.Prototypes
         public ILevelOrder LevelOrder { private set; get; }
         public LifeSystem LifeSystem { private set; get; }
         public LevelConfig HintLevelConfig { private set; get; }
+        public LevelConfig HardLevelConfig { private set; get; }
         private CompositeLootProcessor lootProcessor;
         private CompositeLootFactory lootFactory;
 
@@ -28,7 +29,14 @@ namespace Mimi.Prototypes
             HandleFirstAudio();
             CreateLevelServices();
             InitHintLevelConfig();
+            InitHardLevelConfig();
             InitLootSystem();
+        }
+
+        private void InitHardLevelConfig()
+        {
+            this.HardLevelConfig = new LevelConfig();
+            this.HardLevelConfig.ParseConfig(this.RemoteConfig.GetValue(ConfigKey.HardLevel).String);
         }
 
         protected override void AddInitSteps(IGameInitiator gameInitiator, ProjectConfig projectConfig)

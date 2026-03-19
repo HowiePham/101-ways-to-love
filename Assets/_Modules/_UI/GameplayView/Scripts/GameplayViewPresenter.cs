@@ -175,9 +175,11 @@ public class GameplayViewPresenter : BaseViewPresenter
 
         var winViewPresenter = this.ScenePresenter.GetViewPresenter<WinViewPresenter>();
         var settingViewPresenter = this.ScenePresenter.GetViewPresenter<SettingViewPresenter>();
+        var hardLevelViewPresenter = this.ScenePresenter.GetViewPresenter<HardLevelViewPresenter>();
         winViewPresenter.Show();
 
         settingViewPresenter.Hide();
+        hardLevelViewPresenter.Hide();
         Hide();
     }
 
