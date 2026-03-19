@@ -193,6 +193,7 @@ public class GameplayViewPresenter : BaseViewPresenter
 
         var settingViewPresenter = this.ScenePresenter.GetViewPresenter<SettingViewPresenter>();
         settingViewPresenter.Show();
+        Messenger.Broadcast(EventKey.PauseLevel);
     }
 
     private void SkipClickedHandler()
