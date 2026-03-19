@@ -44,8 +44,6 @@ namespace Mimi.Prototypes
         [SerializeField] private DialogManager dialogManager;
 
         public RuntimeState RuntimeState { private set; get; }
-
-        // public ConsentHandler ConsentHandler { private set; get; }
         public bool IsAdmobConsentUpdateCompleted { private set; get; }
         public DialogManager DialogManager => this.dialogManager;
         public IResourceCollection PlayerResources { private set; get; }
@@ -281,7 +279,8 @@ namespace Mimi.Prototypes
 #endif
 
             var amazonMaxAdapter = new AmazonMaxAdapter(AmazonMaxId, new MaxAdapter(MaxSDKKey, SystemInfo.deviceUniqueIdentifier));
-            Ads = amazonMaxAdapter;
+            var admobAdapter = new AdmobAdapter();
+            Ads = admobAdapter;
             await Ads.Initialize();
 
             if (!IsRemoveAds)
@@ -314,8 +313,7 @@ namespace Mimi.Prototypes
                     Ads.SetInterstitial(
                         new FirebaseMeasureRevenueInterstitial(
                             new SingularRevenueInterstitial(
-                                new AmazonMaxInterstitial(AmazonInterUnitId,
-                                    MaxInterUnityId))));
+                                new MaxInterstitial(MaxInterUnityId))));
                 }
 
                 if (RemoteConfig.GetValue(ConfigKey.ShowMREC).Boolean)
@@ -357,9 +355,7 @@ namespace Mimi.Prototypes
                 Ads.SetRewardVideo(
                     new FirebaseMeasureRevenueRewardVideo(
                         new SingularRevenueRewardVideo(
-                            new AmazonMaxRewardVideo(
-                                AmazonRewardUnitId,
-                                MaxRewardUnitId))));
+                            new MaxRewardVideo(MaxRewardUnitId))));
             }
 
             else
