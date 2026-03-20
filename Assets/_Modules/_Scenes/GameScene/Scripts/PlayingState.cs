@@ -2,6 +2,7 @@ using System.Threading;
 using _Modules._UI.LoseView.Scripts;
 using _Modules.Gameflow_Events_.Scripts;
 using Cysharp.Threading.Tasks;
+using FrogunnerGames;
 using Games;
 using GameScenes;
 using Lean.Touch;
@@ -34,6 +35,7 @@ namespace Mimi
         private LevelPlayer levelPlayer;
         private ILevelLoader levelLoader;
         private readonly DisposableBag eventBag = new DisposableBag();
+        private HardLevelViewPresenter HardLevelViewPresenter => Presenter.GetViewPresenter<HardLevelViewPresenter>();
 
         public override void OnInitialized()
         {
@@ -51,12 +53,21 @@ namespace Mimi
             Context.EventSubscriber.Subscribe<SelectLevel>(SelectLevelHandler).AddToBag(this.eventBag);
             Context.EventSubscriber.Subscribe<UseHint>(UseHintHandler).AddToBag(this.eventBag);
 
+            HardLevelViewPresenter.GetView<HardLevelView>().OnClickPlay +=
+                LimitedTimeViewClickPlayHandler;
+
             Messenger.AddListener(EventKey.LevelWin, LevelWinHandler);
 
             LeanTouch.OnFingerDown += ClickSoundHandler;
 
             // Context.LifeSystem.RunTimer();
             PlayLevel(Context.RuntimeState.CurrentLevelOrder.Value);
+        }
+
+        private void LimitedTimeViewClickPlayHandler()
+        {
+            this.levelPlayer.Play();
+            HardLevelViewPresenter.StartTimer();
         }
 
         private async UniTask SkipLevelHandler(SkipLevel skipLevel, CancellationToken cancellation)
@@ -169,9 +180,17 @@ namespace Mimi
             await this.hintPlayer.Init();
             this.hintPlayer.SetLevelTutorial(CanShowTutorial(levelOrder + 1));
 
-            // await UniTask.Delay(500);
             await Context.EventPublisher.PublishAsync(new LevelStarted(currentLevelInfo.Id));
-            await this.levelPlayer.Play();
+
+            if (Context.HardLevelConfig.HasLevel(StringNumber.IntToText(levelOrder + 1)))
+            {
+                HardLevelViewPresenter.SetClockStartTime(Context.RemoteConfig.GetValue(ConfigKey.HardLevelBaseTime).Int);
+                HardLevelViewPresenter.Show();
+            }
+            else
+            {
+                this.levelPlayer.Play();
+            }
         }
 
         private bool CanShowTutorial(int currentLevelOrder)

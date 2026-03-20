@@ -12,4 +12,5 @@
     public const string ShowHint = "showhint";
     public const string ShowStartLevelGameButton = "showstartlevelgamebutton";
     public const string StartLevelGame = "startlevelgame";
+    public const string PauseLevel = "pauselevel";
 }

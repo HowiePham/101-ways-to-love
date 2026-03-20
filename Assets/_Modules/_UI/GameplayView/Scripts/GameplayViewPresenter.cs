@@ -2,11 +2,15 @@ using System.Threading;
 using _Modules._UI.CheatView.Scripts;
 using _Modules._UI.WinView.Scripts;
 using Cysharp.Threading.Tasks;
+using FrogunnerGames;
 using MEC;
+using Mimi.Ads.Adapters;
+using Mimi.Configs;
 using Mimi.Events.AsyncBus;
 using Mimi.Games;
 using Mimi.Games.Events;
 using Mimi.Prototypes;
+using Mimi.Prototypes.Currencies;
 using Mimi.Prototypes.Events;
 using Mimi.Prototypes.UI;
 using UnityEngine;
@@ -19,6 +23,8 @@ public class GameplayViewPresenter : BaseViewPresenter
     private readonly RuntimeState runtimeState;
     private readonly LevelConfig hintLevelConfig;
     private readonly LifeSystem lifeSystem;
+    private readonly IAdAdapter adAdapter;
+    private readonly DialogManager dialogManager;
 
     private GameplayView gameplayView;
     private NumberBasedLifeView numberBasedLifeView;
@@ -30,7 +36,7 @@ public class GameplayViewPresenter : BaseViewPresenter
     private const float TimeStep = 1f;
 
     public GameplayViewPresenter(BaseScenePresenter scenePresenter, Transform transform, IAsyncPublisher eventPublisher, IAsyncSubscriber eventSubscriber,
-        RuntimeState runtimeState, LifeSystem lifeSystem, LevelConfig hintLevelConfig) :
+        RuntimeState runtimeState, LifeSystem lifeSystem, LevelConfig hintLevelConfig, IAdAdapter adAdapter, DialogManager dialogManager) :
         base(scenePresenter, transform)
     {
         this.eventPublisher = eventPublisher;
@@ -38,6 +44,8 @@ public class GameplayViewPresenter : BaseViewPresenter
         this.runtimeState = runtimeState;
         this.lifeSystem = lifeSystem;
         this.hintLevelConfig = hintLevelConfig;
+        this.adAdapter = adAdapter;
+        this.dialogManager = dialogManager;
     }
 
     protected override void AddViews()
@@ -60,12 +68,15 @@ public class GameplayViewPresenter : BaseViewPresenter
         this.gameplayView.OnRemoveAdsClicked += ShowRemoveAdsView;
         this.gameplayView.OnStartLevelGameClicked += StartLevelGameClickedHandler;
 
+        this.adAdapter.RewardVideo.OnRewarded += OnRewardCompleted;
+        this.adAdapter.RewardVideo.OnShowFailed += OnRewardFailed;
+
         this.eventSubscriber.Subscribe<LevelResumed>(ResumeGameplay).AddToBag(this.eventBag);
         this.eventSubscriber.Subscribe<LifeUpdated>(OnLifeUpdate).AddToBag(this.eventBag);
         this.eventSubscriber.Subscribe<RecoveryLifeTimerUpdated>(OnRecoveryTimerUpdate).AddToBag(this.eventBag);
         Messenger.AddListener(EventKey.LevelWin, ShowWinView);
         Messenger.AddListener(EventKey.ActionDone, UpdateStepPoint);
-        Messenger.AddListener(EventKey.ShowHint, HintClickedHandler);
+        Messenger.AddListener(EventKey.ShowHint, ShowHint);
         Messenger.AddListener(EventKey.ActionFailed, ActionFailedHandler);
         Messenger.AddListener(EventKey.ShowStartLevelGameButton, ShowStartLevelGameButtonHandler);
 
@@ -112,8 +123,49 @@ public class GameplayViewPresenter : BaseViewPresenter
 
     private void HintClickedHandler()
     {
+        if (this.adAdapter.RewardVideo.IsReady)
+        {
+            this.adAdapter.RewardVideo.Show(new AdReward("hint"), new AdPlacement("gameplay"));
+        }
+        else
+        {
+            ShowAdFailedDialog();
+        }
+    }
+
+    private void OnRewardCompleted(AdReward reward)
+    {
+        string rewardRewardId = reward.RewardId;
+
+        switch (rewardRewardId)
+        {
+            case "hint":
+                ShowHint();
+                break;
+            case "skip_level":
+                this.eventPublisher.PublishAsync(new SkipLevel());
+                break;
+        }
+    }
+
+    private void ShowHint()
+    {
         this.gameplayView.SetActiveHintButton(false);
         this.eventPublisher.PublishAsync(new UseHint());
+    }
+
+    private void OnRewardFailed(AdReward adReward, AdError adError)
+    {
+        ShowAdFailedDialog();
+    }
+
+    private void ShowAdFailedDialog()
+    {
+        if (this.dialogManager.TryShowModalDialogOnce(DialogId.GenericAutoHide,
+                out AutoHideNotificationDialog dialog))
+        {
+            dialog.SetText("Ads is not available");
+        }
     }
 
     private async UniTask ResumeGameplay(LevelResumed levelResumed, CancellationToken cancellationToken)
@@ -136,10 +188,13 @@ public class GameplayViewPresenter : BaseViewPresenter
         this.gameplayView.OnRemoveAdsClicked -= ShowRemoveAdsView;
         this.gameplayView.OnStartLevelGameClicked -= StartLevelGameClickedHandler;
 
+        this.adAdapter.RewardVideo.OnRewarded -= OnRewardCompleted;
+        this.adAdapter.RewardVideo.OnShowFailed -= OnRewardFailed;
+
         this.eventBag.Dispose();
         Messenger.RemoveListener(EventKey.LevelWin, ShowWinView);
         Messenger.RemoveListener(EventKey.ActionDone, UpdateStepPoint);
-        Messenger.RemoveListener(EventKey.ShowHint, HintClickedHandler);
+        Messenger.RemoveListener(EventKey.ShowHint, ShowHint);
         Messenger.RemoveListener(EventKey.ActionFailed, ActionFailedHandler);
         Messenger.RemoveListener(EventKey.ShowStartLevelGameButton, ShowStartLevelGameButtonHandler);
 
@@ -175,9 +230,11 @@ public class GameplayViewPresenter : BaseViewPresenter
 
         var winViewPresenter = this.ScenePresenter.GetViewPresenter<WinViewPresenter>();
         var settingViewPresenter = this.ScenePresenter.GetViewPresenter<SettingViewPresenter>();
+        var hardLevelViewPresenter = this.ScenePresenter.GetViewPresenter<HardLevelViewPresenter>();
         winViewPresenter.Show();
 
         settingViewPresenter.Hide();
+        hardLevelViewPresenter.Hide();
         Hide();
     }
 
@@ -193,11 +250,19 @@ public class GameplayViewPresenter : BaseViewPresenter
 
         var settingViewPresenter = this.ScenePresenter.GetViewPresenter<SettingViewPresenter>();
         settingViewPresenter.Show();
+        Messenger.Broadcast(EventKey.PauseLevel);
     }
 
     private void SkipClickedHandler()
     {
-        this.eventPublisher.PublishAsync(new SkipLevel());
+        if (this.adAdapter.RewardVideo.IsReady)
+        {
+            this.adAdapter.RewardVideo.Show(new AdReward("skip_level"), new AdPlacement("gameplay"));
+        }
+        else
+        {
+            ShowAdFailedDialog();
+        }
     }
 
     private void ShowRemoveAdsView()
