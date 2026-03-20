@@ -64,6 +64,7 @@ namespace Mimi.Prototypes
         public LevelConfig RateConfig { get; } = new();
         public LevelConfig ShowInterstitialLevelConfig { get; } = new();
         public bool IsRemoveAds => false;
+        public bool IsRemoteConfigInitialized;
 
         private readonly CompositePlugin globalPluginContainer = new CompositePlugin();
         private IPluginConfigInjector projectPluginInjector;
@@ -152,6 +153,8 @@ namespace Mimi.Prototypes
             CreateAnalyticService();
             CreateAudioService();
 
+            await InitConfigService();
+            LogInitializeEvent("init_config");
             await InitAdmobConsent();
             LogInitializeEvent("init_admob_consent");
             await InitGoogleMobileAds();
@@ -431,7 +434,7 @@ namespace Mimi.Prototypes
 
         public async UniTask InitConfigService()
         {
-            var isInitialized = false;
+            this.IsRemoteConfigInitialized = false;
 
 #if !UNITY_EDITOR
             // RemoteConfig = new Mimi.Configs.Firebase.FirebaseConfigProvider(new PlayPrefCache());
@@ -475,7 +478,7 @@ namespace Mimi.Prototypes
 
             this.RemoteConfig.OnFetchError += (configFetchError) =>
             {
-                isInitialized = true;
+                this.IsRemoteConfigInitialized = true;
                 Debug.LogError($"[RemoteConfig] Fetching Error: " + configFetchError);
             };
 
@@ -486,7 +489,7 @@ namespace Mimi.Prototypes
             try
             {
                 this.RemoteConfig.Fetch();
-                await UniTask.WaitUntil(() => isInitialized, cancellationToken: cts.Token);
+                await UniTask.WaitUntil(() => this.IsRemoteConfigInitialized, cancellationToken: cts.Token);
                 Debug.Log("[RemoveConfig] Firebase Remote Config Initilized before timeout");
             }
             catch (OperationCanceledException ex)
@@ -501,6 +504,7 @@ namespace Mimi.Prototypes
             finally
             {
                 cts.Dispose();
+                this.IsRemoteConfigInitialized = true;
             }
         }
 

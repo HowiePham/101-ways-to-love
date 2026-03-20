@@ -50,8 +50,9 @@ namespace Mimi.Prototypes
                     this.bootView.SetLoadingPercentage(loadingPercentage);
                 }, 0.1f, 2f).AsyncWaitForCompletion().AsUniTask();
 
-            UniTask fetchConfigTask = UniTask.WhenAll(loadConfigTask, this.gameContext.InitConfigService());
+            UniTask fetchConfigTask = UniTask.WhenAll(loadConfigTask);
             await fetchConfigTask;
+            await UniTask.WaitUntil(() => this.gameContext.IsRemoteConfigInitialized);
 
             this.gameContext.CreateServices();
             UniTask fakeLoadingBarProgress = DOTween.To(() => loadingPercentage,
