@@ -158,8 +158,8 @@ namespace Mimi.Prototypes
             LogInitializeEvent("init_gma");
             SingularSDK.InitializeSingularSDK();
             LogInitializeEvent("init_mmp");
-            // await InitAdsService();
-            // LogInitializeEvent("init_ads");
+            await InitAdsService();
+            LogInitializeEvent("init_ads");
         }
 
         private void CreateAnalyticService()
@@ -263,7 +263,7 @@ namespace Mimi.Prototypes
         {
             if (Debug.isDebugBuild)
             {
-                // Ads = DebugAdAdapter.Instance;
+                Ads = DebugAdAdapter.Instance;
                 // Ads = new AdminToolAdapter(DebugAdAdapter.Instance);
                 Ads.SetInterstitial(EditorInterstitialAdapter.Instance);
                 Ads.SetRewardVideo(EditorRewardVideoAdapter.Instance);
@@ -345,6 +345,9 @@ namespace Mimi.Prototypes
             else
             {
                 Ads.SetInterstitial(EditorInterstitialAdapter.Instance);
+                Ads.SetAppOpen(NullAppOpenAdapter.Instance);
+                Ads.SetBanner(NullBannerAdapter.Instance);
+                Ads.SetMrec(NullMrecAdapter.Instance);
             }
 
             Ads.AppOpen.Load();
@@ -357,7 +360,6 @@ namespace Mimi.Prototypes
                         new SingularRevenueRewardVideo(
                             new MaxRewardVideo(MaxRewardUnitId))));
             }
-
             else
             {
                 Ads.SetRewardVideo(EditorRewardVideoAdapter.Instance);
