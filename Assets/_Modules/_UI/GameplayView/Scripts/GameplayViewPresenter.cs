@@ -76,7 +76,7 @@ public class GameplayViewPresenter : BaseViewPresenter
         this.eventSubscriber.Subscribe<RecoveryLifeTimerUpdated>(OnRecoveryTimerUpdate).AddToBag(this.eventBag);
         Messenger.AddListener(EventKey.LevelWin, ShowWinView);
         Messenger.AddListener(EventKey.ActionDone, UpdateStepPoint);
-        Messenger.AddListener(EventKey.ShowHint, HintClickedHandler);
+        Messenger.AddListener(EventKey.ShowHint, ShowHint);
         Messenger.AddListener(EventKey.ActionFailed, ActionFailedHandler);
         Messenger.AddListener(EventKey.ShowStartLevelGameButton, ShowStartLevelGameButtonHandler);
 
@@ -140,13 +140,18 @@ public class GameplayViewPresenter : BaseViewPresenter
         switch (rewardRewardId)
         {
             case "hint":
-                this.gameplayView.SetActiveHintButton(false);
-                this.eventPublisher.PublishAsync(new UseHint());
+                ShowHint();
                 break;
             case "skip_level":
                 this.eventPublisher.PublishAsync(new SkipLevel());
                 break;
         }
+    }
+
+    private void ShowHint()
+    {
+        this.gameplayView.SetActiveHintButton(false);
+        this.eventPublisher.PublishAsync(new UseHint());
     }
 
     private void OnRewardFailed(AdReward adReward, AdError adError)
@@ -189,7 +194,7 @@ public class GameplayViewPresenter : BaseViewPresenter
         this.eventBag.Dispose();
         Messenger.RemoveListener(EventKey.LevelWin, ShowWinView);
         Messenger.RemoveListener(EventKey.ActionDone, UpdateStepPoint);
-        Messenger.RemoveListener(EventKey.ShowHint, HintClickedHandler);
+        Messenger.RemoveListener(EventKey.ShowHint, ShowHint);
         Messenger.RemoveListener(EventKey.ActionFailed, ActionFailedHandler);
         Messenger.RemoveListener(EventKey.ShowStartLevelGameButton, ShowStartLevelGameButtonHandler);
 
