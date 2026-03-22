@@ -1,10 +1,12 @@
 using System.Collections.Generic;
+using _Modules._UI.LoseView.Scripts;
 using DG.Tweening;
 using FrogunnerGames;
 using MEC;
 using Mimi;
 using Mimi.Ads.Adapters;
 using Mimi.Configs;
+using Mimi.Events.AsyncBus;
 using Mimi.Prototypes.Currencies;
 using Mimi.Prototypes.Events;
 using Mimi.Prototypes.UI;
@@ -15,6 +17,7 @@ public class HardLevelViewPresenter : BaseViewPresenter
     private readonly IConfigProvider configProvider;
     private readonly IAdAdapter adAdapter;
     private readonly DialogManager dialogManager;
+    private readonly IAsyncPublisher eventPublisher;
 
     private HardLevelView hardLevelView;
 
@@ -24,13 +27,14 @@ public class HardLevelViewPresenter : BaseViewPresenter
     private Tweener countdownTweener;
 
     public HardLevelViewPresenter(BaseScenePresenter scenePresenter, Transform transform,
-        IConfigProvider configProvider, IAdAdapter adAdapter, DialogManager dialogManager) : base(
+        IConfigProvider configProvider, IAdAdapter adAdapter, DialogManager dialogManager, IAsyncPublisher eventPublisher) : base(
         scenePresenter,
         transform)
     {
         this.configProvider = configProvider;
         this.adAdapter = adAdapter;
         this.dialogManager = dialogManager;
+        this.eventPublisher = eventPublisher;
     }
 
     protected override void AddViews()
@@ -60,8 +64,8 @@ public class HardLevelViewPresenter : BaseViewPresenter
         Messenger.AddListener<bool>(EventKey.PauseLevel, StopTimerHandler);
         Messenger.AddListener(EventKey.LevelWin, FinishTimer);
 
-        // this.adAdapter.RewardVideo.OnRewarded += RewardedHandler;
-        // this.adAdapter.RewardVideo.OnShowFailed += RewardShowFailHandler;
+        this.adAdapter.RewardVideo.OnRewarded += RewardedHandler;
+        this.adAdapter.RewardVideo.OnShowFailed += RewardShowFailHandler;
         this.hardLevelView.OnClickPlay += ClickPlayHandler;
         this.hardLevelView.OnClickGetMoreTime += ClickGetMoreTimeHandler;
         this.hardLevelView.OnClickReplay += ClickReplayHandler;
@@ -76,8 +80,8 @@ public class HardLevelViewPresenter : BaseViewPresenter
         Messenger.RemoveListener<bool>(EventKey.PauseLevel, StopTimerHandler);
         Messenger.RemoveListener(EventKey.LevelWin, FinishTimer);
 
-        // this.adAdapter.RewardVideo.OnRewarded -= RewardedHandler;
-        // this.adAdapter.RewardVideo.OnShowFailed -= RewardShowFailHandler;
+        this.adAdapter.RewardVideo.OnRewarded -= RewardedHandler;
+        this.adAdapter.RewardVideo.OnShowFailed -= RewardShowFailHandler;
         this.hardLevelView.OnClickPlay -= ClickPlayHandler;
         this.hardLevelView.OnClickGetMoreTime -= ClickGetMoreTimeHandler;
         this.hardLevelView.OnClickReplay -= ClickReplayHandler;
@@ -93,15 +97,15 @@ public class HardLevelViewPresenter : BaseViewPresenter
         if (dialogManager.TryShowModalDialogOnce(DialogId.GenericAutoHide,
                 out AutoHideNotificationDialog dialog))
         {
-            // dialog.SetText(LocalizeId.AdNetworkError.Localize());
+            dialog.SetText("Ads not available");
         }
     }
 
     private void ClickReplayHandler()
     {
-        Hide();
         this.hardLevelView.SetTimeOutGroupActive(false);
-        Messenger.Broadcast(EventKey.PlayAgain);
+        this.eventPublisher.PublishAsync(new LevelTryAgain());
+        Hide();
     }
 
     private void RewardedHandler(AdReward reward)
@@ -123,15 +127,12 @@ public class HardLevelViewPresenter : BaseViewPresenter
     {
         if (this.adAdapter.RewardVideo.IsReady)
         {
-            this.adAdapter.RewardVideo.Show(new AdReward("GetMoreTime"), new AdPlacement("HardLevel"));
+            this.adAdapter.RewardVideo.Show(new AdReward("GetMoreTime"), new AdPlacement("hard_level"));
         }
         else
         {
             ShowFailedDialog();
         }
-
-        // GameData.CanShowResumeAds = false;
-        // this.adAdapter.RewardVideo.Show(new AdReward("GetMoreTime"), new AdPlacement("HardLevel"));
     }
 
     private void ClickPlayHandler()
