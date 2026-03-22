@@ -62,7 +62,7 @@ namespace Mimi.Prototypes
         public ConsentHandler ConsentHandler { private set; get; }
 
         public LevelConfig RateConfig { get; } = new();
-        public LevelConfig ShowInterstitialLevelConfig { get; } = new();
+        public LevelConfig ShowInterstitialLevelConfig { protected set; get; }
         public bool IsRemoveAds => false;
         public bool IsRemoteConfigInitialized;
 
@@ -266,11 +266,11 @@ namespace Mimi.Prototypes
         {
             // if (Debug.isDebugBuild)
             // {
-                Ads = DebugAdAdapter.Instance;
-                // Ads = new AdminToolAdapter(DebugAdAdapter.Instance);
-                Ads.SetInterstitial(EditorInterstitialAdapter.Instance);
-                Ads.SetRewardVideo(EditorRewardVideoAdapter.Instance);
-                return;
+            Ads = DebugAdAdapter.Instance;
+            // Ads = new AdminToolAdapter(DebugAdAdapter.Instance);
+            Ads.SetInterstitial(EditorInterstitialAdapter.Instance);
+            Ads.SetRewardVideo(EditorRewardVideoAdapter.Instance);
+            return;
             // }
 
             MaxSdk.SetHasUserConsent(true);

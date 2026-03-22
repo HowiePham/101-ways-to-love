@@ -1,4 +1,5 @@
 using _Modules._UI.LoseView.Scripts;
+using Mimi.Ads.Adapters;
 using Mimi.Events;
 using Mimi.Events.AsyncBus;
 using Mimi.Prototypes;
@@ -11,11 +12,20 @@ namespace _Modules._UI.WinView.Scripts
     {
         private WinView winView;
         private CurrencyView currencyView;
-        private IAsyncPublisher eventPublisher;
+        private readonly IAsyncPublisher eventPublisher;
+        private readonly LevelConfig showAdLevelConfig;
+        private readonly IAdAdapter adsAdapter;
+        private readonly RuntimeState runtimeState;
 
-        public WinViewPresenter(BaseScenePresenter scenePresenter, Transform transform, IAsyncPublisher eventPublisher, RuntimeState runtimeState) : base(scenePresenter, transform)
+        public WinViewPresenter(BaseScenePresenter scenePresenter, Transform transform, IAsyncPublisher eventPublisher,
+            RuntimeState runtimeState, IAdAdapter adsAdapter,
+            LevelConfig showAdLevelConfig) : base(scenePresenter,
+            transform)
         {
             this.eventPublisher = eventPublisher;
+            this.runtimeState = runtimeState;
+            this.adsAdapter = adsAdapter;
+            this.showAdLevelConfig = showAdLevelConfig;
         }
 
         protected override void AddViews()
@@ -36,6 +46,8 @@ namespace _Modules._UI.WinView.Scripts
             this.winView.OnReplayClicked += ReplayClickedHandler;
             this.winView.OnRemoveAdsClicked += ShowRemoveAdsView;
             this.winView.OnSettingClicked += SettingClickedHandler;
+            this.adsAdapter.Interstitial.OnShowFailed += InterstitialShowFailedHandler;
+            this.adsAdapter.Interstitial.OnClosed += InterstitialClosedHandler;
             // this.currencyView.OnAddCurrencyClicked += AddCurrencyClickedHandler;
         }
 
@@ -47,6 +59,8 @@ namespace _Modules._UI.WinView.Scripts
             this.winView.OnReplayClicked -= ReplayClickedHandler;
             this.winView.OnRemoveAdsClicked -= ShowRemoveAdsView;
             this.winView.OnSettingClicked -= SettingClickedHandler;
+            this.adsAdapter.Interstitial.OnShowFailed -= InterstitialShowFailedHandler;
+            this.adsAdapter.Interstitial.OnClosed -= InterstitialClosedHandler;
             // this.currencyView.OnAddCurrencyClicked -= AddCurrencyClickedHandler;
         }
 
@@ -63,6 +77,38 @@ namespace _Modules._UI.WinView.Scripts
 
         private void ContinueClickedHandler()
         {
+            var gameContext = Context as GameContext;
+            bool isAdAvailable = !gameContext.IsRemoveAds && this.adsAdapter.Interstitial.IsReady;
+            bool allowShowAd = false;
+
+            if (this.showAdLevelConfig.HasLevel(this.runtimeState.CurrentLevelOrder.ToString()))
+            {
+                allowShowAd = true;
+            }
+            else
+            {
+                if (this.runtimeState.CurrentLevelOrder > this.showAdLevelConfig.MaxLevel)
+                {
+                    allowShowAd = true;
+                }
+            }
+
+            bool showAds = allowShowAd && isAdAvailable;
+            Debug.LogError("--- (NEXT) Ad Available Interstitial: " + isAdAvailable);
+            Debug.LogError("--- (NEXT) showAds: " + showAds);
+
+            if (showAds)
+            {
+                this.adsAdapter.Interstitial.Show(new AdPlacement("level_complete"));
+            }
+            else
+            {
+                NextLevelHandler();
+            }
+        }
+
+        private void NextLevelHandler()
+        {
             this.eventPublisher.PublishAsync(new NextLevelClicked());
             Hide();
         }
@@ -77,6 +123,23 @@ namespace _Modules._UI.WinView.Scripts
         {
             var settingViewPresenter = this.ScenePresenter.GetViewPresenter<SettingViewPresenter>();
             settingViewPresenter.Show();
+        }
+        
+        private void InterstitialClosedHandler(AdPlacement adPlacement)
+        {
+            if (adPlacement.location == "level_complete")
+            {
+                NextLevelHandler();
+            }
+        }
+
+        private void InterstitialShowFailedHandler(AdError adError)
+        {
+            var adPlacement = adError.Placement;
+            if (adPlacement.location == "level_complete")
+            {
+                NextLevelHandler();
+            }
         }
     }
 }
