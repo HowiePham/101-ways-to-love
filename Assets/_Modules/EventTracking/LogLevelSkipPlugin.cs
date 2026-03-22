@@ -9,12 +9,12 @@ using UnityEngine;
 
 namespace Tracking
 {
-    public class LogLevelSkipPlugin : MonoPlugin
+    public class LogLevelSkipPlugin : IPlugin
     {
-        [SerializeField] private GameContext gameContext;
+        private GameContext gameContext;
         private IDisposable levelSkipSub;
 
-        public override async UniTask Install()
+        public async UniTask Install()
         {
             await UniTask.CompletedTask;
             this.levelSkipSub = this.gameContext.EventSubscriber.Subscribe<SkipLevel>(SkipHandler);
@@ -32,18 +32,18 @@ namespace Tracking
             });
         }
 
-        public override async UniTask Uninstall()
+        public async UniTask Uninstall()
         {
             await UniTask.CompletedTask;
             this.levelSkipSub.Dispose();
         }
 
-        public override async UniTask Begin()
+        public async UniTask Begin()
         {
             await UniTask.CompletedTask;
         }
 
-        public override async UniTask End()
+        public async UniTask End()
         {
             await UniTask.CompletedTask;
         }
