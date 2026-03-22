@@ -103,9 +103,11 @@ public class HardLevelViewPresenter : BaseViewPresenter
 
     private void ClickReplayHandler()
     {
-        this.hardLevelView.SetTimeOutGroupActive(false);
-        this.eventPublisher.PublishAsync(new LevelTryAgain());
+        ScenePresenter.GetViewPresenter<GameplayViewPresenter>().Hide();
         Hide();
+        this.hardLevelView.SetTimeOutGroupActive(false);
+        Messenger.Broadcast(EventKey.PauseLevel, false);
+        this.eventPublisher.PublishAsync(new LevelTryAgain());
     }
 
     private void RewardedHandler(AdReward reward)
