@@ -342,7 +342,7 @@ namespace Mimi.Prototypes
             Ads = maxAdapter;
 
             var maxInitCts = new CancellationTokenSource();
-            maxInitCts.CancelAfterSlim(TimeSpan.FromSeconds(10f));
+            maxInitCts.CancelAfterSlim(TimeSpan.FromSeconds(30f));
 
             try
             {
