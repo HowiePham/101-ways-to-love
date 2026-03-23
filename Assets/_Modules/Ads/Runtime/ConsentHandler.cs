@@ -23,8 +23,13 @@ namespace _Modules.Ads
 
         public async UniTask InitAdmobConsent()
         {
+            ConsentRequestParameters request = new ConsentRequestParameters
+            {
+                TagForUnderAgeOfConsent = false,
+            };
+
 #if DEVELOPMENT
-            var consentDebugSettings = new ConsentDebugSettings
+            request.ConsentDebugSettings = new ConsentDebugSettings
             {
                 DebugGeography = DebugGeography.EEA,
                 TestDeviceHashedIds =
@@ -34,11 +39,6 @@ namespace _Modules.Ads
                     }
             };
 #endif
-
-            ConsentRequestParameters request = new ConsentRequestParameters
-            {
-                TagForUnderAgeOfConsent = false,
-            };
 
             ConsentInformation.Update(request, OnConsentInfoUpdated);
 
@@ -71,6 +71,12 @@ namespace _Modules.Ads
 
         public void ShowConsent()
         {
+            if (this.ConsentForm == null)
+            {
+                Debug.LogWarning("[UMP] ConsentForm is null, cannot show consent");
+                return;
+            }
+
             this.ConsentForm.Show(ConsentShowHandler);
         }
 
