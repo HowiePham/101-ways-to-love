@@ -1409,6 +1409,7 @@ MonoBehaviour:
   duration: 1
   jumpForce: 5
   ease: 1
+  turnOffObjectAfterJumping: 0
   completeAfterMove: 0
 --- !u!1 &3324784319649307843
 GameObject:
@@ -2767,6 +2768,7 @@ MonoBehaviour:
       m_Calls: []
   skeletonAnimation: {fileID: 5837534567719560319}
   audioPlayer: {fileID: 11400000, guid: ca539802b2f42a34d9bbdb0eb278d4e3, type: 2}
+  stopSoundBeforePlaying: 0
   eventName: SFX_BoyTucGian
   nameMusic: SFX_BoyTucGian
   track: 0
@@ -3164,6 +3166,7 @@ MonoBehaviour:
       m_Calls: []
   skeletonAnimation: {fileID: 5837534567719560319}
   audioPlayer: {fileID: 11400000, guid: ca539802b2f42a34d9bbdb0eb278d4e3, type: 2}
+  stopSoundBeforePlaying: 0
   eventName: SFX_Snoring
   nameMusic: SFX_Snoring
   track: 0
@@ -3319,6 +3322,7 @@ MonoBehaviour:
       m_Calls: []
   skeletonAnimation: {fileID: 5837534567719560319}
   audioPlayer: {fileID: 11400000, guid: ca539802b2f42a34d9bbdb0eb278d4e3, type: 2}
+  stopSoundBeforePlaying: 0
   eventName: SFX_BoyVuonVai
   nameMusic: SFX_BoyVuonVai
   track: 0
@@ -3434,6 +3438,7 @@ MonoBehaviour:
   skeletonAnimation: {fileID: 5837534567719560319}
   animation: action2_ChanGoi_win
   timeScale: 1
+  forcePlayAnim: 0
   track: 0
   loop: 1
 --- !u!114 &6818560133670882084
@@ -4329,6 +4334,26 @@ PrefabInstance:
       propertyPath: winCameraDestination
       value: 
       objectReference: {fileID: 8088916720332244306}
+    - target: {fileID: 7951086386032803133, guid: 77b33504dcc19a941a4ece2a723f7ce6, type: 3}
+      propertyPath: winAnimation.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7951086386032803133, guid: 77b33504dcc19a941a4ece2a723f7ce6, type: 3}
+      propertyPath: 'winAnimation.Array.data[0]'
+      value: action2_ChanGoi_win
+      objectReference: {fileID: 0}
+    - target: {fileID: 7951086386032803133, guid: 77b33504dcc19a941a4ece2a723f7ce6, type: 3}
+      propertyPath: skeletonAnimations.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7951086386032803133, guid: 77b33504dcc19a941a4ece2a723f7ce6, type: 3}
+      propertyPath: 'skeletonAnimations.Array.data[0]'
+      value: 
+      objectReference: {fileID: 5837534567719560319}
+    - target: {fileID: 7951086386032803133, guid: 77b33504dcc19a941a4ece2a723f7ce6, type: 3}
+      propertyPath: 'skeletonAnimations.Array.data[1]'
+      value: 
+      objectReference: {fileID: 5837534567719560319}
     - target: {fileID: 8866235693956036009, guid: 77b33504dcc19a941a4ece2a723f7ce6, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -4776,30 +4801,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 6048426919107821883}
     m_Modifications:
-    - target: {fileID: 696866656087300455, guid: 21749ae8a6619b04e8bcc312e69393ba, type: 3}
-      propertyPath: skeletonAnimation
-      value: 
-      objectReference: {fileID: 5837534567719560319}
-    - target: {fileID: 1689884152720729896, guid: 21749ae8a6619b04e8bcc312e69393ba, type: 3}
-      propertyPath: m_Name
-      value: CheckTapArea_ConRuoi
-      objectReference: {fileID: 0}
-    - target: {fileID: 1977723571919977276, guid: 21749ae8a6619b04e8bcc312e69393ba, type: 3}
-      propertyPath: skeletonAnimation
-      value: 
-      objectReference: {fileID: 5696754629029109155}
-    - target: {fileID: 3038637245890626278, guid: 21749ae8a6619b04e8bcc312e69393ba, type: 3}
-      propertyPath: target
-      value: 
-      objectReference: {fileID: 198858880546661387}
-    - target: {fileID: 6935684735595250842, guid: 21749ae8a6619b04e8bcc312e69393ba, type: 3}
-      propertyPath: m_Name
-      value: PlayAndWaitAnim_ConRuoi
-      objectReference: {fileID: 0}
-    - target: {fileID: 8538438916000241810, guid: 21749ae8a6619b04e8bcc312e69393ba, type: 3}
-      propertyPath: m_Name
-      value: LoopAnim_True_1_ConRuoi
-      objectReference: {fileID: 0}
     - target: {fileID: 79568495716573115, guid: 3acd38c1a4e59c94ca7bcb25e7168160, type: 3}
       propertyPath: target
       value: 
@@ -4876,6 +4877,30 @@ PrefabInstance:
       propertyPath: skeletonAnimation
       value: 
       objectReference: {fileID: 5696754629029109155}
+    - target: {fileID: 696866656087300455, guid: 21749ae8a6619b04e8bcc312e69393ba, type: 3}
+      propertyPath: skeletonAnimation
+      value: 
+      objectReference: {fileID: 5837534567719560319}
+    - target: {fileID: 1689884152720729896, guid: 21749ae8a6619b04e8bcc312e69393ba, type: 3}
+      propertyPath: m_Name
+      value: CheckTapArea_ConRuoi
+      objectReference: {fileID: 0}
+    - target: {fileID: 1977723571919977276, guid: 21749ae8a6619b04e8bcc312e69393ba, type: 3}
+      propertyPath: skeletonAnimation
+      value: 
+      objectReference: {fileID: 5696754629029109155}
+    - target: {fileID: 3038637245890626278, guid: 21749ae8a6619b04e8bcc312e69393ba, type: 3}
+      propertyPath: target
+      value: 
+      objectReference: {fileID: 198858880546661387}
+    - target: {fileID: 6935684735595250842, guid: 21749ae8a6619b04e8bcc312e69393ba, type: 3}
+      propertyPath: m_Name
+      value: PlayAndWaitAnim_ConRuoi
+      objectReference: {fileID: 0}
+    - target: {fileID: 8538438916000241810, guid: 21749ae8a6619b04e8bcc312e69393ba, type: 3}
+      propertyPath: m_Name
+      value: LoopAnim_True_1_ConRuoi
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 1261327361827559787, guid: 21749ae8a6619b04e8bcc312e69393ba, type: 3}

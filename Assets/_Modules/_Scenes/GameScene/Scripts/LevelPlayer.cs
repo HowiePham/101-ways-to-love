@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using Mimi.Audio;
 using Mimi.VisualActions.Audio;
@@ -15,15 +16,17 @@ namespace GameScenes
         [SerializeField] private PlayAudio[] levelGeneralAudio;
 
         [Header("Win Level Reference")] [SerializeField]
-        private SkeletonAnimation skeletonAnimation;
+        private List<SkeletonAnimation> skeletonAnimations = new List<SkeletonAnimation>();
 
         [SerializeField] private GameObject levelUIRoot;
 
         [SerializeField, SpineAnimation(dataField = "skeletonAnimation")]
-        protected new string winAnimation;
+        protected List<string> winAnimation = new List<string>();
 
         [SerializeField] private bool loopWinAnim = true;
         [SerializeField] private Transform winCameraDestination;
+        [SerializeField] private List<GameObject> disableObjectsWhenWin = new List<GameObject>();
+        [SerializeField] private List<GameObject> activeObjectsWhenWin = new List<GameObject>();
 
         public PlayAudio[] LevelGeneralAudio => this.levelGeneralAudio;
 
@@ -36,9 +39,35 @@ namespace GameScenes
         {
             Cancel();
 
+            if (this.disableObjectsWhenWin.Count > 0)
+            {
+                foreach (GameObject gameObject in this.disableObjectsWhenWin)
+                {
+                    gameObject.SetActive(false);
+                }
+            }
+            if (this.activeObjectsWhenWin.Count > 0)
+            {
+                foreach (GameObject gameObject in this.activeObjectsWhenWin)
+                {
+                    gameObject.SetActive(true);
+                }
+            }
+
             this.levelUIRoot.SetActive(false);
             var levelEditor = GetComponent<LevelEditor>();
-            this.skeletonAnimation.AnimationState.SetAnimation(0, this.winAnimation, this.loopWinAnim);
+
+            for (var i = 0; i < this.skeletonAnimations.Count; i++)
+            {
+                SkeletonAnimation skeletonAnimation = this.skeletonAnimations[i];
+
+                if (string.IsNullOrEmpty(this.winAnimation[i]) || i >= this.winAnimation.Count)
+                {
+                    continue;
+                }
+
+                skeletonAnimation.AnimationState.SetAnimation(0, this.winAnimation[i], this.loopWinAnim);
+            }
 
             levelEditor.BoxInteractingObjectParent.gameObject.SetActive(false);
             levelEditor.InteractableObjectParent.gameObject.SetActive(false);
@@ -73,6 +102,7 @@ namespace GameScenes
         [Button]
         private void GetWinAnimation()
         {
+            this.winAnimation.Clear();
             var trueAnimLoops = GetComponentsInChildren<PlaySpineAnim>();
 
             foreach (PlaySpineAnim spineAnim in trueAnimLoops)
@@ -82,8 +112,7 @@ namespace GameScenes
                     continue;
                 }
 
-                this.winAnimation = spineAnim.Animation;
-                return;
+                this.winAnimation.Add(spineAnim.Animation);
             }
         }
 
@@ -99,6 +128,29 @@ namespace GameScenes
                     this.winCameraDestination = child;
                     break;
                 }
+            }
+        }
+
+        [Button]
+        private void GetAllSpineAnim()
+        {
+            this.skeletonAnimations.Clear();
+            Transform[] allChildren = GetComponentsInChildren<Transform>(true);
+
+            foreach (Transform child in allChildren)
+            {
+                if (!child.name.Contains("Anim"))
+                {
+                    continue;
+                }
+
+                var skeletonAnim = child.GetComponent<SkeletonAnimation>();
+                if (skeletonAnim == null)
+                {
+                    continue;
+                }
+
+                this.skeletonAnimations.Add(skeletonAnim);
             }
         }
     }
