@@ -49,6 +49,7 @@ namespace Mimi.Prototypes
         protected override void AddGlobalPlugins(CompositePlugin pluginInstaller)
         {
             pluginInstaller.AddPlugin(new ShowOpenAdOnResumePlugin(this.Ads, this.EventSubscriber, this.IsRemoveAds, this.SessionRecorder, this.RemoteConfig));
+            pluginInstaller.AddPlugin(new LoadFirstAdsPlugin(this));
         }
 
         private void HandleFirstAudio()

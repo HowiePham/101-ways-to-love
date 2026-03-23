@@ -16,6 +16,7 @@ using Mimi.Ads.Adapters.Extensions.Amazons.Maxs;
 using Mimi.Ads.Adapters.Extensions.FirebaseAdRevenue;
 using Mimi.Ads.Adapters.Extensions.SingularAdRevenue;
 using Mimi.Ads.Adapters.Max;
+using Mimi.Ads.Extensions.Requests;
 using Mimi.Analytics.Sessions;
 using Mimi.Analytics.Tracking.Firebase;
 using Mimi.Analytics.Tracking.Trackers;
@@ -26,6 +27,7 @@ using Mimi.Events.AsyncBus;
 using Mimi.Games.InitSteps;
 using Mimi.Games.Plugins;
 using Mimi.Games.ProjectConfigs;
+using Mimi.Network.Monitors;
 using Mimi.Persistence.LocalPrefs;
 using Mimi.Prototypes.Pooling;
 using Mimi.Prototypes.SaveLoad;
@@ -58,6 +60,7 @@ namespace Mimi.Prototypes
         public IAudioService AudioService { private set; get; }
         public ILocalizationService Localization { private set; get; }
         public ILocalPrefs LocalPrefs { private set; get; }
+        public IInternetMonitor InternetMonitor { private set; get; }
         public GameData GameData { private set; get; }
         public ConsentHandler ConsentHandler { private set; get; }
 
@@ -142,6 +145,8 @@ namespace Mimi.Prototypes
         private async UniTask CreateCoreServices()
         {
             await UniTask.CompletedTask;
+            InitInternetMonitor();
+
             CreatePoolingService();
             CreateMessageServices();
             CreateLocalPrefsService();
@@ -226,6 +231,42 @@ namespace Mimi.Prototypes
         {
             SaveManager = new ConvertibleSaveManager(this);
             SaveManager.AddSaveLoadStrategy(new GameSaver(this), new GameLoader(this));
+        }
+
+        private void InitInternetMonitor()
+        {
+            InternetMonitor = UnityInternetMonitor.New(5);
+#if !UNITY_EDITOR
+            InternetMonitor.OnNetworkStateChanged += NetworkStateChanged;
+#endif
+            InternetMonitor.StartMonitor();
+        }
+        
+        private void NetworkStateChanged(InternetState internetState)
+        {
+            // if (!RemoteConfig.GetValue(ConfigKey.RequireInternet).Boolean) return;
+            //
+            // if (internetState == InternetState.Unavailable)
+            // {
+            //     if (this.showRequireInternetPopupHandler == default)
+            //     {
+            //         this.showRequireInternetPopupHandler = Timing.RunCoroutine(_ShowRequireInternetDialog());
+            //     }
+            // }
+            // else if (internetState == InternetState.Available)
+            // {
+            //     if (this.showRequireInternetPopupHandler.IsValid)
+            //     {
+            //         Timing.KillCoroutines(this.showRequireInternetPopupHandler);
+            //         this.showRequireInternetPopupHandler = default;
+            //     }
+            //
+            //     if (this.requireInternetDialog != null)
+            //     {
+            //         this.requireInternetDialog.Hide();
+            //         this.requireInternetDialog = null;
+            //     }
+            // }
         }
 
         protected void LogInitializeEvent(string eventName)
@@ -318,22 +359,25 @@ namespace Mimi.Prototypes
 
             if (!IsRemoveAds)
             {
+                var interstitialRequestStrategy = new ExponentialCooldown(999, 2, InternetMonitor);
+                var bannerRequestStrategy = new ExponentialCooldown(999, 2, InternetMonitor);
+
                 if (RemoteConfig.GetValue(ConfigKey.ShowBanner).Boolean)
                 {
                     if (RemoteConfig.GetValue(ConfigKey.UseAdmobBanner).Boolean)
                     {
-                        Ads.SetBanner(
+                        Ads.SetBanner(new AutoRequestBanner(bannerRequestStrategy,
                             new FirebaseMeasureRevenueBanner(
                                 new SingularRevenueBanner(
-                                    new AdmobBanner(AdmobBannerId))));
+                                    new AdmobBanner(AdmobBannerId)))));
                     }
                     else
                     {
-                        Ads.SetBanner(
+                        Ads.SetBanner(new AutoRequestBanner(bannerRequestStrategy,
                             new FirebaseMeasureRevenueBanner(
                                 new SingularRevenueBanner(
                                     new AmazonMaxBanner(TabletAmazonBannerId,
-                                        PhoneAmazonUnitId, MaxBannerUnitId))));
+                                        PhoneAmazonUnitId, MaxBannerUnitId)))));
                     }
                 }
                 else
@@ -344,9 +388,14 @@ namespace Mimi.Prototypes
                 if (RemoteConfig.GetValue(ConfigKey.ShowInterstitial).Boolean)
                 {
                     Ads.SetInterstitial(
-                        new FirebaseMeasureRevenueInterstitial(
-                            new SingularRevenueInterstitial(
-                                new MaxInterstitial(MaxInterUnityId))));
+                        new AutoRequestInterstitial(interstitialRequestStrategy,
+                            new FirebaseMeasureRevenueInterstitial(
+                                new SingularRevenueInterstitial(
+                                    new MaxInterstitial(MaxInterUnityId)))));
+                }
+                else
+                {
+                    Ads.SetInterstitial(EditorInterstitialAdapter.Instance);
                 }
 
                 if (RemoteConfig.GetValue(ConfigKey.ShowMREC).Boolean)
@@ -358,21 +407,23 @@ namespace Mimi.Prototypes
                     Ads.SetMrec(NullMrecAdapter.Instance);
                 }
 
-                // var appOpenRequestStrategy = new ExponentialCooldown(999, 2, InternetMonitor);
+                var appOpenRequestStrategy = new ExponentialCooldown(999, 2, InternetMonitor);
 
                 if (RemoteConfig.GetValue(ConfigKey.UseMaxAoa).Boolean)
                 {
                     Ads.SetAppOpen(
-                        new FirebaseMeasureRevenueAppOpen(
-                            new SingularRevenueAppOpen(
-                                new MaxAppOpen(MaxAOAUnitId))));
+                        new AutoRequestAppOpen(appOpenRequestStrategy,
+                            new FirebaseMeasureRevenueAppOpen(
+                                new SingularRevenueAppOpen(
+                                    new MaxAppOpen(MaxAOAUnitId)))));
                 }
                 else
                 {
                     Ads.SetAppOpen(
-                        new FirebaseMeasureRevenueAppOpen(
-                            new SingularRevenueAppOpen(
-                                new AdmobAppOpen(AdmobAOAUnitId))));
+                        new AutoRequestAppOpen(appOpenRequestStrategy,
+                            new FirebaseMeasureRevenueAppOpen(
+                                new SingularRevenueAppOpen(
+                                    new AdmobAppOpen(AdmobAOAUnitId)))));
                 }
             }
             else
@@ -383,15 +434,14 @@ namespace Mimi.Prototypes
                 Ads.SetMrec(NullMrecAdapter.Instance);
             }
 
-            Ads.AppOpen.Load();
-
             if (RemoteConfig.GetValue(ConfigKey.ShowRewarded).Boolean)
             {
-                // var rewardVideoRequestStrategy = new ExponentialCooldown(999, 2, InternetMonitor);
+                var rewardVideoRequestStrategy = new ExponentialCooldown(999, 2, InternetMonitor);
                 Ads.SetRewardVideo(
-                    new FirebaseMeasureRevenueRewardVideo(
-                        new SingularRevenueRewardVideo(
-                            new MaxRewardVideo(MaxRewardUnitId))));
+                    new AutoRequestRewardVideo(rewardVideoRequestStrategy,
+                        new FirebaseMeasureRevenueRewardVideo(
+                            new SingularRevenueRewardVideo(
+                                new MaxRewardVideo(MaxRewardUnitId)))));
             }
             else
             {
@@ -435,8 +485,10 @@ namespace Mimi.Prototypes
         private void CreateMrecWithCustomPosition()
         {
             this.maxMrec = new MaxMrec(MaxMrecUnitId, 42, 484);
+            var mrecRequestStrategy = new ExponentialCooldown(999, 2, InternetMonitor);
 
-            Ads.SetMrec(new FirebaseAdRevenueMrec(new SingularRevenueMrec(this.maxMrec)));
+            Ads.SetMrec(new AutoRequestMrec(mrecRequestStrategy,
+                new FirebaseAdRevenueMrec(new SingularRevenueMrec(this.maxMrec))));
         }
 
         private void CalculateMrecPos()
@@ -506,10 +558,7 @@ namespace Mimi.Prototypes
 
             await RemoteConfig.SetDefaultValues(blueprint);
 
-            this.RemoteConfig.OnFetchSuccess += () =>
-            {
-                this.IsRemoteConfigInitialized = true;
-            };
+            this.RemoteConfig.OnFetchSuccess += () => { this.IsRemoteConfigInitialized = true; };
 
             this.RemoteConfig.OnFetchError += (configFetchError) =>
             {
