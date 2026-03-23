@@ -10,9 +10,9 @@ using UnityEngine;
 
 namespace Tracking
 {
-    public class LogLevelCompletedPlugin : MonoPlugin
+    public class LogLevelCompletedPlugin : IPlugin
     {
-        [SerializeField] private GameContext gameContext;
+        private GameContext gameContext;
 
         private IDisposable levelCompletedSub;
         private IDisposable levelStartSub;
@@ -21,7 +21,7 @@ namespace Tracking
         private bool useHelp;
         private DateTime startTime;
 
-        public override async UniTask Install()
+        public async UniTask Install()
         {
             await UniTask.CompletedTask;
             this.levelCompletedSub = this.gameContext.EventSubscriber.Subscribe<LevelCompleted>(LevelCompletedHandler);
@@ -63,7 +63,7 @@ namespace Tracking
             });
         }
 
-        public override async UniTask Uninstall()
+        public  async UniTask Uninstall()
         {
             await UniTask.CompletedTask;
             this.levelCompletedSub.Dispose();
@@ -72,12 +72,12 @@ namespace Tracking
             this.levelSkipSub.Dispose();
         }
 
-        public override async UniTask Begin()
+        public  async UniTask Begin()
         {
             await UniTask.CompletedTask;
         }
 
-        public override async UniTask End()
+        public  async UniTask End()
         {
             await UniTask.CompletedTask;
         }

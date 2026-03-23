@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Games;
 using MEC;
@@ -47,7 +48,7 @@ public class HardLevelView : BaseView
     [SerializeField] private Button replayButton;
     [SerializeField] private Image timeoutWarning;
     [SerializeField] private TMP_Text additionalTimeText;
-    
+
     public event Action OnClickPlay;
     public event Action OnClickGetMoreTime;
     public event Action OnClickReplay;
@@ -89,7 +90,7 @@ public class HardLevelView : BaseView
         // }
         // else
         // {
-            OnClickPlay?.Invoke();
+        OnClickPlay?.Invoke();
         // }
     }
 
@@ -113,9 +114,10 @@ public class HardLevelView : BaseView
         yield return new WaitForSeconds(0.2f);
     }
 
-    private void HideCenterIconGroup()
+    private async UniTask HideCenterIconGroup()
     {
-        DOTween.Sequence().Append(this.centerIconGroup.DOFade(0, 0.2f).SetEase(Ease.Linear));
+        await DOTween.Sequence().Append(this.centerIconGroup.DOFade(0, 0.2f).SetEase(Ease.Linear)).AsyncWaitForCompletion();
+        this.centerIconGroup.blocksRaycasts = false;
     }
 
     private void ShowSmallTitle(Vector3 smallTitleTargetPos)
@@ -125,6 +127,7 @@ public class HardLevelView : BaseView
 
     private void ShowLogoHardLevel()
     {
+        this.centerIconGroup.blocksRaycasts = true;
         this.centerIconGroup.alpha = 1;
         this.centerIcon.transform.localScale = Vector3.zero;
         this.centerTitle.transform.localScale = Vector3.zero;

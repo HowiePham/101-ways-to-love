@@ -8,12 +8,12 @@ using UnityEngine;
 
 namespace Tracking
 {
-    public class LogHintLevelShow : MonoPlugin
+    public class LogHintLevelShow : IPlugin
     {
         [SerializeField] private GameContext gameContext;
         private IDisposable levelHintSub;
 
-        public override async UniTask Install()
+        public  async UniTask Install()
         {
             await UniTask.CompletedTask;
             this.levelHintSub = this.gameContext.EventSubscriber.Subscribe<UseHint>(HintHandler);
@@ -31,18 +31,18 @@ namespace Tracking
             });
         }
 
-        public override async UniTask Uninstall()
+        public  async UniTask Uninstall()
         {
             await UniTask.CompletedTask;
             this.levelHintSub.Dispose();
         }
 
-        public override async UniTask Begin()
+        public  async UniTask Begin()
         {
             await UniTask.CompletedTask;
         }
 
-        public override async UniTask End()
+        public  async UniTask End()
         {
             await UniTask.CompletedTask;
         }

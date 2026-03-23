@@ -22,14 +22,16 @@ namespace Mimi.Prototypes
             var gameplayViewPresenter = new GameplayViewPresenter(this, this.Transform, gameContext.EventPublisher, gameContext.EventSubscriber,
                 gameContext.RuntimeState, gameContext.LifeSystem, gameContext.HintLevelConfig, gameContext.Ads, gameContext.DialogManager);
             AddViewPresenter(gameplayViewPresenter);
-            var hardLevelViewPresenter = new HardLevelViewPresenter(this, this.Transform, gameContext.RemoteConfig, gameContext.Ads, gameContext.DialogManager);
+            var hardLevelViewPresenter = new HardLevelViewPresenter(this, this.Transform, gameContext.RemoteConfig, gameContext.Ads, gameContext.DialogManager,
+                gameContext.EventPublisher);
             AddViewPresenter(hardLevelViewPresenter);
             Debug.Log($"--- (PRESENTER) Init SettingViewPresenter");
             var settingViewPresenter = new SettingViewPresenter(this, this.Transform,
                 gameContext.EventPublisher, gameContext.GameData.SettingModel, gameContext.SaveManager, gameContext.RuntimeState, gameContext.AudioService);
             AddViewPresenter(settingViewPresenter);
             Debug.Log($"--- (PRESENTER) Init WinViewPresenter");
-            var winViewPresenter = new WinViewPresenter(this, this.Transform, gameContext.EventPublisher, gameContext.RuntimeState);
+            var winViewPresenter = new WinViewPresenter(this, this.Transform, gameContext.EventPublisher, 
+                gameContext.RuntimeState, gameContext.Ads, gameContext.ShowInterstitialLevelConfig);
             AddViewPresenter(winViewPresenter);
             Debug.Log($"--- (PRESENTER) Init LoseViewPresenter");
             var loseViewPresenter = new LoseViewPresenter(this, this.Transform, gameContext.EventPublisher);

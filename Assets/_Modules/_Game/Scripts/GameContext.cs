@@ -1,4 +1,5 @@
 using System.Linq;
+using Ads;
 using Games;
 using Mimi.Audio;
 using Mimi.Games.InitSteps;
@@ -9,6 +10,7 @@ using Mimi.Loots;
 using Mimi.Prototypes.LevelManagement;
 using Mimi.ServiceLocators;
 using Sirenix.OdinInspector;
+using Tracking;
 using UnityEngine;
 
 namespace Mimi.Prototypes
@@ -28,6 +30,7 @@ namespace Mimi.Prototypes
         {
             HandleFirstAudio();
             CreateLevelServices();
+            InitShowInterstitialLevelConfig();
             InitHintLevelConfig();
             InitHardLevelConfig();
             InitLootSystem();
@@ -45,6 +48,7 @@ namespace Mimi.Prototypes
 
         protected override void AddGlobalPlugins(CompositePlugin pluginInstaller)
         {
+            pluginInstaller.AddPlugin(new ShowOpenAdOnResumePlugin(this.Ads, this.EventSubscriber, this.IsRemoveAds, this.SessionRecorder, this.RemoteConfig));
         }
 
         private void HandleFirstAudio()
@@ -68,6 +72,12 @@ namespace Mimi.Prototypes
         {
             this.HintLevelConfig = new LevelConfig();
             this.HintLevelConfig.ParseConfig(this.RemoteConfig.GetValue(ConfigKey.HintLevel).String);
+        }
+
+        private void InitShowInterstitialLevelConfig()
+        {
+            this.ShowInterstitialLevelConfig = new LevelConfig();
+            this.ShowInterstitialLevelConfig.ParseConfig(this.RemoteConfig.GetValue(ConfigKey.ShowAdLevels).String);
         }
 
         private void InitLootSystem()
