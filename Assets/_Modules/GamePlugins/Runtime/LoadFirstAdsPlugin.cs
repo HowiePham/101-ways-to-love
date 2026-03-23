@@ -4,6 +4,7 @@ using Mimi.Events;
 using Mimi.Games;
 using Mimi.Games.Plugins;
 using Mimi.Prototypes;
+using UnityEngine;
 
 public class LoadFirstAdsPlugin : IPlugin
 {
@@ -26,8 +27,10 @@ public class LoadFirstAdsPlugin : IPlugin
         CancellationToken cancellationToken)
     {
         await UniTask.CompletedTask;
+        Debug.Log($"--- (PLUGIN) Loading first ads inter...");
         this.gameContext.Ads.Interstitial.Load();
         await UniTask.Delay(3000, cancellationToken: cancellationToken);
+        Debug.Log($"--- (PLUGIN) Loading first ads reward...");
         this.gameContext.Ads.RewardVideo.Load();
     }
 

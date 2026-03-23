@@ -286,10 +286,10 @@ namespace Mimi.Prototypes
                 return;
             }
 
-            // if (IsRemoveAds)
-            // {
-            //     return;
-            // }
+            if (IsRemoveAds)
+            {
+                return;
+            }
 
             bool completed = false;
             MobileAds.Initialize(status => { completed = true; });
