@@ -252,7 +252,22 @@ namespace Mimi.Prototypes
 
             bool completed = false;
             MobileAds.Initialize(status => { completed = true; });
-            await UniTask.WaitUntil(() => completed);
+
+            var cts = new CancellationTokenSource();
+            cts.CancelAfterSlim(TimeSpan.FromSeconds(10f));
+
+            try
+            {
+                await UniTask.WaitUntil(() => completed, cancellationToken: cts.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                Debug.LogWarning("[GMA] Google Mobile Ads initialization timed out");
+            }
+            finally
+            {
+                cts.Dispose();
+            }
         }
 
         private async UniTask InitAdmobConsent()
@@ -264,14 +279,14 @@ namespace Mimi.Prototypes
 
         private async UniTask InitAdsService()
         {
-            // if (Debug.isDebugBuild)
-            // {
-            Ads = DebugAdAdapter.Instance;
-            // Ads = new AdminToolAdapter(DebugAdAdapter.Instance);
-            Ads.SetInterstitial(EditorInterstitialAdapter.Instance);
-            Ads.SetRewardVideo(EditorRewardVideoAdapter.Instance);
-            return;
-            // }
+            if (Debug.isDebugBuild)
+            {
+                Ads = DebugAdAdapter.Instance;
+                // Ads = new AdminToolAdapter(DebugAdAdapter.Instance);
+                Ads.SetInterstitial(EditorInterstitialAdapter.Instance);
+                Ads.SetRewardVideo(EditorRewardVideoAdapter.Instance);
+                return;
+            }
 
             MaxSdk.SetHasUserConsent(true);
             MaxSdk.SetDoNotSell(false);
@@ -282,9 +297,24 @@ namespace Mimi.Prototypes
 #endif
 
             // var amazonMaxAdapter = new AmazonMaxAdapter(AmazonMaxId, new MaxAdapter(MaxSDKKey, SystemInfo.deviceUniqueIdentifier));
-            var admobAdapter = new AdmobAdapter();
-            Ads = admobAdapter;
-            await Ads.Initialize();
+            var maxAdapter = new MaxAdapter(MaxSDKKey, SystemInfo.deviceUniqueIdentifier);
+            Ads = maxAdapter;
+
+            var maxInitCts = new CancellationTokenSource();
+            maxInitCts.CancelAfterSlim(TimeSpan.FromSeconds(10f));
+
+            try
+            {
+                await Ads.Initialize().AttachExternalCancellation(maxInitCts.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                Debug.LogWarning("[MAX] AppLovin MAX SDK initialization timed out");
+            }
+            finally
+            {
+                maxInitCts.Dispose();
+            }
 
             if (!IsRemoveAds)
             {
@@ -386,7 +416,7 @@ namespace Mimi.Prototypes
                 this.isMrecFirstSuccessLoad = true;
             };
 
-            EventPublisher.PublishAsync(new InitAdCompleted());
+            await EventPublisher.PublishAsync(new InitAdCompleted());
         }
 
         private static void AdsImpressionHandler(ImpressionData impressionData)
@@ -476,6 +506,11 @@ namespace Mimi.Prototypes
 
             await RemoteConfig.SetDefaultValues(blueprint);
 
+            this.RemoteConfig.OnFetchSuccess += () =>
+            {
+                this.IsRemoteConfigInitialized = true;
+            };
+
             this.RemoteConfig.OnFetchError += (configFetchError) =>
             {
                 this.IsRemoteConfigInitialized = true;
@@ -488,15 +523,23 @@ namespace Mimi.Prototypes
 
             try
             {
-                this.RemoteConfig.Fetch();
-                await UniTask.WaitUntil(() => this.IsRemoteConfigInitialized, cancellationToken: cts.Token);
-                Debug.Log("[RemoveConfig] Firebase Remote Config Initilized before timeout");
+                await this.RemoteConfig.Fetch();
+
+                if (this.IsRemoteConfigInitialized)
+                {
+                    Debug.Log("[RemoteConfig] Firebase Remote Config Initialized immediately");
+                }
+                else
+                {
+                    await UniTask.WaitUntil(() => this.IsRemoteConfigInitialized, cancellationToken: cts.Token);
+                    Debug.Log("[RemoteConfig] Firebase Remote Config Initialized before timeout");
+                }
             }
             catch (OperationCanceledException ex)
             {
                 if (ex.CancellationToken == cts.Token)
                 {
-                    Debug.Log("[RemoveConfig] Firebase Remote Config Initilized Timeout");
+                    Debug.Log("[RemoteConfig] Firebase Remote Config Initialized Timeout");
                 }
 
                 Debug.LogException(ex);
