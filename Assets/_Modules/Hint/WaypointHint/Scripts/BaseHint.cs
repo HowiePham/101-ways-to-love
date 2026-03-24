@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
@@ -43,6 +44,7 @@ namespace VisualFlow
         protected override async UniTask OnExecuting(CancellationToken cancellationToken)
         {
             Messenger.AddListener(EventKey.ResetAction, ActiveHint);
+            Messenger.AddListener(EventKey.LevelWin, TurnOff);
             Messenger.AddListener(EventKey.AnimationStart, DisableHint);
             LeanTouch.OnFingerDown += FingerDownHandler;
             this.leanSelectByFinger.OnSelected.AddListener(OnSelectedHandler);
@@ -65,12 +67,19 @@ namespace VisualFlow
             EnableHint(true);
         }
 
+        private void TurnOff()
+        {
+            DisableHint();
+            StopListeningEvent();
+        }
+
         protected virtual void StopListeningEvent()
         {
             LeanTouch.OnFingerDown -= FingerDownHandler;
             LeanTouch.OnFingerUp -= FingerUpHandler;
             Messenger.RemoveListener(EventKey.ResetAction, ActiveHint);
             Messenger.RemoveListener(EventKey.AnimationStart, DisableHint);
+            Messenger.RemoveListener(EventKey.LevelWin, TurnOff);
             this.leanSelectByFinger.OnSelected.RemoveListener(OnSelectedHandler);
         }
     }
