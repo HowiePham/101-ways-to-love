@@ -89,5 +89,14 @@ public class DraggingHint : BaseHint
         this.hintGraphic.SetActive(enable);
         this.hintedObjectGraphic.gameObject.SetActive(enable);
         this.hintGraphic.enabled = enable;
+
+        if (enable)
+        {
+            foreach (BaseMonoGraphic graphic in this.hintedObjectGraphic.GetGraphics())
+            {
+                graphic.SetSortingOrder(799);
+                graphic.SetAlpha(0.6f);
+            }
+        }
     }
 }
