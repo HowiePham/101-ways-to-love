@@ -26,6 +26,16 @@ public class LoadFirstAdsPlugin : IPlugin
         this.gameContext.Ads.Interstitial.OnLoadFailed += AdsLoadFailed;
         this.gameContext.Ads.RewardVideo.OnLoadSucceeded += AdsLoadSucceeded;
         this.gameContext.Ads.RewardVideo.OnLoadFailed += AdsLoadFailed;
+
+        // Direct MaxSdk callback logging (diagnostic)
+        MaxSdkCallbacks.Interstitial.OnAdLoadedEvent += (adUnitId, adInfo) =>
+            Debug.Log($"--- (ADS-DIAG) MaxSdk Inter LOADED: {adUnitId}");
+        MaxSdkCallbacks.Interstitial.OnAdLoadFailedEvent += (adUnitId, errorInfo) =>
+            Debug.Log($"--- (ADS-DIAG) MaxSdk Inter FAILED: {adUnitId} code={errorInfo.Code} msg={errorInfo.Message}");
+        MaxSdkCallbacks.Rewarded.OnAdLoadedEvent += (adUnitId, adInfo) =>
+            Debug.Log($"--- (ADS-DIAG) MaxSdk Reward LOADED: {adUnitId}");
+        MaxSdkCallbacks.Rewarded.OnAdLoadFailedEvent += (adUnitId, errorInfo) =>
+            Debug.Log($"--- (ADS-DIAG) MaxSdk Reward FAILED: {adUnitId} code={errorInfo.Code} msg={errorInfo.Message}");
     }
 
     private void AdsLoadFailed(AdError adError)
@@ -42,6 +52,8 @@ public class LoadFirstAdsPlugin : IPlugin
         CancellationToken cancellationToken)
     {
         await UniTask.CompletedTask;
+        Debug.Log($"--- (PLUGIN) MaxSdk.IsInitialized: {MaxSdk.IsInitialized()}");
+        Debug.Log($"--- (PLUGIN) Inter IsReady before load: {this.gameContext.Ads.Interstitial.IsReady}");
         Debug.Log($"--- (PLUGIN) Loading first ads inter...");
         this.gameContext.Ads.Interstitial.Load();
         await UniTask.Delay(3000, cancellationToken: cancellationToken);
