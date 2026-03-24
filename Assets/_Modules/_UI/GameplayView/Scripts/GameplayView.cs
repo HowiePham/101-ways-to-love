@@ -274,17 +274,4 @@ public class GameplayView : BaseView
             this.loopScalingTweens.Add(uiItem, tweenCore);
         }
     }
-
-    private void KillLoopScalingEffect(RectTransform uiItem)
-    {
-        if (!this.loopScalingTweens.ContainsKey(uiItem))
-        {
-            return;
-        }
-
-        if (this.loopScalingTweens[uiItem] != null)
-        {
-            this.loopScalingTweens[uiItem].Kill();
-        }
-    }
 }
