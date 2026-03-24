@@ -54,7 +54,7 @@ public class DraggingHint : BaseHint
         foreach (BaseMonoGraphic graphic in this.hintedObjectGraphic.GetGraphics())
         {
             graphic.SetSortingOrder(799);
-            graphic.SetAlpha(0.6f);
+            graphic.SetAlpha(0.8f);
         }
     }
 
@@ -95,7 +95,7 @@ public class DraggingHint : BaseHint
             foreach (BaseMonoGraphic graphic in this.hintedObjectGraphic.GetGraphics())
             {
                 graphic.SetSortingOrder(799);
-                graphic.SetAlpha(0.6f);
+                graphic.SetAlpha(0.8f);
             }
         }
     }
