@@ -381,7 +381,7 @@ namespace Mimi.Prototypes
                         new AutoRequestInterstitial(interstitialRequestStrategy,
                             // new FirebaseMeasureRevenueInterstitial(
                             new SingularRevenueInterstitial(
-                                new AdmobInterstitial("ca-app-pub-3940256099942544/1033173712"))));
+                                new MaxInterstitial(MaxInterUnityId))));
                 }
                 else
                 {
@@ -435,7 +435,7 @@ namespace Mimi.Prototypes
                     new AutoRequestRewardVideo(rewardVideoRequestStrategy,
                         // new FirebaseMeasureRevenueRewardVideo(
                         new SingularRevenueRewardVideo(
-                            new AdmobRewardAd("ca-app-pub-3940256099942544/5224354917"))));
+                            new MaxRewardVideo(MaxRewardUnitId))));
             }
             else
             {
