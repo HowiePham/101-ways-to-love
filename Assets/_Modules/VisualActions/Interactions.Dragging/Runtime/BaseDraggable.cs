@@ -16,6 +16,7 @@ namespace Mimi.Interactions.Dragging
         [SerializeField] private MonoDraggableExtension draggableExtension;
         [SerializeField] private BaseMonoGraphic graphic;
         [SerializeField] private MonoMovement movement;
+        [SerializeField] private bool forceDestination = true;
         public bool IsSelected { private set; get; }
         public bool IsInteractable { private set; get; }
         public Vector3 Position => movement.GetPosition();
@@ -114,8 +115,14 @@ namespace Mimi.Interactions.Dragging
 
         public void SetPosition(Vector3 targetPos)
         {
-            // this.dest = this.positionProcessor.Process(targetPos);
-            this.transform.position = this.positionProcessor.Process(targetPos);
+            if (this.forceDestination)
+            {
+                this.dest = this.positionProcessor.Process(targetPos);
+            }
+            else
+            {
+                this.transform.position = this.positionProcessor.Process(targetPos);
+            }
         }
 
         protected void OnStartDrag()
@@ -135,19 +142,19 @@ namespace Mimi.Interactions.Dragging
             {
                 return;
             }
-            
+
             IsSelected = false;
             this.draggableExtension.EndDrag();
         }
 
 
-        // private void LateUpdate()
-        // {
-        //     if (!IsInteractable) return;
-        //     movement.SetPosition(Vector3.SmoothDamp(movement.GetPosition(), this.dest, ref this.dragVelocity,
-        //         this.smoothTime,
-        //         Mathf.Infinity, Time.deltaTime * this.speedScalar));
-        //         ;
-        //     }
+        private void LateUpdate()
+        {
+            if (!IsInteractable || !this.forceDestination) return;
+            movement.SetPosition(Vector3.SmoothDamp(movement.GetPosition(), this.dest, ref this.dragVelocity,
+                this.smoothTime,
+                Mathf.Infinity, Time.deltaTime * this.speedScalar));
+            ;
+        }
     }
 }

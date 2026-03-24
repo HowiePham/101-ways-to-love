@@ -465,6 +465,7 @@ MonoBehaviour:
   startDelay: 0
   endDelay: 0.2
   ease: 0
+  runWhileDragging: 0
 --- !u!1 &8941882117890696608
 GameObject:
   m_ObjectHideFlags: 0
@@ -496,7 +497,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8941882117890696608}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -555,6 +556,7 @@ MonoBehaviour:
   draggableExtension: {fileID: 4692027598078665631}
   graphic: {fileID: 5025490481928546718}
   movement: {fileID: 6050653125522532171}
+  forceDestination: 1
   selectable: {fileID: 3803292552363020593}
   renderCamera: {fileID: 0}
 --- !u!114 &4753869155099791705
@@ -569,7 +571,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a81e3d18612a476f95fce6a3deb01250, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  value: {x: 0, y: 1, z: 0}
+  value: {x: 0, y: 2, z: 0}
 --- !u!114 &6050653125522532171
 MonoBehaviour:
   m_ObjectHideFlags: 0
