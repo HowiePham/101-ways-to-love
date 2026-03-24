@@ -22,16 +22,25 @@ namespace Mimi.Prototypes
         [SerializeField, ClassExtends(typeof(BaseSceneController))]
         private ClassTypeReference nextSceneType;
 
+        public static bool IsBootViewReady { get; private set; }
+
         private void Awake()
         {
             DontDestroyOnLoad(this);
+            IsBootViewReady = false;
+            PrepareBootView().Forget();
         }
 
-        public async UniTask StartLoading()
+        private async UniTaskVoid PrepareBootView()
         {
             this.bootView.Show();
             await this.bootView.RunLogoEffect();
             await this.bootView.ShowLoadingBarEffect();
+            IsBootViewReady = true;
+        }
+
+        public async UniTask StartLoading()
+        {
             await Load();
             this.gameContext.EventPublisher.PublishAsync(new BootGameCompleted());
             this.bootView.Hide();

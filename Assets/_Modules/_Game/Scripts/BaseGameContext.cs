@@ -90,6 +90,8 @@ namespace Mimi.Prototypes
 
         protected override async UniTask OnInitializing()
         {
+            await UniTask.WaitUntil(() => BootLoader.IsBootViewReady);
+
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             Application.targetFrameRate = 60;
             InitSheetAssets();
