@@ -112,7 +112,27 @@ namespace VisualFlow
             scratchCard.OnRenderTextureInitialized -= OnCardRenderTextureInitialized;
             scratchCard.OnRenderTextureInitialized += OnCardRenderTextureInitialized;
             scratchCard.Init();
+            OverrideScratchPositionForSelectable();
             SetScratchCardFill();
+        }
+
+        protected virtual void OverrideScratchPositionForSelectable()
+        {
+            if (this.selectable == null) return;
+
+            this.scratchCard.Input.OnScratch -= this.scratchCard.ScratchData.GetScratchPosition;
+            this.scratchCard.Input.OnScratch += GetSelectableScratchPosition;
+        }
+
+        protected virtual Vector2 GetSelectableScratchPosition(Vector2 fingerScreenPos)
+        {
+            if (this.selectable != null && this.selectable.IsSelected)
+            {
+                Vector2 selectableScreenPos = mainCamera.WorldToScreenPoint(this.selectable.transform.position);
+                return this.scratchCard.ScratchData.GetScratchPosition(selectableScreenPos);
+            }
+
+            return this.scratchCard.ScratchData.GetScratchPosition(fingerScreenPos);
         }
 
         protected virtual Material InitScratchCardSurfaceMaterial()
@@ -379,6 +399,11 @@ namespace VisualFlow
             LeanTouch.OnFingerUpdate -= FingerUpdateHandler;
             LeanTouch.OnFingerDown -= FingerDownHandler;
             LeanTouch.OnFingerUp -= FingerUpHandler;
+
+            if (this.scratchCard != null && this.scratchCard.Input != null)
+            {
+                this.scratchCard.Input.OnScratch -= GetSelectableScratchPosition;
+            }
         }
 
         [SerializeField] protected LeanSelectable selectable;
@@ -398,11 +423,11 @@ namespace VisualFlow
                 isFirstDrag = false;
             }
 
-            Vector3 fingerWorldPos = mainCamera.ScreenToWorldPoint(finger.ScreenPosition);
-            Vector3 eraseCenter = fingerWorldPos;
-            eraseCenter.z += 1f;
-            Vector3 brushPos = new Vector3(fingerWorldPos.x, fingerWorldPos.y) + this.brushHeaderOffset;
-            eraseCenter.z = 0f;
+            Vector3 deleteWorldPos = this.selectable != null
+                ? this.selectable.transform.position
+                : mainCamera.ScreenToWorldPoint(finger.ScreenPosition);
+
+            Vector3 brushPos = new Vector3(deleteWorldPos.x, deleteWorldPos.y) + this.brushHeaderOffset;
             OnDeleting?.Invoke(brushPos);
             prevFingerPosition = finger.ScreenPosition;
             this.deleteProgress = this.eraseProgress.GetProgress();
@@ -487,11 +512,14 @@ namespace VisualFlow
             else
             {
                 this.isFingerDowned = true;
-                this.startPos = mainCamera.ScreenToWorldPoint(finger.ScreenPosition);
+                this.startPos = this.selectable != null
+                    ? this.selectable.transform.position
+                    : mainCamera.ScreenToWorldPoint(finger.ScreenPosition);
                 PlayDeleteSound();
                 OnStartDelete?.Invoke(this.startPos);
             }
         }
+
 
         protected virtual void CopySpriteAnimationData(Sprite source, Sprite destination)
         {
