@@ -241,7 +241,7 @@ namespace Mimi.Prototypes
 #endif
             InternetMonitor.StartMonitor();
         }
-        
+
         private void NetworkStateChanged(InternetState internetState)
         {
             // if (!RemoteConfig.GetValue(ConfigKey.RequireInternet).Boolean) return;
@@ -347,6 +347,7 @@ namespace Mimi.Prototypes
             try
             {
                 await Ads.Initialize().AttachExternalCancellation(maxInitCts.Token);
+                Debug.Log($"[MAX] SDK initialized. GGAdmob ready: {MaxSdk.IsInitialized()}");
             }
             catch (OperationCanceledException)
             {
@@ -368,16 +369,16 @@ namespace Mimi.Prototypes
                     {
                         Ads.SetBanner(new AutoRequestBanner(bannerRequestStrategy,
                             // new FirebaseMeasureRevenueBanner(
-                                new SingularRevenueBanner(
-                                    new AdmobBanner(AdmobBannerId))));
+                            new SingularRevenueBanner(
+                                new AdmobBanner(AdmobBannerId))));
                     }
                     else
                     {
                         Ads.SetBanner(new AutoRequestBanner(bannerRequestStrategy,
                             // new FirebaseMeasureRevenueBanner(
-                                new SingularRevenueBanner(
-                                    new AmazonMaxBanner(TabletAmazonBannerId,
-                                        PhoneAmazonUnitId, MaxBannerUnitId))));
+                            new SingularRevenueBanner(
+                                new AmazonMaxBanner(TabletAmazonBannerId,
+                                    PhoneAmazonUnitId, MaxBannerUnitId))));
                     }
                 }
                 else
@@ -390,8 +391,8 @@ namespace Mimi.Prototypes
                     Ads.SetInterstitial(
                         new AutoRequestInterstitial(interstitialRequestStrategy,
                             // new FirebaseMeasureRevenueInterstitial(
-                                new SingularRevenueInterstitial(
-                                    new MaxInterstitial(MaxInterUnityId))));
+                            new SingularRevenueInterstitial(
+                                new MaxInterstitial(MaxInterUnityId))));
                 }
                 else
                 {
@@ -414,16 +415,16 @@ namespace Mimi.Prototypes
                     Ads.SetAppOpen(
                         new AutoRequestAppOpen(appOpenRequestStrategy,
                             // new FirebaseMeasureRevenueAppOpen(
-                                new SingularRevenueAppOpen(
-                                    new MaxAppOpen(MaxAOAUnitId))));
+                            new SingularRevenueAppOpen(
+                                new MaxAppOpen(MaxAOAUnitId))));
                 }
                 else
                 {
                     Ads.SetAppOpen(
                         new AutoRequestAppOpen(appOpenRequestStrategy,
                             // new FirebaseMeasureRevenueAppOpen(
-                                new SingularRevenueAppOpen(
-                                    new AdmobAppOpen(AdmobAOAUnitId))));
+                            new SingularRevenueAppOpen(
+                                new AdmobAppOpen(AdmobAOAUnitId))));
                 }
             }
             else
@@ -440,8 +441,8 @@ namespace Mimi.Prototypes
                 Ads.SetRewardVideo(
                     new AutoRequestRewardVideo(rewardVideoRequestStrategy,
                         // new FirebaseMeasureRevenueRewardVideo(
-                            new SingularRevenueRewardVideo(
-                                new MaxRewardVideo(MaxRewardUnitId))));
+                        new SingularRevenueRewardVideo(
+                            new MaxRewardVideo(MaxRewardUnitId))));
             }
             else
             {
@@ -487,9 +488,9 @@ namespace Mimi.Prototypes
             this.maxMrec = new MaxMrec(MaxMrecUnitId, 42, 484);
             var mrecRequestStrategy = new ExponentialCooldown(999, 2, InternetMonitor);
 
-            Ads.SetMrec(new AutoRequestMrec(mrecRequestStrategy, 
+            Ads.SetMrec(new AutoRequestMrec(mrecRequestStrategy,
                 // new FirebaseAdRevenueMrec(
-                    new SingularRevenueMrec(this.maxMrec)));
+                new SingularRevenueMrec(this.maxMrec)));
         }
 
         private void CalculateMrecPos()
