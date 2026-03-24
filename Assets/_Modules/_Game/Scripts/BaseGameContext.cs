@@ -321,14 +321,14 @@ namespace Mimi.Prototypes
 
         private async UniTask InitAdsService()
         {
-            if (Debug.isDebugBuild)
-            {
+            // if (Debug.isDebugBuild)
+            // {
                 Ads = DebugAdAdapter.Instance;
                 // Ads = new AdminToolAdapter(DebugAdAdapter.Instance);
                 Ads.SetInterstitial(EditorInterstitialAdapter.Instance);
                 Ads.SetRewardVideo(EditorRewardVideoAdapter.Instance);
                 return;
-            }
+            // }
 
             MaxSdk.SetHasUserConsent(true);
             MaxSdk.SetDoNotSell(false);
