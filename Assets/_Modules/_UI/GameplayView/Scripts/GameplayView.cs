@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using DG.Tweening.Core;
@@ -14,7 +15,6 @@ public class GameplayView : BaseView
     [SerializeField] private Transform wrongSignal;
     [SerializeField] private float signalDuration;
     [SerializeField] private float maxScale;
-
     [Header("Text")] [SerializeField] private TMP_Text levelTextCurrent;
 
     [Header("StepUI")] [SerializeField] private Transform stepPanel;
@@ -39,6 +39,7 @@ public class GameplayView : BaseView
     private Dictionary<RectTransform, TweenerCore<Vector3, Vector3, VectorOptions>> loopScalingTweens;
     private Dictionary<RectTransform, TweenerCore<Vector3, Vector3, VectorOptions>> movingTweens;
     private List<StepPoint> stepPoints;
+    private CancellationTokenSource showCts;
     private RectTransform RemoveAdsRect => this.removeAdsButton.GetComponent<RectTransform>();
     private RectTransform HintBtnRect => this.hintBtn.GetComponent<RectTransform>();
     private RectTransform SkipBtnRect => this.skipBtn.GetComponent<RectTransform>();
@@ -71,23 +72,28 @@ public class GameplayView : BaseView
     {
         base.Show();
 
-        HandleUIEffect();
+        this.showCts?.Cancel();
+        this.showCts?.Dispose();
+        this.showCts = new CancellationTokenSource();
+
+        HandleUIEffect(this.showCts.Token);
     }
 
     public override void Hide()
     {
         base.Hide();
 
-        // KillLoopScalingEffect(this.RemoveAdsRect);
-        // KillLoopScalingEffect(this.HintBtnRect);
-        // KillLoopScalingEffect(this.SkipBtnRect);
+        this.showCts?.Cancel();
+        this.showCts?.Dispose();
+        this.showCts = null;
+
         DOTween.Kill(this.HintBtnRect);
         DOTween.Kill(this.SkipBtnRect);
         DOTween.Kill(this.RemoveAdsRect);
         DOTween.Kill(this.StartLevelGameBtnRect);
     }
 
-    private async UniTask HandleUIEffect()
+    private async UniTask HandleUIEffect(CancellationToken ct)
     {
         this.HintBtnRect.localScale = Vector3.zero;
         this.SkipBtnRect.localScale = Vector3.zero;
@@ -96,9 +102,10 @@ public class GameplayView : BaseView
         for (var i = 0; i < this.showingEffectUIs.Length; i++)
         {
             RectTransform uiItem = this.showingEffectUIs[i];
-            scalingTask[i] = ScaleUIEffect(uiItem, 0.5f);
+            scalingTask[i] = ScaleUIEffect(uiItem, 0.5f, ct);
         }
 
+        if (ct.IsCancellationRequested) return;
         await UniTask.WhenAll(scalingTask);
 
         // LoopScalingUIEffect(this.RemoveAdsRect, 1.1f, 1f, 1f);
@@ -189,8 +196,10 @@ public class GameplayView : BaseView
             return;
         }
 
-        await ScaleUIEffect(this.HintBtnRect, delay);
-        LoopScalingUIEffect(this.HintBtnRect.GetComponent<RectTransform>(), 1.1f, 1f, 1f);
+        var ct = this.showCts?.Token ?? CancellationToken.None;
+        await ScaleUIEffect(this.HintBtnRect, delay, ct);
+        if (ct.IsCancellationRequested) return;
+        LoopScalingUIEffect(this.HintBtnRect.GetComponent<RectTransform>(), 1.1f, 1f, 1f, ct);
     }
 
     public async UniTask SetActiveStartLevelGameButton(bool value, float delay = 0f)
@@ -202,8 +211,10 @@ public class GameplayView : BaseView
             return;
         }
 
-        await ScaleUIEffect(this.StartLevelGameBtnRect, delay);
-        LoopScalingUIEffect(this.StartLevelGameBtnRect.GetComponent<RectTransform>(), 1.1f, 1f, 1f);
+        var ct = this.showCts?.Token ?? CancellationToken.None;
+        await ScaleUIEffect(this.StartLevelGameBtnRect, delay, ct);
+        if (ct.IsCancellationRequested) return;
+        LoopScalingUIEffect(this.StartLevelGameBtnRect.GetComponent<RectTransform>(), 1.1f, 1f, 1f, ct);
     }
 
     public async UniTask SetActiveSkipButton(bool value, float delay = 0f)
@@ -215,8 +226,10 @@ public class GameplayView : BaseView
             return;
         }
 
-        await ScaleUIEffect(this.SkipBtnRect, delay);
-        LoopScalingUIEffect(this.SkipBtnRect, 1.1f, 1f, 1f);
+        var ct = this.showCts?.Token ?? CancellationToken.None;
+        await ScaleUIEffect(this.SkipBtnRect, delay, ct);
+        if (ct.IsCancellationRequested) return;
+        LoopScalingUIEffect(this.SkipBtnRect, 1.1f, 1f, 1f, ct);
     }
 
     private async UniTask MovingUIEffect(RectTransform uiItem, Vector3 firstPos, Vector3 targetPos, float duration, float delay, bool bounceEffect)
@@ -235,18 +248,21 @@ public class GameplayView : BaseView
         }
     }
 
-    private async UniTask ScaleUIEffect(RectTransform uiItem, float delay)
+    private async UniTask ScaleUIEffect(RectTransform uiItem, float delay, CancellationToken ct = default)
     {
         uiItem.localScale = Vector3.zero;
-        await UniTask.WaitForSeconds(delay);
+        bool canceled = await UniTask.WaitForSeconds(delay, cancellationToken: ct).SuppressCancellationThrow();
+        if (canceled) return;
         await uiItem.DOScale(1.2f, 0.4f).SetEase(Ease.InOutQuad).AsyncWaitForCompletion();
+        if (ct.IsCancellationRequested) return;
         await uiItem.DOScale(1f, 0.2f).SetEase(Ease.InOutQuad).AsyncWaitForCompletion();
     }
 
-    private async UniTask LoopScalingUIEffect(RectTransform uiItem, float targetValue, float delay, float duration)
+    private async UniTask LoopScalingUIEffect(RectTransform uiItem, float targetValue, float delay, float duration, CancellationToken ct = default)
     {
         uiItem.localScale = Vector3.one;
-        await UniTask.WaitForSeconds(delay);
+        bool canceled = await UniTask.WaitForSeconds(delay, cancellationToken: ct).SuppressCancellationThrow();
+        if (canceled) return;
 
         if (this.loopScalingTweens.ContainsKey(uiItem))
         {
