@@ -49,6 +49,7 @@ namespace Mimi.Prototypes
         protected override void AddGlobalPlugins(CompositePlugin pluginInstaller)
         {
             pluginInstaller.AddPlugin(new ShowOpenAdOnResumePlugin(this.Ads, this.EventSubscriber, this.IsRemoveAds, this.SessionRecorder, this.RemoteConfig));
+            pluginInstaller.AddPlugin(new LoadFirstAdsPlugin(this));
         }
 
         private void HandleFirstAudio()
@@ -57,8 +58,8 @@ namespace Mimi.Prototypes
             this.AudioService.SetMusicVolPercentage(this.GameData.SettingModel.MusicOn ? 1 : 0);
             this.AudioService.SetSoundVolPercentage(this.GameData.SettingModel.SoundOn ? 1 : 0);
 
-            Debug.Log($"--- (Audio) MusicOn: {this.GameData.SettingModel.MusicOn} --- {this.AudioService.MusicVolPercentage}");
-            Debug.Log($"--- (Audio) SoundOn: {this.GameData.SettingModel.SoundOn} --- {this.AudioService.SoundVolPercentage}");
+            // Debug.Log($"--- (Audio) MusicOn: {this.GameData.SettingModel.MusicOn} --- {this.AudioService.MusicVolPercentage}");
+            // Debug.Log($"--- (Audio) SoundOn: {this.GameData.SettingModel.SoundOn} --- {this.AudioService.SoundVolPercentage}");
         }
 
         private void CreateLevelServices()

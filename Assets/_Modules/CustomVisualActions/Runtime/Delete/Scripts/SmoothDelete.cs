@@ -398,11 +398,6 @@ namespace VisualFlow
                 isFirstDrag = false;
             }
 
-            if (finger.ScreenPosition != prevFingerPosition)
-            {
-                PlayDeleteSound();
-            }
-
             Vector3 fingerWorldPos = mainCamera.ScreenToWorldPoint(finger.ScreenPosition);
             Vector3 eraseCenter = fingerWorldPos;
             eraseCenter.z += 1f;
@@ -493,6 +488,7 @@ namespace VisualFlow
             {
                 this.isFingerDowned = true;
                 this.startPos = mainCamera.ScreenToWorldPoint(finger.ScreenPosition);
+                PlayDeleteSound();
                 OnStartDelete?.Invoke(this.startPos);
             }
         }

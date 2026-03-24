@@ -29,7 +29,7 @@ namespace Mimi.Prototypes
             this.audioPlayer.SetSoundVolPercentage(percentage);
             this.soundVolPercentage = percentage;
 
-            Debug.Log($"--- (AUDIO) New sound vol: {this.soundVolPercentage}");
+            // Debug.Log($"--- (AUDIO) New sound vol: {this.soundVolPercentage}");
         }
 
         public void SetMusicVolPercentage(float percentage)
@@ -37,7 +37,7 @@ namespace Mimi.Prototypes
             this.audioPlayer.SetMusicVolPercentage(percentage);
             this.musicVolPercentage = percentage;
 
-            Debug.Log($"--- (AUDIO) New Music vol: {this.musicVolPercentage}");
+            // Debug.Log($"--- (AUDIO) New Music vol: {this.musicVolPercentage}");
         }
     }
 }
