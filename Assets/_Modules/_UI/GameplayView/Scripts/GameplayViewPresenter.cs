@@ -123,16 +123,14 @@ public class GameplayViewPresenter : BaseViewPresenter
 
     private void HintClickedHandler()
     {
-        this.adAdapter.RewardVideo.Show(new AdReward("hint"), new AdPlacement("gameplay"));
-
-        // if (this.adAdapter.RewardVideo.IsReady)
-        // {
-        //     this.adAdapter.RewardVideo.Show(new AdReward("hint"), new AdPlacement("gameplay"));
-        // }
-        // else
-        // {
-        //     ShowAdFailedDialog();
-        // }
+        if (this.adAdapter.RewardVideo.IsReady)
+        {
+            this.adAdapter.RewardVideo.Show(new AdReward("hint"), new AdPlacement("gameplay"));
+        }
+        else
+        {
+            ShowAdFailedDialog();
+        }
     }
 
     private void OnRewardCompleted(AdReward reward)
