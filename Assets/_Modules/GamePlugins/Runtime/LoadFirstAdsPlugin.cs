@@ -48,8 +48,7 @@ public class LoadFirstAdsPlugin : IPlugin
         Debug.Log($"--- (ADS) Ads load SUCCEEDED");
     }
 
-    private async UniTask BootGameCompleted(BootGameCompleted bootGameCompleted,
-        CancellationToken cancellationToken)
+    private async UniTask BootGameCompleted(BootGameCompleted bootGameCompleted, CancellationToken cancellationToken)
     {
         await UniTask.CompletedTask;
         Debug.Log($"--- (PLUGIN) MaxSdk.IsInitialized: {MaxSdk.IsInitialized()}");
