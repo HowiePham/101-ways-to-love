@@ -36,6 +36,15 @@ namespace Mimi.Prototypes
             this.bootView.Show();
             await this.bootView.RunLogoEffect();
             await this.bootView.ShowLoadingBarEffect();
+
+            float loadingPercentage = 0f;
+            await DOTween.To(() => loadingPercentage,
+                value =>
+                {
+                    loadingPercentage = value;
+                    this.bootView.SetLoadingPercentage(loadingPercentage);
+                }, 0.1f, 2f).AsyncWaitForCompletion();
+
             IsBootViewReady = true;
         }
 
@@ -50,17 +59,8 @@ namespace Mimi.Prototypes
         private async UniTask Load()
         {
             float loadingSecs = Application.isEditor ? 1f : fakeLoadingSecs;
-            float loadingPercentage = 0f;
+            float loadingPercentage = 0.1f;
 
-            UniTask loadConfigTask = DOTween.To(() => loadingPercentage,
-                value =>
-                {
-                    loadingPercentage = value;
-                    this.bootView.SetLoadingPercentage(loadingPercentage);
-                }, 0.1f, 2f).AsyncWaitForCompletion().AsUniTask();
-
-            UniTask fetchConfigTask = UniTask.WhenAll(loadConfigTask);
-            await fetchConfigTask;
             await UniTask.WaitUntil(() => this.gameContext.IsRemoteConfigInitialized);
 
             this.gameContext.CreateServices();
