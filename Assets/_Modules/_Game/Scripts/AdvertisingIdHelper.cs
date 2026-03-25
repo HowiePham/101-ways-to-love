@@ -9,11 +9,14 @@ public static class AdvertisingIdHelper
     public static async UniTask<string> GetGoogleAdvertisingId()
     {
 #if UNITY_ANDROID && !UNITY_EDITOR
-        // Get activity reference on main thread (required by Unity 6 GameActivity)
-        AndroidJavaObject activity = AndroidApplication.currentActivity;
-        if (activity == null)
+        // Get application context on main thread - works with Unity 6 GameActivity
+        // Use context instead of activity since AdvertisingIdClient only needs a Context
+        AndroidJavaObject appContext = AndroidApplication.currentActivity?
+            .Call<AndroidJavaObject>("getApplicationContext");
+
+        if (appContext == null)
         {
-            Debug.LogWarning("Failed to get GAID: currentActivity is null");
+            Debug.LogWarning("Failed to get GAID: Application context is null");
             return null;
         }
 
@@ -22,7 +25,7 @@ public static class AdvertisingIdHelper
             try
             {
                 using var client = new AndroidJavaClass("com.google.android.gms.ads.identifier.AdvertisingIdClient");
-                using var adInfo = client.CallStatic<AndroidJavaObject>("getAdvertisingIdInfo", activity);
+                using var adInfo = client.CallStatic<AndroidJavaObject>("getAdvertisingIdInfo", appContext);
                 return adInfo.Call<string>("getId");
             }
             catch (System.Exception e)
