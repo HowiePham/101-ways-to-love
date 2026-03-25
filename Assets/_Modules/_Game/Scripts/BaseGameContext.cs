@@ -323,14 +323,14 @@ namespace Mimi.Prototypes
 
         private async UniTask InitAdsService()
         {
-            // if (Debug.isDebugBuild)
-            // {
+            if (Debug.isDebugBuild)
+            {
                 Ads = DebugAdAdapter.Instance;
                 // Ads = new AdminToolAdapter(DebugAdAdapter.Instance);
                 Ads.SetInterstitial(EditorInterstitialAdapter.Instance);
                 Ads.SetRewardVideo(EditorRewardVideoAdapter.Instance);
                 return;
-            // }
+            }
 
             MaxSdk.SetHasUserConsent(true);
             MaxSdk.SetDoNotSell(false);
@@ -343,6 +343,9 @@ namespace Mimi.Prototypes
 
             // var amazonMaxAdapter = new AmazonMaxAdapter(AmazonMaxId, new MaxAdapter(MaxSDKKey, SystemInfo.deviceUniqueIdentifier));
             var maxAdapter = new MaxAdapter(MaxSDKKey, SystemInfo.deviceUniqueIdentifier);
+#if DEVELOPMENT
+            maxAdapter.SetTestDeviceIds(SystemInfo.deviceUniqueIdentifier);
+#endif
             Ads = maxAdapter;
             await Ads.Initialize();
 
