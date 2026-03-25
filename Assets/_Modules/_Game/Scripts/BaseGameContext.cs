@@ -302,7 +302,6 @@ namespace Mimi.Prototypes
 
             var cts = new CancellationTokenSource();
             cts.CancelAfterSlim(TimeSpan.FromSeconds(10f));
-
             try
             {
                 await UniTask.WaitUntil(() => completed, cancellationToken: cts.Token);
@@ -341,7 +340,20 @@ namespace Mimi.Prototypes
 
             if (EnableTestAds)
             {
-                MaxSdk.SetTestDeviceAdvertisingIdentifiers(new string[] { SystemInfo.deviceUniqueIdentifier });
+                MaxSdk.SetVerboseLogging(true);
+                MaxSdk.SetCreativeDebuggerEnabled(true);
+
+                string gaid = await AdvertisingIdHelper.GetGoogleAdvertisingId();
+                if (!string.IsNullOrEmpty(gaid))
+                {
+                    MaxSdk.SetTestDeviceAdvertisingIdentifiers(new string[] { gaid });
+                    Debug.Log($"--- (ADS) Test device GAID: {gaid}");
+                }
+                else
+                {
+                    Debug.LogWarning("--- (ADS) Could not retrieve GAID for test device");
+                }
+
                 MaxSdkCallbacks.OnSdkInitializedEvent += sdkConfiguration => { MaxSdk.ShowMediationDebugger(); };
             }
 
@@ -351,12 +363,6 @@ namespace Mimi.Prototypes
             var maxAdapter = new MaxAdapter(MaxSDKKey, SystemInfo.deviceUniqueIdentifier);
             Ads = maxAdapter;
             await Ads.Initialize();
-
-            if (EnableTestAds)
-            {
-                MaxSdk.SetCreativeDebuggerEnabled(true);
-                MaxSdk.SetVerboseLogging(true);
-            }
 
             if (!IsRemoveAds)
             {
