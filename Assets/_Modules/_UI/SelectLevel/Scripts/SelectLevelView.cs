@@ -25,8 +25,6 @@ public class SelectLevelView : BaseView, IEnhancedScrollerDelegate
 
     [SerializeField] private EnhancedScroller scroller;
     [SerializeField] private PageCell cellViewPrefab;
-    [SerializeField] private EnhancedScrollerCellView premiumCellViewPrefab;
-
     private ILevelRepository levelRepository;
     private int levelTop;
     private float currentStar;
@@ -56,12 +54,12 @@ public class SelectLevelView : BaseView, IEnhancedScrollerDelegate
         base.Show();
         this.canvasGroup.alpha = 1f;
         this.canvasGroup.interactable = true;
-        FadeIn();
+        // FadeIn();
     }
 
     public override async void Hide()
     {
-        await FadeOut();
+        // await FadeOut();
         base.Hide();
         this.canvasGroup.alpha = 0f;
         this.canvasGroup.interactable = false;

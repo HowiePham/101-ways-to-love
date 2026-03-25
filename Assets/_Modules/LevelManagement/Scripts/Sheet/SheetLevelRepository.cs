@@ -13,11 +13,13 @@ namespace Mimi.Prototypes.LevelManagement
         public SheetLevelRepository(List<SheetLevelModel> levels)
         {
             this.lookup = new Dictionary<string, LevelInfo>(levels.Count);
+            var stageNumber = 1;
 
             foreach (SheetLevelModel levelData in levels)
             {
-                var levelInfo = new LevelInfo(levelData.Id, levelData.PrefabAddress, levelData.StageNumber);
+                var levelInfo = new LevelInfo(levelData.Id, levelData.PrefabAddress, stageNumber);
                 this.lookup.Add(levelData.Id, levelInfo);
+                stageNumber++;
             }
         }
 

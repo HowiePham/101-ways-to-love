@@ -1,10 +1,6 @@
 ﻿using System.Collections.Generic;
-using Economy.Resources;
 using EnhancedUI.EnhancedScroller;
-using MEC;
 using Mimi.Ads.Adapters;
-using Mimi.Configs;
-using Mimi.Events.AsyncBus;
 using Mimi.Games;
 using Mimi.Prototypes;
 using Mimi.Prototypes.LevelManagement;
@@ -16,52 +12,31 @@ public class SelectLevelPresenter : BaseViewPresenter
 {
     private SelectLevelView selectLevelView;
 
-    private readonly GameData gameData;
-    private readonly DialogManager dialogManager;
     private readonly ILevelRepository levelRepository;
     private readonly IAudioService audioService;
     private readonly IAdAdapter adAdapter;
-    private readonly IAsyncPublisher eventPublisher;
-    private readonly IAsyncSubscriber eventSubscriber;
     private readonly DisposableBag disposeBag;
     private readonly ISaveManager saveManager;
-    private readonly IConfigProvider configProvider;
     private readonly RuntimeState runtimeState;
-    private readonly IResourceCollection resourceCollection;
     List<LevelInfo> listLevel = new List<LevelInfo>();
     private int currentPageOrder = 1;
-    private bool isShowPlayGap;
-    private bool buyAtIAPPopup;
-    private CoroutineHandle unlockAllCountDownCoroutine;
-    private CoroutineHandle clickingTimeCountDownCoroutine;
 
     public SelectLevelPresenter(BaseScenePresenter scenePresenter, Transform transform,
-        ILevelRepository levelDataRepository, GameData gameData, DialogManager dialogManager,
-        IAudioService audioService, IAdAdapter adAdapter,
-        IAsyncPublisher eventPublisher, IAsyncSubscriber eventSubscriber, IConfigProvider configProvider,
-        IResourceCollection resourceCollection, RuntimeState runtimeState)
+        ILevelRepository levelDataRepository,
+        IAudioService audioService, IAdAdapter adAdapter, RuntimeState runtimeState)
         : base(scenePresenter, transform)
     {
-        this.gameData = gameData;
-        this.dialogManager = dialogManager;
         this.levelRepository = levelDataRepository;
-        this.configProvider = configProvider;
-        this.resourceCollection = resourceCollection;
         this.runtimeState = runtimeState;
         this.audioService = audioService;
         this.adAdapter = adAdapter;
-        this.eventPublisher = eventPublisher;
-        this.eventSubscriber = eventSubscriber;
 
         this.disposeBag = new DisposableBag();
 
         foreach (LevelInfo levelData in levelDataRepository.GetAll())
         {
-            this.listLevel.Add(new LevelInfo(levelData.Id, levelData.PrefabAddress, levelData.StageNumber));
+            this.listLevel.Add(new LevelInfo(levelData.Id, levelData.PrefabAddress, levelData.StageNumber, levelData.IconName));
         }
-#if PLAYGAP_DEPENDENCIES_INSTALLED
-        Messenger.AddListener(EventKey.OnShowClaimBannerPlayGap, SetCanShowPlayGap);
-#endif
     }
 
     protected override void AddViews()
@@ -78,10 +53,7 @@ public class SelectLevelPresenter : BaseViewPresenter
         this.selectLevelView.OnBottomButtonClick += JumpToLastPage;
 
         this.adAdapter.Mrec.Hide();
-
-#if PLAYGAP_DEPENDENCIES_INSTALLED
-        WaitShowPlayGap();
-#endif
+        ReloadLevelSelectionPage();
     }
 
 
@@ -120,7 +92,7 @@ public class SelectLevelPresenter : BaseViewPresenter
         this.selectLevelView.ReloadLevelPage();
         JumpToCurrentPage();
     }
-    
+
 
     protected override void OnHide()
     {

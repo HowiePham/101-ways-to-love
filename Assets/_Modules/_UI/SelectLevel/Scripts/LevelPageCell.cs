@@ -18,9 +18,10 @@ public class LevelPageCell : PageCell
     {
         this.levelTop = levelTop;
         this.levelData = levels;
+        LoadCellData(pageOrder);
     }
 
-    private void LoadCellData(int pageOrder, float currentStar)
+    private void LoadCellData(int pageOrder)
     {
         int firstLevelInPage = pageOrder * this.TotalLevelInAPage;
         for (var cellId = 0; cellId < this.TotalLevelInAPage; cellId++)
@@ -39,7 +40,7 @@ public class LevelPageCell : PageCell
             }
             else
             {
-                this.cells[cellId].SetData(1, "Icons/icon_level-001", CellStatus.PlainCell, 0);
+                this.cells[cellId].SetData(1, "Icons/icon_level-001", CellStatus.PlainCell);
             }
         }
     }

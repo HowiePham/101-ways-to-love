@@ -47,7 +47,7 @@ public class LevelCellView : MonoBehaviour, ILevelCell
                 this.cell.SetActive(true);
                 SetButtonInteractable(true);
                 SetActiveLockIcon(true);
-                this.levelIcon.sprite = Resources.Load<Sprite>("Icons/" + this.iconAddress);
+                // this.levelIcon.sprite = Resources.Load<Sprite>("Icons/" + this.iconAddress);
                 this.levelIcon.color = lockColor;
                 SetLockIcon(this.lockSprite);
                 break;
@@ -55,7 +55,7 @@ public class LevelCellView : MonoBehaviour, ILevelCell
                 this.cell.SetActive(true);
                 SetButtonInteractable(true);
                 SetActiveLockIcon(true);
-                this.levelIcon.sprite = Resources.Load<Sprite>("Icons/" + this.iconAddress);
+                // this.levelIcon.sprite = Resources.Load<Sprite>("Icons/" + this.iconAddress);
                 this.levelIcon.color = currentLevelColor;
                 SetLockIcon(this.playSprite);
                 break;
@@ -63,7 +63,7 @@ public class LevelCellView : MonoBehaviour, ILevelCell
                 this.cell.SetActive(true);
                 SetButtonInteractable(true);
                 SetActiveLockIcon(false);
-                this.levelIcon.sprite = Resources.Load<Sprite>("Icons/" + this.iconAddress);
+                // this.levelIcon.sprite = Resources.Load<Sprite>("Icons/" + this.iconAddress);
                 this.levelIcon.color = Color.white;
                 break;
             case CellStatus.PlainCell:
@@ -75,11 +75,6 @@ public class LevelCellView : MonoBehaviour, ILevelCell
     public void SetLevelOrderText(int levelOrder)
     {
         this.levelOrderText.SetText((levelOrder + 1).ToString());
-    }
-
-    public void SetData(int order, string iconAddress, CellStatus cellStatus, int numberStar)
-    {
-        throw new System.NotImplementedException();
     }
 
     protected virtual void SelectLevel()
