@@ -88,6 +88,9 @@ namespace Mimi.Prototypes
         private const string MaxBannerUnitId = "3d6cf94b8b39a0b1";
         private const string MaxMrecUnitId = "b21d09db69c6a7a5";
 
+        // Set to true to enable test ads on device, set to false before production release
+        private const bool EnableTestAds = true;
+
         protected override async UniTask OnInitializing()
         {
             await UniTask.WaitUntil(() => BootLoader.IsBootViewReady);
@@ -336,18 +339,23 @@ namespace Mimi.Prototypes
             MaxSdk.SetDoNotSell(false);
             SingularSDK.TrackingOptIn();
 
-#if DEVELOPMENT
-            MaxSdkCallbacks.OnSdkInitializedEvent += (MaxSdkBase.SdkConfiguration sdkConfiguration) => { MaxSdk.ShowMediationDebugger(); };
-#endif
+            if (EnableTestAds)
+            {
+                MaxSdkCallbacks.OnSdkInitializedEvent += sdkConfiguration => { MaxSdk.ShowMediationDebugger(); };
+            }
+
             Debug.Log($"--- (ADS) Ads initializing...");
 
             // var amazonMaxAdapter = new AmazonMaxAdapter(AmazonMaxId, new MaxAdapter(MaxSDKKey, SystemInfo.deviceUniqueIdentifier));
             var maxAdapter = new MaxAdapter(MaxSDKKey, SystemInfo.deviceUniqueIdentifier);
-#if DEVELOPMENT
-            maxAdapter.SetTestDeviceIds(SystemInfo.deviceUniqueIdentifier);
-#endif
             Ads = maxAdapter;
             await Ads.Initialize();
+
+            if (EnableTestAds)
+            {
+                MaxSdk.SetCreativeDebuggerEnabled(true);
+                MaxSdk.SetVerboseLogging(true);
+            }
 
             if (!IsRemoveAds)
             {
