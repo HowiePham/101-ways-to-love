@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
+using _Modules.Gameflow_Events_.Scripts;
 using EnhancedUI.EnhancedScroller;
 using Mimi.Ads.Adapters;
+using Mimi.Events.AsyncBus;
 using Mimi.Games;
 using Mimi.Prototypes;
+using Mimi.Prototypes.Events;
 using Mimi.Prototypes.LevelManagement;
 using Mimi.Prototypes.SaveLoad;
 using Mimi.Prototypes.UI;
@@ -15,6 +18,7 @@ public class SelectLevelPresenter : BaseViewPresenter
     private readonly ILevelRepository levelRepository;
     private readonly IAudioService audioService;
     private readonly IAdAdapter adAdapter;
+    private readonly IAsyncPublisher eventPublisher;
     private readonly DisposableBag disposeBag;
     private readonly ISaveManager saveManager;
     private readonly RuntimeState runtimeState;
@@ -23,13 +27,15 @@ public class SelectLevelPresenter : BaseViewPresenter
 
     public SelectLevelPresenter(BaseScenePresenter scenePresenter, Transform transform,
         ILevelRepository levelDataRepository,
-        IAudioService audioService, IAdAdapter adAdapter, RuntimeState runtimeState)
+        IAudioService audioService, IAdAdapter adAdapter, RuntimeState runtimeState,
+        IAsyncPublisher eventPublisher)
         : base(scenePresenter, transform)
     {
         this.levelRepository = levelDataRepository;
         this.runtimeState = runtimeState;
         this.audioService = audioService;
         this.adAdapter = adAdapter;
+        this.eventPublisher = eventPublisher;
 
         this.disposeBag = new DisposableBag();
 
@@ -51,6 +57,8 @@ public class SelectLevelPresenter : BaseViewPresenter
         this.selectLevelView.OnClickSetting += OnClickSettingHandler;
         this.selectLevelView.OnTopButtonClick += JumpToFirstPage;
         this.selectLevelView.OnBottomButtonClick += JumpToLastPage;
+
+        Messenger.AddListener<LevelCellView>(EventKey.SelectLevel, OnLevelCellSelected);
 
         this.adAdapter.Mrec.Hide();
         ReloadLevelSelectionPage();
@@ -101,8 +109,17 @@ public class SelectLevelPresenter : BaseViewPresenter
         this.selectLevelView.OnTopButtonClick -= JumpToFirstPage;
         this.selectLevelView.OnBottomButtonClick -= JumpToLastPage;
 
+        Messenger.RemoveListener<LevelCellView>(EventKey.SelectLevel, OnLevelCellSelected);
+
         this.disposeBag.Dispose();
         this.selectLevelView.Hide();
+    }
+
+    private void OnLevelCellSelected(LevelCellView levelCellView)
+    {
+        int levelOrder = levelCellView.GetLevelOrder() - 1;
+        this.eventPublisher.PublishAsync(new SelectLevel(levelOrder));
+        Hide();
     }
 
     private void PlayClickSound()

@@ -57,6 +57,11 @@ public class LevelPageCell : PageCell
             return CellStatus.Playing;
         }
 
+        if (dataIndex < this.levelTop)
+        {
+            return CellStatus.Complete;
+        }
+
         return CellStatus.Lock;
     }
 }

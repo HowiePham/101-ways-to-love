@@ -98,9 +98,12 @@ namespace Mimi
 
         private async UniTask SelectLevelHandler(SelectLevel selectLevel, CancellationToken cancellationToken)
         {
-            DestroyOldLevelRoot();
-            var gameplayViewPresenter = this.Presenter.GetViewPresenter<GameplayViewPresenter>();
-            gameplayViewPresenter.Hide();
+            if (this.levelPlayer != null)
+            {
+                DestroyOldLevelRoot();
+                var gameplayViewPresenter = this.Presenter.GetViewPresenter<GameplayViewPresenter>();
+                gameplayViewPresenter.Hide();
+            }
 
             this.Context.RuntimeState.CurrentLevelOrder.Set(selectLevel.LevelOrder);
             PlayLevel(selectLevel.LevelOrder);
