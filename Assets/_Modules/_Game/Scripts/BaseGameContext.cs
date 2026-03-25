@@ -341,6 +341,7 @@ namespace Mimi.Prototypes
 
             if (EnableTestAds)
             {
+                MaxSdk.SetTestDeviceAdvertisingIdentifiers(new string[] { SystemInfo.deviceUniqueIdentifier });
                 MaxSdkCallbacks.OnSdkInitializedEvent += sdkConfiguration => { MaxSdk.ShowMediationDebugger(); };
             }
 
