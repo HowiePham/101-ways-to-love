@@ -8,6 +8,7 @@ namespace Mimi.Prototypes.LevelManagement
         public string Id { get; }
         public string PrefabAddress { get; }
         public int StageNumber { get; }
+        public string IconName { get; }
 
         public LevelInfo(string id, string prefabAddress, int stageNumber)
         {

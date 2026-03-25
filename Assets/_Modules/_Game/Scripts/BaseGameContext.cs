@@ -88,6 +88,9 @@ namespace Mimi.Prototypes
         private const string MaxBannerUnitId = "3d6cf94b8b39a0b1";
         private const string MaxMrecUnitId = "b21d09db69c6a7a5";
 
+        // Set to true to enable test ads on device, set to false before production release
+        private const bool EnableTestAds = true;
+
         protected override async UniTask OnInitializing()
         {
             await UniTask.WaitUntil(() => BootLoader.IsBootViewReady);
@@ -299,7 +302,6 @@ namespace Mimi.Prototypes
 
             var cts = new CancellationTokenSource();
             cts.CancelAfterSlim(TimeSpan.FromSeconds(10f));
-
             try
             {
                 await UniTask.WaitUntil(() => completed, cancellationToken: cts.Token);
@@ -323,22 +325,38 @@ namespace Mimi.Prototypes
 
         private async UniTask InitAdsService()
         {
-            // if (Debug.isDebugBuild)
-            // {
+            if (Debug.isDebugBuild)
+            {
                 Ads = DebugAdAdapter.Instance;
                 // Ads = new AdminToolAdapter(DebugAdAdapter.Instance);
                 Ads.SetInterstitial(EditorInterstitialAdapter.Instance);
                 Ads.SetRewardVideo(EditorRewardVideoAdapter.Instance);
                 return;
-            // }
+            }
 
             MaxSdk.SetHasUserConsent(true);
             MaxSdk.SetDoNotSell(false);
             SingularSDK.TrackingOptIn();
 
-#if DEVELOPMENT
-            MaxSdkCallbacks.OnSdkInitializedEvent += (MaxSdkBase.SdkConfiguration sdkConfiguration) => { MaxSdk.ShowMediationDebugger(); };
-#endif
+            if (EnableTestAds)
+            {
+                MaxSdk.SetVerboseLogging(true);
+                MaxSdk.SetCreativeDebuggerEnabled(true);
+
+                string gaid = await AdvertisingIdHelper.GetGoogleAdvertisingId();
+                if (!string.IsNullOrEmpty(gaid))
+                {
+                    MaxSdk.SetTestDeviceAdvertisingIdentifiers(new string[] { gaid });
+                    Debug.Log($"--- (ADS) Test device GAID: {gaid}");
+                }
+                else
+                {
+                    Debug.LogWarning("--- (ADS) Could not retrieve GAID for test device");
+                }
+
+                MaxSdkCallbacks.OnSdkInitializedEvent += sdkConfiguration => { MaxSdk.ShowMediationDebugger(); };
+            }
+
             Debug.Log($"--- (ADS) Ads initializing...");
 
             // var amazonMaxAdapter = new AmazonMaxAdapter(AmazonMaxId, new MaxAdapter(MaxSDKKey, SystemInfo.deviceUniqueIdentifier));
