@@ -19,6 +19,7 @@ public class HardLevelView : BaseView
 
     [Title("Center group")] [SerializeField]
     private CanvasGroup centerIconGroup;
+
     [SerializeField] private Transform warningFx;
     [SerializeField] private Image background;
 
@@ -70,6 +71,7 @@ public class HardLevelView : BaseView
         ShowLogoHardLevel();
         yield return new WaitForSeconds(2.8f);
         ShowSmallTitle(smallTitleTargetPos);
+        this.warningFx.gameObject.SetActive(false);
         HideCenterIconGroup();
         ShowClockGroup();
         yield return new WaitForSeconds(0.6f);
@@ -126,7 +128,9 @@ public class HardLevelView : BaseView
         var startBgAlpha = bgColor.a;
         bgColor.a = 0;
         this.background.color = bgColor;
-        
+
+        this.warningFx.gameObject.SetActive(true);
+
         Sequence sequence = DOTween.Sequence();
         sequence.Append(this.background.DOFade(startBgAlpha, 1).SetEase(Ease.Linear));
         sequence.Append(DOTween.To(value =>
