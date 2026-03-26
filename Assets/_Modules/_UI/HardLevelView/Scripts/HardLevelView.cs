@@ -31,7 +31,6 @@ public class HardLevelView : BaseView
 
     [Title("Clock")] [SerializeField] private CanvasGroup clockGroup;
     [SerializeField] private TMP_Text clockText;
-    [SerializeField] private Image clockwise;
 
     [Title("Message Group")] [SerializeField]
     private CanvasGroup messageGroup;
@@ -174,11 +173,6 @@ public class HardLevelView : BaseView
     public void SetMessageActive(bool active)
     {
         this.messageGroup.gameObject.SetActive(active);
-    }
-
-    public void SetClockwise(float percent)
-    {
-        this.clockwise.fillAmount = percent;
     }
 
     public IEnumerator<float> TimeoutAppearFromTopEffect()

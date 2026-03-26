@@ -24,7 +24,6 @@ public class HardLevelViewPresenter : BaseViewPresenter
     private int startTime;
     private int currentTime;
     private CoroutineHandle countdownCoroutine;
-    private Tweener countdownTweener;
 
     public HardLevelViewPresenter(BaseScenePresenter scenePresenter, Transform transform,
         IConfigProvider configProvider, IAdAdapter adAdapter, DialogManager dialogManager, IAsyncPublisher eventPublisher) : base(
@@ -163,38 +162,22 @@ public class HardLevelViewPresenter : BaseViewPresenter
 
     public void ResumeTimer()
     {
-        if (this.countdownTweener != null)
-        {
-            this.countdownTweener.timeScale = 1;
-        }
-
         Timing.ResumeCoroutines(this.countdownCoroutine);
     }
 
     public void StopTimer()
     {
-        if (this.countdownTweener != null)
-        {
-            this.countdownTweener.timeScale = 0;
-        }
-
         Timing.PauseCoroutines(this.countdownCoroutine);
     }
 
     public void FinishTimer()
     {
         Timing.KillCoroutines(this.countdownCoroutine);
-        this.countdownTweener?.Kill();
-        this.countdownTweener = null;
         this.countdownCoroutine = default;
     }
 
     private IEnumerator<float> StartCountdown()
     {
-        this.countdownTweener =
-            DOTween.To(value => { this.hardLevelView.SetClockwise(value); }, 0, 1, this.startTime)
-                .SetEase(Ease.Linear);
-        this.countdownTweener.timeScale = 1;
         var warningTime = this.configProvider.GetValue(ConfigKey.HardLevelWarningTime).Int;
         while (this.currentTime >= 0)
         {
@@ -219,7 +202,6 @@ public class HardLevelViewPresenter : BaseViewPresenter
 
     public void SetClockStartTime(int time)
     {
-        this.hardLevelView.SetClockwise(0);
         this.startTime = time;
         this.hardLevelView.SetClockText(StringNumber.IntToText(time));
     }
