@@ -273,12 +273,12 @@ public class GameplayViewPresenter : BaseViewPresenter
 
     private void LifeButtonClickedHandler()
     {
-        this.lifeSystem.ShowGetMoreLifeDialog();
+        this.lifeSystem.ShowGetMoreLifeDialog(DialogId.GetMoreLifeDialog);
     }
 
     private void NoLifeBlockerClickedHandler()
     {
-        this.lifeSystem.ShowGetMoreLifeDialog();
+        this.lifeSystem.ShowGetMoreLifeDialog(DialogId.EndOfLifeDialog);
     }
 
     private void ShowRemoveAdsView()
