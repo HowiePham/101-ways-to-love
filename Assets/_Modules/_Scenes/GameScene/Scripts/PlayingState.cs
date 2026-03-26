@@ -61,7 +61,9 @@ namespace Mimi
             LeanTouch.OnFingerDown += ClickSoundHandler;
 
             // Context.LifeSystem.RunTimer();
-            PlayLevel(Context.RuntimeState.CurrentLevelOrder.Value);
+            // PlayLevel(Context.RuntimeState.CurrentLevelOrder.Value);
+            var selectLevelViewPresenter = this.Presenter.GetViewPresenter<SelectLevelPresenter>();
+            selectLevelViewPresenter.Show();
         }
 
         private void LimitedTimeViewClickPlayHandler()
@@ -96,9 +98,12 @@ namespace Mimi
 
         private async UniTask SelectLevelHandler(SelectLevel selectLevel, CancellationToken cancellationToken)
         {
-            DestroyOldLevelRoot();
-            var gameplayViewPresenter = this.Presenter.GetViewPresenter<GameplayViewPresenter>();
-            gameplayViewPresenter.Hide();
+            if (this.levelPlayer != null)
+            {
+                DestroyOldLevelRoot();
+                var gameplayViewPresenter = this.Presenter.GetViewPresenter<GameplayViewPresenter>();
+                gameplayViewPresenter.Hide();
+            }
 
             this.Context.RuntimeState.CurrentLevelOrder.Set(selectLevel.LevelOrder);
             PlayLevel(selectLevel.LevelOrder);

@@ -25,8 +25,6 @@ public class SelectLevelView : BaseView, IEnhancedScrollerDelegate
 
     [SerializeField] private EnhancedScroller scroller;
     [SerializeField] private PageCell cellViewPrefab;
-    [SerializeField] private EnhancedScrollerCellView premiumCellViewPrefab;
-
     private ILevelRepository levelRepository;
     private int levelTop;
     private float currentStar;
@@ -56,12 +54,12 @@ public class SelectLevelView : BaseView, IEnhancedScrollerDelegate
         base.Show();
         this.canvasGroup.alpha = 1f;
         this.canvasGroup.interactable = true;
-        FadeIn();
+        // FadeIn();
     }
 
     public override async void Hide()
     {
-        await FadeOut();
+        // await FadeOut();
         base.Hide();
         this.canvasGroup.alpha = 0f;
         this.canvasGroup.interactable = false;
@@ -109,8 +107,9 @@ public class SelectLevelView : BaseView, IEnhancedScrollerDelegate
 
     public EnhancedScrollerCellView GetCellView(EnhancedScroller scroller, int dataIndex, int cellIndex)
     {
+        int reversedPageOrder = (this.TotalPage - 1) - dataIndex;
         var pageCellView = scroller.GetCellView(this.cellViewPrefab) as PageCell;
-        pageCellView.SetData(dataIndex, this.levelTop, this.levelData);
+        pageCellView.SetData(reversedPageOrder, this.levelTop, this.levelData);
 
         return pageCellView;
     }
