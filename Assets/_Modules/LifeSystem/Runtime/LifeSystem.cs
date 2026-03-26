@@ -80,6 +80,11 @@ public class LifeSystem
 
     public void ShowGetMoreLifeDialog()
     {
+        if (IsLifeIsFull())
+        {
+            return;
+        }
+        
         if (this.dialogManager.TryShowModalDialogOnce<YesNoDialog>(DialogId.LifeDialog, out this.activeLifeDialog))
         {
             this.activeLifeDialog.SetContentText("Get more life");

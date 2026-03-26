@@ -78,6 +78,7 @@ public class HardLevelViewPresenter : BaseViewPresenter
     protected override void OnHide()
     {
         base.OnHide();
+        StopTimerHandler(false);
         FinishTimer();
 
         Messenger.RemoveListener<bool>(EventKey.PauseLevel, StopTimerHandler);
