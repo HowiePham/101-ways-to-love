@@ -93,7 +93,7 @@ namespace Mimi.Prototypes
 
         private void InitLifeSystem()
         {
-            LifeSystem = new LifeSystem(1, 30, this.EventPublisher, this.EventSubscriber, this.DialogManager, this.Ads);
+            LifeSystem = new LifeSystem(10, 30, this.EventPublisher, this.EventSubscriber, this.DialogManager, this.Ads);
         }
 
         [Button]
