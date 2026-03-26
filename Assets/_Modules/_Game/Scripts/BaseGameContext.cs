@@ -88,9 +88,6 @@ namespace Mimi.Prototypes
         private const string MaxBannerUnitId = "3d6cf94b8b39a0b1";
         private const string MaxMrecUnitId = "b21d09db69c6a7a5";
 
-        // Set to true to enable test ads on device, set to false before production release
-        private const bool EnableTestAds = true;
-
         protected override async UniTask OnInitializing()
         {
             await UniTask.WaitUntil(() => BootLoader.IsBootViewReady);
@@ -338,24 +335,12 @@ namespace Mimi.Prototypes
             MaxSdk.SetDoNotSell(false);
             SingularSDK.TrackingOptIn();
 
-            if (EnableTestAds)
-            {
-                MaxSdk.SetVerboseLogging(true);
-                MaxSdk.SetCreativeDebuggerEnabled(true);
+#if DEVELOPMENT
+            MaxSdk.SetVerboseLogging(true);
+            MaxSdk.SetCreativeDebuggerEnabled(true);
 
-                string gaid = await AdvertisingIdHelper.GetGoogleAdvertisingId();
-                if (!string.IsNullOrEmpty(gaid))
-                {
-                    MaxSdk.SetTestDeviceAdvertisingIdentifiers(new string[] { gaid });
-                    Debug.Log($"--- (ADS) Test device GAID: {gaid}");
-                }
-                else
-                {
-                    Debug.LogWarning("--- (ADS) Could not retrieve GAID for test device");
-                }
-
-                MaxSdkCallbacks.OnSdkInitializedEvent += sdkConfiguration => { MaxSdk.ShowMediationDebugger(); };
-            }
+            MaxSdkCallbacks.OnSdkInitializedEvent += sdkConfiguration => { MaxSdk.ShowMediationDebugger(); };
+#endif
 
             Debug.Log($"--- (ADS) Ads initializing...");
 
