@@ -51,12 +51,15 @@ public class ChapterPageCell : EnhancedScrollerCellView
         int firstStage = chapter.Levels[0].StageNumber;
         int lastStage = chapter.Levels[chapter.LevelCount - 1].StageNumber;
 
-        if (firstStage <= this.currentLevelOrder && this.currentLevelOrder <= lastStage)
+        // currentLevelOrder is 0-based, StageNumber is 1-based
+        int currentStage = this.currentLevelOrder + 1;
+
+        if (firstStage <= currentStage && currentStage <= lastStage)
         {
             return CellStatus.Playing;
         }
 
-        if (lastStage < this.currentLevelOrder)
+        if (lastStage < currentStage)
         {
             return CellStatus.Complete;
         }
