@@ -197,6 +197,7 @@ public class HardLevelViewPresenter : BaseViewPresenter
 
         Messenger.Broadcast(EventKey.PauseLevel, true);
         FinishTimer();
+        this.eventPublisher.PublishAsync(new LifeUsing());
         Timing.RunCoroutine(this.hardLevelView.TimeoutAppearFromTopEffect());
     }
 
