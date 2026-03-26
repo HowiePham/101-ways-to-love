@@ -9,8 +9,6 @@ public class LevelCellView : MonoBehaviour, ILevelCell
     [SerializeField] protected TMP_Text levelOrderText;
     [SerializeField] protected Image levelIcon;
     [SerializeField] protected Image lockIcon;
-    [SerializeField] protected Sprite lockSprite;
-    [SerializeField] protected Sprite playSprite;
     [SerializeField] protected GameObject cell;
 
     protected int levelOrder;
@@ -49,7 +47,6 @@ public class LevelCellView : MonoBehaviour, ILevelCell
                 SetActiveLockIcon(true);
                 // this.levelIcon.sprite = Resources.Load<Sprite>("Icons/" + this.iconAddress);
                 this.levelIcon.color = lockColor;
-                SetLockIcon(this.lockSprite);
                 break;
             case CellStatus.Playing:
                 this.cell.SetActive(true);
@@ -57,7 +54,6 @@ public class LevelCellView : MonoBehaviour, ILevelCell
                 SetActiveLockIcon(true);
                 // this.levelIcon.sprite = Resources.Load<Sprite>("Icons/" + this.iconAddress);
                 this.levelIcon.color = currentLevelColor;
-                SetLockIcon(this.playSprite);
                 break;
             case CellStatus.Complete:
                 this.cell.SetActive(true);
