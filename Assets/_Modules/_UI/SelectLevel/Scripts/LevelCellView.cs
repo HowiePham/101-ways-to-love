@@ -10,6 +10,8 @@ public class LevelCellView : MonoBehaviour, ILevelCell
     [SerializeField] protected Image levelIcon;
     [SerializeField] protected Image lockIcon;
     [SerializeField] protected GameObject cell;
+    [SerializeField] protected GameObject progressPanel;
+    [SerializeField] protected Vector3 lockCellScale;
 
     protected int levelOrder;
     protected string iconAddress;
@@ -47,13 +49,15 @@ public class LevelCellView : MonoBehaviour, ILevelCell
                 SetActiveLockIcon(true);
                 // this.levelIcon.sprite = Resources.Load<Sprite>("Icons/" + this.iconAddress);
                 this.levelIcon.color = lockColor;
+                this.cell.transform.localScale = this.lockCellScale;
                 break;
             case CellStatus.Playing:
                 this.cell.SetActive(true);
                 SetButtonInteractable(true);
-                SetActiveLockIcon(true);
+                SetActiveLockIcon(false);
                 // this.levelIcon.sprite = Resources.Load<Sprite>("Icons/" + this.iconAddress);
-                this.levelIcon.color = currentLevelColor;
+                this.levelIcon.color = Color.white;
+                this.cell.transform.localScale = Vector3.one;
                 break;
             case CellStatus.Complete:
                 this.cell.SetActive(true);
@@ -61,6 +65,7 @@ public class LevelCellView : MonoBehaviour, ILevelCell
                 SetActiveLockIcon(false);
                 // this.levelIcon.sprite = Resources.Load<Sprite>("Icons/" + this.iconAddress);
                 this.levelIcon.color = Color.white;
+                this.cell.transform.localScale = this.lockCellScale;
                 break;
             case CellStatus.PlainCell:
                 this.cell.SetActive(false);
@@ -78,16 +83,12 @@ public class LevelCellView : MonoBehaviour, ILevelCell
         Messenger.Broadcast(EventKey.SelectLevel, this);
     }
 
-    protected void SetLockIcon(Sprite sprite)
-    {
-        this.lockIcon.sprite = sprite;
-        this.lockIcon.rectTransform.sizeDelta = new Vector2(sprite.rect.width, sprite.rect.height);
-    }
-
     protected void SetActiveLockIcon(bool active)
     {
         var lockIconGameObject = lockIcon.gameObject;
+        var progressPanelGameObject = progressPanel.gameObject;
         lockIconGameObject.SetActive(active);
+        progressPanelGameObject.SetActive(!active);
     }
 
     protected void SetButtonInteractable(bool interactable)

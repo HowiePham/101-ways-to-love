@@ -34,7 +34,7 @@ public class LevelPageCell : PageCell
             {
                 int cellOrder = cellData.StageNumber;
                 CellStatus cellStatus = SetCellStatus(cellOrder);
-                Debug.Log($"--- (LEVEL CELL) Set LVOrder: {cellOrder} --- Status: {cellStatus}");
+                Debug.Log($"--- (LEVEL CELL) Set LVOrder: {cellOrder}/{this.levelTop} --- Status: {cellStatus}");
 
                 this.cells[cellId].SetData(cellOrder, cellData.IconName, cellStatus);
             }
