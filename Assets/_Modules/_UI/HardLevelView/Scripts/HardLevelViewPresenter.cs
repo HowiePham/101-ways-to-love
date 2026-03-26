@@ -62,9 +62,10 @@ public class HardLevelViewPresenter : BaseViewPresenter
     {
         base.OnShow();
         Messenger.AddListener<bool>(EventKey.PauseLevel, StopTimerHandler);
-        Messenger.AddListener(EventKey.LevelWin, FinishTimer);
         Messenger.AddListener(EventKey.AnimationStart, StopTimer);
         Messenger.AddListener(EventKey.AnimationComplete, ResumeTimer);
+        Messenger.AddListener(EventKey.LevelDone, StopTimer);
+        Messenger.AddListener(EventKey.LevelWin, FinishTimer);
 
         this.adAdapter.RewardVideo.OnRewarded += RewardedHandler;
         this.adAdapter.RewardVideo.OnShowFailed += RewardShowFailHandler;
@@ -80,10 +81,11 @@ public class HardLevelViewPresenter : BaseViewPresenter
         FinishTimer();
 
         Messenger.RemoveListener<bool>(EventKey.PauseLevel, StopTimerHandler);
-        Messenger.RemoveListener(EventKey.LevelWin, FinishTimer);
         Messenger.RemoveListener(EventKey.AnimationStart, StopTimer);
         Messenger.RemoveListener(EventKey.AnimationComplete, ResumeTimer);
-        
+        Messenger.RemoveListener(EventKey.LevelDone, StopTimer);
+        Messenger.RemoveListener(EventKey.LevelWin, FinishTimer);
+
         this.adAdapter.RewardVideo.OnRewarded -= RewardedHandler;
         this.adAdapter.RewardVideo.OnShowFailed -= RewardShowFailHandler;
         this.hardLevelView.OnClickPlay -= ClickPlayHandler;
