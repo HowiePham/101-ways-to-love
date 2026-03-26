@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using MEC;
+using Mimi.Ads.Adapters;
 using Mimi.Events.AsyncBus;
 using Mimi.Games;
 using Mimi.Prototypes.Currencies;
 using Mimi.Prototypes.UI;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class LifeSystem
@@ -17,9 +19,11 @@ public class LifeSystem
     private readonly IAsyncPublisher publisher;
     private readonly IAsyncSubscriber subscriber;
     private readonly DialogManager dialogManager;
+    private readonly IAdAdapter adAdapter;
     private readonly DisposableBag eventBag;
     private const string LifeDataKey = "LIFE";
     private CoroutineHandle lifeTimerCoroutine;
+    private YesNoDialog activeLifeDialog;
 
     public int CurrentLifeCount
     {
@@ -27,15 +31,17 @@ public class LifeSystem
         private set => this.lifeData.CurrentLifeCount = value;
     }
 
-    public LifeSystem(int maxLifeCount, int timeToAddLifeInSeconds, IAsyncPublisher publisher, IAsyncSubscriber subscriber, DialogManager dialogManager)
+    public LifeSystem(int maxLifeCount, int timeToAddLifeInSeconds, IAsyncPublisher publisher, IAsyncSubscriber subscriber, DialogManager dialogManager, IAdAdapter adAdapter)
     {
         this.maxLifeCount = maxLifeCount;
         this.timeToAddLifeInSeconds = timeToAddLifeInSeconds;
         this.publisher = publisher;
         this.subscriber = subscriber;
         this.dialogManager = dialogManager;
+        this.adAdapter = adAdapter;
         this.eventBag = new DisposableBag();
         this.subscriber.Subscribe<LifeUsing>(LifeUsingHandler).AddToBag(this.eventBag);
+        this.adAdapter.RewardVideo.OnRewarded += OnLifeRewardCompleted;
 
         if (PlayerPrefs.HasKey(LifeDataKey))
         {
@@ -58,7 +64,6 @@ public class LifeSystem
         if (!AnyLifeLeft())
         {
             Debug.Log($"--- (LIFE) Do not have any Life left!");
-
             return;
         }
 
@@ -67,23 +72,54 @@ public class LifeSystem
 
         if (!AnyLifeLeft())
         {
-            if (this.dialogManager.TryShowModalDialogOnce<YesNoDialog>(DialogId.LifeDialog, out var dialog))
-            {
-                dialog.SetContentText("Get more life");
-                dialog.SetYesText("+1 Life");
-                dialog.SetNoText("Close");
-                dialog.SetYesCallback(GetMoreLife);
-            }
+            ShowGetMoreLifeDialog();
         }
 
         await UniTask.CompletedTask;
     }
 
-    private void GetMoreLife()
+    private void ShowGetMoreLifeDialog()
     {
+        if (this.dialogManager.TryShowModalDialogOnce<YesNoDialog>(DialogId.LifeDialog, out this.activeLifeDialog))
+        {
+            this.activeLifeDialog.SetContentText("Get more life");
+            this.activeLifeDialog.SetYesText("+1 Life");
+            this.activeLifeDialog.SetNoText("Close");
+            this.activeLifeDialog.SetYesCallback(OnGetMoreLifeClicked);
+        }
+    }
+
+    private void OnGetMoreLifeClicked()
+    {
+        if (this.adAdapter.RewardVideo.IsReady)
+        {
+            this.adAdapter.RewardVideo.Show(new AdReward("extra_life"), new AdPlacement("life_system"));
+        }
+        else
+        {
+            ShowAdFailedDialog();
+        }
+    }
+
+    private void ShowAdFailedDialog()
+    {
+        if (this.dialogManager.TryShowModalDialogOnce(DialogId.GenericAutoHide,
+                out AutoHideNotificationDialog dialog))
+        {
+            dialog.SetText("Ads is not available");
+        }
+    }
+
+    private void OnLifeRewardCompleted(AdReward reward)
+    {
+        if (reward.RewardId != "extra_life") return;
+
         AddLife();
         this.lifeData.AddedNextTime.RemoveAt(this.lifeData.AddedNextTime.Count - 1);
         RunTimer();
+        
+        this.activeLifeDialog.Hide();
+        this.activeLifeDialog = null;
     }
 
     private void LooseLife()

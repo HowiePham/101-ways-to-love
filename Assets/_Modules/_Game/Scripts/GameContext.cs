@@ -34,6 +34,7 @@ namespace Mimi.Prototypes
             InitHintLevelConfig();
             InitHardLevelConfig();
             InitLootSystem();
+            InitLifeSystem();
         }
 
         private void InitHardLevelConfig()
@@ -92,7 +93,7 @@ namespace Mimi.Prototypes
 
         private void InitLifeSystem()
         {
-            LifeSystem = new LifeSystem(5, 30, this.EventPublisher, this.EventSubscriber, this.DialogManager);
+            LifeSystem = new LifeSystem(1, 30, this.EventPublisher, this.EventSubscriber, this.DialogManager, this.Ads);
         }
 
         [Button]
