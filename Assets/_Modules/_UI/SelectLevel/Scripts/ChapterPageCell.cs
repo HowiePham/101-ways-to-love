@@ -35,8 +35,9 @@ public class ChapterPageCell : EnhancedScrollerCellView
             if (cellData != null)
             {
                 CellStatus cellStatus = SetCellStatus(cellData);
+                float progress = CalculateProgress(cellData, cellStatus);
                 this.cells[cellId].SetChapterOrderText(cellData.ChapterNumber);
-                this.cells[cellId].SetData(cellData.ChapterNumber, cellStatus);
+                this.cells[cellId].SetData(cellData.ChapterNumber, cellStatus, progress);
             }
             else
             {
@@ -44,6 +45,25 @@ public class ChapterPageCell : EnhancedScrollerCellView
                 this.cells[cellId].SetData(0, CellStatus.PlainCell);
             }
         }
+    }
+
+    private float CalculateProgress(ChapterInfo chapter, CellStatus status)
+    {
+        if (status == CellStatus.Complete)
+        {
+            return 1f;
+        }
+
+        if (status == CellStatus.Lock)
+        {
+            return 0f;
+        }
+
+        // Playing: calculate how many levels completed within this chapter
+        int firstStage = chapter.Levels[0].StageNumber;
+        int currentStage = this.currentLevelOrder + 1;
+        int completedInChapter = currentStage - firstStage;
+        return (float)completedInChapter / chapter.LevelCount;
     }
 
     private CellStatus SetCellStatus(ChapterInfo chapter)
