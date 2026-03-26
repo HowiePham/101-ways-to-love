@@ -109,6 +109,8 @@ public class HardLevelViewPresenter : BaseViewPresenter
 
     private void ClickReplayHandler()
     {
+        this.eventPublisher.PublishAsync(new LifeUsing());
+
         ScenePresenter.GetViewPresenter<GameplayViewPresenter>().Hide();
         Hide();
         this.hardLevelView.SetTimeOutGroupActive(false);
@@ -197,7 +199,6 @@ public class HardLevelViewPresenter : BaseViewPresenter
 
         Messenger.Broadcast(EventKey.PauseLevel, true);
         FinishTimer();
-        this.eventPublisher.PublishAsync(new LifeUsing());
         Timing.RunCoroutine(this.hardLevelView.TimeoutAppearFromTopEffect());
     }
 
