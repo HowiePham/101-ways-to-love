@@ -218,6 +218,6 @@ public class HardLevelView : BaseView
 
     public void SetAdditionalTimeText(int time)
     {
-        this.additionalTimeText.SetText($"+{time}s");
+        // this.additionalTimeText.SetText($"+{time}s");
     }
 }
