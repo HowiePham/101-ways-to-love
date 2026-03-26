@@ -93,7 +93,9 @@ namespace Mimi.Prototypes
 
         private void InitLifeSystem()
         {
-            LifeSystem = new LifeSystem(10, 30, this.EventPublisher, this.EventSubscriber, this.DialogManager, this.Ads);
+            var lifeCooldown = this.RemoteConfig.GetValue(ConfigKey.LifeCooldown).Int;
+            var maxLife = this.RemoteConfig.GetValue(ConfigKey.MaxLife).Int;
+            LifeSystem = new LifeSystem(maxLife, lifeCooldown, this.EventPublisher, this.EventSubscriber, this.DialogManager, this.Ads);
         }
 
         [Button]

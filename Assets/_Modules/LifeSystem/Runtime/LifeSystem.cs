@@ -78,7 +78,7 @@ public class LifeSystem
         await UniTask.CompletedTask;
     }
 
-    private void ShowGetMoreLifeDialog()
+    public void ShowGetMoreLifeDialog()
     {
         if (this.dialogManager.TryShowModalDialogOnce<YesNoDialog>(DialogId.LifeDialog, out this.activeLifeDialog))
         {
@@ -115,7 +115,10 @@ public class LifeSystem
         if (reward.RewardId != "extra_life") return;
 
         AddLife();
-        this.lifeData.AddedNextTime.RemoveAt(this.lifeData.AddedNextTime.Count - 1);
+        if (this.lifeData.AddedNextTime.Count > 0)
+        {
+            this.lifeData.AddedNextTime.RemoveAt(this.lifeData.AddedNextTime.Count - 1);
+        }
         RunTimer();
         
         this.activeLifeDialog.Hide();
@@ -161,7 +164,7 @@ public class LifeSystem
     {
         if (this.lifeData.AddedNextTime.Count <= 0)
         {
-            return "Full";
+            return "";
         }
 
         TimeSpan span = DateTime.Parse(this.lifeData.AddedNextTime[0]) - DateTime.Now;
@@ -257,6 +260,6 @@ public class LifeSystem
         }
 
         this.publisher.PublishAsync(new LifeUpdated(CurrentLifeCount));
-        this.publisher.PublishAsync(new RecoveryLifeTimerUpdated("Full"));
+        this.publisher.PublishAsync(new RecoveryLifeTimerUpdated(""));
     }
 }

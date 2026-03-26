@@ -31,5 +31,7 @@
         public const string HardLevelAdditionalTime = "hard_level_additional_time";
         public const string HardLevelWarningTime = "hard_level_warning_time";
         public const string CooldownInterAfterShowReward = "cooldown_inter_after_show_reward";
+        public const string LifeCooldown = "life_cooldown";
+        public const string MaxLife = "max_life";
     }
 }

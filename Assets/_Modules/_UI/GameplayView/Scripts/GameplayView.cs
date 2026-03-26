@@ -26,15 +26,11 @@ public class GameplayView : BaseView
     [SerializeField] private Button hintBtn;
     [SerializeField] private Button removeAdsButton;
     [SerializeField] private Button startLevelGameButton;
+    [SerializeField] private Button lifeButton;
 
     [Header("Popup Effect")] [SerializeField]
     private RectTransform[] showingEffectUIs;
-
-    [SerializeField] private Vector3 skipShowingPos;
-    [SerializeField] private Vector3 skipHidingPos;
-    [SerializeField] private Vector3 hintShowingPos;
-    [SerializeField] private Vector3 hintHidingPos;
-
+    
     private TweenerCore<Vector2, Vector2, VectorOptions> tutorialStepUITween;
     private Dictionary<RectTransform, TweenerCore<Vector3, Vector3, VectorOptions>> loopScalingTweens;
     private Dictionary<RectTransform, TweenerCore<Vector3, Vector3, VectorOptions>> movingTweens;
@@ -51,6 +47,7 @@ public class GameplayView : BaseView
     public Action OnHintClicked;
     public Action OnRemoveAdsClicked;
     public Action OnStartLevelGameClicked;
+    public Action OnLifeButtonClicked;
 
     public override void Initialize()
     {
@@ -66,6 +63,7 @@ public class GameplayView : BaseView
         this.hintBtn.onClick.AddListener(() => this.OnHintClicked?.Invoke());
         this.removeAdsButton.onClick.AddListener(() => OnRemoveAdsClicked?.Invoke());
         this.startLevelGameButton.onClick.AddListener(() => OnStartLevelGameClicked?.Invoke());
+        this.lifeButton.onClick.AddListener(() => OnLifeButtonClicked?.Invoke());
     }
 
     public override void Show()
