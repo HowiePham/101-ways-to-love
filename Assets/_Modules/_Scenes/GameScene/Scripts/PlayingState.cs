@@ -61,9 +61,9 @@ namespace Mimi
             LeanTouch.OnFingerDown += ClickSoundHandler;
 
             Context.LifeSystem.RunTimer();
-            PlayLevel(Context.RuntimeState.CurrentLevelOrder.Value);
-        //     var selectLevelViewPresenter = this.Presenter.GetViewPresenter<SelectLevelPresenter>();
-        //     selectLevelViewPresenter.Show();
+            // PlayLevel(Context.RuntimeState.CurrentLevelOrder.Value);
+            var chapterSelectLevelPresenter = this.Presenter.GetViewPresenter<ChapterSelectLevelPresenter>();
+            chapterSelectLevelPresenter.Show();
         }
 
         private void LimitedTimeViewClickPlayHandler()

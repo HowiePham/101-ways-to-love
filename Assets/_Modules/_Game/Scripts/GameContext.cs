@@ -65,7 +65,7 @@ namespace Mimi.Prototypes
 
         private void CreateLevelServices()
         {
-            LevelRepository = new SheetLevelRepository(GetDataSheet<SheetLevelModel>("LevelRepository"));
+            LevelRepository = new SheetLevelRepository(GetDataSheet<SheetLevelModel>());
             var levelIdOrders = GetDataSheet<SheetOrderModel>().Select(x => x.Id).Distinct();
             LevelOrder = new LinearLevelOrder(LevelRepository, levelIdOrders);
         }

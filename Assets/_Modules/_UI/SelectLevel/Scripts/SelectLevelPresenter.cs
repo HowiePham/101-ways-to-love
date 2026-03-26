@@ -41,7 +41,8 @@ public class SelectLevelPresenter : BaseViewPresenter
 
         foreach (LevelInfo levelData in levelDataRepository.GetAll())
         {
-            this.listLevel.Add(new LevelInfo(levelData.Id, levelData.PrefabAddress, levelData.StageNumber, levelData.IconName));
+            this.listLevel.Add(new LevelInfo(levelData.Id, levelData.PrefabAddress, 
+                levelData.StageNumber, levelData.Chapter, levelData.IconName));
         }
     }
 
