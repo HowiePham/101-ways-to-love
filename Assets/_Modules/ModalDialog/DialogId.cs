@@ -14,6 +14,7 @@ namespace Mimi.Prototypes.Currencies
         GDPR = 600,
         CCPA = 700,
         RequireInternet = 800,
-        LifeDialog = 900,
+        GetMoreLifeDialog = 900,
+        EndOfLifeDialog = 901,
     }
 }

@@ -63,7 +63,7 @@ public class LifeSystem
     {
         if (!AnyLifeLeft())
         {
-            ShowGetMoreLifeDialog();
+            ShowGetMoreLifeDialog(DialogId.EndOfLifeDialog);
             return;
         }
 
@@ -72,24 +72,21 @@ public class LifeSystem
 
         if (!AnyLifeLeft())
         {
-            ShowGetMoreLifeDialog();
+            ShowGetMoreLifeDialog(DialogId.EndOfLifeDialog);
         }
 
         await UniTask.CompletedTask;
     }
 
-    public void ShowGetMoreLifeDialog()
+    public void ShowGetMoreLifeDialog(DialogId dialogId)
     {
         if (IsLifeIsFull())
         {
             return;
         }
         
-        if (this.dialogManager.TryShowModalDialogOnce<YesNoDialog>(DialogId.LifeDialog, out this.activeLifeDialog))
+        if (this.dialogManager.TryShowModalDialogOnce(dialogId, out this.activeLifeDialog))
         {
-            this.activeLifeDialog.SetContentText("Get more life");
-            this.activeLifeDialog.SetYesText("+1 Life");
-            this.activeLifeDialog.SetNoText("Close");
             this.activeLifeDialog.SetYesCallback(OnGetMoreLifeClicked);
         }
     }
