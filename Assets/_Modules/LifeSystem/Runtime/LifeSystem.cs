@@ -123,6 +123,7 @@ public class LifeSystem
         if (this.lifeData.AddedNextTime.Count > 0)
         {
             this.lifeData.AddedNextTime.RemoveAt(this.lifeData.AddedNextTime.Count - 1);
+            PlayerPrefs.SetString(LifeDataKey, JsonUtility.ToJson(this.lifeData));
         }
 
         RunTimer();
@@ -228,6 +229,13 @@ public class LifeSystem
                 break;
             }
         }
+
+        if (IsLifeIsFull() && this.lifeData.AddedNextTime.Count > 0)
+        {
+            this.lifeData.AddedNextTime.Clear();
+        }
+
+        PlayerPrefs.SetString(LifeDataKey, JsonUtility.ToJson(this.lifeData));
     }
 
     public void RunTimer()
