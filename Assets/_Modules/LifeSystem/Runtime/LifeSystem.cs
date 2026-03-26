@@ -63,7 +63,7 @@ public class LifeSystem
     {
         if (!AnyLifeLeft())
         {
-            Debug.Log($"--- (LIFE) Do not have any Life left!");
+            ShowGetMoreLifeDialog();
             return;
         }
 
@@ -80,6 +80,11 @@ public class LifeSystem
 
     public void ShowGetMoreLifeDialog()
     {
+        if (IsLifeIsFull())
+        {
+            return;
+        }
+        
         if (this.dialogManager.TryShowModalDialogOnce<YesNoDialog>(DialogId.LifeDialog, out this.activeLifeDialog))
         {
             this.activeLifeDialog.SetContentText("Get more life");
@@ -118,9 +123,11 @@ public class LifeSystem
         if (this.lifeData.AddedNextTime.Count > 0)
         {
             this.lifeData.AddedNextTime.RemoveAt(this.lifeData.AddedNextTime.Count - 1);
+            PlayerPrefs.SetString(LifeDataKey, JsonUtility.ToJson(this.lifeData));
         }
+
         RunTimer();
-        
+
         this.activeLifeDialog.Hide();
         this.activeLifeDialog = null;
     }
@@ -222,6 +229,13 @@ public class LifeSystem
                 break;
             }
         }
+
+        if (IsLifeIsFull() && this.lifeData.AddedNextTime.Count > 0)
+        {
+            this.lifeData.AddedNextTime.Clear();
+        }
+
+        PlayerPrefs.SetString(LifeDataKey, JsonUtility.ToJson(this.lifeData));
     }
 
     public void RunTimer()

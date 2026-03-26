@@ -27,6 +27,7 @@ public class GameplayView : BaseView
     [SerializeField] private Button removeAdsButton;
     [SerializeField] private Button startLevelGameButton;
     [SerializeField] private Button lifeButton;
+    [SerializeField] private Button noLifeBlocker;
 
     [Header("Popup Effect")] [SerializeField]
     private RectTransform[] showingEffectUIs;
@@ -48,6 +49,7 @@ public class GameplayView : BaseView
     public Action OnRemoveAdsClicked;
     public Action OnStartLevelGameClicked;
     public Action OnLifeButtonClicked;
+    public Action OnNoLifeBlockerClicked;
 
     public override void Initialize()
     {
@@ -64,6 +66,8 @@ public class GameplayView : BaseView
         this.removeAdsButton.onClick.AddListener(() => OnRemoveAdsClicked?.Invoke());
         this.startLevelGameButton.onClick.AddListener(() => OnStartLevelGameClicked?.Invoke());
         this.lifeButton.onClick.AddListener(() => OnLifeButtonClicked?.Invoke());
+        this.noLifeBlocker.onClick.AddListener(() => OnNoLifeBlockerClicked?.Invoke());
+        this.noLifeBlocker.gameObject.SetActive(false);
     }
 
     public override void Show()
@@ -254,6 +258,11 @@ public class GameplayView : BaseView
         await uiItem.DOScale(1.2f, 0.4f).SetEase(Ease.InOutQuad).AsyncWaitForCompletion();
         if (ct.IsCancellationRequested) return;
         await uiItem.DOScale(1f, 0.2f).SetEase(Ease.InOutQuad).AsyncWaitForCompletion();
+    }
+
+    public void SetActiveNoLifeBlocker(bool active)
+    {
+        this.noLifeBlocker.gameObject.SetActive(active);
     }
 
     private async UniTask LoopScalingUIEffect(RectTransform uiItem, float targetValue, float delay, float duration, CancellationToken ct = default)

@@ -4,13 +4,9 @@ using System.Collections.Generic;
 using System.Text;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
-using Games;
 using MEC;
-using Mimi;
-using Mimi.Prototypes;
 using Mimi.Prototypes.Events;
 using Mimi.Prototypes.UI;
-using Mimi.ServiceLocators;
 using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
@@ -23,15 +19,11 @@ public class HardLevelView : BaseView
 
     [Title("Center group")] [SerializeField]
     private CanvasGroup centerIconGroup;
-
-    [SerializeField] private Image centerIcon;
-    [SerializeField] private TMP_Text centerTitle;
-    [SerializeField] private Transform lightingFx;
+    [SerializeField] private Transform warningFx;
     [SerializeField] private Image background;
 
     [Title("Clock")] [SerializeField] private CanvasGroup clockGroup;
     [SerializeField] private TMP_Text clockText;
-    [SerializeField] private Image clockwise;
 
     [Title("Message Group")] [SerializeField]
     private CanvasGroup messageGroup;
@@ -129,21 +121,24 @@ public class HardLevelView : BaseView
     {
         this.centerIconGroup.blocksRaycasts = true;
         this.centerIconGroup.alpha = 1;
-        this.centerIcon.transform.localScale = Vector3.zero;
-        this.centerTitle.transform.localScale = Vector3.zero;
-        this.lightingFx.transform.localScale = Vector3.zero;
+        this.warningFx.transform.localScale = Vector3.zero;
         var bgColor = this.background.color;
         var startBgAlpha = bgColor.a;
         bgColor.a = 0;
         this.background.color = bgColor;
-        DOTween.Sequence().Append(this.background.DOFade(startBgAlpha, 1).SetEase(Ease.Linear));
-        DOTween.Sequence().Append(DOTween.To(value =>
+        
+        Sequence sequence = DOTween.Sequence();
+        sequence.Append(this.background.DOFade(startBgAlpha, 1).SetEase(Ease.Linear));
+        sequence.Append(DOTween.To(value =>
         {
             var scale = new Vector3(value, value, value);
-            this.centerIcon.transform.localScale = scale;
-            this.centerTitle.transform.localScale = scale;
-            this.lightingFx.transform.localScale = scale;
-        }, 0, 0.8f, 2).SetEase(Ease.OutBack));
+            this.warningFx.transform.localScale = scale;
+        }, 0, 1f, 2).SetEase(Ease.OutBack));
+        sequence.Append(DOTween.To(value =>
+        {
+            var scale = new Vector3(value, value, value);
+            this.warningFx.transform.localScale = scale;
+        }, 1f, 0f, 0.75f).SetEase(Ease.Linear));
     }
 
     private IEnumerator TextAppearEffect(string text)
@@ -174,11 +169,6 @@ public class HardLevelView : BaseView
     public void SetMessageActive(bool active)
     {
         this.messageGroup.gameObject.SetActive(active);
-    }
-
-    public void SetClockwise(float percent)
-    {
-        this.clockwise.fillAmount = percent;
     }
 
     public IEnumerator<float> TimeoutAppearFromTopEffect()
@@ -218,6 +208,6 @@ public class HardLevelView : BaseView
 
     public void SetAdditionalTimeText(int time)
     {
-        this.additionalTimeText.SetText($"+{time}s");
+        // this.additionalTimeText.SetText($"+{time}s");
     }
 }

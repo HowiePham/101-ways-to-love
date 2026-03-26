@@ -68,6 +68,7 @@ public class GameplayViewPresenter : BaseViewPresenter
         this.gameplayView.OnRemoveAdsClicked += ShowRemoveAdsView;
         this.gameplayView.OnStartLevelGameClicked += StartLevelGameClickedHandler;
         this.gameplayView.OnLifeButtonClicked += LifeButtonClickedHandler;
+        this.gameplayView.OnNoLifeBlockerClicked += NoLifeBlockerClickedHandler;
 
         this.adAdapter.RewardVideo.OnRewarded += OnRewardCompleted;
         this.adAdapter.RewardVideo.OnShowFailed += OnRewardFailed;
@@ -87,6 +88,7 @@ public class GameplayViewPresenter : BaseViewPresenter
 
         this.numberBasedLifeView.SetLifeCount(this.lifeSystem.CurrentLifeCount);
         this.numberBasedLifeView.SetTimeRemaining(this.lifeSystem.GetRemainingTime());
+        this.gameplayView.SetActiveNoLifeBlocker(!this.lifeSystem.AnyLifeLeft());
 
 #if DEVELOPMENT
         var cheatViewPresenter = this.ScenePresenter.GetViewPresenter<CheatViewPresenter>();
@@ -189,6 +191,7 @@ public class GameplayViewPresenter : BaseViewPresenter
         this.gameplayView.OnRemoveAdsClicked -= ShowRemoveAdsView;
         this.gameplayView.OnStartLevelGameClicked -= StartLevelGameClickedHandler;
         this.gameplayView.OnLifeButtonClicked -= LifeButtonClickedHandler;
+        this.gameplayView.OnNoLifeBlockerClicked -= NoLifeBlockerClickedHandler;
 
         this.adAdapter.RewardVideo.OnRewarded -= OnRewardCompleted;
         this.adAdapter.RewardVideo.OnShowFailed -= OnRewardFailed;
@@ -210,6 +213,7 @@ public class GameplayViewPresenter : BaseViewPresenter
     {
         int currentLifeCount = lifeUpdated.LifeCount;
         this.numberBasedLifeView.SetLifeCount(currentLifeCount);
+        this.gameplayView.SetActiveNoLifeBlocker(currentLifeCount <= 0);
         await UniTask.CompletedTask;
     }
 
@@ -268,6 +272,11 @@ public class GameplayViewPresenter : BaseViewPresenter
     }
 
     private void LifeButtonClickedHandler()
+    {
+        this.lifeSystem.ShowGetMoreLifeDialog();
+    }
+
+    private void NoLifeBlockerClickedHandler()
     {
         this.lifeSystem.ShowGetMoreLifeDialog();
     }

@@ -1,6 +1,7 @@
 ﻿public static class EventKey
 {
     public const string LevelWin = "lvwin";
+    public const string LevelDone = "lvdone";
     public const string ActionFailed = "actionfailed";
     public const string ActionDone = "actiondone";
     public const string LevelLose = "lvlose";
