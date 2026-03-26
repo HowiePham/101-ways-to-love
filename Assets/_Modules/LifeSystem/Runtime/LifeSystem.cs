@@ -63,7 +63,7 @@ public class LifeSystem
     {
         if (!AnyLifeLeft())
         {
-            Debug.Log($"--- (LIFE) Do not have any Life left!");
+            ShowGetMoreLifeDialog();
             return;
         }
 
@@ -119,8 +119,9 @@ public class LifeSystem
         {
             this.lifeData.AddedNextTime.RemoveAt(this.lifeData.AddedNextTime.Count - 1);
         }
+
         RunTimer();
-        
+
         this.activeLifeDialog.Hide();
         this.activeLifeDialog = null;
     }
