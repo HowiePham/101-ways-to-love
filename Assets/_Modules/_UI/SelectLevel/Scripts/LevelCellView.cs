@@ -11,14 +11,13 @@ public class LevelCellView : MonoBehaviour, ILevelCell
     [SerializeField] protected Image lockIcon;
     [SerializeField] protected GameObject cell;
     [SerializeField] protected GameObject progressPanel;
+    [SerializeField] protected GameObject highlightObject;
+    [SerializeField] protected GameObject darkIconPanel;
     [SerializeField] protected Vector3 lockCellScale;
 
     protected int levelOrder;
     protected string iconAddress;
     protected CellStatus cellStatus;
-
-    protected static readonly Color32 lockColor = new Color32(125, 125, 125, 255);
-    protected static readonly Color32 currentLevelColor = new Color32(170, 170, 170, 255);
 
     protected void OnEnable()
     {
@@ -45,26 +44,26 @@ public class LevelCellView : MonoBehaviour, ILevelCell
         {
             case CellStatus.Lock:
                 this.cell.SetActive(true);
-                SetButtonInteractable(true);
+                SetButtonInteractable(false);
                 SetActiveLockIcon(true);
+                this.highlightObject.SetActive(false);
                 // this.levelIcon.sprite = Resources.Load<Sprite>("Icons/" + this.iconAddress);
-                this.levelIcon.color = lockColor;
                 this.cell.transform.localScale = this.lockCellScale;
                 break;
             case CellStatus.Playing:
                 this.cell.SetActive(true);
                 SetButtonInteractable(true);
                 SetActiveLockIcon(false);
+                this.highlightObject.SetActive(true);
                 // this.levelIcon.sprite = Resources.Load<Sprite>("Icons/" + this.iconAddress);
-                this.levelIcon.color = Color.white;
                 this.cell.transform.localScale = Vector3.one;
                 break;
             case CellStatus.Complete:
                 this.cell.SetActive(true);
                 SetButtonInteractable(true);
                 SetActiveLockIcon(false);
+                this.highlightObject.SetActive(false);
                 // this.levelIcon.sprite = Resources.Load<Sprite>("Icons/" + this.iconAddress);
-                this.levelIcon.color = Color.white;
                 this.cell.transform.localScale = this.lockCellScale;
                 break;
             case CellStatus.PlainCell:
@@ -86,9 +85,9 @@ public class LevelCellView : MonoBehaviour, ILevelCell
     protected void SetActiveLockIcon(bool active)
     {
         var lockIconGameObject = lockIcon.gameObject;
-        var progressPanelGameObject = progressPanel.gameObject;
         lockIconGameObject.SetActive(active);
-        progressPanelGameObject.SetActive(!active);
+        darkIconPanel.SetActive(active);
+        progressPanel.SetActive(!active);
     }
 
     protected void SetButtonInteractable(bool interactable)
