@@ -72,8 +72,8 @@ public class GameplayViewPresenter : BaseViewPresenter
         this.adAdapter.RewardVideo.OnShowFailed += OnRewardFailed;
 
         this.eventSubscriber.Subscribe<LevelResumed>(ResumeGameplay).AddToBag(this.eventBag);
-        this.eventSubscriber.Subscribe<LifeUpdated>(OnLifeUpdate).AddToBag(this.eventBag);
-        this.eventSubscriber.Subscribe<RecoveryLifeTimerUpdated>(OnRecoveryTimerUpdate).AddToBag(this.eventBag);
+        // this.eventSubscriber.Subscribe<LifeUpdated>(OnLifeUpdate).AddToBag(this.eventBag);
+        // this.eventSubscriber.Subscribe<RecoveryLifeTimerUpdated>(OnRecoveryTimerUpdate).AddToBag(this.eventBag);
         Messenger.AddListener(EventKey.LevelWin, ShowWinView);
         Messenger.AddListener(EventKey.ActionDone, UpdateStepPoint);
         Messenger.AddListener(EventKey.ShowHint, ShowHint);
@@ -241,7 +241,7 @@ public class GameplayViewPresenter : BaseViewPresenter
     private void ActionFailedHandler()
     {
         this.gameplayView.ShowWrongSignal();
-        // this.eventPublisher.PublishAsync(new LifeUsing());
+        this.eventPublisher.PublishAsync(new LifeUsing());
     }
 
     private void SettingClickedHandler()

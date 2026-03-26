@@ -51,7 +51,6 @@ namespace Mimi.Prototypes.UI
         private void OnClickYes()
         {
             this.onClickYesEvent.Invoke();
-            Hide();
         }
 
         private void OnClickNo()
