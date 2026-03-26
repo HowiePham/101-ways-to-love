@@ -107,8 +107,9 @@ public class SelectLevelView : BaseView, IEnhancedScrollerDelegate
 
     public EnhancedScrollerCellView GetCellView(EnhancedScroller scroller, int dataIndex, int cellIndex)
     {
+        int reversedPageOrder = (this.TotalPage - 1) - dataIndex;
         var pageCellView = scroller.GetCellView(this.cellViewPrefab) as PageCell;
-        pageCellView.SetData(dataIndex, this.levelTop, this.levelData);
+        pageCellView.SetData(reversedPageOrder, this.levelTop, this.levelData);
 
         return pageCellView;
     }
