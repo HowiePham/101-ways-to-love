@@ -74,7 +74,7 @@ public class GameplayViewPresenter : BaseViewPresenter
 
         this.eventSubscriber.Subscribe<LevelResumed>(ResumeGameplay).AddToBag(this.eventBag);
         this.eventSubscriber.Subscribe<LifeUpdated>(OnLifeUpdate).AddToBag(this.eventBag);
-        // this.eventSubscriber.Subscribe<RecoveryLifeTimerUpdated>(OnRecoveryTimerUpdate).AddToBag(this.eventBag);
+        this.eventSubscriber.Subscribe<RecoveryLifeTimerUpdated>(OnRecoveryTimerUpdate).AddToBag(this.eventBag);
         Messenger.AddListener(EventKey.LevelWin, ShowWinView);
         Messenger.AddListener(EventKey.ActionDone, UpdateStepPoint);
         Messenger.AddListener(EventKey.ShowHint, ShowHint);
@@ -86,7 +86,7 @@ public class GameplayViewPresenter : BaseViewPresenter
         ShowLevelInfo();
 
         this.numberBasedLifeView.SetLifeCount(this.lifeSystem.CurrentLifeCount);
-        // this.numberBasedLifeView.SetTimeRemaining(this.lifeSystem.GetRemainingTime());
+        this.numberBasedLifeView.SetTimeRemaining(this.lifeSystem.GetRemainingTime());
 
 #if DEVELOPMENT
         var cheatViewPresenter = this.ScenePresenter.GetViewPresenter<CheatViewPresenter>();

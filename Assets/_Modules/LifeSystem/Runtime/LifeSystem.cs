@@ -164,7 +164,7 @@ public class LifeSystem
     {
         if (this.lifeData.AddedNextTime.Count <= 0)
         {
-            return "Full";
+            return "";
         }
 
         TimeSpan span = DateTime.Parse(this.lifeData.AddedNextTime[0]) - DateTime.Now;
@@ -260,6 +260,6 @@ public class LifeSystem
         }
 
         this.publisher.PublishAsync(new LifeUpdated(CurrentLifeCount));
-        this.publisher.PublishAsync(new RecoveryLifeTimerUpdated("Full"));
+        this.publisher.PublishAsync(new RecoveryLifeTimerUpdated(""));
     }
 }
