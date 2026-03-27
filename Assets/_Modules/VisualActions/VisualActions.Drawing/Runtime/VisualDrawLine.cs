@@ -120,6 +120,11 @@ namespace VisualActions.Drawing
             }
         }
 
+        private void OnDisable()
+        {
+            Dispose();
+        }
+
         public override void Dispose()
         {
             base.Dispose();
