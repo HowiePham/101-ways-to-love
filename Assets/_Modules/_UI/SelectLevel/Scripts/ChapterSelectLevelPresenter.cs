@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using _Modules.Gameflow_Events_.Scripts;
 using EnhancedUI.EnhancedScroller;
+using Games;
 using Mimi.Ads.Adapters;
 using Mimi.Events.AsyncBus;
 using Mimi.Games;
@@ -28,10 +29,10 @@ public class ChapterSelectLevelPresenter : BaseViewPresenter
     public ChapterSelectLevelPresenter(BaseScenePresenter scenePresenter, Transform transform,
         ILevelRepository levelRepository, ILevelOrder levelOrder,
         IAudioService audioService, IAdAdapter adAdapter, RuntimeState runtimeState,
-        IAsyncPublisher eventPublisher)
+        IAsyncPublisher eventPublisher, List<SheetChapterModel> chapterModels)
         : base(scenePresenter, transform)
     {
-        this.chapterLevelRepo = new ChapterLevelRepository(levelRepository);
+        this.chapterLevelRepo = new ChapterLevelRepository(levelRepository, chapterModels);
         this.levelOrder = levelOrder;
         this.runtimeState = runtimeState;
         this.audioService = audioService;

@@ -20,6 +20,7 @@ public class ChapterCellView : MonoBehaviour
     [SerializeField] protected TMP_Text progressText;
 
     protected int chapterNumber;
+    protected string iconAddress;
     protected CellStatus cellStatus;
 
     protected void OnEnable()
@@ -32,9 +33,10 @@ public class ChapterCellView : MonoBehaviour
         this.selectBtn.onClick.RemoveListener(SelectChapter);
     }
 
-    public void SetData(int chapterNumber, CellStatus cellStatus, float progress = 0f)
+    public void SetData(int chapterNumber, string iconAddress, CellStatus cellStatus, float progress = 0f)
     {
         this.chapterNumber = chapterNumber;
+        this.iconAddress = iconAddress;
         SetState(cellStatus);
         UpdateProgressBar(cellStatus, progress);
     }
@@ -47,14 +49,14 @@ public class ChapterCellView : MonoBehaviour
         {
             case CellStatus.Lock:
                 this.cell.SetActive(true);
-                // this.levelIcon.sprite = Resources.Load<Sprite>("Icons/" + this.iconAddress);
+                this.chapterIcon.sprite = Resources.Load<Sprite>("Icons/" + this.iconAddress);
                 SetButtonInteractable(false);
                 SetActiveLockIcon(true);
                 this.highlightObject.SetActive(false);
                 this.cell.transform.localScale = this.lockCellScale;
                 break;
             case CellStatus.Playing:
-                // this.levelIcon.sprite = Resources.Load<Sprite>("Icons/" + this.iconAddress);
+                this.chapterIcon.sprite = Resources.Load<Sprite>("Icons/" + this.iconAddress);
                 this.cell.SetActive(true);
                 SetButtonInteractable(true);
                 SetActiveLockIcon(false);
@@ -62,7 +64,7 @@ public class ChapterCellView : MonoBehaviour
                 this.cell.transform.localScale = Vector3.one;
                 break;
             case CellStatus.Complete:
-                // this.levelIcon.sprite = Resources.Load<Sprite>("Icons/" + this.iconAddress);
+                this.chapterIcon.sprite = Resources.Load<Sprite>("Icons/" + this.iconAddress);
                 this.cell.SetActive(true);
                 SetButtonInteractable(true);
                 SetActiveLockIcon(false);
@@ -93,9 +95,9 @@ public class ChapterCellView : MonoBehaviour
         }
     }
 
-    public void SetChapterOrderText(int order)
+    public void SetChapterOrderText(int order, string chapterName)
     {
-        this.chapterOrderText.SetText("Chapter " + order);
+        this.chapterOrderText.SetText("Chapter " + order + ": " + chapterName);
     }
 
     protected virtual void SelectChapter()

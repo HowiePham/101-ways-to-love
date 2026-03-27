@@ -36,13 +36,13 @@ public class ChapterPageCell : EnhancedScrollerCellView
             {
                 CellStatus cellStatus = SetCellStatus(cellData);
                 float progress = CalculateProgress(cellData, cellStatus);
-                this.cells[cellId].SetChapterOrderText(cellData.ChapterNumber);
-                this.cells[cellId].SetData(cellData.ChapterNumber, cellStatus, progress);
+                this.cells[cellId].SetData(cellData.ChapterNumber, cellData.ChapterIconAddress, cellStatus, progress);
+                this.cells[cellId].SetChapterOrderText(cellData.ChapterNumber, cellData.ChapterName);
             }
             else
             {
-                this.cells[cellId].SetChapterOrderText(0);
-                this.cells[cellId].SetData(0, CellStatus.PlainCell);
+                this.cells[cellId].SetData(0, string.Empty, CellStatus.PlainCell);
+                this.cells[cellId].SetChapterOrderText(0, string.Empty);
             }
         }
     }

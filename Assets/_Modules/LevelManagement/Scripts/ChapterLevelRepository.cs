@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Games;
 
 namespace Mimi.Prototypes.LevelManagement
 {
@@ -8,7 +9,7 @@ namespace Mimi.Prototypes.LevelManagement
 
         public int ChapterCount => chapters.Count;
 
-        public ChapterLevelRepository(ILevelRepository repository)
+        public ChapterLevelRepository(ILevelRepository repository, List<SheetChapterModel> chapterModels)
         {
             var groups = new SortedDictionary<int, List<LevelInfo>>();
 
@@ -22,11 +23,29 @@ namespace Mimi.Prototypes.LevelManagement
                 groups[level.Chapter].Add(level);
             }
 
+            var chapterDataMap = new Dictionary<int, SheetChapterModel>();
+            foreach (var model in chapterModels)
+            {
+                if (int.TryParse(model.Id, out int chapterId))
+                {
+                    chapterDataMap[chapterId] = model;
+                }
+            }
+
             chapters = new SortedDictionary<int, ChapterInfo>();
 
             foreach (var kvp in groups)
             {
-                chapters[kvp.Key] = new ChapterInfo(kvp.Key, kvp.Value);
+                string iconAddress = string.Empty;
+                string chapterName = string.Empty;
+
+                if (chapterDataMap.TryGetValue(kvp.Key, out var chapterModel))
+                {
+                    iconAddress = chapterModel.ChapterIconAddress;
+                    chapterName = chapterModel.ChapterName;
+                }
+
+                chapters[kvp.Key] = new ChapterInfo(kvp.Key, kvp.Value, iconAddress, chapterName);
             }
         }
 
