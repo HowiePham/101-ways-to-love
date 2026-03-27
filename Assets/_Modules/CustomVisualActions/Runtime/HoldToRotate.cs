@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
@@ -22,15 +23,24 @@ public class HoldToRotate : VisualAction
 
     protected override async UniTask OnExecuting(CancellationToken cancellationToken)
     {
-        this.complete = false;
-        LeanTouch.OnFingerUpdate += FingerUpdateHandler;
-        LeanTouch.OnFingerUp += FingerUpHandler;
-        LeanTouch.OnFingerDown += FingerDownHandler;
-        await UniTask.WaitUntil(() => this.complete, cancellationToken: cancellationToken);
-        LeanTouch.OnFingerUpdate -= FingerUpdateHandler;
-        LeanTouch.OnFingerUp -= FingerUpHandler;
-        LeanTouch.OnFingerDown -= FingerDownHandler;
-        await this.target.DORotate(this.targetRotation, 0.5f).SetEase(Ease.InOutQuad).AsyncWaitForCompletion();
+        try
+        {
+            this.complete = false;
+            LeanTouch.OnFingerUpdate += FingerUpdateHandler;
+            LeanTouch.OnFingerUp += FingerUpHandler;
+            LeanTouch.OnFingerDown += FingerDownHandler;
+            await UniTask.WaitUntil(() => this.complete, cancellationToken: cancellationToken);
+            await this.target.DORotate(this.targetRotation, 0.5f).SetEase(Ease.InOutQuad).AsyncWaitForCompletion();
+        }
+        catch (OperationCanceledException e)
+        {
+        }
+        finally
+        {
+            LeanTouch.OnFingerUpdate -= FingerUpdateHandler;
+            LeanTouch.OnFingerUp -= FingerUpHandler;
+            LeanTouch.OnFingerDown -= FingerDownHandler;
+        }
     }
 
     private void FingerDownHandler(LeanFinger finger)
@@ -82,5 +92,12 @@ public class HoldToRotate : VisualAction
         float currentAngle = this.target.eulerAngles.z;
         float rotateAngle = currentAngle + this.angleValue;
         this.target.DORotate(new Vector3(0, 0, rotateAngle), 0f, RotateMode.FastBeyond360);
+    }
+
+    private void OnDisable()
+    {
+        LeanTouch.OnFingerUpdate -= FingerUpdateHandler;
+        LeanTouch.OnFingerUp -= FingerUpHandler;
+        LeanTouch.OnFingerDown -= FingerDownHandler;
     }
 }
