@@ -11,6 +11,7 @@ using GoogleMobileAds.Api;
 // using GoogleMobileAds.Api;
 using Mimi.Ads.Adapters;
 using Mimi.Ads.Adapters.Admob;
+using Mimi.Ads.Adapters.Extensions.AdminTools;
 // using Mimi.Ads.Adapters.Admob;
 using Mimi.Ads.Adapters.Extensions.Amazons.Maxs;
 using Mimi.Ads.Adapters.Extensions.FirebaseAdRevenue;
@@ -94,11 +95,11 @@ namespace Mimi.Prototypes
 
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             Application.targetFrameRate = 60;
-            
+
 #if RELEASE
             Debug.unityLogger.filterLogType = LogType.Exception;
 #endif
-            
+
             InitSheetAssets();
             this.projectPluginInjector = new UnityResourcePluginConfigInjector();
             IProjectConfigRepository projectConfigRepository = new ResourceProjectConfigRepository();
@@ -329,7 +330,7 @@ namespace Mimi.Prototypes
         {
             if (Debug.isDebugBuild)
             {
-                Ads = DebugAdAdapter.Instance;
+                Ads = new AdminToolAdapter(DebugAdAdapter.Instance);
                 // Ads = new AdminToolAdapter(DebugAdAdapter.Instance);
                 Ads.SetInterstitial(EditorInterstitialAdapter.Instance);
                 Ads.SetRewardVideo(EditorRewardVideoAdapter.Instance);
@@ -350,7 +351,7 @@ namespace Mimi.Prototypes
             Debug.Log($"--- (ADS) Ads initializing...");
 
             // var amazonMaxAdapter = new AmazonMaxAdapter(AmazonMaxId, new MaxAdapter(MaxSDKKey, SystemInfo.deviceUniqueIdentifier));
-            var maxAdapter = new MaxAdapter(MaxSDKKey, SystemInfo.deviceUniqueIdentifier);
+            var maxAdapter = new AdminToolAdapter(new MaxAdapter(MaxSDKKey, SystemInfo.deviceUniqueIdentifier));
             Ads = maxAdapter;
             await Ads.Initialize();
 
