@@ -58,6 +58,8 @@ public class LoadFirstAdsPlugin : IPlugin
         await UniTask.Delay(3000, cancellationToken: cancellationToken);
         Debug.Log($"--- (PLUGIN) Loading first ads reward...");
         this.gameContext.Ads.RewardVideo.Load();
+        await UniTask.Delay(3000, cancellationToken: cancellationToken);
+        this.gameContext.Ads.Banner.Load(new AdPlacement("Bottom"), BannerSize.Adaptive, BannerPosition.Bottom);
     }
 
     public async UniTask Uninstall()
