@@ -88,6 +88,7 @@ public class GameplayViewPresenter : BaseViewPresenter
 
         this.numberBasedLifeView.SetLifeCount(this.lifeSystem.CurrentLifeCount);
         this.numberBasedLifeView.SetTimeRemaining(this.lifeSystem.GetRemainingTime());
+        this.numberBasedLifeView.SetAddLifeIconActive(!this.lifeSystem.IsLifeIsFull());
         this.gameplayView.SetActiveNoLifeBlocker(!this.lifeSystem.AnyLifeLeft());
 
 #if DEVELOPMENT
@@ -213,6 +214,7 @@ public class GameplayViewPresenter : BaseViewPresenter
     {
         int currentLifeCount = lifeUpdated.LifeCount;
         this.numberBasedLifeView.SetLifeCount(currentLifeCount);
+        this.numberBasedLifeView.SetAddLifeIconActive(!this.lifeSystem.IsLifeIsFull());
         this.gameplayView.SetActiveNoLifeBlocker(currentLifeCount <= 0);
         await UniTask.CompletedTask;
     }
