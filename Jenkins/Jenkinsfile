@@ -189,19 +189,20 @@ pipeline {
                         {
                             withCredentials([file(credentialsId: "google-play-console-credentials", variable: 'GCLOUD_SERVICE_ACCOUNT_CREDENTIALS')])
                             {
-                                try
-                                {
-                                    dir('src') {
-                                        Python(" -u ${env.UNITY_PROJECT_ROOT}/Jenkins/Scripts/ValidateRemoteConfig.py")
-                                    }
-                                }
-                                catch(err)
-                                {
-                                    def msg = "Validate Remote Config failed: ${err.message ?: err.toString()}"
-                                    echo msg
-                                    currentBuild.description = msg
-                                    error(msg)
-                                }
+                                // TODO: Re-enable when Firebase Remote Config is set up
+                                // try
+                                // {
+                                //     dir('src') {
+                                //         Python(" -u ${env.UNITY_PROJECT_ROOT}/Jenkins/Scripts/ValidateRemoteConfig.py")
+                                //     }
+                                // }
+                                // catch(err)
+                                // {
+                                //     def msg = "Validate Remote Config failed: ${err.message ?: err.toString()}"
+                                //     echo msg
+                                //     currentBuild.description = msg
+                                //     error(msg)
+                                // }
                                 try
                                 {
                                     // get latest app version and version code from Google Console then save into environment variables
