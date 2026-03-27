@@ -51,7 +51,7 @@ public class GameplayViewPresenter : BaseViewPresenter
     protected override void AddViews()
     {
         this.gameplayView = AddView<GameplayView>();
-        this.numberBasedLifeView = AddView<NumberBasedLifeView>();
+        this.numberBasedLifeView = this.gameplayView.LifeView;
     }
 
     protected override void AddChildren()
@@ -67,7 +67,8 @@ public class GameplayViewPresenter : BaseViewPresenter
         this.gameplayView.OnHintClicked += HintClickedHandler;
         this.gameplayView.OnRemoveAdsClicked += ShowRemoveAdsView;
         this.gameplayView.OnStartLevelGameClicked += StartLevelGameClickedHandler;
-        this.gameplayView.OnLifeButtonClicked += LifeButtonClickedHandler;
+        this.numberBasedLifeView.Show();
+        this.numberBasedLifeView.OnLifeButtonClicked += LifeButtonClickedHandler;
         this.gameplayView.OnNoLifeBlockerClicked += NoLifeBlockerClickedHandler;
 
         this.adAdapter.RewardVideo.OnRewarded += OnRewardCompleted;
@@ -191,7 +192,8 @@ public class GameplayViewPresenter : BaseViewPresenter
         this.gameplayView.OnHintClicked -= HintClickedHandler;
         this.gameplayView.OnRemoveAdsClicked -= ShowRemoveAdsView;
         this.gameplayView.OnStartLevelGameClicked -= StartLevelGameClickedHandler;
-        this.gameplayView.OnLifeButtonClicked -= LifeButtonClickedHandler;
+        this.numberBasedLifeView.OnLifeButtonClicked -= LifeButtonClickedHandler;
+        this.numberBasedLifeView.Hide();
         this.gameplayView.OnNoLifeBlockerClicked -= NoLifeBlockerClickedHandler;
 
         this.adAdapter.RewardVideo.OnRewarded -= OnRewardCompleted;

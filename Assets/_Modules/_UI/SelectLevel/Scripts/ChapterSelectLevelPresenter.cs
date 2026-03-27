@@ -1,12 +1,14 @@
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading;
 using _Modules.Gameflow_Events_.Scripts;
+using Cysharp.Threading.Tasks;
 using EnhancedUI.EnhancedScroller;
 using Games;
 using Mimi.Ads.Adapters;
 using Mimi.Events.AsyncBus;
 using Mimi.Games;
 using Mimi.Prototypes;
+using Mimi.Prototypes.Currencies;
 using Mimi.Prototypes.Events;
 using Mimi.Prototypes.LevelManagement;
 using Mimi.Prototypes.UI;
@@ -15,21 +17,25 @@ using UnityEngine;
 public class ChapterSelectLevelPresenter : BaseViewPresenter
 {
     private ChapterSelectLevelView chapterView;
+    private NumberBasedLifeView lifeView;
 
     private readonly ChapterLevelRepository chapterLevelRepo;
     private readonly ILevelOrder levelOrder;
     private readonly IAudioService audioService;
     private readonly IAdAdapter adAdapter;
     private readonly IAsyncPublisher eventPublisher;
+    private readonly IAsyncSubscriber eventSubscriber;
     private readonly DisposableBag disposeBag;
     private readonly RuntimeState runtimeState;
+    private readonly LifeSystem lifeSystem;
     private readonly List<ChapterInfo> listChapter;
     private int currentPageOrder = 1;
 
     public ChapterSelectLevelPresenter(BaseScenePresenter scenePresenter, Transform transform,
         ILevelRepository levelRepository, ILevelOrder levelOrder,
         IAudioService audioService, IAdAdapter adAdapter, RuntimeState runtimeState,
-        IAsyncPublisher eventPublisher, List<SheetChapterModel> chapterModels)
+        IAsyncPublisher eventPublisher, IAsyncSubscriber eventSubscriber,
+        LifeSystem lifeSystem, List<SheetChapterModel> chapterModels)
         : base(scenePresenter, transform)
     {
         this.chapterLevelRepo = new ChapterLevelRepository(levelRepository, chapterModels);
@@ -38,6 +44,8 @@ public class ChapterSelectLevelPresenter : BaseViewPresenter
         this.audioService = audioService;
         this.adAdapter = adAdapter;
         this.eventPublisher = eventPublisher;
+        this.eventSubscriber = eventSubscriber;
+        this.lifeSystem = lifeSystem;
         this.disposeBag = new DisposableBag();
 
         this.listChapter = new List<ChapterInfo>(this.chapterLevelRepo.GetChapters());
@@ -46,6 +54,7 @@ public class ChapterSelectLevelPresenter : BaseViewPresenter
     protected override void AddViews()
     {
         this.chapterView = AddView<ChapterSelectLevelView>();
+        this.lifeView = this.chapterView.LifeView;
     }
 
     protected override void OnShow()
@@ -57,6 +66,15 @@ public class ChapterSelectLevelPresenter : BaseViewPresenter
         this.chapterView.OnBottomButtonClick += JumpToLastPage;
 
         Messenger.AddListener<ChapterCellView>(EventKey.SelectChapter, OnChapterCellSelected);
+
+        this.lifeView.Show();
+        this.lifeView.OnLifeButtonClicked += LifeButtonClickedHandler;
+        this.eventSubscriber.Subscribe<LifeUpdated>(OnLifeUpdate).AddToBag(this.disposeBag);
+        this.eventSubscriber.Subscribe<RecoveryLifeTimerUpdated>(OnRecoveryTimerUpdate).AddToBag(this.disposeBag);
+
+        this.lifeView.SetLifeCount(this.lifeSystem.CurrentLifeCount);
+        this.lifeView.SetTimeRemaining(this.lifeSystem.IsLifeIsFull() ? "FULL" : this.lifeSystem.GetRemainingTime());
+        this.lifeView.SetAddLifeIconActive(!this.lifeSystem.IsLifeIsFull());
 
         this.adAdapter.Mrec.Hide();
         ReloadChapterSelectionPage();
@@ -72,8 +90,9 @@ public class ChapterSelectLevelPresenter : BaseViewPresenter
 
         Messenger.RemoveListener<ChapterCellView>(EventKey.SelectChapter, OnChapterCellSelected);
 
+        this.lifeView.OnLifeButtonClicked -= LifeButtonClickedHandler;
+        this.lifeView.Hide();
         this.disposeBag.Dispose();
-        this.chapterView.Hide();
     }
 
     private void ReloadChapterSelectionPage()
@@ -161,6 +180,31 @@ public class ChapterSelectLevelPresenter : BaseViewPresenter
 
         // Completed or new chapter: play first level (convert to 0-based)
         return firstStage - 1;
+    }
+
+    private async UniTask OnLifeUpdate(LifeUpdated lifeUpdated, CancellationToken cancellationToken)
+    {
+        int currentLifeCount = lifeUpdated.LifeCount;
+        this.lifeView.SetLifeCount(currentLifeCount);
+        this.lifeView.SetAddLifeIconActive(!this.lifeSystem.IsLifeIsFull());
+
+        if (this.lifeSystem.IsLifeIsFull())
+        {
+            this.lifeView.SetTimeRemaining("FULL");
+        }
+
+        await UniTask.CompletedTask;
+    }
+
+    private async UniTask OnRecoveryTimerUpdate(RecoveryLifeTimerUpdated recoveryLifeTimerUpdated, CancellationToken cancellationToken)
+    {
+        this.lifeView.SetTimeRemaining(this.lifeSystem.IsLifeIsFull() ? "FULL" : recoveryLifeTimerUpdated.RemainingTime);
+        await UniTask.CompletedTask;
+    }
+
+    private void LifeButtonClickedHandler()
+    {
+        this.lifeSystem.ShowGetMoreLifeDialog(DialogId.GetMoreLifeDialog);
     }
 
     private void OnClickSettingHandler()

@@ -21,12 +21,14 @@ public class GameplayView : BaseView
     [SerializeField] private StepPoint stepPointPrefab;
     [SerializeField] private RectTransform stepTutorialUI;
 
+    [Header("Life View")]
+    [SerializeField] private NumberBasedLifeView lifeView;
+
     [Header("Button")] [SerializeField] private Button settingBtn;
     [SerializeField] private Button skipBtn;
     [SerializeField] private Button hintBtn;
     [SerializeField] private Button removeAdsButton;
     [SerializeField] private Button startLevelGameButton;
-    [SerializeField] private Button lifeButton;
     [SerializeField] private Button noLifeBlocker;
 
     [Header("Popup Effect")] [SerializeField]
@@ -43,17 +45,22 @@ public class GameplayView : BaseView
     private RectTransform StartLevelGameBtnRect => this.startLevelGameButton.GetComponent<RectTransform>();
 
 
+    public NumberBasedLifeView LifeView => this.lifeView;
+
     public Action OnSettingClicked;
     public Action OnSkipClicked;
     public Action OnHintClicked;
     public Action OnRemoveAdsClicked;
     public Action OnStartLevelGameClicked;
-    public Action OnLifeButtonClicked;
     public Action OnNoLifeBlockerClicked;
 
     public override void Initialize()
     {
         base.Initialize();
+        if (this.lifeView != null)
+        {
+            this.lifeView.Initialize();
+        }
         this.wrongSignal.gameObject.SetActive(false);
         this.stepTutorialUI.gameObject.SetActive(false);
         this.wrongSignal.localScale = Vector3.zero;
@@ -65,7 +72,6 @@ public class GameplayView : BaseView
         this.hintBtn.onClick.AddListener(() => this.OnHintClicked?.Invoke());
         this.removeAdsButton.onClick.AddListener(() => OnRemoveAdsClicked?.Invoke());
         this.startLevelGameButton.onClick.AddListener(() => OnStartLevelGameClicked?.Invoke());
-        this.lifeButton.onClick.AddListener(() => OnLifeButtonClicked?.Invoke());
         this.noLifeBlocker.onClick.AddListener(() => OnNoLifeBlockerClicked?.Invoke());
         this.noLifeBlocker.gameObject.SetActive(false);
     }

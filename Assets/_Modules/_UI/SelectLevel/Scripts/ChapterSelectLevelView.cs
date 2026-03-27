@@ -15,6 +15,9 @@ public class ChapterSelectLevelView : BaseView, IEnhancedScrollerDelegate
     [SerializeField] private Button goToTopButton;
     [SerializeField] private Button goToBottomButton;
 
+    [Header("Life View")]
+    [SerializeField] private NumberBasedLifeView lifeView;
+
     [Header("Enhance scroller")]
     [SerializeField] private float cellViewSize;
     [SerializeField] private EnhancedScroller scroller;
@@ -23,6 +26,7 @@ public class ChapterSelectLevelView : BaseView, IEnhancedScrollerDelegate
     private int currentLevelOrder;
     private SmallList<ChapterInfo> chapterData = new SmallList<ChapterInfo>();
 
+    public NumberBasedLifeView LifeView => this.lifeView;
     public int TotalChapterInAPage => this.cellViewPrefab.TotalChapterInAPage;
     public int TotalPage { private set; get; }
 
@@ -33,6 +37,10 @@ public class ChapterSelectLevelView : BaseView, IEnhancedScrollerDelegate
     public override void Initialize()
     {
         base.Initialize();
+        if (this.lifeView != null)
+        {
+            this.lifeView.Initialize();
+        }
         this.scroller.Delegate = this;
         this.settingButton.onClick.AddListener(() => OnClickSetting?.Invoke());
         this.goToTopButton.onClick.AddListener(() => OnTopButtonClick?.Invoke());
