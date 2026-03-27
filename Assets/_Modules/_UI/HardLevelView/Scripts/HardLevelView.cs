@@ -56,8 +56,24 @@ public class HardLevelView : BaseView
 
     public override void Show()
     {
+        StopAllCoroutines();
         base.Show();
         StartCoroutine(ShowIntro());
+    }
+
+    public override void Hide()
+    {
+        StopAllCoroutines();
+        DOTween.Kill(this.centerIconGroup);
+        DOTween.Kill(this.background);
+        DOTween.Kill(this.warningFx.transform);
+        DOTween.Kill(this.smallTitle);
+        DOTween.Kill(this.clockGroup.transform);
+        DOTween.Kill(this.messageGroup);
+        DOTween.Kill(this.deathGod);
+        DOTween.Kill(this.messageBoard);
+        this.centerIconGroup.blocksRaycasts = false;
+        base.Hide();
     }
 
     private IEnumerator ShowIntro()

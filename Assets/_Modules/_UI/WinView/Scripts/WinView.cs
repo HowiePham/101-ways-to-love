@@ -63,9 +63,15 @@ namespace _Modules._UI.WinView.Scripts
             this.showCts?.Dispose();
             this.showCts = null;
 
+            foreach (var kvp in this.loopScalingTweens)
+            {
+                kvp.Value?.Kill();
+            }
+            this.loopScalingTweens.Clear();
+
             DOTween.Kill(this.ContinueBtnRect);
             DOTween.Kill(this.RemoveAdsRect);
-            
+
             this.ContinueBtnRect.localScale = Vector3.one;
             this.RemoveAdsRect.localScale = Vector3.one;
         }
