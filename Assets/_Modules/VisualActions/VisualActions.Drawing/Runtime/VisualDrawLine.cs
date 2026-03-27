@@ -57,12 +57,16 @@ namespace VisualActions.Drawing
 
         private void FingerDownHandler(LeanFinger finger)
         {
+            if (finger.IsOverGui)
+            {
+                return;
+            }
             this.fingerDown = true;
         }
 
         private void FingerUpHandler(LeanFinger finger)
         {
-            if (!this.fingerDown) return;
+            if (!this.fingerDown || finger.IsOverGui) return;
             this.fingerDown = false;
             this.pencilTrans.gameObject.SetActive(false);
 
@@ -79,7 +83,7 @@ namespace VisualActions.Drawing
 
         private void FingerUpdateHandler(LeanFinger finger)
         {
-            if (!this.fingerDown) return;
+            if (!this.fingerDown || finger.IsOverGui) return;
             Vector2 pos = this.renderCamera.ScreenToWorldPoint(finger.ScreenPosition);
             Vector2 brushLine = pos + this.penOffset;
             this.pencilTrans.position = brushLine;
@@ -114,6 +118,11 @@ namespace VisualActions.Drawing
             {
                 Dispose();
             }
+        }
+
+        private void OnDisable()
+        {
+            Dispose();
         }
 
         public override void Dispose()
