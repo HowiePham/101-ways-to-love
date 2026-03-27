@@ -94,6 +94,11 @@ namespace Mimi.Prototypes
 
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             Application.targetFrameRate = 60;
+            
+#if RELEASE
+            Debug.unityLogger.filterLogType = LogType.Exception;
+#endif
+            
             InitSheetAssets();
             this.projectPluginInjector = new UnityResourcePluginConfigInjector();
             IProjectConfigRepository projectConfigRepository = new ResourceProjectConfigRepository();
