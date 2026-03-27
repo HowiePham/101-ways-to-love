@@ -2,7 +2,7 @@ using UnityEditor;
 using UnityEngine;
 
 [CustomEditor(typeof(LevelEditor))]
-public class LevelEditorCustomEditor : Editor
+public class LevelEditorCustomEditor : UnityEditor.Editor
 {
     private LevelEditorWindow levelEditorWindow;
 

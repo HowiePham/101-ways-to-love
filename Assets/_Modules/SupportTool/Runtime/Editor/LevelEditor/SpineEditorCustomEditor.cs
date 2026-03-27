@@ -2,7 +2,7 @@ using UnityEditor;
 using UnityEngine;
 
 [CustomEditor(typeof(SpineAnimationEditorPlayer))]
-public class SpineEditorCustomEditor : Editor
+public class SpineEditorCustomEditor : UnityEditor.Editor
 {
     private SpineEditorWindow spineEditorWindow;
 
