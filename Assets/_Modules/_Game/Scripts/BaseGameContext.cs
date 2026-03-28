@@ -7,6 +7,7 @@ using _Modules.Ads;
 using Cysharp.Threading.Tasks;
 using Economy.Resources;
 using Firebase.Analytics;
+using Games;
 using GoogleMobileAds.Api;
 // using GoogleMobileAds.Api;
 using Mimi.Ads.Adapters;
@@ -391,8 +392,9 @@ namespace Mimi.Prototypes
                     Ads.SetInterstitial(
                         new AutoRequestInterstitial(interstitialRequestStrategy,
                             // new FirebaseMeasureRevenueInterstitial(
-                            new SingularRevenueInterstitial(
-                                new MaxInterstitial(MaxInterUnityId))));
+                            new SingularLogInterstitial(
+                                new SingularRevenueInterstitial(
+                                    new MaxInterstitial(MaxInterUnityId)))));
                 }
                 else
                 {
@@ -445,8 +447,9 @@ namespace Mimi.Prototypes
                 Ads.SetRewardVideo(
                     new AutoRequestRewardVideo(rewardVideoRequestStrategy,
                         // new FirebaseMeasureRevenueRewardVideo(
-                        new SingularRevenueRewardVideo(
-                            new MaxRewardVideo(MaxRewardUnitId))));
+                        new SingularLogRewardVideo(
+                            new SingularRevenueRewardVideo(
+                                new MaxRewardVideo(MaxRewardUnitId)))));
             }
             else
             {
