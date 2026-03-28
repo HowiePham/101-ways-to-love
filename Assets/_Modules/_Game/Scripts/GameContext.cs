@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Ads;
 using Games;
@@ -20,6 +21,8 @@ namespace Mimi.Prototypes
         [SerializeField, SoundKey] private string bgmSoundKey;
         public ILevelRepository LevelRepository { private set; get; }
         public ILevelOrder LevelOrder { private set; get; }
+        public List<SheetChapterModel> ChapterModels { private set; get; }
+        public ChapterLevelRepository ChapterLevelRepo { private set; get; }
         public LifeSystem LifeSystem { private set; get; }
         public LevelConfig HintLevelConfig { private set; get; }
         public LevelConfig HardLevelConfig { private set; get; }
@@ -65,9 +68,11 @@ namespace Mimi.Prototypes
 
         private void CreateLevelServices()
         {
-            LevelRepository = new SheetLevelRepository(GetDataSheet<SheetLevelModel>("LevelRepository"));
+            LevelRepository = new SheetLevelRepository(GetDataSheet<SheetLevelModel>());
+            ChapterModels = GetDataSheet<SheetChapterModel>();
             var levelIdOrders = GetDataSheet<SheetOrderModel>().Select(x => x.Id).Distinct();
             LevelOrder = new LinearLevelOrder(LevelRepository, levelIdOrders);
+            ChapterLevelRepo = new ChapterLevelRepository(LevelRepository, ChapterModels);
         }
 
         private void InitHintLevelConfig()

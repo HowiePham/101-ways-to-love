@@ -15,4 +15,5 @@
     public const string StartLevelGame = "startlevelgame";
     public const string PauseLevel = "pauselevel";
     public const string SelectLevel = "selectlevel";
+    public const string SelectChapter = "selectchapter";
 }

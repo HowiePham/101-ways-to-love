@@ -21,13 +21,18 @@ public class GameplayView : BaseView
     [SerializeField] private StepPoint stepPointPrefab;
     [SerializeField] private RectTransform stepTutorialUI;
 
+    [Header("Life View")]
+    [SerializeField] private NumberBasedLifeView lifeView;
+
     [Header("Button")] [SerializeField] private Button settingBtn;
     [SerializeField] private Button skipBtn;
     [SerializeField] private Button hintBtn;
     [SerializeField] private Button removeAdsButton;
     [SerializeField] private Button startLevelGameButton;
-    [SerializeField] private Button lifeButton;
     [SerializeField] private Button noLifeBlocker;
+
+    [Header("Chapter Progress")]
+    [SerializeField] private ChapterProgressBar chapterProgressBar;
 
     [Header("Popup Effect")] [SerializeField]
     private RectTransform[] showingEffectUIs;
@@ -43,29 +48,38 @@ public class GameplayView : BaseView
     private RectTransform StartLevelGameBtnRect => this.startLevelGameButton.GetComponent<RectTransform>();
 
 
+    public NumberBasedLifeView LifeView => this.lifeView;
+
     public Action OnSettingClicked;
     public Action OnSkipClicked;
     public Action OnHintClicked;
     public Action OnRemoveAdsClicked;
     public Action OnStartLevelGameClicked;
-    public Action OnLifeButtonClicked;
     public Action OnNoLifeBlockerClicked;
 
     public override void Initialize()
     {
         base.Initialize();
+        if (this.lifeView != null)
+        {
+            this.lifeView.Initialize();
+        }
         this.wrongSignal.gameObject.SetActive(false);
         this.stepTutorialUI.gameObject.SetActive(false);
         this.wrongSignal.localScale = Vector3.zero;
         this.stepPoints = new List<StepPoint>();
         this.loopScalingTweens = new Dictionary<RectTransform, TweenerCore<Vector3, Vector3, VectorOptions>>();
 
+        if (this.chapterProgressBar != null)
+        {
+            this.chapterProgressBar.Initialize();
+        }
+
         this.settingBtn.onClick.AddListener(() => this.OnSettingClicked?.Invoke());
         this.skipBtn.onClick.AddListener(() => this.OnSkipClicked?.Invoke());
         this.hintBtn.onClick.AddListener(() => this.OnHintClicked?.Invoke());
         this.removeAdsButton.onClick.AddListener(() => OnRemoveAdsClicked?.Invoke());
         this.startLevelGameButton.onClick.AddListener(() => OnStartLevelGameClicked?.Invoke());
-        this.lifeButton.onClick.AddListener(() => OnLifeButtonClicked?.Invoke());
         this.noLifeBlocker.onClick.AddListener(() => OnNoLifeBlockerClicked?.Invoke());
         this.noLifeBlocker.gameObject.SetActive(false);
     }
@@ -109,6 +123,12 @@ public class GameplayView : BaseView
 
         if (ct.IsCancellationRequested) return;
         await UniTask.WhenAll(scalingTask);
+        if (ct.IsCancellationRequested) return;
+
+        if (this.chapterProgressBar != null)
+        {
+            await this.chapterProgressBar.PlayShowAnimation();
+        }
 
         // LoopScalingUIEffect(this.RemoveAdsRect, 1.1f, 1f, 1f);
     }
@@ -116,6 +136,14 @@ public class GameplayView : BaseView
     public void SetLevelCurrent(string level)
     {
         this.levelTextCurrent.text = "Level " + level;
+    }
+
+    public void SetChapterProgress(int completedCount, int totalLevels)
+    {
+        if (this.chapterProgressBar != null)
+        {
+            this.chapterProgressBar.SetProgressData(completedCount, totalLevels);
+        }
     }
 
     public void SetActiveTutorialStepUI(bool value)

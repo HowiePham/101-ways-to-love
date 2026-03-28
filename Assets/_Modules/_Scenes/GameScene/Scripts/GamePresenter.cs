@@ -18,12 +18,17 @@ namespace Mimi.Prototypes
         {
             GameContext gameContext = this.SceneController.Context;
 
-            var selectLevelViewPresenter = new SelectLevelPresenter(this, this.Transform, gameContext.LevelRepository,
-                gameContext.AudioService, gameContext.Ads, gameContext.RuntimeState, gameContext.EventPublisher);
-            AddViewPresenter(selectLevelViewPresenter);
+            // var selectLevelViewPresenter = new SelectLevelPresenter(this, this.Transform, gameContext.LevelRepository,
+            //     gameContext.AudioService, gameContext.Ads, gameContext.RuntimeState, gameContext.EventPublisher);
+            // AddViewPresenter(selectLevelViewPresenter);
+            var chapterSelectLevelViewPresenter = new ChapterSelectLevelPresenter(this, this.Transform, gameContext.LevelRepository,
+                gameContext.LevelOrder, gameContext.AudioService, gameContext.Ads, gameContext.RuntimeState, gameContext.EventPublisher,
+                gameContext.EventSubscriber, gameContext.LifeSystem, gameContext.ChapterModels);
+            AddViewPresenter(chapterSelectLevelViewPresenter);
             Debug.Log($"--- (PRESENTER) Init GameplayViewPresenter");
             var gameplayViewPresenter = new GameplayViewPresenter(this, this.Transform, gameContext.EventPublisher, gameContext.EventSubscriber,
-                gameContext.RuntimeState, gameContext.LifeSystem, gameContext.HintLevelConfig, gameContext.Ads, gameContext.DialogManager);
+                gameContext.RuntimeState, gameContext.LifeSystem, gameContext.HintLevelConfig, gameContext.Ads, gameContext.DialogManager,
+                gameContext.ChapterLevelRepo, gameContext.LevelOrder);
             AddViewPresenter(gameplayViewPresenter);
             var hardLevelViewPresenter = new HardLevelViewPresenter(this, this.Transform, gameContext.RemoteConfig, gameContext.Ads, gameContext.DialogManager,
                 gameContext.EventPublisher);

@@ -8,6 +8,7 @@ namespace Mimi.Prototypes
 
         public RxVar<int> LastCompletedLevelOrder { get; } = new RxVar<int>();
         public RxVar<int> CurrentLevelOrder { get; } = new RxVar<int>();
+        public RxVar<int> TopLevelOrder { get; } = new RxVar<int>();
 
         private RuntimeState()
         {

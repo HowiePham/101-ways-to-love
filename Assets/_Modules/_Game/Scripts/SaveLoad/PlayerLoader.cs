@@ -17,6 +17,12 @@ namespace Mimi.Prototypes.SaveLoad
             // gameData.SettingModel.VibrationOn = playerSaver.SettingModel.VibrationOn;
             gameData.SettingModel = playerSaver.SettingModel;
             context.RuntimeState.CurrentLevelOrder.Set(playerSaver.CurrentLevel);
+
+            // Migration: existing players may have TopLevel=1 (default) while CurrentLevel is higher
+            int topLevel = playerSaver.TopLevel > playerSaver.CurrentLevel
+                ? playerSaver.TopLevel
+                : playerSaver.CurrentLevel;
+            context.RuntimeState.TopLevelOrder.Set(topLevel);
         }
     }
 }

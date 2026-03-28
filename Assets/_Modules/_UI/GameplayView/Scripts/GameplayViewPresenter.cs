@@ -12,6 +12,7 @@ using Mimi.Games.Events;
 using Mimi.Prototypes;
 using Mimi.Prototypes.Currencies;
 using Mimi.Prototypes.Events;
+using Mimi.Prototypes.LevelManagement;
 using Mimi.Prototypes.UI;
 using UnityEngine;
 
@@ -25,6 +26,8 @@ public class GameplayViewPresenter : BaseViewPresenter
     private readonly LifeSystem lifeSystem;
     private readonly IAdAdapter adAdapter;
     private readonly DialogManager dialogManager;
+    private readonly ChapterLevelRepository chapterLevelRepo;
+    private readonly ILevelOrder levelOrder;
 
     private GameplayView gameplayView;
     private NumberBasedLifeView numberBasedLifeView;
@@ -36,7 +39,8 @@ public class GameplayViewPresenter : BaseViewPresenter
     private const float TimeStep = 1f;
 
     public GameplayViewPresenter(BaseScenePresenter scenePresenter, Transform transform, IAsyncPublisher eventPublisher, IAsyncSubscriber eventSubscriber,
-        RuntimeState runtimeState, LifeSystem lifeSystem, LevelConfig hintLevelConfig, IAdAdapter adAdapter, DialogManager dialogManager) :
+        RuntimeState runtimeState, LifeSystem lifeSystem, LevelConfig hintLevelConfig, IAdAdapter adAdapter, DialogManager dialogManager,
+        ChapterLevelRepository chapterLevelRepo, ILevelOrder levelOrder) :
         base(scenePresenter, transform)
     {
         this.eventPublisher = eventPublisher;
@@ -46,12 +50,14 @@ public class GameplayViewPresenter : BaseViewPresenter
         this.hintLevelConfig = hintLevelConfig;
         this.adAdapter = adAdapter;
         this.dialogManager = dialogManager;
+        this.chapterLevelRepo = chapterLevelRepo;
+        this.levelOrder = levelOrder;
     }
 
     protected override void AddViews()
     {
         this.gameplayView = AddView<GameplayView>();
-        this.numberBasedLifeView = AddView<NumberBasedLifeView>();
+        this.numberBasedLifeView = this.gameplayView.LifeView;
     }
 
     protected override void AddChildren()
@@ -67,7 +73,8 @@ public class GameplayViewPresenter : BaseViewPresenter
         this.gameplayView.OnHintClicked += HintClickedHandler;
         this.gameplayView.OnRemoveAdsClicked += ShowRemoveAdsView;
         this.gameplayView.OnStartLevelGameClicked += StartLevelGameClickedHandler;
-        this.gameplayView.OnLifeButtonClicked += LifeButtonClickedHandler;
+        this.numberBasedLifeView.Show();
+        this.numberBasedLifeView.OnLifeButtonClicked += LifeButtonClickedHandler;
         this.gameplayView.OnNoLifeBlockerClicked += NoLifeBlockerClickedHandler;
 
         this.adAdapter.RewardVideo.OnRewarded += OnRewardCompleted;
@@ -85,6 +92,7 @@ public class GameplayViewPresenter : BaseViewPresenter
         HandleHintButtonVisible(3f);
         HandleSkipButtonVisible(5f);
         ShowLevelInfo();
+        ShowChapterProgress();
 
         this.numberBasedLifeView.SetLifeCount(this.lifeSystem.CurrentLifeCount);
         this.numberBasedLifeView.SetTimeRemaining(this.lifeSystem.GetRemainingTime());
@@ -191,7 +199,8 @@ public class GameplayViewPresenter : BaseViewPresenter
         this.gameplayView.OnHintClicked -= HintClickedHandler;
         this.gameplayView.OnRemoveAdsClicked -= ShowRemoveAdsView;
         this.gameplayView.OnStartLevelGameClicked -= StartLevelGameClickedHandler;
-        this.gameplayView.OnLifeButtonClicked -= LifeButtonClickedHandler;
+        this.numberBasedLifeView.OnLifeButtonClicked -= LifeButtonClickedHandler;
+        this.numberBasedLifeView.Hide();
         this.gameplayView.OnNoLifeBlockerClicked -= NoLifeBlockerClickedHandler;
 
         this.adAdapter.RewardVideo.OnRewarded -= OnRewardCompleted;
@@ -230,6 +239,22 @@ public class GameplayViewPresenter : BaseViewPresenter
     {
         int currentLevel = this.runtimeState.CurrentLevelOrder.Value + 1;
         this.gameplayView.SetLevelCurrent(currentLevel.ToString());
+    }
+
+    private void ShowChapterProgress()
+    {
+        int currentOrder = this.runtimeState.CurrentLevelOrder.Value;
+        LevelInfo currentLevel = this.levelOrder.GetByOrder(currentOrder);
+        if (currentLevel == null) return;
+
+        ChapterInfo chapter = this.chapterLevelRepo.GetChapter(currentLevel.Chapter);
+        if (chapter == null) return;
+
+        int firstStage = chapter.Levels[0].StageNumber;
+        int currentStage = currentOrder + 1;
+        int completedInChapter = currentStage - firstStage + 1;
+
+        this.gameplayView.SetChapterProgress(completedInChapter, chapter.LevelCount);
     }
 
     private void ShowWinView()
