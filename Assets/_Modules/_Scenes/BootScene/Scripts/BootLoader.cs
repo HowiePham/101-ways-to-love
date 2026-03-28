@@ -24,6 +24,9 @@ namespace Mimi.Prototypes
 
         public static bool IsBootViewReady { get; private set; }
 
+        private Tween earlyProgressTween;
+        private float loadingPercentage;
+
         private void Awake()
         {
             DontDestroyOnLoad(this);
@@ -33,19 +36,30 @@ namespace Mimi.Prototypes
 
         private async UniTaskVoid PrepareBootView()
         {
+            Application.targetFrameRate = 60;
+            
             this.bootView.Show();
             await this.bootView.RunLogoEffect();
             await this.bootView.ShowLoadingBarEffect();
 
-            float loadingPercentage = 0f;
-            await DOTween.To(() => loadingPercentage,
+            this.loadingPercentage = 0f;
+            await DOTween.To(() => this.loadingPercentage,
                 value =>
                 {
-                    loadingPercentage = value;
-                    this.bootView.SetLoadingPercentage(loadingPercentage);
-                }, 0.1f, 2f).AsyncWaitForCompletion();
+                    this.loadingPercentage = value;
+                    this.bootView.SetLoadingPercentage(this.loadingPercentage);
+                }, 0.1f, 0.5f).AsyncWaitForCompletion();
 
             IsBootViewReady = true;
+
+            float loadingSecs = Application.isEditor ? 1f : fakeLoadingSecs;
+            // float loadingSecs = fakeLoadingSecs;
+            this.earlyProgressTween = DOTween.To(() => this.loadingPercentage,
+                value =>
+                {
+                    this.loadingPercentage = value;
+                    this.bootView.SetLoadingPercentage(this.loadingPercentage);
+                }, 0.7f, loadingSecs).SetEase(Ease.Linear);
         }
 
         public async UniTask StartLoading()
@@ -59,31 +73,31 @@ namespace Mimi.Prototypes
         private async UniTask Load()
         {
             float loadingSecs = Application.isEditor ? 1f : fakeLoadingSecs;
-            float loadingPercentage = 0.1f;
 
             await UniTask.WaitUntil(() => this.gameContext.IsRemoteConfigInitialized);
 
             this.gameContext.CreateServices();
-            UniTask fakeLoadingBarProgress = DOTween.To(() => loadingPercentage,
+
+            // this.earlyProgressTween?.Kill();
+            await this.earlyProgressTween.AsyncWaitForCompletion();
+
+            UniTask fakeLoadingBarProgress = DOTween.To(() => this.loadingPercentage,
                 value =>
                 {
-                    loadingPercentage = value;
-                    this.bootView.SetLoadingPercentage(loadingPercentage);
-                }, 0.8f, loadingSecs).AsyncWaitForCompletion().AsUniTask();
+                    this.loadingPercentage = value;
+                    this.bootView.SetLoadingPercentage(this.loadingPercentage);
+                }, 0.8f, loadingSecs * 0.3f).AsyncWaitForCompletion().AsUniTask();
 
             UniTask waitForContextInitialized = UniTask.WaitUntil(() => this.gameContext.IsInitialized);
-            UniTask loadingProgress =
-                UniTask.WhenAll(fakeLoadingBarProgress, waitForContextInitialized);
+            await UniTask.WhenAll(fakeLoadingBarProgress, waitForContextInitialized);
 
-            await loadingProgress;
-            UniTask loadNextScene = this.gameContext.LoadSceneAsync(this.nextSceneType.Type);
-            await loadNextScene;
+            await this.gameContext.LoadSceneAsync(this.nextSceneType.Type);
 
-            await DOTween.To(() => loadingPercentage,
+            await DOTween.To(() => this.loadingPercentage,
                 value =>
                 {
-                    loadingPercentage = value;
-                    this.bootView.SetLoadingPercentage(loadingPercentage);
+                    this.loadingPercentage = value;
+                    this.bootView.SetLoadingPercentage(this.loadingPercentage);
                 }, 1f, 0.1f).AsyncWaitForCompletion().AsUniTask();
         }
 
