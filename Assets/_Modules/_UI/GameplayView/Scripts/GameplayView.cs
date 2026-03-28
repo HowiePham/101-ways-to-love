@@ -31,6 +31,9 @@ public class GameplayView : BaseView
     [SerializeField] private Button startLevelGameButton;
     [SerializeField] private Button noLifeBlocker;
 
+    [Header("Chapter Progress")]
+    [SerializeField] private ChapterProgressBar chapterProgressBar;
+
     [Header("Popup Effect")] [SerializeField]
     private RectTransform[] showingEffectUIs;
     
@@ -66,6 +69,11 @@ public class GameplayView : BaseView
         this.wrongSignal.localScale = Vector3.zero;
         this.stepPoints = new List<StepPoint>();
         this.loopScalingTweens = new Dictionary<RectTransform, TweenerCore<Vector3, Vector3, VectorOptions>>();
+
+        if (this.chapterProgressBar != null)
+        {
+            this.chapterProgressBar.Initialize();
+        }
 
         this.settingBtn.onClick.AddListener(() => this.OnSettingClicked?.Invoke());
         this.skipBtn.onClick.AddListener(() => this.OnSkipClicked?.Invoke());
@@ -122,6 +130,14 @@ public class GameplayView : BaseView
     public void SetLevelCurrent(string level)
     {
         this.levelTextCurrent.text = "Level " + level;
+    }
+
+    public void SetChapterProgress(int completedCount, int totalLevels)
+    {
+        if (this.chapterProgressBar != null)
+        {
+            this.chapterProgressBar.SetProgress(completedCount, totalLevels);
+        }
     }
 
     public void SetActiveTutorialStepUI(bool value)
