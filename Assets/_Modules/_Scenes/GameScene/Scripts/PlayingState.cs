@@ -1,5 +1,6 @@
 using System.Threading;
 using _Modules._UI.LoseView.Scripts;
+using _Modules.GameEvent.Scripts;
 using _Modules.Gameflow_Events_.Scripts;
 using Cysharp.Threading.Tasks;
 using FrogunnerGames;
@@ -51,6 +52,7 @@ namespace Mimi
             Context.EventSubscriber.Subscribe<SkipLevel>(SkipLevelHandler).AddToBag(this.eventBag);
             Context.EventSubscriber.Subscribe<LevelTryAgain>(TryAgainLevelHandler).AddToBag(this.eventBag);
             Context.EventSubscriber.Subscribe<SelectLevel>(SelectLevelHandler).AddToBag(this.eventBag);
+            Context.EventSubscriber.Subscribe<BackHome>(BackHomeHandler).AddToBag(this.eventBag);
             Context.EventSubscriber.Subscribe<UseHint>(UseHintHandler).AddToBag(this.eventBag);
 
             HardLevelViewPresenter.GetView<HardLevelView>().OnClickPlay +=
@@ -106,6 +108,16 @@ namespace Mimi
 
             this.Context.RuntimeState.CurrentLevelOrder.Set(selectLevel.LevelOrder);
             PlayLevel(selectLevel.LevelOrder);
+            await UniTask.CompletedTask;
+        }
+
+        private async UniTask BackHomeHandler(BackHome backHome, CancellationToken cancellationToken)
+        {
+            DestroyOldLevelRoot();
+            var gameplayViewPresenter = this.Presenter.GetViewPresenter<GameplayViewPresenter>();
+            gameplayViewPresenter.Hide();
+            var chapterSelectLevelPresenter = this.Presenter.GetViewPresenter<ChapterSelectLevelPresenter>();
+            chapterSelectLevelPresenter.Show();
             await UniTask.CompletedTask;
         }
 

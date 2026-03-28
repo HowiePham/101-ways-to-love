@@ -18,10 +18,12 @@ namespace _Modules._UI.WinView.Scripts
         [SerializeField] private CanvasGroup replayBtnGroup;
         [SerializeField] private CanvasGroup settingBtnGroup;
         [SerializeField] private CanvasGroup removeAdsBtnGroup;
+        [SerializeField] private CanvasGroup homeBtnBtnGroup;
         [SerializeField] private Button removeAdsButton;
         [SerializeField] private Button settingButton;
         [SerializeField] private Button continueButton;
         [SerializeField] private Button replayButton;
+        [SerializeField] private Button homeButton;
 
         private Dictionary<RectTransform, TweenerCore<Vector3, Vector3, VectorOptions>> loopScalingTweens;
         private CancellationTokenSource showCts;
@@ -32,6 +34,7 @@ namespace _Modules._UI.WinView.Scripts
         public Action OnReplayClicked;
         public Action OnRemoveAdsClicked;
         public Action OnSettingClicked;
+        public Action OnHomeClicked;
 
         public override void Initialize()
         {
@@ -42,6 +45,7 @@ namespace _Modules._UI.WinView.Scripts
             this.replayButton.onClick.AddListener(() => OnReplayClicked?.Invoke());
             this.settingButton.onClick.AddListener(() => this.OnSettingClicked?.Invoke());
             this.removeAdsButton.onClick.AddListener(() => OnRemoveAdsClicked?.Invoke());
+            this.homeButton.onClick.AddListener(() => OnHomeClicked?.Invoke());
         }
 
         public override void Show()
@@ -83,6 +87,8 @@ namespace _Modules._UI.WinView.Scripts
             this.replayBtnGroup.DOFade(0f, 0f);
             this.removeAdsBtnGroup.DOFade(0f, 0f);
             this.settingBtnGroup.DOFade(0f, 0f);
+            this.settingBtnGroup.DOFade(0f, 0f);
+            this.homeBtnBtnGroup.DOFade(0f, 0f);
 
             await DOTween.Sequence().Append(this.resultView.DOScale(1f, 0.4f)).AsyncWaitForCompletion();
             if (ct.IsCancellationRequested) return;
@@ -90,6 +96,7 @@ namespace _Modules._UI.WinView.Scripts
             this.continueBtnGroup.DOFade(1f, 0.5f).AsyncWaitForCompletion();
             this.replayBtnGroup.DOFade(1f, 0.5f).AsyncWaitForCompletion();
             this.removeAdsBtnGroup.DOFade(1f, 0.5f).AsyncWaitForCompletion();
+            this.homeBtnBtnGroup.DOFade(1f, 0.5f).AsyncWaitForCompletion();
             await this.settingBtnGroup.DOFade(1f, 0.5f).AsyncWaitForCompletion();
             if (ct.IsCancellationRequested) return;
 

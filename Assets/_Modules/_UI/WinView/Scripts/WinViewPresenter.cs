@@ -1,4 +1,5 @@
 using _Modules._UI.LoseView.Scripts;
+using _Modules.GameEvent.Scripts;
 using Mimi.Ads.Adapters;
 using Mimi.Events;
 using Mimi.Events.AsyncBus;
@@ -46,6 +47,7 @@ namespace _Modules._UI.WinView.Scripts
             this.winView.OnReplayClicked += ReplayClickedHandler;
             this.winView.OnRemoveAdsClicked += ShowRemoveAdsView;
             this.winView.OnSettingClicked += SettingClickedHandler;
+            this.winView.OnHomeClicked += HomeClickedHandler;
             this.adsAdapter.Interstitial.OnShowFailed += InterstitialShowFailedHandler;
             this.adsAdapter.Interstitial.OnClosed += InterstitialClosedHandler;
             // this.currencyView.OnAddCurrencyClicked += AddCurrencyClickedHandler;
@@ -59,6 +61,7 @@ namespace _Modules._UI.WinView.Scripts
             this.winView.OnReplayClicked -= ReplayClickedHandler;
             this.winView.OnRemoveAdsClicked -= ShowRemoveAdsView;
             this.winView.OnSettingClicked -= SettingClickedHandler;
+            this.winView.OnHomeClicked -= HomeClickedHandler;
             this.adsAdapter.Interstitial.OnShowFailed -= InterstitialShowFailedHandler;
             this.adsAdapter.Interstitial.OnClosed -= InterstitialClosedHandler;
             // this.currencyView.OnAddCurrencyClicked -= AddCurrencyClickedHandler;
@@ -123,6 +126,12 @@ namespace _Modules._UI.WinView.Scripts
         {
             var settingViewPresenter = this.ScenePresenter.GetViewPresenter<SettingViewPresenter>();
             settingViewPresenter.Show();
+        }
+
+        private void HomeClickedHandler()
+        {
+            this.eventPublisher.PublishAsync(new BackHome());
+            Hide();
         }
         
         private void InterstitialClosedHandler(AdPlacement adPlacement)
