@@ -123,6 +123,12 @@ public class GameplayView : BaseView
 
         if (ct.IsCancellationRequested) return;
         await UniTask.WhenAll(scalingTask);
+        if (ct.IsCancellationRequested) return;
+
+        if (this.chapterProgressBar != null)
+        {
+            await this.chapterProgressBar.PlayShowAnimation();
+        }
 
         // LoopScalingUIEffect(this.RemoveAdsRect, 1.1f, 1f, 1f);
     }
@@ -136,7 +142,7 @@ public class GameplayView : BaseView
     {
         if (this.chapterProgressBar != null)
         {
-            this.chapterProgressBar.SetProgress(completedCount, totalLevels);
+            this.chapterProgressBar.SetProgressData(completedCount, totalLevels);
         }
     }
 

@@ -1,3 +1,4 @@
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -26,11 +27,30 @@ public class ChapterProgressBlock : MonoBehaviour
     {
         this.blockImage.color = completed ? this.completedColor : this.uncompletedColor;
     }
-}
 
-public enum BlockType
-{
-    First,
-    Mid,
-    Last
+    public void ResetScale()
+    {
+        transform.localScale = Vector3.one;
+    }
+
+    public void HideScale()
+    {
+        transform.localScale = Vector3.zero;
+    }
+
+    public Sequence PlayCurrentBlockAnimation(int pulseLoops = 3)
+    {
+        transform.localScale = Vector3.zero;
+
+        Sequence pulseSequence = DOTween.Sequence()
+            .Append(transform.DOScale(1.3f, 0.35f).SetEase(Ease.OutQuad))
+            .Append(transform.DOScale(1f, 0.35f).SetEase(Ease.InQuad))
+            .SetLoops(pulseLoops);
+
+        return DOTween.Sequence()
+            .Append(transform.DOScale(1.3f, 0.4f).SetEase(Ease.OutBack))
+            .Append(transform.DOScale(1f, 0.2f).SetEase(Ease.InQuad))
+            .AppendInterval(0.15f)
+            .Append(pulseSequence);
+    }
 }
