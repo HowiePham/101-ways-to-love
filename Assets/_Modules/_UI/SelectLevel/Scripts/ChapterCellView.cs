@@ -1,3 +1,4 @@
+using DG.Tweening;
 using Mimi.Prototypes.Events;
 using TMPro;
 using UnityEngine;
@@ -22,6 +23,7 @@ public class ChapterCellView : MonoBehaviour
     protected int chapterNumber;
     protected string iconAddress;
     protected CellStatus cellStatus;
+    private Tweener pulseTween;
 
     protected void OnEnable()
     {
@@ -31,6 +33,7 @@ public class ChapterCellView : MonoBehaviour
     protected void OnDisable()
     {
         this.selectBtn.onClick.RemoveListener(SelectChapter);
+        StopPulse();
     }
 
     public void SetData(int chapterNumber, string iconAddress, CellStatus cellStatus, float progress = 0f)
@@ -44,6 +47,7 @@ public class ChapterCellView : MonoBehaviour
     protected virtual void SetState(CellStatus cellStatus)
     {
         this.cellStatus = cellStatus;
+        StopPulse();
 
         switch (cellStatus)
         {
@@ -62,6 +66,7 @@ public class ChapterCellView : MonoBehaviour
                 SetActiveLockIcon(false);
                 this.highlightObject.SetActive(true);
                 this.cell.transform.localScale = Vector3.one;
+                PlayPulse();
                 break;
             case CellStatus.Complete:
                 this.chapterIcon.sprite = Resources.Load<Sprite>("Icons/" + this.iconAddress);
@@ -75,6 +80,19 @@ public class ChapterCellView : MonoBehaviour
                 this.cell.SetActive(false);
                 break;
         }
+    }
+
+    private void PlayPulse()
+    {
+        this.pulseTween = this.cell.transform.DOScale(1.08f, 0.6f)
+            .SetEase(Ease.InOutQuad)
+            .SetLoops(-1, LoopType.Yoyo);
+    }
+
+    private void StopPulse()
+    {
+        this.pulseTween?.Kill();
+        this.pulseTween = null;
     }
 
     private void UpdateProgressBar(CellStatus status, float progress)
