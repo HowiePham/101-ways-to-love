@@ -1,42 +1,40 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using UnityEditor;
 using UnityEngine;
 
 namespace Editor
 {
+    /// <summary>
+    /// Safely deduplicates audio files across level folders.
+    ///
+    /// The problem:
+    /// - Same audio file is copied into multiple L_xxx/ folders (e.g., SFX_ThaTim.mp3 x14)
+    /// - Each copy has its own GUID
+    /// - GUIDs are referenced from: level prefabs (direct AudioClip fields), Addressable groups,
+    ///   MasterAudio prefab, scenes, and other .asset files
+    /// - Some copies are heavily referenced (one GUID used by 50+ prefabs), others only in Addressables
+    /// - Addressable _Shared group has duplicate entries (14 entries with address "SFX_ThaTim")
+    ///
+    /// The solution:
+    /// 1. Verify duplicates have identical content (MD5 hash)
+    /// 2. Find the most-referenced GUID (the "primary" copy)
+    /// 3. Remap ALL references from other GUIDs to the primary GUID across ALL project files
+    /// 4. Remove duplicate Addressable entries (keep only one per address)
+    /// 5. Delete the unused copies
+    /// 6. Move the primary copy to Common/ folder
+    /// </summary>
     public static class AudioDeduplicator
     {
-        [MenuItem("Tools/Optimization/Find Duplicate Audio")]
+        // Search the entire Assets folder for GUID references
+        private const string SearchRoot = "Assets";
+
+        [MenuItem("Tools/Optimization/1. Find Duplicate Audio (Report Only)")]
         public static void FindDuplicateAudio()
         {
-            string basePath = "Assets/_Levels/_Shared/Sounds";
-            string[] guids = AssetDatabase.FindAssets("t:AudioClip", new[] { basePath });
-
-            // Group by filename
-            var fileGroups = new Dictionary<string, List<string>>();
-
-            foreach (string guid in guids)
-            {
-                string path = AssetDatabase.GUIDToAssetPath(guid);
-                // Only look at per-level folders (L_xxx/)
-                if (!path.Contains("/L_")) continue;
-
-                string fileName = Path.GetFileName(path);
-                if (!fileGroups.ContainsKey(fileName))
-                {
-                    fileGroups[fileName] = new List<string>();
-                }
-                fileGroups[fileName].Add(path);
-            }
-
-            // Filter to duplicates only
-            var duplicates = fileGroups
-                .Where(kvp => kvp.Value.Count > 1)
-                .OrderByDescending(kvp => kvp.Value.Count)
-                .ToList();
-
+            var duplicates = CollectDuplicates();
             if (duplicates.Count == 0)
             {
                 Debug.Log("[AudioDeduplicator] No duplicate audio files found.");
@@ -44,64 +42,80 @@ namespace Editor
                 return;
             }
 
+            // Build file index once for performance
+            string[] allProjectFiles = GetAllSerializedFiles();
+
             int totalDuplicateFiles = duplicates.Sum(d => d.Value.Count - 1);
             long totalWastedBytes = 0;
+            int sameContentCount = 0;
+            int differentContentCount = 0;
 
             Debug.Log("========== DUPLICATE AUDIO REPORT ==========");
+
             foreach (var kvp in duplicates)
             {
-                long fileSize = new FileInfo(kvp.Value[0]).Length;
-                long wastedBytes = fileSize * (kvp.Value.Count - 1);
+                List<string> copies = kvp.Value;
+                long fileSize = new FileInfo(copies[0]).Length;
+                long wastedBytes = fileSize * (copies.Count - 1);
                 totalWastedBytes += wastedBytes;
 
-                Debug.Log($"<b>{kvp.Key}</b> ({kvp.Value.Count} copies, {FormatSize(fileSize)} each, {FormatSize(wastedBytes)} wasted)");
-                foreach (string path in kvp.Value)
+                // Verify content is identical
+                bool contentIdentical = VerifyIdenticalContent(copies);
+                string contentLabel = contentIdentical ? "IDENTICAL" : "DIFFERENT CONTENT";
+                if (contentIdentical) sameContentCount++;
+                else differentContentCount++;
+
+                Debug.Log($"<b>{kvp.Key}</b> ({copies.Count} copies, {FormatSize(fileSize)} each, " +
+                          $"{FormatSize(wastedBytes)} wasted) [{contentLabel}]");
+
+                foreach (string path in copies)
                 {
-                    int refCount = FindReferencesCount(path);
-                    string refLabel = refCount > 0 ? $" [REFERENCED x{refCount}]" : " [unreferenced]";
-                    Debug.Log($"  - {path}{refLabel}");
+                    string guid = AssetDatabase.AssetPathToGUID(path);
+                    int refCount = CountGuidReferences(guid, allProjectFiles);
+                    string refLabel = refCount > 0 ? $"REFERENCED x{refCount}" : "unreferenced";
+                    Debug.Log($"  - {path}  [{refLabel}]  guid:{guid}");
                 }
             }
 
-            Debug.Log($"=== TOTAL: {duplicates.Count} duplicated files, {totalDuplicateFiles} extra copies, {FormatSize(totalWastedBytes)} wasted ===");
+            Debug.Log($"\n=== SUMMARY ===");
+            Debug.Log($"Duplicated filenames: {duplicates.Count}");
+            Debug.Log($"  Identical content: {sameContentCount}");
+            Debug.Log($"  Different content: {differentContentCount} (will be SKIPPED during consolidation)");
+            Debug.Log($"Extra copies: {totalDuplicateFiles}");
+            Debug.Log($"Wasted space: {FormatSize(totalWastedBytes)}");
+
+            // Check Addressable duplicate entries
+            string sharedAsset = "Assets/AddressableAssetsData/AssetGroups/_Shared.asset";
+            if (File.Exists(sharedAsset))
+            {
+                string content = File.ReadAllText(sharedAsset);
+                var addressLines = content.Split('\n')
+                    .Where(l => l.Contains("m_Address:"))
+                    .Select(l => l.Trim())
+                    .ToArray();
+                int totalEntries = addressLines.Length;
+                int uniqueEntries = addressLines.Distinct().Count();
+                int duplicateEntries = totalEntries - uniqueEntries;
+                Debug.Log($"Addressable _Shared group: {totalEntries} entries, {uniqueEntries} unique, " +
+                          $"{duplicateEntries} duplicates to clean");
+            }
 
             EditorUtility.DisplayDialog("Audio Deduplication Report",
                 $"Found {duplicates.Count} duplicated audio files\n" +
-                $"{totalDuplicateFiles} extra copies\n" +
-                $"{FormatSize(totalWastedBytes)} wasted\n\n" +
+                $"Identical content: {sameContentCount}\n" +
+                $"Different content (skipped): {differentContentCount}\n" +
+                $"Extra copies: {totalDuplicateFiles}\n" +
+                $"Wasted: {FormatSize(totalWastedBytes)}\n\n" +
                 "See Console for full report.\n" +
                 "Use 'Consolidate Duplicates' to fix.",
                 "OK");
         }
 
-        [MenuItem("Tools/Optimization/Consolidate Duplicate Audio")]
+        [MenuItem("Tools/Optimization/2. Consolidate Duplicate Audio")]
         public static void ConsolidateDuplicateAudio()
         {
-            string basePath = "Assets/_Levels/_Shared/Sounds";
             string commonPath = "Assets/_Levels/_Shared/Sounds/Common";
-
-            if (!AssetDatabase.IsValidFolder(commonPath))
-            {
-                AssetDatabase.CreateFolder("Assets/_Levels/_Shared/Sounds", "Common");
-            }
-
-            string[] guids = AssetDatabase.FindAssets("t:AudioClip", new[] { basePath });
-
-            var fileGroups = new Dictionary<string, List<string>>();
-            foreach (string guid in guids)
-            {
-                string path = AssetDatabase.GUIDToAssetPath(guid);
-                if (!path.Contains("/L_")) continue;
-
-                string fileName = Path.GetFileName(path);
-                if (!fileGroups.ContainsKey(fileName))
-                {
-                    fileGroups[fileName] = new List<string>();
-                }
-                fileGroups[fileName].Add(path);
-            }
-
-            var duplicates = fileGroups.Where(kvp => kvp.Value.Count > 1).ToList();
+            var duplicates = CollectDuplicates();
 
             if (duplicates.Count == 0)
             {
@@ -109,64 +123,104 @@ namespace Editor
                 return;
             }
 
+            // Filter to only identical-content duplicates
+            var safeDuplicates = duplicates
+                .Where(kvp => VerifyIdenticalContent(kvp.Value))
+                .ToList();
+
+            int skippedCount = duplicates.Count - safeDuplicates.Count;
+
             if (!EditorUtility.DisplayDialog("Consolidate Duplicates",
-                    $"This will consolidate {duplicates.Count} duplicated audio files into {commonPath}/.\n\n" +
-                    "For each duplicate set:\n" +
-                    "1. The most-referenced copy is kept and moved to Common/\n" +
-                    "2. All other copies have their references remapped to the kept copy\n" +
-                    "3. Unreferenced copies are deleted\n\n" +
-                    "Make sure to commit your changes first!",
+                    $"Found {duplicates.Count} duplicate sets ({safeDuplicates.Count} identical, {skippedCount} different content - skipped).\n\n" +
+                    "For each identical duplicate set:\n" +
+                    "1. Finds the most-referenced copy across ALL project files\n" +
+                    "2. Remaps ALL GUIDs from other copies to the kept copy\n" +
+                    "3. Removes duplicate Addressable entries\n" +
+                    "4. Deletes extra copies\n" +
+                    "5. Moves kept copy to Common/\n\n" +
+                    "IMPORTANT: Commit your changes first!",
                     "Proceed", "Cancel"))
             {
                 return;
             }
 
+            if (!AssetDatabase.IsValidFolder(commonPath))
+            {
+                AssetDatabase.CreateFolder("Assets/_Levels/_Shared/Sounds", "Common");
+            }
+
+            // Build file index once
+            string[] allProjectFiles = GetAllSerializedFiles();
+
             int movedCount = 0;
-            int remappedCount = 0;
+            int remappedFileCount = 0;
             int deletedCount = 0;
+            int addressableEntriesCleaned = 0;
 
             try
             {
-                foreach (var kvp in duplicates)
+                for (int i = 0; i < safeDuplicates.Count; i++)
                 {
+                    var kvp = safeDuplicates[i];
                     string fileName = kvp.Key;
-                    string targetPath = $"{commonPath}/{fileName}";
                     List<string> copies = kvp.Value;
 
                     EditorUtility.DisplayProgressBar("Consolidating Audio",
-                        $"Processing {fileName}...", (float)movedCount / duplicates.Count);
+                        $"Processing {fileName} ({i + 1}/{safeDuplicates.Count})...",
+                        (float)(i + 1) / safeDuplicates.Count);
 
-                    // Find which copy has the most references — that's the one to keep
+                    // Step 1: Find the most-referenced copy
                     string keepPath = null;
+                    string keepGuid = null;
                     int maxRefs = -1;
+
                     foreach (string path in copies)
                     {
-                        int refs = FindReferencesCount(path);
+                        string guid = AssetDatabase.AssetPathToGUID(path);
+                        int refs = CountGuidReferences(guid, allProjectFiles);
                         if (refs > maxRefs)
                         {
                             maxRefs = refs;
                             keepPath = path;
+                            keepGuid = guid;
                         }
                     }
 
-                    string keepGuid = AssetDatabase.AssetPathToGUID(keepPath);
+                    // Step 2: Remap all other GUIDs to the kept GUID
+                    var otherGuids = copies
+                        .Where(p => p != keepPath)
+                        .Select(p => AssetDatabase.AssetPathToGUID(p))
+                        .Where(g => !string.IsNullOrEmpty(g))
+                        .ToList();
 
-                    // Remap all references from other copies to the kept copy's GUID
-                    foreach (string copyPath in copies)
+                    foreach (string projectFile in allProjectFiles)
                     {
-                        if (copyPath == keepPath) continue;
+                        string content = File.ReadAllText(projectFile);
+                        bool modified = false;
 
-                        string copyGuid = AssetDatabase.AssetPathToGUID(copyPath);
-                        int refsRemapped = RemapReferences(copyGuid, keepGuid);
-                        remappedCount += refsRemapped;
-
-                        if (refsRemapped > 0)
+                        foreach (string oldGuid in otherGuids)
                         {
-                            Debug.Log($"[AudioDeduplicator] Remapped {refsRemapped} references from {copyPath} -> {keepPath}");
+                            if (content.Contains(oldGuid))
+                            {
+                                content = content.Replace(oldGuid, keepGuid);
+                                modified = true;
+                            }
+                        }
+
+                        if (modified)
+                        {
+                            File.WriteAllText(projectFile, content);
+                            remappedFileCount++;
                         }
                     }
 
-                    // Move the kept copy to Common/
+                    // Step 3: Clean duplicate Addressable entries
+                    // After GUID remapping, _Shared.asset now has multiple entries with the same GUID
+                    // and same address. We need to remove the duplicates.
+                    // This is handled in a separate pass after all remapping is done.
+
+                    // Step 4: Move the kept copy to Common/
+                    string targetPath = $"{commonPath}/{fileName}";
                     if (!File.Exists(targetPath))
                     {
                         string moveResult = AssetDatabase.MoveAsset(keepPath, targetPath);
@@ -178,7 +232,7 @@ namespace Editor
                         movedCount++;
                     }
 
-                    // Delete the other copies
+                    // Step 5: Delete extra copies
                     foreach (string copyPath in copies)
                     {
                         if (copyPath == keepPath) continue;
@@ -187,7 +241,15 @@ namespace Editor
                             deletedCount++;
                         }
                     }
+
+                    Debug.Log($"[AudioDeduplicator] {fileName}: kept {keepPath} (refs:{maxRefs}), " +
+                              $"remapped {otherGuids.Count} GUIDs, deleted {copies.Count - 1} copies");
                 }
+
+                // Step 6: Clean duplicate Addressable entries in _Shared.asset
+                EditorUtility.DisplayProgressBar("Consolidating Audio",
+                    "Cleaning Addressable group entries...", 1f);
+                addressableEntriesCleaned = CleanAddressableEntries();
             }
             finally
             {
@@ -196,79 +258,176 @@ namespace Editor
                 AssetDatabase.Refresh();
             }
 
-            Debug.Log($"[AudioDeduplicator] Done. Moved: {movedCount}, Remapped: {remappedCount} refs, Deleted: {deletedCount} copies.");
+            Debug.Log($"\n=== CONSOLIDATION COMPLETE ===");
+            Debug.Log($"Moved to Common/: {movedCount}");
+            Debug.Log($"Files with remapped GUIDs: {remappedFileCount}");
+            Debug.Log($"Deleted copies: {deletedCount}");
+            Debug.Log($"Addressable entries cleaned: {addressableEntriesCleaned}");
+            if (skippedCount > 0)
+                Debug.LogWarning($"Skipped {skippedCount} sets with different content (same name, different audio)");
+
             EditorUtility.DisplayDialog("Consolidation Complete",
-                $"Moved: {movedCount} files to Common/\n" +
-                $"Remapped: {remappedCount} references\n" +
-                $"Deleted: {deletedCount} duplicate copies\n\n" +
-                "Review Addressable groups if sounds are addressable.",
+                $"Moved to Common/: {movedCount}\n" +
+                $"Files with remapped GUIDs: {remappedFileCount}\n" +
+                $"Deleted copies: {deletedCount}\n" +
+                $"Addressable entries cleaned: {addressableEntriesCleaned}\n" +
+                (skippedCount > 0 ? $"\nSkipped: {skippedCount} (different content)" : ""),
                 "OK");
         }
 
         /// <summary>
-        /// Counts how many .prefab, .unity, and .asset files reference this asset's GUID.
+        /// Removes duplicate entries from the _Shared Addressable group.
+        /// After GUID remapping, entries that had different GUIDs but same address
+        /// now have the SAME GUID and same address — pure duplicates.
         /// </summary>
-        private static int FindReferencesCount(string assetPath)
+        private static int CleanAddressableEntries()
         {
-            string guid = AssetDatabase.AssetPathToGUID(assetPath);
-            if (string.IsNullOrEmpty(guid)) return 0;
+            string sharedAssetPath = "Assets/AddressableAssetsData/AssetGroups/_Shared.asset";
+            if (!File.Exists(sharedAssetPath)) return 0;
 
-            // Search in prefabs, scenes, and addressable group assets
-            string[] searchPaths = { "Assets/_Levels", "Assets/AddressableAssetsData" };
-            int count = 0;
+            string content = File.ReadAllText(sharedAssetPath);
+            string[] lines = content.Split('\n');
 
-            foreach (string searchPath in searchPaths)
+            // Parse entries: each entry is "  - m_GUID: xxx\n    m_Address: yyy\n    ..."
+            // We need to find blocks starting with "  - m_GUID:" and remove duplicate GUID entries
+            var seenGuids = new HashSet<string>();
+            var outputLines = new List<string>();
+            int removedCount = 0;
+            bool skipCurrentEntry = false;
+            var entryBuffer = new List<string>();
+
+            for (int i = 0; i < lines.Length; i++)
             {
-                if (!Directory.Exists(searchPath)) continue;
+                string line = lines[i];
 
-                string[] files = Directory.GetFiles(searchPath, "*.*", SearchOption.AllDirectories)
-                    .Where(f => f.EndsWith(".prefab") || f.EndsWith(".unity") || f.EndsWith(".asset"))
-                    .ToArray();
-
-                foreach (string file in files)
+                // Detect start of a new entry in the m_SerializedEntries list
+                if (line.TrimStart().StartsWith("- m_GUID:"))
                 {
-                    string content = File.ReadAllText(file);
-                    if (content.Contains(guid))
+                    // Flush previous entry if not skipped
+                    if (entryBuffer.Count > 0)
                     {
-                        count++;
+                        if (!skipCurrentEntry)
+                        {
+                            outputLines.AddRange(entryBuffer);
+                        }
+                        else
+                        {
+                            removedCount++;
+                        }
                     }
+
+                    // Start new entry
+                    entryBuffer = new List<string> { line };
+                    string guid = line.Split(':').Last().Trim();
+                    skipCurrentEntry = seenGuids.Contains(guid);
+                    seenGuids.Add(guid);
+                }
+                else if (entryBuffer.Count > 0 && !line.TrimStart().StartsWith("- m_GUID:") &&
+                         (line.StartsWith("    ") || line.Trim().Length == 0) &&
+                         !line.TrimStart().StartsWith("m_") && !line.Contains("m_SchemaSet:"))
+                {
+                    // Continuation of current entry
+                    entryBuffer.Add(line);
+                }
+                else
+                {
+                    // Not part of an entry — flush and output directly
+                    if (entryBuffer.Count > 0)
+                    {
+                        if (!skipCurrentEntry)
+                        {
+                            outputLines.AddRange(entryBuffer);
+                        }
+                        else
+                        {
+                            removedCount++;
+                        }
+                        entryBuffer.Clear();
+                        skipCurrentEntry = false;
+                    }
+                    outputLines.Add(line);
                 }
             }
 
-            return count;
+            // Flush last entry
+            if (entryBuffer.Count > 0 && !skipCurrentEntry)
+            {
+                outputLines.AddRange(entryBuffer);
+            }
+            else if (entryBuffer.Count > 0)
+            {
+                removedCount++;
+            }
+
+            if (removedCount > 0)
+            {
+                File.WriteAllText(sharedAssetPath, string.Join("\n", outputLines));
+                Debug.Log($"[AudioDeduplicator] Removed {removedCount} duplicate entries from _Shared.asset");
+            }
+
+            return removedCount;
+        }
+
+        private static Dictionary<string, List<string>> CollectDuplicates()
+        {
+            string basePath = "Assets/_Levels/_Shared/Sounds";
+            string[] guids = AssetDatabase.FindAssets("t:AudioClip", new[] { basePath });
+
+            var fileGroups = new Dictionary<string, List<string>>();
+            foreach (string guid in guids)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                if (!path.Contains("/L_")) continue;
+
+                string fileName = Path.GetFileName(path);
+                if (!fileGroups.ContainsKey(fileName))
+                    fileGroups[fileName] = new List<string>();
+                fileGroups[fileName].Add(path);
+            }
+
+            return fileGroups
+                .Where(kvp => kvp.Value.Count > 1)
+                .OrderByDescending(kvp => kvp.Value.Count)
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
         }
 
         /// <summary>
-        /// Replaces all occurrences of oldGuid with newGuid in prefabs, scenes, and asset files.
-        /// Returns the number of files modified.
+        /// Verifies all files in the list have identical content using MD5 hash.
         /// </summary>
-        private static int RemapReferences(string oldGuid, string newGuid)
+        private static bool VerifyIdenticalContent(List<string> paths)
         {
-            if (oldGuid == newGuid) return 0;
+            if (paths.Count <= 1) return true;
 
-            string[] searchPaths = { "Assets/_Levels", "Assets/AddressableAssetsData" };
-            int modifiedCount = 0;
+            string firstHash = ComputeFileHash(paths[0]);
+            return paths.Skip(1).All(p => ComputeFileHash(p) == firstHash);
+        }
 
-            foreach (string searchPath in searchPaths)
+        private static string ComputeFileHash(string path)
+        {
+            using (var md5 = MD5.Create())
+            using (var stream = File.OpenRead(path))
             {
-                if (!Directory.Exists(searchPath)) continue;
-
-                string[] files = Directory.GetFiles(searchPath, "*.*", SearchOption.AllDirectories)
-                    .Where(f => f.EndsWith(".prefab") || f.EndsWith(".unity") || f.EndsWith(".asset"))
-                    .ToArray();
-
-                foreach (string file in files)
-                {
-                    string content = File.ReadAllText(file);
-                    if (!content.Contains(oldGuid)) continue;
-
-                    string newContent = content.Replace(oldGuid, newGuid);
-                    File.WriteAllText(file, newContent);
-                    modifiedCount++;
-                }
+                byte[] hash = md5.ComputeHash(stream);
+                return System.BitConverter.ToString(hash).Replace("-", "").ToLower();
             }
+        }
 
-            return modifiedCount;
+        /// <summary>
+        /// Gets all serialized files (.prefab, .unity, .asset) across the entire project.
+        /// Cached for performance when processing multiple duplicates.
+        /// </summary>
+        private static string[] GetAllSerializedFiles()
+        {
+            return Directory.GetFiles(SearchRoot, "*.*", SearchOption.AllDirectories)
+                .Where(f => f.EndsWith(".prefab") || f.EndsWith(".unity") || f.EndsWith(".asset"))
+                .Where(f => !f.Contains("Library"))
+                .ToArray();
+        }
+
+        private static int CountGuidReferences(string guid, string[] files)
+        {
+            if (string.IsNullOrEmpty(guid)) return 0;
+            return files.Count(f => File.ReadAllText(f).Contains(guid));
         }
 
         private static string FormatSize(long bytes)
