@@ -9,7 +9,6 @@ public class ChapterProgressBar : MonoBehaviour
     [SerializeField] private Transform blockContainer;
     [SerializeField] private float hideDelay = 1f;
     [SerializeField] private float hideDuration = 0.3f;
-    [SerializeField] private int blockPulseLoop = 3;
 
     private List<ChapterProgressBlock> blocks;
     private Sequence currentBlockSequence;
@@ -64,7 +63,7 @@ public class ChapterProgressBar : MonoBehaviour
 
         if (this.currentBlockIndex >= 0 && this.currentBlockIndex < this.blocks.Count)
         {
-            this.currentBlockSequence = this.blocks[this.currentBlockIndex].PlayCurrentBlockAnimation(this.blockPulseLoop);
+            this.currentBlockSequence = this.blocks[this.currentBlockIndex].PlayCurrentBlockAnimation();
             await this.currentBlockSequence.AsyncWaitForCompletion();
         }
 

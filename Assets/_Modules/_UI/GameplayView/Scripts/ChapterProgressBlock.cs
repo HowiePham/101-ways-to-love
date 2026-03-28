@@ -38,19 +38,12 @@ public class ChapterProgressBlock : MonoBehaviour
         transform.localScale = Vector3.zero;
     }
 
-    public Sequence PlayCurrentBlockAnimation(int pulseLoops = 3)
+    public Sequence PlayCurrentBlockAnimation()
     {
         transform.localScale = Vector3.zero;
 
-        Sequence pulseSequence = DOTween.Sequence()
-            .Append(transform.DOScale(1.3f, 0.35f).SetEase(Ease.OutQuad))
-            .Append(transform.DOScale(1f, 0.35f).SetEase(Ease.InQuad))
-            .SetLoops(pulseLoops);
-
         return DOTween.Sequence()
             .Append(transform.DOScale(1.3f, 0.4f).SetEase(Ease.OutBack))
-            .Append(transform.DOScale(1f, 0.2f).SetEase(Ease.InQuad))
-            .AppendInterval(0.15f)
-            .Append(pulseSequence);
+            .Append(transform.DOScale(1f, 0.2f).SetEase(Ease.InQuad));
     }
 }
