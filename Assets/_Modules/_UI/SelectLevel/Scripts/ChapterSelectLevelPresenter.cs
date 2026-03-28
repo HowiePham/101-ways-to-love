@@ -104,8 +104,8 @@ public class ChapterSelectLevelPresenter : BaseViewPresenter
 
     private void LoadChapterPageData()
     {
-        int currentLevel = this.runtimeState.CurrentLevelOrder.Value;
-        this.chapterView.LoadPageData(this.listChapter, currentLevel);
+        int topLevel = this.runtimeState.TopLevelOrder.Value;
+        this.chapterView.LoadPageData(this.listChapter, topLevel);
     }
 
     private void JumpToCurrentPage()
@@ -118,7 +118,7 @@ public class ChapterSelectLevelPresenter : BaseViewPresenter
 
     private int GetCurrentChapterIndex()
     {
-        int currentOrder = this.runtimeState.CurrentLevelOrder.Value;
+        int currentOrder = this.runtimeState.TopLevelOrder.Value;
         LevelInfo currentLevel = this.levelOrder.GetByOrder(currentOrder);
 
         if (currentLevel == null)
@@ -168,14 +168,14 @@ public class ChapterSelectLevelPresenter : BaseViewPresenter
 
     private int GetTargetLevelOrder(ChapterInfo chapter)
     {
-        int currentOrder = this.runtimeState.CurrentLevelOrder.Value;
+        int topOrder = this.runtimeState.TopLevelOrder.Value;
         int firstStage = chapter.Levels[0].StageNumber;
         int lastStage = chapter.Levels[chapter.LevelCount - 1].StageNumber;
 
-        if (firstStage <= (currentOrder + 1) && (currentOrder + 1) <= lastStage)
+        if (firstStage <= (topOrder + 1) && (topOrder + 1) <= lastStage)
         {
-            // Current chapter: resume at current level (already 0-based)
-            return currentOrder;
+            // Current chapter: resume at top level (already 0-based)
+            return topOrder;
         }
 
         // Completed or new chapter: play first level (convert to 0-based)

@@ -10,7 +10,7 @@ namespace Mimi.Prototypes.SaveLoad
 
         public int CurrentLevel = 0;
         public int LastCompleteLevel;
-        public int TopLevel = 1;
+        public int TopLevel = 0;
 
         public int CurrentLevelChallenge = 0;
         public int LastCompleteLevelChallenge = 0;

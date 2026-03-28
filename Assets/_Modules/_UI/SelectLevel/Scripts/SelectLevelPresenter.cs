@@ -68,7 +68,7 @@ public class SelectLevelPresenter : BaseViewPresenter
 
     private void JumpToCurrentPage()
     {
-        int logicalPage = (int)Mathf.Ceil((float)this.runtimeState.CurrentLevelOrder.Value / this.selectLevelView.TotalLevelInAPage) - 1;
+        int logicalPage = (int)Mathf.Ceil((float)this.runtimeState.TopLevelOrder.Value / this.selectLevelView.TotalLevelInAPage) - 1;
         this.currentPageOrder = (this.selectLevelView.TotalPage - 1) - logicalPage;
         this.selectLevelView.JumpToPage(this.currentPageOrder);
     }
@@ -85,7 +85,7 @@ public class SelectLevelPresenter : BaseViewPresenter
 
     private void LoadLevelPageData()
     {
-        int levelTop = this.runtimeState.CurrentLevelOrder.Value;
+        int levelTop = this.runtimeState.TopLevelOrder.Value;
 
         this.selectLevelView.LoadPageData(this.listLevel, levelTop);
     }

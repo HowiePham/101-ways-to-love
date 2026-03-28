@@ -12,6 +12,7 @@ namespace Mimi.Prototypes.SaveLoad
             playerSave.SettingModel.VibrationOn = context.GameData.SettingModel.VibrationOn;
             // //Level
             playerSave.CurrentLevel = context.RuntimeState.CurrentLevelOrder.Value;
+            playerSave.TopLevel = context.RuntimeState.TopLevelOrder.Value;
             // playerSave.LastCompleteLevel = context.GameData.LastCompletedLevelOrder;
             // playerSave.TopLevel = context.GameData.LevelTop;
             // //Games

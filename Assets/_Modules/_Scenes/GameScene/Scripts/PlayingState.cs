@@ -142,7 +142,14 @@ namespace Mimi
             if (!IsLastLevel())
             {
                 int oldValue = this.Context.RuntimeState.CurrentLevelOrder.Value;
-                this.Context.RuntimeState.CurrentLevelOrder.Set(oldValue + 1);
+                int newValue = oldValue + 1;
+                this.Context.RuntimeState.CurrentLevelOrder.Set(newValue);
+
+                int topLevel = this.Context.RuntimeState.TopLevelOrder.Value;
+                if (newValue > topLevel)
+                {
+                    this.Context.RuntimeState.TopLevelOrder.Set(newValue);
+                }
             }
 
             Context.SaveManager.Save();
