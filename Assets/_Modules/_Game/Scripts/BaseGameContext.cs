@@ -335,7 +335,8 @@ namespace Mimi.Prototypes
             {
                 Ads = new AdminToolAdapter(DebugAdAdapter.Instance);
                 // Ads = new AdminToolAdapter(DebugAdAdapter.Instance);
-                Ads.SetInterstitial(EditorInterstitialAdapter.Instance);
+                var interstitialRequestStrategy = new ExponentialCooldown(999, 2, InternetMonitor);
+                Ads.SetInterstitial(new AutoRequestInterstitial(interstitialRequestStrategy, EditorInterstitialAdapter.Instance));
                 Ads.SetRewardVideo(EditorRewardVideoAdapter.Instance);
                 return;
             }
@@ -441,6 +442,8 @@ namespace Mimi.Prototypes
                 Ads.SetMrec(NullMrecAdapter.Instance);
             }
 
+            Ads.AppOpen.Load();
+
             if (RemoteConfig.GetValue(ConfigKey.ShowRewarded).Boolean)
             {
                 Debug.Log($"--- (ADS) Rewarded Ads initializing...");
@@ -457,13 +460,6 @@ namespace Mimi.Prototypes
             {
                 Ads.SetRewardVideo(EditorRewardVideoAdapter.Instance);
             }
-
-// #if DEVELOPMENT
-//             if (PlayerPrefs.GetInt("RemoveAdsCheat", 0) != 0)
-//             {
-//                 Ads.SetRewardVideo(EditorRewardVideoAdapter.Instance);
-//             }
-// #endif
 
             Ads.Banner.OnImpressionSuccess += AdsImpressionHandler;
             Ads.Interstitial.OnImpressionSuccess += AdsImpressionHandler;
