@@ -7,6 +7,7 @@ using _Modules.Ads;
 using Cysharp.Threading.Tasks;
 using Economy.Resources;
 using Firebase.Analytics;
+using Games;
 using GoogleMobileAds.Api;
 // using GoogleMobileAds.Api;
 using Mimi.Ads.Adapters;
@@ -172,8 +173,10 @@ namespace Mimi.Prototypes
             LogInitializeEvent("init_admob_consent");
             await InitGoogleMobileAds();
             LogInitializeEvent("init_gma");
+#if !UNITY_EDITOR
             SingularSDK.InitializeSingularSDK();
             LogInitializeEvent("init_mmp");
+#endif
             await InitAdsService();
             LogInitializeEvent("init_ads");
         }
@@ -332,7 +335,8 @@ namespace Mimi.Prototypes
             {
                 Ads = new AdminToolAdapter(DebugAdAdapter.Instance);
                 // Ads = new AdminToolAdapter(DebugAdAdapter.Instance);
-                Ads.SetInterstitial(EditorInterstitialAdapter.Instance);
+                var interstitialRequestStrategy = new ExponentialCooldown(999, 2, InternetMonitor);
+                Ads.SetInterstitial(new AutoRequestInterstitial(interstitialRequestStrategy, EditorInterstitialAdapter.Instance));
                 Ads.SetRewardVideo(EditorRewardVideoAdapter.Instance);
                 return;
             }
@@ -391,8 +395,9 @@ namespace Mimi.Prototypes
                     Ads.SetInterstitial(
                         new AutoRequestInterstitial(interstitialRequestStrategy,
                             // new FirebaseMeasureRevenueInterstitial(
-                            new SingularRevenueInterstitial(
-                                new MaxInterstitial(MaxInterUnityId))));
+                            new SingularLogInterstitial(
+                                new SingularRevenueInterstitial(
+                                    new MaxInterstitial(MaxInterUnityId)))));
                 }
                 else
                 {
@@ -437,6 +442,8 @@ namespace Mimi.Prototypes
                 Ads.SetMrec(NullMrecAdapter.Instance);
             }
 
+            Ads.AppOpen.Load();
+
             if (RemoteConfig.GetValue(ConfigKey.ShowRewarded).Boolean)
             {
                 Debug.Log($"--- (ADS) Rewarded Ads initializing...");
@@ -445,20 +452,14 @@ namespace Mimi.Prototypes
                 Ads.SetRewardVideo(
                     new AutoRequestRewardVideo(rewardVideoRequestStrategy,
                         // new FirebaseMeasureRevenueRewardVideo(
-                        new SingularRevenueRewardVideo(
-                            new MaxRewardVideo(MaxRewardUnitId))));
+                        new SingularLogRewardVideo(
+                            new SingularRevenueRewardVideo(
+                                new MaxRewardVideo(MaxRewardUnitId)))));
             }
             else
             {
                 Ads.SetRewardVideo(EditorRewardVideoAdapter.Instance);
             }
-
-// #if DEVELOPMENT
-//             if (PlayerPrefs.GetInt("RemoveAdsCheat", 0) != 0)
-//             {
-//                 Ads.SetRewardVideo(EditorRewardVideoAdapter.Instance);
-//             }
-// #endif
 
             Ads.Banner.OnImpressionSuccess += AdsImpressionHandler;
             Ads.Interstitial.OnImpressionSuccess += AdsImpressionHandler;

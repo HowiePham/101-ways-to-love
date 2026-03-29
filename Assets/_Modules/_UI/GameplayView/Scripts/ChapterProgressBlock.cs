@@ -30,20 +30,20 @@ public class ChapterProgressBlock : MonoBehaviour
 
     public void ResetScale()
     {
-        transform.localScale = Vector3.one;
+        this.blockImage.transform.localScale = Vector3.one;
     }
 
     public void HideScale()
     {
-        transform.localScale = Vector3.zero;
+        this.blockImage.transform.localScale = Vector3.zero;
     }
 
     public Sequence PlayCurrentBlockAnimation()
     {
-        transform.localScale = Vector3.zero;
+        this.blockImage.transform.localScale = Vector3.zero;
 
         return DOTween.Sequence()
-            .Append(transform.DOScale(1.3f, 0.4f).SetEase(Ease.OutBack))
-            .Append(transform.DOScale(1f, 0.2f).SetEase(Ease.InQuad));
+            .Append(this.blockImage.transform.DOScale(1.5f, 0.4f).SetEase(Ease.OutBack))
+            .Append(this.blockImage.transform.DOScale(1f, 0.2f).SetEase(Ease.InQuad));
     }
 }

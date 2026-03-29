@@ -44,6 +44,13 @@ namespace Mimi.Prototypes
             Debug.Log($"--- (PRESENTER) Init LoseViewPresenter");
             var loseViewPresenter = new LoseViewPresenter(this, this.Transform, gameContext.EventPublisher);
             AddViewPresenter(loseViewPresenter);
+            var chapterUnlockPresenter = new ChapterUnlockPresenter(
+                this, this.Transform,
+                gameContext.EventPublisher,
+                gameContext.ChapterLevelRepo,
+                gameContext.LevelOrder,
+                gameContext.RuntimeState);
+            AddViewPresenter(chapterUnlockPresenter);
             var removeAdsViewPresenter = new RemoveAdsViewPresenter(this, this.Transform);
             AddViewPresenter(removeAdsViewPresenter);
 

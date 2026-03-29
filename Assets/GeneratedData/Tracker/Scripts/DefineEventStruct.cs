@@ -62,6 +62,8 @@ public struct Feature_LEVEL_END : IEventData{
 	 public string level{ get; set; }
 	 public string level_mode{ get; set; }
 	 public string success{ get; set; }
+	 public string use_hint{ get; set; }
+	 public string use_skip{ get; set; }
 }
 
 public struct Feature_HINT : IEventData{
