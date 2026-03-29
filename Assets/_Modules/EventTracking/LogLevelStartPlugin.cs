@@ -3,6 +3,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using Mimi.Analytics.Tracking.Trackers;
 using Mimi.Events;
+using Mimi.Events.AsyncBus;
 using Mimi.Games.Plugins;
 using Mimi.Prototypes;
 using UnityEngine;
@@ -11,21 +12,31 @@ namespace Tracking
 {
     public class LogLevelStartPlugin : IPlugin
     {
-        private GameContext gameContext;
-
+        private readonly RuntimeState runtimeState;
+        private readonly IAsyncSubscriber eventSubscriber;
+        private readonly IAnalyticTracker analyticTracker;
         private IDisposable levelStartedSub;
+
+        public LogLevelStartPlugin(RuntimeState runtimeState, IAsyncSubscriber eventSubscriber, IAnalyticTracker analyticTracker)
+        {
+            this.runtimeState = runtimeState;
+            this.eventSubscriber = eventSubscriber;
+            this.analyticTracker = analyticTracker;
+        }
 
         public async UniTask Install()
         {
             await UniTask.CompletedTask;
-            this.levelStartedSub = this.gameContext.EventSubscriber.Subscribe<LevelStarted>(LevelStartedHandler);
+            this.levelStartedSub = this.eventSubscriber.Subscribe<LevelStarted>(LevelStartedHandler);
         }
 
         private async UniTask LevelStartedHandler(LevelStarted levelStarted, CancellationToken cancellationToken)
         {
             await UniTask.CompletedTask;
-            int currentLevelOrder = this.gameContext.RuntimeState.CurrentLevelOrder.Value + 1;
-            this.gameContext.AnalyticTracker.LogEvent(new Feature_LEVEL_START()
+            int currentLevelOrder = this.runtimeState.CurrentLevelOrder.Value + 1;
+            Debug.Log($"--- (TRACKING) Log level Start: {currentLevelOrder}");
+
+            this.analyticTracker.LogEvent(new Feature_LEVEL_START()
             {
                 eventName = Feature_LEVEL_START.EVENT_NAME.level_start,
                 level = currentLevelOrder.ToString(),

@@ -55,6 +55,10 @@ namespace Mimi.Prototypes
             pluginInstaller.AddPlugin(new LoadFirstAdsPlugin(this));
             pluginInstaller.AddPlugin(new ShowOpenAdAfterBootPlugin(this.Ads, this.EventSubscriber, this.RemoteConfig, this.SessionRecorder));
             pluginInstaller.AddPlugin(new ShowOpenAdOnResumePlugin(this.Ads, this.EventSubscriber, this.IsRemoveAds, this.SessionRecorder, this.RemoteConfig));
+            pluginInstaller.AddPlugin(new LogHintLevelShow(this.RuntimeState, this.EventSubscriber, this.AnalyticTracker));
+            pluginInstaller.AddPlugin(new LogLevelStartPlugin(this.RuntimeState, this.EventSubscriber, this.AnalyticTracker));
+            pluginInstaller.AddPlugin(new LogLevelCompletedPlugin(this.RuntimeState, this.EventSubscriber, this.AnalyticTracker));
+            pluginInstaller.AddPlugin(new LogLevelSkipPlugin(this.RuntimeState, this.EventSubscriber, this.AnalyticTracker));
         }
 
         private void HandleFirstAudio()

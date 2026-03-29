@@ -90,6 +90,20 @@ namespace Mimi
         private void LevelWinHandler()
         {
             this.winCamera.SetActive(true);
+            int currentLevelOrder = this.Context.RuntimeState.CurrentLevelOrder.Value;
+            this.Context.EventPublisher.PublishAsync(new LevelCompleted(currentLevelOrder.ToString(), LevelCompletionStatus.Win));
+
+            if (!IsLastLevel())
+            {
+                int nextLevelOrder = currentLevelOrder + 1;
+                int topLevel = this.Context.RuntimeState.TopLevelOrder.Value;
+                if (nextLevelOrder > topLevel)
+                {
+                    this.Context.RuntimeState.TopLevelOrder.Set(nextLevelOrder);
+                }
+            }
+
+            Context.SaveManager.Save();
         }
 
         private void ClickSoundHandler(LeanFinger finger)
@@ -144,12 +158,6 @@ namespace Mimi
                 int oldValue = this.Context.RuntimeState.CurrentLevelOrder.Value;
                 int newValue = oldValue + 1;
                 this.Context.RuntimeState.CurrentLevelOrder.Set(newValue);
-
-                int topLevel = this.Context.RuntimeState.TopLevelOrder.Value;
-                if (newValue > topLevel)
-                {
-                    this.Context.RuntimeState.TopLevelOrder.Set(newValue);
-                }
             }
 
             Context.SaveManager.Save();
