@@ -112,6 +112,13 @@ namespace _Modules._UI.WinView.Scripts
 
         private void NextLevelHandler()
         {
+            var chapterUnlockPresenter = this.ScenePresenter.GetViewPresenter<ChapterUnlockPresenter>();
+            if (chapterUnlockPresenter.TryShowForNextChapter())
+            {
+                Hide();
+                return;
+            }
+
             this.eventPublisher.PublishAsync(new NextLevelClicked());
             Hide();
         }
