@@ -173,8 +173,10 @@ namespace Mimi.Prototypes
             LogInitializeEvent("init_admob_consent");
             await InitGoogleMobileAds();
             LogInitializeEvent("init_gma");
+#if !UNITY_EDITOR
             SingularSDK.InitializeSingularSDK();
             LogInitializeEvent("init_mmp");
+#endif
             await InitAdsService();
             LogInitializeEvent("init_ads");
         }
