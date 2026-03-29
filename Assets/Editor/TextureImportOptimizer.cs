@@ -5,69 +5,89 @@ namespace Editor
 {
     public static class TextureImportOptimizer
     {
-        [MenuItem("Tools/Optimization/Fix Texture Compression")]
-        public static void FixTextureCompression()
+        [MenuItem("Tools/Optimization/Fix Texture Compression (Animations Only)")]
+        public static void FixAnimationTextureCompression()
         {
-            string[] guids = AssetDatabase.FindAssets("t:Texture2D", new[] { "Assets/_Levels" });
+            OptimizeTextures(new[] { "Assets/_Levels" }, true, "Animations");
+        }
+
+        [MenuItem("Tools/Optimization/Fix ALL Texture Compression")]
+        public static void FixAllTextureCompression()
+        {
+            OptimizeTextures(new[] { "Assets/_Levels", "Assets/_Modules" }, false, "All Textures");
+        }
+
+        private static void OptimizeTextures(string[] searchPaths, bool animationsOnly, string label)
+        {
             int fixedCount = 0;
             int skippedCount = 0;
+            int totalProcessed = 0;
 
             try
             {
-                for (int i = 0; i < guids.Length; i++)
+                foreach (string searchPath in searchPaths)
                 {
-                    string path = AssetDatabase.GUIDToAssetPath(guids[i]);
+                    string[] guids = AssetDatabase.FindAssets("t:Texture2D", new[] { searchPath });
 
-                    if (!path.Contains("/Animations/") || !path.EndsWith(".png"))
+                    for (int i = 0; i < guids.Length; i++)
                     {
-                        continue;
-                    }
+                        string path = AssetDatabase.GUIDToAssetPath(guids[i]);
 
-                    EditorUtility.DisplayProgressBar("Fixing Texture Compression",
-                        $"Processing {path}... ({i + 1}/{guids.Length})",
-                        (float)(i + 1) / guids.Length);
+                        if (animationsOnly && !path.Contains("/Animations/"))
+                            continue;
 
-                    var importer = AssetImporter.GetAtPath(path) as TextureImporter;
-                    if (importer == null) continue;
+                        if (!path.EndsWith(".png") && !path.EndsWith(".jpg") && !path.EndsWith(".jpeg"))
+                            continue;
 
-                    TextureImporterPlatformSettings defaultSettings = importer.GetDefaultPlatformTextureSettings();
-                    bool needsReimport = false;
+                        totalProcessed++;
+                        EditorUtility.DisplayProgressBar($"Fixing {label} Compression",
+                            $"Processing {path}... ({totalProcessed})",
+                            (float)(i + 1) / guids.Length);
 
-                    // Fix default platform: enable compression
-                    if (defaultSettings.textureCompression == TextureImporterCompression.Uncompressed)
-                    {
-                        defaultSettings.textureCompression = TextureImporterCompression.Compressed;
-                        defaultSettings.crunchedCompression = true;
-                        defaultSettings.compressionQuality = 75;
-                        importer.SetPlatformTextureSettings(defaultSettings);
-                        needsReimport = true;
-                    }
+                        var importer = AssetImporter.GetAtPath(path) as TextureImporter;
+                        if (importer == null) continue;
 
-                    // Add/fix Android override with ASTC
-                    TextureImporterPlatformSettings androidSettings = importer.GetPlatformTextureSettings("Android");
-                    if (!androidSettings.overridden ||
-                        androidSettings.format != TextureImporterFormat.ASTC_6x6 ||
-                        !androidSettings.crunchedCompression)
-                    {
-                        androidSettings.overridden = true;
-                        androidSettings.name = "Android";
-                        androidSettings.maxTextureSize = defaultSettings.maxTextureSize;
-                        androidSettings.format = TextureImporterFormat.ASTC_6x6;
-                        androidSettings.textureCompression = TextureImporterCompression.Compressed;
-                        androidSettings.crunchedCompression = true;
-                        androidSettings.compressionQuality = 75;
-                        importer.SetPlatformTextureSettings(androidSettings);
-                        needsReimport = true;
-                    }
+                        TextureImporterPlatformSettings defaultSettings =
+                            importer.GetDefaultPlatformTextureSettings();
+                        bool needsReimport = false;
 
-                    if (needsReimport)
-                    {
-                        importer.SaveAndReimport();
-                        fixedCount++;
-                    }
-                    else
-                    {
-                        skippedCount++;
+                        // Fix default platform: enable compression if uncompressed
+                        if (defaultSettings.textureCompression == TextureImporterCompression.Uncompressed)
+                        {
+                            defaultSettings.textureCompression = TextureImporterCompression.Compressed;
+                            defaultSettings.crunchedCompression = true;
+                            defaultSettings.compressionQuality = 75;
+                            importer.SetPlatformTextureSettings(defaultSettings);
+                            needsReimport = true;
+                        }
+
+                        // Add/fix Android override with ASTC_6x6
+                        TextureImporterPlatformSettings androidSettings =
+                            importer.GetPlatformTextureSettings("Android");
+                        if (!androidSettings.overridden ||
+                            androidSettings.format != TextureImporterFormat.ASTC_6x6 ||
+                            !androidSettings.crunchedCompression)
+                        {
+                            androidSettings.overridden = true;
+                            androidSettings.name = "Android";
+                            androidSettings.maxTextureSize = defaultSettings.maxTextureSize;
+                            androidSettings.format = TextureImporterFormat.ASTC_6x6;
+                            androidSettings.textureCompression = TextureImporterCompression.Compressed;
+                            androidSettings.crunchedCompression = true;
+                            androidSettings.compressionQuality = 75;
+                            importer.SetPlatformTextureSettings(androidSettings);
+                            needsReimport = true;
+                        }
+
+                        if (needsReimport)
+                        {
+                            importer.SaveAndReimport();
+                            fixedCount++;
+                        }
+                        else
+                        {
+                            skippedCount++;
+                        }
                     }
                 }
             }
@@ -76,8 +96,8 @@ namespace Editor
                 EditorUtility.ClearProgressBar();
             }
 
-            Debug.Log($"[TextureOptimizer] Done. Fixed: {fixedCount}, Already OK: {skippedCount}");
-            EditorUtility.DisplayDialog("Texture Optimization Complete",
+            Debug.Log($"[TextureOptimizer] {label} done. Fixed: {fixedCount}, Already OK: {skippedCount}");
+            EditorUtility.DisplayDialog($"{label} Optimization Complete",
                 $"Fixed: {fixedCount} textures\nAlready OK: {skippedCount} textures", "OK");
         }
     }
