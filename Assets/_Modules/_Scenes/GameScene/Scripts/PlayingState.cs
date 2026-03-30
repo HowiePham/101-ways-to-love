@@ -53,6 +53,7 @@ namespace Mimi
             Context.EventSubscriber.Subscribe<LevelTryAgain>(TryAgainLevelHandler).AddToBag(this.eventBag);
             Context.EventSubscriber.Subscribe<SelectLevel>(SelectLevelHandler).AddToBag(this.eventBag);
             Context.EventSubscriber.Subscribe<BackHome>(BackHomeHandler).AddToBag(this.eventBag);
+            Context.EventSubscriber.Subscribe<DestroyLevelRequested>(DestroyLevelRequestedHandler).AddToBag(this.eventBag);
             Context.EventSubscriber.Subscribe<UseHint>(UseHintHandler).AddToBag(this.eventBag);
 
             HardLevelViewPresenter.GetView<HardLevelView>().OnClickPlay +=
@@ -140,6 +141,12 @@ namespace Mimi
             DestroyOldLevelRoot();
 
             PlayLevel(Context.RuntimeState.CurrentLevelOrder.Value);
+            await UniTask.CompletedTask;
+        }
+
+        private async UniTask DestroyLevelRequestedHandler(DestroyLevelRequested destroyLevelRequested, CancellationToken cancellationToken)
+        {
+            DestroyOldLevelRoot();
             await UniTask.CompletedTask;
         }
 

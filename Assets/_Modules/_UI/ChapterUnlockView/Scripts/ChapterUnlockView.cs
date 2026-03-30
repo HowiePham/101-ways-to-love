@@ -4,6 +4,7 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using DG.Tweening.Core;
 using DG.Tweening.Plugins.Options;
+using Mimi.Audio;
 using Mimi.Prototypes.UI;
 using TMPro;
 using UnityEngine;
@@ -23,6 +24,9 @@ public class ChapterUnlockView : BaseView
     [SerializeField] private Button continueButton;
     [SerializeField] private Button backHomeButton;
     [SerializeField] private float lockBarSlideUpOffset = 80f;
+    [SerializeField, SoundKey] private string musicSoundKey;
+
+    public string MusicSoundKey => this.musicSoundKey;
 
     private CancellationTokenSource showCts;
     private TweenerCore<Vector3, Vector3, VectorOptions> continuePulseTween;
