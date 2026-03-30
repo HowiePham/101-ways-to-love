@@ -235,6 +235,8 @@ namespace Mimi.Prototypes
             PlayerResources = currencyRepo;
             IResource coinResource = new Resource("Coin");
             PlayerResources.AddResource(coinResource);
+            IResource lifeResource = new Resource("Life");
+            PlayerResources.AddResource(lifeResource);
         }
 
         private void CreateAudioService()
@@ -568,7 +570,6 @@ namespace Mimi.Prototypes
                 .SetString(ConfigKey.ShowAdLevels, "10")
                 .SetBool(ConfigKey.ResumeAds, true)
                 .SetBool(ConfigKey.RatingPopup, true)
-                .SetBool(ConfigKey.ShowAOA, true)
                 .SetBool(ConfigKey.ShowAOAFirstOpen, false)
                 .SetFloat(ConfigKey.CollapsibleCooldown, 30f)
                 .SetBool(ConfigKey.ShowCollapAd, true)

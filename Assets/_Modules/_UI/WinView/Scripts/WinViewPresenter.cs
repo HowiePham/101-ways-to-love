@@ -5,6 +5,7 @@ using Mimi.Events;
 using Mimi.Events.AsyncBus;
 using Mimi.Prototypes;
 using Mimi.Prototypes.UI;
+using Mimi.Rx.Variables;
 using UnityEngine;
 
 namespace _Modules._UI.WinView.Scripts
@@ -84,13 +85,14 @@ namespace _Modules._UI.WinView.Scripts
             bool isAdAvailable = !gameContext.IsRemoveAds && this.adsAdapter.Interstitial.IsReady;
             bool allowShowAd = false;
 
-            if (this.showAdLevelConfig.HasLevel(this.runtimeState.CurrentLevelOrder.ToString()))
+            int currentLevelOrder = this.runtimeState.CurrentLevelOrder.Value + 1;
+            if (this.showAdLevelConfig.HasLevel(currentLevelOrder.ToString()))
             {
                 allowShowAd = true;
             }
             else
             {
-                if (this.runtimeState.CurrentLevelOrder > this.showAdLevelConfig.MaxLevel)
+                if (currentLevelOrder > this.showAdLevelConfig.MaxLevel)
                 {
                     allowShowAd = true;
                 }
