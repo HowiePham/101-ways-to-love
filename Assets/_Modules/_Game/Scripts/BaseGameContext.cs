@@ -591,7 +591,14 @@ namespace Mimi.Prototypes
 
             await RemoteConfig.SetDefaultValues(blueprint);
 
-            this.RemoteConfig.OnFetchSuccess += () => { this.IsRemoteConfigInitialized = true; };
+            this.RemoteConfig.OnFetchSuccess += () =>
+            {
+                this.IsRemoteConfigInitialized = true;
+                Debug.Log($"--- (CONFIG) {ConfigKey.LevelDevelopment}: {RemoteConfig.GetValue(ConfigKey.LevelDevelopment).String}");
+                Debug.Log($"--- (CONFIG) {ConfigKey.LevelProduction}: {RemoteConfig.GetValue(ConfigKey.LevelProduction).String}");
+                Debug.Log($"--- (CONFIG) {ConfigKey.ChapterProduction}: {RemoteConfig.GetValue(ConfigKey.ChapterProduction).String}");
+                Debug.Log($"--- (CONFIG) {ConfigKey.ChapterDevelopment}: {RemoteConfig.GetValue(ConfigKey.ChapterDevelopment).String}");
+            };
 
             this.RemoteConfig.OnFetchError += (configFetchError) =>
             {
