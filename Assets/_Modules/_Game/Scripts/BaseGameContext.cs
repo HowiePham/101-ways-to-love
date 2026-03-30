@@ -29,6 +29,8 @@ using Mimi.Events.AsyncBus;
 using Mimi.Games.InitSteps;
 using Mimi.Games.Plugins;
 using Mimi.Games.ProjectConfigs;
+using Mimi.IAP;
+using Mimi.IAP.Providers.Unity;
 using Mimi.Network.Monitors;
 using Mimi.Persistence.LocalPrefs;
 using Mimi.Prototypes.Pooling;
@@ -58,6 +60,7 @@ namespace Mimi.Prototypes
         public IAsyncSubscriber EventSubscriber { private set; get; }
         public IConfigProvider RemoteConfig { private set; get; }
         public IAdAdapter Ads { private set; get; }
+        public IPurchasingProvider InAppPurchaseStore { private set; get; }
         public IAnalyticTracker AnalyticTracker { private set; get; }
         public IAudioService AudioService { private set; get; }
         public ILocalizationService Localization { private set; get; }
@@ -169,6 +172,8 @@ namespace Mimi.Prototypes
 
             await InitConfigService();
             LogInitializeEvent("init_config");
+            await InitIAPService();
+            LogInitializeEvent("init_iap");
             await InitAdmobConsent();
             LogInitializeEvent("init_admob_consent");
             await InitGoogleMobileAds();
@@ -243,6 +248,16 @@ namespace Mimi.Prototypes
         {
             SaveManager = new ConvertibleSaveManager(this);
             SaveManager.AddSaveLoadStrategy(new GameSaver(this), new GameLoader(this));
+        }
+
+        private async UniTask InitIAPService()
+        {
+            InAppPurchaseStore = new UnityPurchasingProvider(new MockPurchaseValidator());
+            // InAppPurchaseStore.Initialize(new[]
+            // {
+            //     new ProductMetadata(ProductKey.RemoveAds_Android, ProductType.NonConsumable),
+            // });
+            InAppPurchaseStore.Initialize(Array.Empty<ProductMetadata>());
         }
 
         private void InitInternetMonitor()

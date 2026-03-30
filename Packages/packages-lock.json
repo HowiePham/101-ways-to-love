@@ -669,6 +669,24 @@
       },
       "url": "https://gapustudio.net/upm"
     },
+    "com.mimi.iap.core": {
+      "version": "0.1.18",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://gapustudio.net/upm"
+    },
+    "com.mimi.iap.providers.unity": {
+      "version": "0.1.39",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.mimi.iap.core": "0.1.18",
+        "com.unity.purchasing": "5.0.1",
+        "com.mimi.logging.core": "0.1.1"
+      },
+      "url": "https://gapustudio.net/upm"
+    },
     "com.mimi.localizations": {
       "version": "0.1.1",
       "depth": 0,
@@ -1282,6 +1300,19 @@
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
+    "com.unity.purchasing": {
+      "version": "5.0.1",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.ugui": "1.0.0",
+        "com.unity.services.core": "1.14.0",
+        "com.unity.modules.androidjni": "1.0.0",
+        "com.unity.modules.jsonserialize": "1.0.0",
+        "com.unity.modules.unitywebrequest": "1.0.0"
+      },
+      "url": "https://packages.unity.com"
+    },
     "com.unity.recorder": {
       "version": "5.1.3",
       "depth": 0,
@@ -1351,6 +1382,17 @@
       "depth": 2,
       "source": "registry",
       "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.services.core": {
+      "version": "1.14.0",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.modules.androidjni": "1.0.0",
+        "com.unity.nuget.newtonsoft-json": "3.2.1",
+        "com.unity.modules.unitywebrequest": "1.0.0"
+      },
       "url": "https://packages.unity.com"
     },
     "com.unity.shadergraph": {
