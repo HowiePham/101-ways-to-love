@@ -11,7 +11,7 @@ namespace Mimi.Prototypes.LevelManagement
         public string IconName { get; }
         public int Chapter { get; }
 
-        public LevelInfo(string id, string prefabAddress, int stageNumber, int chapter, string iconName = "")
+        public LevelInfo(string id, string prefabAddress, int stageNumber, int chapter = 1, string iconName = "")
         {
             Id = id;
             PrefabAddress = prefabAddress;

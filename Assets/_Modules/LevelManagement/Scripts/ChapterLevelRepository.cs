@@ -9,11 +9,11 @@ namespace Mimi.Prototypes.LevelManagement
 
         public int ChapterCount => chapters.Count;
 
-        public ChapterLevelRepository(ILevelRepository repository, List<SheetChapterModel> chapterModels)
+        public ChapterLevelRepository(ILevelOrder levelOrder, List<SheetChapterModel> chapterModels)
         {
             var groups = new SortedDictionary<int, List<LevelInfo>>();
 
-            foreach (var level in repository.GetAll())
+            foreach (var level in levelOrder.GetAllOrdered())
             {
                 if (!groups.ContainsKey(level.Chapter))
                 {

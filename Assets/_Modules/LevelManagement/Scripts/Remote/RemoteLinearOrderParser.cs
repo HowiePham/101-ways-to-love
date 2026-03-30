@@ -12,10 +12,13 @@ namespace Mimi.Prototypes.LevelManagement
             this.levelRemoteData = levelRemoteData;
         }
 
-        public IEnumerable<string> Parse()
+        public IEnumerable<LevelOrderEntry> Parse()
         {
             RemoteOrderModel[] items = CSVSerializer.Deserialize<RemoteOrderModel>(this.levelRemoteData);
-            return items.Select(x => x.Id).Distinct();
+            return items
+                .GroupBy(x => x.Id)
+                .Select(g => g.First())
+                .Select(x => new LevelOrderEntry(x.Id, int.TryParse(x.Chapter, out int ch) ? ch : 1));
         }
     }
 }
