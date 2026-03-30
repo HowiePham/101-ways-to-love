@@ -19,8 +19,8 @@ namespace Editor
     /// - Addressable _Shared group has duplicate entries (14 entries with address "SFX_ThaTim")
     ///
     /// The solution:
-    /// 1. Verify duplicates have identical content (MD5 hash)
-    /// 2. Find the most-referenced GUID (the "primary" copy)
+    /// 1. Group duplicate files by MD5 hash (handles mixed-content sets)
+    /// 2. For each group of 2+ identical files, find the most-referenced GUID
     /// 3. Remap ALL references from other GUIDs to the primary GUID across ALL project files
     /// 4. Remove duplicate Addressable entries (keep only one per address)
     /// 5. Delete the unused copies
@@ -47,8 +47,8 @@ namespace Editor
 
             int totalDuplicateFiles = duplicates.Sum(d => d.Value.Count - 1);
             long totalWastedBytes = 0;
-            int sameContentCount = 0;
-            int differentContentCount = 0;
+            int consolidatableSetCount = 0;
+            int uniqueOnlyCount = 0;
 
             Debug.Log("========== DUPLICATE AUDIO REPORT ==========");
 
@@ -59,28 +59,43 @@ namespace Editor
                 long wastedBytes = fileSize * (copies.Count - 1);
                 totalWastedBytes += wastedBytes;
 
-                // Verify content is identical
-                bool contentIdentical = VerifyIdenticalContent(copies);
-                string contentLabel = contentIdentical ? "IDENTICAL" : "DIFFERENT CONTENT";
-                if (contentIdentical) sameContentCount++;
-                else differentContentCount++;
+                // Group by content hash
+                var hashGroups = GroupByContent(copies);
+                bool hasConsolidatable = hashGroups.Any(g => g.Value.Count > 1);
+                if (hasConsolidatable) consolidatableSetCount++;
+                else uniqueOnlyCount++;
+
+                string groupLabel = hashGroups.Count == 1
+                    ? "ALL IDENTICAL"
+                    : $"{hashGroups.Count} variants";
 
                 Debug.Log($"<b>{kvp.Key}</b> ({copies.Count} copies, {FormatSize(fileSize)} each, " +
-                          $"{FormatSize(wastedBytes)} wasted) [{contentLabel}]");
+                          $"{FormatSize(wastedBytes)} wasted) [{groupLabel}]");
 
-                foreach (string path in copies)
+                foreach (var hashGroup in hashGroups)
                 {
-                    string guid = AssetDatabase.AssetPathToGUID(path);
-                    int refCount = CountGuidReferences(guid, allProjectFiles);
-                    string refLabel = refCount > 0 ? $"REFERENCED x{refCount}" : "unreferenced";
-                    Debug.Log($"  - {path}  [{refLabel}]  guid:{guid}");
+                    if (hashGroups.Count > 1)
+                    {
+                        string hashLabel = hashGroup.Value.Count > 1
+                            ? $"IDENTICAL x{hashGroup.Value.Count} (will consolidate)"
+                            : "UNIQUE (will keep)";
+                        Debug.Log($"  Hash {hashGroup.Key.Substring(0, 8)}: {hashLabel}");
+                    }
+
+                    foreach (string path in hashGroup.Value)
+                    {
+                        string guid = AssetDatabase.AssetPathToGUID(path);
+                        int refCount = CountGuidReferences(guid, allProjectFiles);
+                        string refLabel = refCount > 0 ? $"REFERENCED x{refCount}" : "unreferenced";
+                        Debug.Log($"    - {path}  [{refLabel}]  guid:{guid}");
+                    }
                 }
             }
 
             Debug.Log($"\n=== SUMMARY ===");
             Debug.Log($"Duplicated filenames: {duplicates.Count}");
-            Debug.Log($"  Identical content: {sameContentCount}");
-            Debug.Log($"  Different content: {differentContentCount} (will be SKIPPED during consolidation)");
+            Debug.Log($"  With consolidatable groups: {consolidatableSetCount}");
+            Debug.Log($"  All unique content (no consolidation possible): {uniqueOnlyCount}");
             Debug.Log($"Extra copies: {totalDuplicateFiles}");
             Debug.Log($"Wasted space: {FormatSize(totalWastedBytes)}");
 
@@ -102,8 +117,8 @@ namespace Editor
 
             EditorUtility.DisplayDialog("Audio Deduplication Report",
                 $"Found {duplicates.Count} duplicated audio files\n" +
-                $"Identical content: {sameContentCount}\n" +
-                $"Different content (skipped): {differentContentCount}\n" +
+                $"With consolidatable groups: {consolidatableSetCount}\n" +
+                $"All unique (skip): {uniqueOnlyCount}\n" +
                 $"Extra copies: {totalDuplicateFiles}\n" +
                 $"Wasted: {FormatSize(totalWastedBytes)}\n\n" +
                 "See Console for full report.\n" +
@@ -123,16 +138,43 @@ namespace Editor
                 return;
             }
 
-            // Filter to only identical-content duplicates
-            var safeDuplicates = duplicates
-                .Where(kvp => VerifyIdenticalContent(kvp.Value))
-                .ToList();
+            // Build consolidation work items: for each filename, find groups of identical files with 2+ copies
+            var workItems = new List<ConsolidationItem>();
+            int skippedUniqueCount = 0;
 
-            int skippedCount = duplicates.Count - safeDuplicates.Count;
+            foreach (var kvp in duplicates)
+            {
+                var hashGroups = GroupByContent(kvp.Value);
+                foreach (var hashGroup in hashGroups)
+                {
+                    if (hashGroup.Value.Count > 1)
+                    {
+                        workItems.Add(new ConsolidationItem
+                        {
+                            FileName = kvp.Key,
+                            Copies = hashGroup.Value,
+                            Hash = hashGroup.Key
+                        });
+                    }
+                    else
+                    {
+                        skippedUniqueCount++;
+                    }
+                }
+            }
+
+            if (workItems.Count == 0)
+            {
+                Debug.Log("[AudioDeduplicator] No identical duplicate groups found to consolidate.");
+                EditorUtility.DisplayDialog("No Consolidation Needed",
+                    "All duplicate filenames have different content — nothing to consolidate.", "OK");
+                return;
+            }
 
             if (!EditorUtility.DisplayDialog("Consolidate Duplicates",
-                    $"Found {duplicates.Count} duplicate sets ({safeDuplicates.Count} identical, {skippedCount} different content - skipped).\n\n" +
-                    "For each identical duplicate set:\n" +
+                    $"Found {workItems.Count} identical groups to consolidate.\n" +
+                    $"Unique copies to keep in place: {skippedUniqueCount}\n\n" +
+                    "For each identical group:\n" +
                     "1. Finds the most-referenced copy across ALL project files\n" +
                     "2. Remaps ALL GUIDs from other copies to the kept copy\n" +
                     "3. Removes duplicate Addressable entries\n" +
@@ -159,15 +201,15 @@ namespace Editor
 
             try
             {
-                for (int i = 0; i < safeDuplicates.Count; i++)
+                for (int i = 0; i < workItems.Count; i++)
                 {
-                    var kvp = safeDuplicates[i];
-                    string fileName = kvp.Key;
-                    List<string> copies = kvp.Value;
+                    var item = workItems[i];
+                    string fileName = item.FileName;
+                    List<string> copies = item.Copies;
 
                     EditorUtility.DisplayProgressBar("Consolidating Audio",
-                        $"Processing {fileName} ({i + 1}/{safeDuplicates.Count})...",
-                        (float)(i + 1) / safeDuplicates.Count);
+                        $"Processing {fileName} ({i + 1}/{workItems.Count})...",
+                        (float)(i + 1) / workItems.Count);
 
                     // Step 1: Find the most-referenced copy
                     string keepPath = null;
@@ -214,13 +256,10 @@ namespace Editor
                         }
                     }
 
-                    // Step 3: Clean duplicate Addressable entries
-                    // After GUID remapping, _Shared.asset now has multiple entries with the same GUID
-                    // and same address. We need to remove the duplicates.
-                    // This is handled in a separate pass after all remapping is done.
-
-                    // Step 4: Move the kept copy to Common/
+                    // Step 3: Move the kept copy to Common/
                     string targetPath = $"{commonPath}/{fileName}";
+                    // If a file with the same name already exists in Common (from a different hash group),
+                    // keep it in place — the first group already claimed that filename
                     if (!File.Exists(targetPath))
                     {
                         string moveResult = AssetDatabase.MoveAsset(keepPath, targetPath);
@@ -232,7 +271,7 @@ namespace Editor
                         movedCount++;
                     }
 
-                    // Step 5: Delete extra copies
+                    // Step 4: Delete extra copies
                     foreach (string copyPath in copies)
                     {
                         if (copyPath == keepPath) continue;
@@ -242,11 +281,12 @@ namespace Editor
                         }
                     }
 
-                    Debug.Log($"[AudioDeduplicator] {fileName}: kept {keepPath} (refs:{maxRefs}), " +
+                    Debug.Log($"[AudioDeduplicator] {fileName} (hash:{item.Hash.Substring(0, 8)}): " +
+                              $"kept {keepPath} (refs:{maxRefs}), " +
                               $"remapped {otherGuids.Count} GUIDs, deleted {copies.Count - 1} copies");
                 }
 
-                // Step 6: Clean duplicate Addressable entries in _Shared.asset
+                // Step 5: Clean duplicate Addressable entries in _Shared.asset
                 EditorUtility.DisplayProgressBar("Consolidating Audio",
                     "Cleaning Addressable group entries...", 1f);
                 addressableEntriesCleaned = CleanAddressableEntries();
@@ -263,15 +303,15 @@ namespace Editor
             Debug.Log($"Files with remapped GUIDs: {remappedFileCount}");
             Debug.Log($"Deleted copies: {deletedCount}");
             Debug.Log($"Addressable entries cleaned: {addressableEntriesCleaned}");
-            if (skippedCount > 0)
-                Debug.LogWarning($"Skipped {skippedCount} sets with different content (same name, different audio)");
+            if (skippedUniqueCount > 0)
+                Debug.Log($"Unique copies kept in place: {skippedUniqueCount}");
 
             EditorUtility.DisplayDialog("Consolidation Complete",
                 $"Moved to Common/: {movedCount}\n" +
                 $"Files with remapped GUIDs: {remappedFileCount}\n" +
                 $"Deleted copies: {deletedCount}\n" +
                 $"Addressable entries cleaned: {addressableEntriesCleaned}\n" +
-                (skippedCount > 0 ? $"\nSkipped: {skippedCount} (different content)" : ""),
+                (skippedUniqueCount > 0 ? $"\nUnique copies kept in place: {skippedUniqueCount}" : ""),
                 "OK");
         }
 
@@ -392,14 +432,20 @@ namespace Editor
         }
 
         /// <summary>
-        /// Verifies all files in the list have identical content using MD5 hash.
+        /// Groups files by their MD5 content hash.
+        /// Returns a dictionary of hash → list of paths with that hash.
         /// </summary>
-        private static bool VerifyIdenticalContent(List<string> paths)
+        private static Dictionary<string, List<string>> GroupByContent(List<string> paths)
         {
-            if (paths.Count <= 1) return true;
-
-            string firstHash = ComputeFileHash(paths[0]);
-            return paths.Skip(1).All(p => ComputeFileHash(p) == firstHash);
+            var groups = new Dictionary<string, List<string>>();
+            foreach (string path in paths)
+            {
+                string hash = ComputeFileHash(path);
+                if (!groups.ContainsKey(hash))
+                    groups[hash] = new List<string>();
+                groups[hash].Add(path);
+            }
+            return groups;
         }
 
         private static string ComputeFileHash(string path)
@@ -435,6 +481,13 @@ namespace Editor
             if (bytes >= 1048576) return $"{bytes / 1048576f:F1}MB";
             if (bytes >= 1024) return $"{bytes / 1024f:F0}KB";
             return $"{bytes}B";
+        }
+
+        private struct ConsolidationItem
+        {
+            public string FileName;
+            public List<string> Copies;
+            public string Hash;
         }
     }
 }
