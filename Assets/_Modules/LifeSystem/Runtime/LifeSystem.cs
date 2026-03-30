@@ -27,6 +27,7 @@ public class LifeSystem
     private const string LifeDataKey = "LIFE";
     private CoroutineHandle lifeTimerCoroutine;
     private YesNoDialog activeLifeDialog;
+    private DialogId dialogId;
 
     public int CurrentLifeCount => (int)this.playerResources.GetAmount(LifeResourceId);
 
@@ -86,6 +87,7 @@ public class LifeSystem
         
         if (this.dialogManager.TryShowModalDialogOnce(dialogId, out this.activeLifeDialog))
         {
+            this.dialogId = dialogId;
             this.activeLifeDialog.SetYesCallback(OnGetMoreLifeClicked);
         }
     }
@@ -138,7 +140,7 @@ public class LifeSystem
     {
         if (CurrentLifeCount > 0)
         {
-            this.playerResources.Sink(LifeResourceId, 1, TransactionInfo.New(LifeResourceId, "LifeSystem", "UseLife"));
+            this.playerResources.Sink(LifeResourceId, 1, TransactionInfo.New(LifeResourceId, "gameplay_view", "lose_life"));
             SetTimeToAddNextLife();
             SaveLifeData();
             this.publisher.PublishAsync(new LifeUpdated(CurrentLifeCount));
@@ -149,7 +151,8 @@ public class LifeSystem
     {
         if (CurrentLifeCount < this.maxLifeCount)
         {
-            this.playerResources.Source(LifeResourceId, 1, TransactionInfo.New(LifeResourceId, "LifeSystem", "RecoverLife"));
+            var placement = this.dialogId == DialogId.EndOfLifeDialog ? "gameplay_view" : "select_level_view";
+            this.playerResources.Source(LifeResourceId, 1, TransactionInfo.New(LifeResourceId, placement, "get_more_life"));
             SaveLifeData();
             this.publisher.PublishAsync(new LifeUpdated(CurrentLifeCount));
         }

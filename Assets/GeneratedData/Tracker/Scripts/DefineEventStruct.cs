@@ -129,5 +129,38 @@ public struct Feature_LEVEL_EXIT : IEventData{
 	 public string play_duration{ get; set; }
 }
 
+public struct Feature_LEVEL_REOPEN : IEventData{
+	 public enum EVENT_NAME {
+		 level_reopen}
+
+	 public EVENT_NAME eventName { get; set; }
+	 public string level{ get; set; }
+	 public string mode{ get; set; }
+}
+
+public struct Feature_RESOURCE_EARN : IEventData{
+	 public enum EVENT_NAME {
+		 resource_earn}
+
+	 public EVENT_NAME eventName { get; set; }
+	 public string resource_type{ get; set; }
+	 public string resource_name{ get; set; }
+	 public string resource_amount{ get; set; }
+	 public string placement{ get; set; }
+	 public string resource_balance{ get; set; }
+}
+
+public struct Feature_RESOURCE_SPEND : IEventData{
+	 public enum EVENT_NAME {
+		 resource_spend}
+
+	 public EVENT_NAME eventName { get; set; }
+	 public string resource_type{ get; set; }
+	 public string resource_name{ get; set; }
+	 public string resource_amount{ get; set; }
+	 public string placement{ get; set; }
+	 public string resource_balance{ get; set; }
+}
+
 	}
 

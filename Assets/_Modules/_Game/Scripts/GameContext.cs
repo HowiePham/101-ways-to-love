@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Ads;
+using Economy.Resources;
 using Games;
 using Mimi.Audio;
 using Mimi.Games.InitSteps;
@@ -61,6 +62,8 @@ namespace Mimi.Prototypes
             pluginInstaller.AddPlugin(new LogAdCompletePlugin(this.Ads, this.AnalyticTracker));
             pluginInstaller.AddPlugin(new LogAdRequestPlugin(this.Ads, this.AnalyticTracker));
             pluginInstaller.AddPlugin(new LogLevelExitPlugin(this.RuntimeState, this.EventSubscriber, this.AnalyticTracker));
+            pluginInstaller.AddPlugin(new LogLevelReopenPlugin(this.RuntimeState, this.EventSubscriber, this.AnalyticTracker));
+            pluginInstaller.AddPlugin(new LogResourceChangedPlugin((ResourceCollection)this.PlayerResources, this.AnalyticTracker));
         }
 
         private void CreateLevelServices()
