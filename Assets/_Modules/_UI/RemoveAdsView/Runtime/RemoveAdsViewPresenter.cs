@@ -7,12 +7,10 @@ public class RemoveAdsViewPresenter : BaseViewPresenter
 {
     private RemoveAdsView removeAdsView;
     private readonly IAsyncPublisher eventPublisher;
-    private readonly string placement;
 
-    public RemoveAdsViewPresenter(BaseScenePresenter scenePresenter, Transform transform, IAsyncPublisher eventPublisher, string placement = "ingame_icon") : base(scenePresenter, transform)
+    public RemoveAdsViewPresenter(BaseScenePresenter scenePresenter, Transform transform, IAsyncPublisher eventPublisher) : base(scenePresenter, transform)
     {
         this.eventPublisher = eventPublisher;
-        this.placement = placement;
     }
 
     protected override void AddViews()
@@ -31,12 +29,12 @@ public class RemoveAdsViewPresenter : BaseViewPresenter
         this.removeAdsView.OnBuyRemoveAdsClicked += BuyRemoveAdsHandler;
         this.removeAdsView.OnCloseClicked += CloseClickedHandler;
 
-        this.eventPublisher.PublishAsync(new IapShow(this.placement, "pack", "click", "removeads"));
+        this.eventPublisher.PublishAsync(new IapShow("remove_ads_view", "pack", "click", "removeads"));
     }
 
     private void BuyRemoveAdsHandler()
     {
-        this.eventPublisher.PublishAsync(new IapClick(this.placement, "pack", "click", "removeads"));
+        this.eventPublisher.PublishAsync(new IapClick("remove_ads_view", "pack", "click", "removeads"));
     }
 
     private void CloseClickedHandler()
