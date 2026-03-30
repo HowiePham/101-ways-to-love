@@ -235,6 +235,8 @@ namespace Mimi.Prototypes
             PlayerResources = currencyRepo;
             IResource coinResource = new Resource("Coin");
             PlayerResources.AddResource(coinResource);
+            IResource lifeResource = new Resource("Life");
+            PlayerResources.AddResource(lifeResource);
         }
 
         private void CreateAudioService()

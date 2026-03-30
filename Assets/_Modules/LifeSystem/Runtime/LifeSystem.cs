@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using Economy.Resources;
 using MEC;
 using Mimi.Ads.Adapters;
 using Mimi.Events.AsyncBus;
@@ -13,9 +14,11 @@ using UnityEngine;
 
 public class LifeSystem
 {
+    private const string LifeResourceId = "Life";
     private readonly int maxLifeCount;
     private readonly int timeToAddLifeInSeconds;
     private readonly LifeData lifeData;
+    private readonly IResourceCollection playerResources;
     private readonly IAsyncPublisher publisher;
     private readonly IAsyncSubscriber subscriber;
     private readonly DialogManager dialogManager;
@@ -25,16 +28,13 @@ public class LifeSystem
     private CoroutineHandle lifeTimerCoroutine;
     private YesNoDialog activeLifeDialog;
 
-    public int CurrentLifeCount
-    {
-        get => this.lifeData.CurrentLifeCount;
-        private set => this.lifeData.CurrentLifeCount = value;
-    }
+    public int CurrentLifeCount => (int)this.playerResources.GetAmount(LifeResourceId);
 
-    public LifeSystem(int maxLifeCount, int timeToAddLifeInSeconds, IAsyncPublisher publisher, IAsyncSubscriber subscriber, DialogManager dialogManager, IAdAdapter adAdapter)
+    public LifeSystem(int maxLifeCount, int timeToAddLifeInSeconds, IResourceCollection playerResources, IAsyncPublisher publisher, IAsyncSubscriber subscriber, DialogManager dialogManager, IAdAdapter adAdapter)
     {
         this.maxLifeCount = maxLifeCount;
         this.timeToAddLifeInSeconds = timeToAddLifeInSeconds;
+        this.playerResources = playerResources;
         this.publisher = publisher;
         this.subscriber = subscriber;
         this.dialogManager = dialogManager;
@@ -46,14 +46,13 @@ public class LifeSystem
         if (PlayerPrefs.HasKey(LifeDataKey))
         {
             this.lifeData = JsonUtility.FromJson<LifeData>(PlayerPrefs.GetString(LifeDataKey));
+            this.playerResources.SetAmount(LifeResourceId, this.lifeData.CurrentLifeCount, TransactionInfo.New(LifeResourceId, "LifeSystem", "Restore"));
         }
         else
         {
-            this.lifeData = new LifeData
-            {
-                CurrentLifeCount = maxLifeCount
-            };
-            PlayerPrefs.SetString(LifeDataKey, JsonUtility.ToJson(this.lifeData));
+            this.lifeData = new LifeData { CurrentLifeCount = maxLifeCount };
+            this.playerResources.SetAmount(LifeResourceId, maxLifeCount, TransactionInfo.New(LifeResourceId, "LifeSystem", "Init"));
+            SaveLifeData();
         }
 
         CheckLife();
@@ -120,7 +119,7 @@ public class LifeSystem
         if (this.lifeData.AddedNextTime.Count > 0)
         {
             this.lifeData.AddedNextTime.RemoveAt(this.lifeData.AddedNextTime.Count - 1);
-            PlayerPrefs.SetString(LifeDataKey, JsonUtility.ToJson(this.lifeData));
+            SaveLifeData();
         }
 
         RunTimer();
@@ -129,13 +128,19 @@ public class LifeSystem
         this.activeLifeDialog = null;
     }
 
+    private void SaveLifeData()
+    {
+        this.lifeData.CurrentLifeCount = CurrentLifeCount;
+        PlayerPrefs.SetString(LifeDataKey, JsonUtility.ToJson(this.lifeData));
+    }
+
     private void LooseLife()
     {
         if (CurrentLifeCount > 0)
         {
-            CurrentLifeCount--;
-            PlayerPrefs.SetString(LifeDataKey, JsonUtility.ToJson(this.lifeData));
+            this.playerResources.Sink(LifeResourceId, 1, TransactionInfo.New(LifeResourceId, "LifeSystem", "UseLife"));
             SetTimeToAddNextLife();
+            SaveLifeData();
             this.publisher.PublishAsync(new LifeUpdated(CurrentLifeCount));
         }
     }
@@ -144,17 +149,17 @@ public class LifeSystem
     {
         if (CurrentLifeCount < this.maxLifeCount)
         {
-            this.lifeData.CurrentLifeCount += 1;
-            PlayerPrefs.SetString(LifeDataKey, JsonUtility.ToJson(this.lifeData));
+            this.playerResources.Source(LifeResourceId, 1, TransactionInfo.New(LifeResourceId, "LifeSystem", "RecoverLife"));
+            SaveLifeData();
             this.publisher.PublishAsync(new LifeUpdated(CurrentLifeCount));
         }
     }
 
     public void RefillLife()
     {
-        CurrentLifeCount = this.maxLifeCount;
+        this.playerResources.SetAmount(LifeResourceId, this.maxLifeCount, TransactionInfo.New(LifeResourceId, "LifeSystem", "Refill"));
         this.lifeData.AddedNextTime = new List<string>();
-        PlayerPrefs.SetString(LifeDataKey, JsonUtility.ToJson(this.lifeData));
+        SaveLifeData();
     }
 
     public string GetRemainingTime(TimeSpan timeSpan)
@@ -200,7 +205,7 @@ public class LifeSystem
             this.lifeData.AddedNextTime.Add(nextTime.ToString());
         }
 
-        PlayerPrefs.SetString(LifeDataKey, JsonUtility.ToJson(lifeData));
+        SaveLifeData();
     }
 
     private void CheckLife()
@@ -232,7 +237,7 @@ public class LifeSystem
             this.lifeData.AddedNextTime.Clear();
         }
 
-        PlayerPrefs.SetString(LifeDataKey, JsonUtility.ToJson(this.lifeData));
+        SaveLifeData();
     }
 
     public void RunTimer()
