@@ -162,5 +162,40 @@ public struct Feature_RESOURCE_SPEND : IEventData{
 	 public string resource_balance{ get; set; }
 }
 
+public struct Feature_IAP_SHOW : IEventData{
+	 public enum EVENT_NAME {
+		 iap_show}
+
+	 public EVENT_NAME eventName { get; set; }
+	 public string placement{ get; set; }
+	 public string show_type{ get; set; }
+	 public string trigger_type{ get; set; }
+	 public string pack_name{ get; set; }
+}
+
+public struct Feature_IAP_CLICK : IEventData{
+	 public enum EVENT_NAME {
+		 iap_click}
+
+	 public EVENT_NAME eventName { get; set; }
+	 public string placement{ get; set; }
+	 public string show_type{ get; set; }
+	 public string trigger_type{ get; set; }
+	 public string pack_name{ get; set; }
+}
+
+public struct Feature_IAP_PURCHASE : IEventData{
+	 public enum EVENT_NAME {
+		 iap_purchase}
+
+	 public EVENT_NAME eventName { get; set; }
+	 public string placement{ get; set; }
+	 public string show_type{ get; set; }
+	 public string trigger_type{ get; set; }
+	 public string pack_name{ get; set; }
+	 public string price{ get; set; }
+	 public string currency{ get; set; }
+}
+
 	}
 
