@@ -9,11 +9,9 @@ using Economy.Resources;
 using Firebase.Analytics;
 using Games;
 using GoogleMobileAds.Api;
-// using GoogleMobileAds.Api;
 using Mimi.Ads.Adapters;
 using Mimi.Ads.Adapters.Admob;
 using Mimi.Ads.Adapters.Extensions.AdminTools;
-// using Mimi.Ads.Adapters.Admob;
 using Mimi.Ads.Adapters.Extensions.Amazons.Maxs;
 using Mimi.Ads.Adapters.Extensions.FirebaseAdRevenue;
 using Mimi.Ads.Adapters.Extensions.SingularAdRevenue;
@@ -188,9 +186,7 @@ namespace Mimi.Prototypes
 
         private void CreateAnalyticService()
         {
-            // AnalyticTracker = new ReflectionTracker(new FirebaseTrackingProvider());
-            AnalyticTracker = new NullTracker();
-
+            AnalyticTracker = new ReflectionTracker(new FirebaseTrackingProvider());
 #if UNITY_EDITOR
             AnalyticTracker = new NullTracker();
 #endif
@@ -303,7 +299,7 @@ namespace Mimi.Prototypes
                 return;
             }
 
-            // FirebaseAnalytics.LogEvent(eventName);
+            FirebaseAnalytics.LogEvent(eventName);
         }
 
         private async UniTask InitGoogleMobileAds()
@@ -385,17 +381,17 @@ namespace Mimi.Prototypes
                     {
                         Debug.Log($"--- (ADS) Admob Banner Ads initializing...");
                         Ads.SetBanner(new AutoRequestBanner(bannerRequestStrategy,
-                            // new FirebaseMeasureRevenueBanner(
-                            new SingularRevenueBanner(
-                                new AdmobBanner(AdmobBannerId))));
+                            new FirebaseMeasureRevenueBanner(
+                                new SingularRevenueBanner(
+                                    new AdmobBanner(AdmobBannerId)))));
                     }
                     else
                     {
                         Ads.SetBanner(new AutoRequestBanner(bannerRequestStrategy,
-                            // new FirebaseMeasureRevenueBanner(
-                            new SingularRevenueBanner(
-                                new AmazonMaxBanner(TabletAmazonBannerId,
-                                    PhoneAmazonUnitId, MaxBannerUnitId))));
+                            new FirebaseMeasureRevenueBanner(
+                                new SingularRevenueBanner(
+                                    new AmazonMaxBanner(TabletAmazonBannerId,
+                                        PhoneAmazonUnitId, MaxBannerUnitId)))));
                     }
                 }
                 else
@@ -409,10 +405,10 @@ namespace Mimi.Prototypes
 
                     Ads.SetInterstitial(
                         new AutoRequestInterstitial(interstitialRequestStrategy,
-                            // new FirebaseMeasureRevenueInterstitial(
-                            new SingularLogInterstitial(
-                                new SingularRevenueInterstitial(
-                                    new MaxInterstitial(MaxInterUnityId)))));
+                            new FirebaseMeasureRevenueInterstitial(
+                                new SingularLogInterstitial(
+                                    new SingularRevenueInterstitial(
+                                        new MaxInterstitial(MaxInterUnityId))))));
                 }
                 else
                 {
@@ -436,17 +432,17 @@ namespace Mimi.Prototypes
 
                     Ads.SetAppOpen(
                         new AutoRequestAppOpen(appOpenRequestStrategy,
-                            // new FirebaseMeasureRevenueAppOpen(
-                            new SingularRevenueAppOpen(
-                                new MaxAppOpen(MaxAOAUnitId))));
+                            new FirebaseMeasureRevenueAppOpen(
+                                new SingularRevenueAppOpen(
+                                    new MaxAppOpen(MaxAOAUnitId)))));
                 }
                 else
                 {
                     Ads.SetAppOpen(
                         new AutoRequestAppOpen(appOpenRequestStrategy,
-                            // new FirebaseMeasureRevenueAppOpen(
-                            new SingularRevenueAppOpen(
-                                new AdmobAppOpen(AdmobAOAUnitId))));
+                            new FirebaseMeasureRevenueAppOpen(
+                                new SingularRevenueAppOpen(
+                                    new AdmobAppOpen(AdmobAOAUnitId)))));
                 }
             }
             else
@@ -466,10 +462,10 @@ namespace Mimi.Prototypes
                 var rewardVideoRequestStrategy = new ExponentialCooldown(999, 2, InternetMonitor);
                 Ads.SetRewardVideo(
                     new AutoRequestRewardVideo(rewardVideoRequestStrategy,
-                        // new FirebaseMeasureRevenueRewardVideo(
-                        new SingularLogRewardVideo(
-                            new SingularRevenueRewardVideo(
-                                new MaxRewardVideo(MaxRewardUnitId)))));
+                        new FirebaseMeasureRevenueRewardVideo(
+                            new SingularLogRewardVideo(
+                                new SingularRevenueRewardVideo(
+                                    new MaxRewardVideo(MaxRewardUnitId))))));
             }
             else
             {
@@ -500,7 +496,7 @@ namespace Mimi.Prototypes
                 new Parameter(FirebaseAnalytics.ParameterCurrency, "USD"),
                 new Parameter(FirebaseAnalytics.ParameterValue, impressionData.Revenue)
             };
-            // FirebaseAnalytics.LogEvent("ad_impression_mediation", parameters);
+            FirebaseAnalytics.LogEvent("ad_impression_mediation", parameters);
         }
 
         private void CreateMrecWithCustomPosition()
@@ -511,8 +507,8 @@ namespace Mimi.Prototypes
             var mrecRequestStrategy = new ExponentialCooldown(999, 2, InternetMonitor);
 
             Ads.SetMrec(new AutoRequestMrec(mrecRequestStrategy,
-                // new FirebaseAdRevenueMrec(
-                new SingularRevenueMrec(this.maxMrec)));
+                new FirebaseAdRevenueMrec(
+                    new SingularRevenueMrec(this.maxMrec))));
         }
 
         private void CalculateMrecPos()
@@ -543,8 +539,7 @@ namespace Mimi.Prototypes
             this.IsRemoteConfigInitialized = false;
 
 #if !UNITY_EDITOR
-            // RemoteConfig = new Mimi.Configs.Firebase.FirebaseConfigProvider(new PlayPrefCache());
-                        RemoteConfig = NullConfigProvider.Instance;
+            RemoteConfig = new Mimi.Configs.Firebase.FirebaseConfigProvider(new PlayPrefCache());
 #else
             RemoteConfig = NullConfigProvider.Instance;
 #endif
