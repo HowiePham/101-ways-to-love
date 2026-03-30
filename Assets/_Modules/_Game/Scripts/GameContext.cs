@@ -67,13 +67,51 @@ namespace Mimi.Prototypes
         private void CreateLevelServices()
         {
             LevelRepository = new SheetLevelRepository(GetDataSheet<SheetLevelModel>());
-            List<SheetChapterModel> chapterModels = GetDataSheet<SheetChapterModel>();
-            IEnumerable<LevelOrderEntry> levelOrderEntries = GetDataSheet<SheetOrderModel>()
+            LevelOrder = new LinearLevelOrder(LevelRepository, GetLevelOrderEntries());
+            ChapterLevelRepo = new ChapterLevelRepository(LevelOrder, GetChapterModels());
+        }
+
+        private IEnumerable<LevelOrderEntry> GetLevelOrderEntries()
+        {
+            string levelConfigString = string.Empty;
+#if DEVELOPMENT
+            levelConfigString = this.RemoteConfig.GetValue(ConfigKey.LevelDevelopment).String;
+#else
+            levelConfigString = this.RemoteConfig.GetValue(ConfigKey.LevelProduction).String;
+#endif
+            if (!string.IsNullOrEmpty(levelConfigString))
+            {
+                var remoteEntries = new RemoteLinearOrderParser(levelConfigString).Parse().ToList();
+                if (remoteEntries.Count > 0)
+                {
+                    return remoteEntries;
+                }
+            }
+
+            return GetDataSheet<SheetOrderModel>()
                 .GroupBy(x => x.Id)
                 .Select(g => g.First())
                 .Select(x => new LevelOrderEntry(x.Id, int.TryParse(x.Chapter, out int ch) ? ch : 1));
-            LevelOrder = new LinearLevelOrder(LevelRepository, levelOrderEntries);
-            ChapterLevelRepo = new ChapterLevelRepository(LevelOrder, chapterModels);
+        }
+
+        private IEnumerable<IChapterModel> GetChapterModels()
+        {
+            string chapterConfigString = string.Empty;
+#if DEVELOPMENT
+            chapterConfigString = this.RemoteConfig.GetValue(ConfigKey.ChapterDevelopment).String;
+#else
+            chapterConfigString = this.RemoteConfig.GetValue(ConfigKey.ChapterProduction).String;
+#endif
+            if (!string.IsNullOrEmpty(chapterConfigString))
+            {
+                var remoteChapters = new RemoteChapterParser(chapterConfigString).Parse();
+                if (remoteChapters.Length > 0)
+                {
+                    return remoteChapters;
+                }
+            }
+
+            return GetDataSheet<SheetChapterModel>();
         }
 
         private void InitHintLevelConfig()

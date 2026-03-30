@@ -32,13 +32,13 @@ public class ChapterSelectLevelPresenter : BaseViewPresenter
     private int currentPageOrder = 1;
 
     public ChapterSelectLevelPresenter(BaseScenePresenter scenePresenter, Transform transform,
-        ILevelRepository levelRepository, ILevelOrder levelOrder,
+        ChapterLevelRepository chapterLevelRepo, ILevelOrder levelOrder,
         IAudioService audioService, IAdAdapter adAdapter, RuntimeState runtimeState,
         IAsyncPublisher eventPublisher, IAsyncSubscriber eventSubscriber,
-        LifeSystem lifeSystem, List<SheetChapterModel> chapterModels)
+        LifeSystem lifeSystem)
         : base(scenePresenter, transform)
     {
-        this.chapterLevelRepo = new ChapterLevelRepository(levelRepository, chapterModels);
+        this.chapterLevelRepo = chapterLevelRepo;
         this.levelOrder = levelOrder;
         this.runtimeState = runtimeState;
         this.audioService = audioService;
