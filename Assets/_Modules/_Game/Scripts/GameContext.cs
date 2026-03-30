@@ -30,23 +30,18 @@ namespace Mimi.Prototypes
         public override void CreateServices()
         {
             CreateLevelServices();
-            LogInitializeEvent("init_level_service");
             InitShowInterstitialLevelConfig();
-            LogInitializeEvent("init_show_interstitial_level_config");
             InitHintLevelConfig();
-            LogInitializeEvent("init_hint_level_config");
             InitHardLevelConfig();
-            LogInitializeEvent("init_hard_level_config");
             InitLootSystem();
-            LogInitializeEvent("init_loot_system");
             InitLifeSystem();
-            LogInitializeEvent("init_life_system");
         }
 
         private void InitHardLevelConfig()
         {
             this.HardLevelConfig = new LevelConfig();
             this.HardLevelConfig.ParseConfig(this.RemoteConfig.GetValue(ConfigKey.HardLevel).String);
+            LogInitializeEvent("init_hard_level_config");
         }
 
         protected override void AddInitSteps(IGameInitiator gameInitiator, ProjectConfig projectConfig)
@@ -73,6 +68,8 @@ namespace Mimi.Prototypes
             LevelRepository = new SheetLevelRepository(GetDataSheet<SheetLevelModel>());
             LevelOrder = new LinearLevelOrder(LevelRepository, GetLevelOrderEntries());
             ChapterLevelRepo = new ChapterLevelRepository(LevelOrder, GetChapterModels());
+
+            LogInitializeEvent("init_level_service");
         }
 
         private IEnumerable<LevelOrderEntry> GetLevelOrderEntries()
@@ -122,12 +119,14 @@ namespace Mimi.Prototypes
         {
             this.HintLevelConfig = new LevelConfig();
             this.HintLevelConfig.ParseConfig(this.RemoteConfig.GetValue(ConfigKey.HintLevel).String);
+            LogInitializeEvent("init_hint_level_config");
         }
 
         private void InitShowInterstitialLevelConfig()
         {
             this.ShowInterstitialLevelConfig = new LevelConfig();
             this.ShowInterstitialLevelConfig.ParseConfig(this.RemoteConfig.GetValue(ConfigKey.ShowAdLevels).String);
+            LogInitializeEvent("init_show_interstitial_level_config");
         }
 
         private void InitLootSystem()
@@ -137,6 +136,7 @@ namespace Mimi.Prototypes
 
             this.lootProcessor = new CompositeLootProcessor();
             this.lootProcessor.AddProcessor("Currency", new CurrencyLootProcessor(PlayerResources));
+            LogInitializeEvent("init_loot_system");
         }
 
         private void InitLifeSystem()
@@ -144,6 +144,7 @@ namespace Mimi.Prototypes
             var lifeCooldown = this.RemoteConfig.GetValue(ConfigKey.LifeCooldown).Int;
             var maxLife = this.RemoteConfig.GetValue(ConfigKey.MaxLife).Int;
             LifeSystem = new LifeSystem(maxLife, lifeCooldown, this.PlayerResources, this.EventPublisher, this.EventSubscriber, this.DialogManager, this.Ads);
+            LogInitializeEvent("init_life_system");
         }
 
         [Button]
