@@ -64,6 +64,7 @@ namespace Mimi.Prototypes
             pluginInstaller.AddPlugin(new LogLevelExitPlugin(this.RuntimeState, this.EventSubscriber, this.AnalyticTracker));
             pluginInstaller.AddPlugin(new LogLevelReopenPlugin(this.RuntimeState, this.EventSubscriber, this.AnalyticTracker));
             pluginInstaller.AddPlugin(new LogResourceChangedPlugin((ResourceCollection)this.PlayerResources, this.AnalyticTracker));
+            pluginInstaller.AddPlugin(new LogIapPlugin(this.EventSubscriber, this.AnalyticTracker));
         }
 
         private void CreateLevelServices()

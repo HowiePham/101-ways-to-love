@@ -1,12 +1,15 @@
 using System.Collections.Generic;
 using _Modules._UI.LoseView.Scripts;
+using _Modules.GameEvent.Scripts;
 using DG.Tweening;
 using FrogunnerGames;
 using MEC;
 using Mimi;
 using Mimi.Ads.Adapters;
 using Mimi.Configs;
+using Mimi.Events;
 using Mimi.Events.AsyncBus;
+using Mimi.Prototypes;
 using Mimi.Prototypes.Currencies;
 using Mimi.Prototypes.Events;
 using Mimi.Prototypes.UI;
@@ -18,6 +21,7 @@ public class HardLevelViewPresenter : BaseViewPresenter
     private readonly IAdAdapter adAdapter;
     private readonly DialogManager dialogManager;
     private readonly IAsyncPublisher eventPublisher;
+    private readonly RuntimeState runtimeState;
 
     private HardLevelView hardLevelView;
 
@@ -26,7 +30,7 @@ public class HardLevelViewPresenter : BaseViewPresenter
     private CoroutineHandle countdownCoroutine;
 
     public HardLevelViewPresenter(BaseScenePresenter scenePresenter, Transform transform,
-        IConfigProvider configProvider, IAdAdapter adAdapter, DialogManager dialogManager, IAsyncPublisher eventPublisher) : base(
+        IConfigProvider configProvider, IAdAdapter adAdapter, DialogManager dialogManager, IAsyncPublisher eventPublisher, RuntimeState runtimeState) : base(
         scenePresenter,
         transform)
     {
@@ -34,6 +38,7 @@ public class HardLevelViewPresenter : BaseViewPresenter
         this.adAdapter = adAdapter;
         this.dialogManager = dialogManager;
         this.eventPublisher = eventPublisher;
+        this.runtimeState = runtimeState;
     }
 
     protected override void AddViews()
@@ -71,6 +76,7 @@ public class HardLevelViewPresenter : BaseViewPresenter
         this.hardLevelView.OnClickPlay += ClickPlayHandler;
         this.hardLevelView.OnClickGetMoreTime += ClickGetMoreTimeHandler;
         this.hardLevelView.OnClickReplay += ClickReplayHandler;
+        this.hardLevelView.OnClickHome += ClickHomeHandler;
         this.hardLevelView.SetAdditionalTimeText(this.configProvider.GetValue(ConfigKey.HardLevelAdditionalTime).Int);
     }
 
@@ -91,6 +97,7 @@ public class HardLevelViewPresenter : BaseViewPresenter
         this.hardLevelView.OnClickPlay -= ClickPlayHandler;
         this.hardLevelView.OnClickGetMoreTime -= ClickGetMoreTimeHandler;
         this.hardLevelView.OnClickReplay -= ClickReplayHandler;
+        this.hardLevelView.OnClickHome -= ClickHomeHandler;
     }
 
     private void RewardShowFailHandler(AdReward adReward, AdError adError)
@@ -116,6 +123,15 @@ public class HardLevelViewPresenter : BaseViewPresenter
         this.hardLevelView.SetTimeOutGroupActive(false);
         Messenger.Broadcast(EventKey.PauseLevel, false);
         this.eventPublisher.PublishAsync(new LevelTryAgain());
+    }
+
+    private void ClickHomeHandler()
+    {
+        ScenePresenter.GetViewPresenter<GameplayViewPresenter>().Hide();
+        Hide();
+        this.hardLevelView.SetTimeOutGroupActive(false);
+        Messenger.Broadcast(EventKey.PauseLevel, false);
+        this.eventPublisher.PublishAsync(new BackHome());
     }
 
     private void RewardedHandler(AdReward reward)
@@ -200,6 +216,8 @@ public class HardLevelViewPresenter : BaseViewPresenter
         Messenger.Broadcast(EventKey.PauseLevel, true);
         FinishTimer();
         Timing.RunCoroutine(this.hardLevelView.TimeoutAppearFromTopEffect());
+        int currentLevelOrder = this.runtimeState.CurrentLevelOrder.Value;
+        this.eventPublisher.PublishAsync(new LevelCompleted(currentLevelOrder.ToString(), LevelCompletionStatus.Lose));
     }
 
     public void SetClockStartTime(int time)

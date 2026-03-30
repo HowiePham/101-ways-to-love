@@ -3,6 +3,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using Mimi.Analytics.Tracking.Trackers;
 using Mimi.Events;
+using _Modules.GameEvent.Scripts;
 using Mimi.Events.AsyncBus;
 using Mimi.Games.Plugins;
 using Mimi.Prototypes;
@@ -19,6 +20,7 @@ namespace Tracking
         private IDisposable levelStartedSub;
         private IDisposable levelCompletedSub;
         private IDisposable gamePausedSub;
+        private IDisposable backHomeSub;
 
         private bool isInLevel;
         private DateTime levelStartTime;
@@ -36,6 +38,7 @@ namespace Tracking
             this.levelStartedSub = this.eventSubscriber.Subscribe<LevelStarted>(LevelStartedHandler);
             this.levelCompletedSub = this.eventSubscriber.Subscribe<LevelCompleted>(LevelCompletedHandler);
             this.gamePausedSub = this.eventSubscriber.Subscribe<GamePaused>(GamePausedHandler);
+            this.backHomeSub = this.eventSubscriber.Subscribe<BackHome>(BackHomeHandler);
         }
 
         private async UniTask LevelStartedHandler(LevelStarted levelStarted, CancellationToken cancellationToken)
@@ -54,8 +57,20 @@ namespace Tracking
         private async UniTask GamePausedHandler(GamePaused gamePaused, CancellationToken cancellationToken)
         {
             await UniTask.CompletedTask;
+            LogLevelExit();
+        }
+
+        private async UniTask BackHomeHandler(BackHome backHome, CancellationToken cancellationToken)
+        {
+            await UniTask.CompletedTask;
+            LogLevelExit();
+        }
+
+        private void LogLevelExit()
+        {
             if (!this.isInLevel) return;
 
+            this.isInLevel = false;
             int currentLevelOrder = this.runtimeState.CurrentLevelOrder.Value + 1;
             long playDurationMs = (long)(DateTime.UtcNow - this.levelStartTime).TotalMilliseconds;
 
@@ -75,6 +90,7 @@ namespace Tracking
             this.levelStartedSub.Dispose();
             this.levelCompletedSub.Dispose();
             this.gamePausedSub.Dispose();
+            this.backHomeSub.Dispose();
         }
 
         public async UniTask Begin()

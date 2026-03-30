@@ -208,6 +208,8 @@ namespace Mimi.Prototypes
         private void CreateGameSessionService()
         {
             SessionRecorder = new LocalSessionRecorder(EventPublisher, LocalPrefs);
+            SessionRecorder.RecordSessionStart(DateTime.UtcNow);
+            Debug.Log($"--- (INIT) Session count: {SessionRecorder.SessionCount} --> IsFirstSession: {SessionRecorder.IsFirstSession}");
         }
 
         private void CreatePoolingService()

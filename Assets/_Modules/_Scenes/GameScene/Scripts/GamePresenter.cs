@@ -31,7 +31,7 @@ namespace Mimi.Prototypes
                 gameContext.ChapterLevelRepo, gameContext.LevelOrder);
             AddViewPresenter(gameplayViewPresenter);
             var hardLevelViewPresenter = new HardLevelViewPresenter(this, this.Transform, gameContext.RemoteConfig, gameContext.Ads, gameContext.DialogManager,
-                gameContext.EventPublisher);
+                gameContext.EventPublisher, gameContext.RuntimeState);
             AddViewPresenter(hardLevelViewPresenter);
             Debug.Log($"--- (PRESENTER) Init SettingViewPresenter");
             var settingViewPresenter = new SettingViewPresenter(this, this.Transform,
@@ -49,9 +49,10 @@ namespace Mimi.Prototypes
                 gameContext.EventPublisher,
                 gameContext.ChapterLevelRepo,
                 gameContext.LevelOrder,
-                gameContext.RuntimeState);
+                gameContext.RuntimeState,
+                gameContext.AudioService);
             AddViewPresenter(chapterUnlockPresenter);
-            var removeAdsViewPresenter = new RemoveAdsViewPresenter(this, this.Transform);
+            var removeAdsViewPresenter = new RemoveAdsViewPresenter(this, this.Transform, gameContext.EventPublisher);
             AddViewPresenter(removeAdsViewPresenter);
 
 #if DEVELOPMENT

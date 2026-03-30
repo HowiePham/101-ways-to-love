@@ -43,9 +43,9 @@ public class ChapterProgressBar : MonoBehaviour
                 this.blocks[i].SetCompleted(i < completedCount);
 
                 if (i == this.currentBlockIndex)
-                    this.blocks[i].HideScale();
+                    this.blocks[i].HideFill();
                 else
-                    this.blocks[i].ResetScale();
+                    this.blocks[i].ResetFill();
             }
             else
             {
