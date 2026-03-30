@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
 using _Modules.Ads;
-// using _Modules.Ads;
 using Cysharp.Threading.Tasks;
 using Economy.Resources;
 using Firebase.Analytics;
@@ -20,6 +19,7 @@ using Mimi.Ads.Extensions.Requests;
 using Mimi.Analytics.Sessions;
 using Mimi.Analytics.Tracking.Firebase;
 using Mimi.Analytics.Tracking.Trackers;
+using Mimi.Audio;
 using Mimi.Configs;
 using Mimi.DataSources.GoogleSheet;
 using Mimi.Events;
@@ -47,6 +47,7 @@ namespace Mimi.Prototypes
         [SerializeField] private SheetAsset localizeAsset;
         [SerializeField] private BaseAudioServiceSO audioService;
         [SerializeField] private DialogManager dialogManager;
+        [SerializeField, SoundKey] private string bgmSoundKey;
 
         public RuntimeState RuntimeState { private set; get; }
         public bool IsAdmobConsentUpdateCompleted { private set; get; }
@@ -166,8 +167,10 @@ namespace Mimi.Prototypes
             CreateGameData();
             CreateSaveService();
             CreateAnalyticService();
+            LogInitializeEvent("init_analytic_service");
             CreateAudioService();
-
+            LogInitializeEvent("init_audio_service");
+            
             await InitConfigService();
             LogInitializeEvent("init_config");
             await InitIAPService();
@@ -238,6 +241,7 @@ namespace Mimi.Prototypes
         {
             this.AudioService = new AudioServiceAdapter(this.audioService);
             ServiceLocator.Global.Register(this.AudioService);
+            HandleFirstAudio();
         }
 
         private void CreateSaveService()
@@ -639,6 +643,16 @@ namespace Mimi.Prototypes
                 Time.timeScale = 1f;
                 EventPublisher.PublishAsync(new GameUnpaused());
             }
+        }
+        
+        private void HandleFirstAudio()
+        {
+            this.AudioService.PlaySound(this.bgmSoundKey);
+            this.AudioService.SetMusicVolPercentage(this.GameData.SettingModel.MusicOn ? 1 : 0);
+            this.AudioService.SetSoundVolPercentage(this.GameData.SettingModel.SoundOn ? 1 : 0);
+
+            // Debug.Log($"--- (Audio) MusicOn: {this.GameData.SettingModel.MusicOn} --- {this.AudioService.MusicVolPercentage}");
+            // Debug.Log($"--- (Audio) SoundOn: {this.GameData.SettingModel.SoundOn} --- {this.AudioService.SoundVolPercentage}");
         }
     }
 }
