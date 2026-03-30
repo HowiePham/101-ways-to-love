@@ -6,6 +6,8 @@
         public const string ClientVersion = "client_version";
         public const string LevelDevelopment = "level_dev";
         public const string LevelProduction = "level_prod";
+        public const string ChapterDevelopment = "chapter_dev";
+        public const string ChapterProduction= "chapter_prod";
         public const string IsShowAOA = "is_show_aoa";
         public const string AdCooldown = "ads_interval";
         public const string RateLevel = "level_rate";

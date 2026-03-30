@@ -550,11 +550,17 @@ namespace Mimi.Prototypes
 
             var blueprint = new ConfigBlueprint();
             blueprint
-                .SetString(ConfigKey.LevelDevelopment, string.Empty)
-                .SetString(ConfigKey.LevelProduction, string.Empty)
+                .SetString(ConfigKey.LevelDevelopment, 
+                    "Id,PrefabAddress,Chapter1,L_001,12,L_012,13,L_015,14,L_019,15,L_021,16,L_022,17,L_036,18,L_038,19,L_043,110,L_049,111,L_002,212,L_005,213,L_007,214,L_013,215,L_016,216,L_018,217,L_025,218,L_026,219,L_029,220,L_031,221,L_004,322,L_014,323,L_017,324,L_024,325,L_028,326,L_045,327,L_106,328,L_151,329,L_068,430,L_070,431,L_071,432,L_076,433,L_077,434,L_078,435,L_079,436,L_080,437,L_081,438,L_082,439,L_103,440,L_055,541,L_061,542,L_064,543,L_102,544,L_104,545,L_107,546,L_110,547,L_119,548,L_126,549,L_150,550,L_008,651,L_011,652,L_035,653,L_039,654,L_054,655,L_072,656,L_114,657,L_032,758,L_034,759,L_037,760,L_040,761,L_044,762,L_050,763,L_056,764,L_060,765,L_062,766,L_065,767,L_003,868,L_006,869,L_010,870,L_020,871,L_027,872,L_033,873,L_047,874,L_052,875,L_053,876,L_057,877,L_099,878,L_112,879,L_069,880,L_067,981,L_075,982,L_093,983,L_096,984,L_105,985,L_111,986,L_113,987,L_115,988,L_116,989,L_117,990,L_118,991,L_120,992,L_121,993,L_160,994,L_086,9")
+                .SetString(ConfigKey.LevelProduction, 
+                    "Id,PrefabAddress,Chapter1,L_001,12,L_012,13,L_015,14,L_019,15,L_021,16,L_022,17,L_036,18,L_038,19,L_043,110,L_049,111,L_002,212,L_005,213,L_007,214,L_013,215,L_016,216,L_018,217,L_025,218,L_026,219,L_029,220,L_031,221,L_004,322,L_014,323,L_017,324,L_024,325,L_028,326,L_045,327,L_106,328,L_151,329,L_068,430,L_070,431,L_071,432,L_076,433,L_077,434,L_078,435,L_079,436,L_080,437,L_081,438,L_082,439,L_103,440,L_055,541,L_061,542,L_064,543,L_102,544,L_104,545,L_107,546,L_110,547,L_119,548,L_126,549,L_150,550,L_008,651,L_011,652,L_035,653,L_039,654,L_054,655,L_072,656,L_114,657,L_032,758,L_034,759,L_037,760,L_040,761,L_044,762,L_050,763,L_056,764,L_060,765,L_062,766,L_065,767,L_003,868,L_006,869,L_010,870,L_020,871,L_027,872,L_033,873,L_047,874,L_052,875,L_053,876,L_057,877,L_099,878,L_112,879,L_069,880,L_067,981,L_075,982,L_093,983,L_096,984,L_105,985,L_111,986,L_113,987,L_115,988,L_116,989,L_117,990,L_118,991,L_120,992,L_121,993,L_160,994,L_086,9")
+                .SetString(ConfigKey.ChapterDevelopment,
+                    "Id,ChapterName,ChapterIconAddress 1,Love I,Chapter1 2,Help I,Chapter2 3,Family,Chapter3 4,Discovery,Chapter4 5,Love II,Chapter5 6,Animals,Chapter6 7,Help II,Chapter7 8,Fearless,Chapter8 9,Help III,Chapter9")
+                .SetString(ConfigKey.ChapterProduction, 
+                    "Id,ChapterName,ChapterIconAddress 1,Love I,Chapter1 2,Help I,Chapter2 3,Family,Chapter3 4,Discovery,Chapter4 5,Love II,Chapter5 6,Animals,Chapter6 7,Help II,Chapter7 8,Fearless,Chapter8 9,Help III,Chapter9")
                 .SetString(ConfigKey.ClientVersion, Application.version)
                 .SetFloat(ConfigKey.AdCooldown, 60f)
-                .SetString(ConfigKey.RateLevel, "5,35,65")
+                .SetString(ConfigKey.RateLevel, "10,35,65")
                 .SetString(ConfigKey.HintLevel, "1,5")
                 .SetBool(ConfigKey.IsShowAOA, true)
                 .SetBool(ConfigKey.RequireInternet, true)

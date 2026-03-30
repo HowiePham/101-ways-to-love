@@ -192,7 +192,7 @@ namespace Mimi
         {
             this.currentLevel = Context.LevelOrder.GetByOrder(levelOrder);
             this.nextLevel = Context.LevelOrder.GetNextLevel(levelOrder);
-            Debug.Log($"--- (LEVEL) Playing level : {levelOrder} --- PrefabAddress: {this.currentLevel.PrefabAddress}");
+            Debug.Log($"--- (LEVEL) Playing level : {levelOrder + 1} --- PrefabAddress: {this.currentLevel.PrefabAddress}");
             await PlayLevel(this.currentLevel, levelOrder);
         }
 
