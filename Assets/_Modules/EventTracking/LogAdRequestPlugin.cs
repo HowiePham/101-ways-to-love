@@ -57,8 +57,8 @@ namespace Tracking
                 ad_platform = adPlatform,
                 ad_network = "",
                 placement = placement,
-                is_load = isLoad,
-                load_time = 0
+                is_load = isLoad.ToString(),
+                load_time = "0"
             });
         }
 

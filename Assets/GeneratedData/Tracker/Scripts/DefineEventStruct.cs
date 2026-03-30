@@ -107,13 +107,6 @@ public struct Feature_AD_COMPLETE : IEventData{
 }
 
 public struct Feature_AD_REQUEST : IEventData{
-	 public enum STATUS {
-		NONE,
-		 _start,
-		 _success,
-		 _fail
-}
-
 	 public enum EVENT_NAME {
 		 ad_request}
 
@@ -122,7 +115,8 @@ public struct Feature_AD_REQUEST : IEventData{
 	 public string ad_platform{ get; set; }
 	 public string ad_network{ get; set; }
 	 public string placement{ get; set; }
-	 public STATUS status{ get; set; }
+	 public string is_load{ get; set; }
+	 public string load_time{ get; set; }
 }
 
 	}
