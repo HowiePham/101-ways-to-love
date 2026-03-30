@@ -18,7 +18,6 @@ namespace Mimi.Prototypes
 {
     public class GameContext : BaseGameContext
     {
-        [SerializeField, SoundKey] private string bgmSoundKey;
         public ILevelRepository LevelRepository { private set; get; }
         public ILevelOrder LevelOrder { private set; get; }
         public List<SheetChapterModel> ChapterModels { private set; get; }
@@ -31,13 +30,18 @@ namespace Mimi.Prototypes
 
         public override void CreateServices()
         {
-            HandleFirstAudio();
             CreateLevelServices();
+            LogInitializeEvent("init_level_service");
             InitShowInterstitialLevelConfig();
+            LogInitializeEvent("init_show_interstitial_level_config");
             InitHintLevelConfig();
+            LogInitializeEvent("init_hint_level_config");
             InitHardLevelConfig();
+            LogInitializeEvent("init_hard_level_config");
             InitLootSystem();
+            LogInitializeEvent("init_loot_system");
             InitLifeSystem();
+            LogInitializeEvent("init_life_system");
         }
 
         private void InitHardLevelConfig()
@@ -59,16 +63,6 @@ namespace Mimi.Prototypes
             pluginInstaller.AddPlugin(new LogLevelStartPlugin(this.RuntimeState, this.EventSubscriber, this.AnalyticTracker));
             pluginInstaller.AddPlugin(new LogLevelCompletedPlugin(this.RuntimeState, this.EventSubscriber, this.AnalyticTracker));
             pluginInstaller.AddPlugin(new LogLevelSkipPlugin(this.RuntimeState, this.EventSubscriber, this.AnalyticTracker));
-        }
-
-        private void HandleFirstAudio()
-        {
-            this.AudioService.PlaySound(this.bgmSoundKey);
-            this.AudioService.SetMusicVolPercentage(this.GameData.SettingModel.MusicOn ? 1 : 0);
-            this.AudioService.SetSoundVolPercentage(this.GameData.SettingModel.SoundOn ? 1 : 0);
-
-            // Debug.Log($"--- (Audio) MusicOn: {this.GameData.SettingModel.MusicOn} --- {this.AudioService.MusicVolPercentage}");
-            // Debug.Log($"--- (Audio) SoundOn: {this.GameData.SettingModel.SoundOn} --- {this.AudioService.SoundVolPercentage}");
         }
 
         private void CreateLevelServices()

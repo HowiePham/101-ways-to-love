@@ -13,11 +13,16 @@ public class ChapterUnlockView : BaseView
 {
     [SerializeField] private RectTransform contentPanel;
     [SerializeField] private Image chapterIcon;
+    [SerializeField] private Image chapterIconDark;
+    [SerializeField] private Image lockBarIcon;
+    [SerializeField] private Image highlightFx;
+    [SerializeField] private RectTransform unlockIconPanel;
     [SerializeField] private TMP_Text chapterTitleText;
     [SerializeField] private CanvasGroup continueBtnGroup;
     [SerializeField] private CanvasGroup backHomeBtnGroup;
     [SerializeField] private Button continueButton;
     [SerializeField] private Button backHomeButton;
+    [SerializeField] private float lockBarSlideUpOffset = 80f;
 
     private CancellationTokenSource showCts;
     private TweenerCore<Vector3, Vector3, VectorOptions> continuePulseTween;
@@ -37,6 +42,7 @@ public class ChapterUnlockView : BaseView
     public void SetChapterData(Sprite icon, string title)
     {
         this.chapterIcon.sprite = icon;
+        this.chapterIconDark.sprite = icon;
         this.chapterTitleText.SetText(title);
     }
 
@@ -48,7 +54,7 @@ public class ChapterUnlockView : BaseView
         this.showCts?.Dispose();
         this.showCts = new CancellationTokenSource();
 
-        HandleUIEffect(this.showCts.Token);
+        HandleUIEffect(this.showCts.Token).Forget();
     }
 
     public override void Hide()
@@ -64,18 +70,77 @@ public class ChapterUnlockView : BaseView
 
         DOTween.Kill(this.ContinueBtnRect);
         this.ContinueBtnRect.localScale = Vector3.one;
+
+        DOTween.Kill(this.unlockIconPanel);
+        this.unlockIconPanel.localRotation = Quaternion.identity;
+        DOTween.Kill(this.lockBarIcon.rectTransform);
+        DOTween.Kill(this.chapterIcon);
+        DOTween.Kill(this.chapterIconDark);
+        DOTween.Kill(this.highlightFx);
     }
 
     private async UniTask HandleUIEffect(CancellationToken ct)
     {
+        // === Setup initial locked state ===
         this.contentPanel.localScale = Vector3.zero;
         this.continueBtnGroup.DOFade(0f, 0f);
         this.backHomeBtnGroup.DOFade(0f, 0f);
 
-        await DOTween.Sequence().Append(this.contentPanel.DOScale(1f, 0.4f)).AsyncWaitForCompletion();
+        // Dark icon visible, bright icon hidden
+        this.chapterIconDark.gameObject.SetActive(true);
+
+        // Lock panel visible, lock bar at original position
+        this.unlockIconPanel.gameObject.SetActive(true);
+        this.unlockIconPanel.localScale = Vector3.one;
+        var lockBarOriginalPos = this.lockBarIcon.rectTransform.anchoredPosition;
+
+        // Highlight hidden
+        this.highlightFx.color = new Color(1f, 1f, 1f, 0f);
+
+        // === Phase 1: Scale up content (locked state visible) ===
+        await this.contentPanel.DOScale(1f, 0.4f).AsyncWaitForCompletion();
         if (ct.IsCancellationRequested) return;
 
-        this.backHomeBtnGroup.DOFade(1f, 0.5f).AsyncWaitForCompletion();
+        await UniTask.Delay(300, cancellationToken: ct);
+        if (ct.IsCancellationRequested) return;
+
+        // === Phase 2: Unlock icon panel shakes before unlock ===
+        await this.unlockIconPanel.DOShakeAnchorPos(0.5f, 10f, 15, fadeOut: false)
+            .AsyncWaitForCompletion();
+        if (ct.IsCancellationRequested) return;
+
+        // === Phase 3: Lock bar slides up (simulate unlock action) ===
+        await this.lockBarIcon.rectTransform
+            .DOAnchorPosY(lockBarOriginalPos.y + this.lockBarSlideUpOffset, 0.4f)
+            .SetEase(Ease.InBack)
+            .AsyncWaitForCompletion();
+        if (ct.IsCancellationRequested) return;
+
+        // === Phase 4: Unlock icon panel rotates side to side then disappears ===
+        await this.unlockIconPanel.DORotate(new Vector3(0f, 0f, 15f), 0.1f, RotateMode.Fast)
+            .SetEase(Ease.InOutSine)
+            .SetLoops(8, LoopType.Yoyo)
+            .AsyncWaitForCompletion();
+        if (ct.IsCancellationRequested) return;
+
+        this.unlockIconPanel.localRotation = Quaternion.identity;
+        await this.unlockIconPanel.DOScale(0f, 0.3f)
+            .SetEase(Ease.InBack)
+            .AsyncWaitForCompletion();
+        if (ct.IsCancellationRequested) return;
+        this.unlockIconPanel.gameObject.SetActive(false);
+
+        // Reset lock bar position for next show
+        this.lockBarIcon.rectTransform.anchoredPosition = lockBarOriginalPos;
+
+        // === Phase 4: Dark icon fades out, bright icon + highlight fade in ===
+        this.chapterIconDark.DOFade(0f, 0.3f);
+        this.highlightFx.DOFade(1f, 0.4f);
+        await UniTask.Delay(400, cancellationToken: ct);
+        if (ct.IsCancellationRequested) return;
+
+        // === Phase 5: Buttons fade in + continue button pulse ===
+        this.backHomeBtnGroup.DOFade(1f, 0.5f);
         await this.continueBtnGroup.DOFade(1f, 0.5f).AsyncWaitForCompletion();
         if (ct.IsCancellationRequested) return;
 

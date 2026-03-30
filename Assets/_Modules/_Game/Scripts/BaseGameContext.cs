@@ -3,17 +3,14 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
 using _Modules.Ads;
-// using _Modules.Ads;
 using Cysharp.Threading.Tasks;
 using Economy.Resources;
 using Firebase.Analytics;
 using Games;
 using GoogleMobileAds.Api;
-// using GoogleMobileAds.Api;
 using Mimi.Ads.Adapters;
 using Mimi.Ads.Adapters.Admob;
 using Mimi.Ads.Adapters.Extensions.AdminTools;
-// using Mimi.Ads.Adapters.Admob;
 using Mimi.Ads.Adapters.Extensions.Amazons.Maxs;
 using Mimi.Ads.Adapters.Extensions.FirebaseAdRevenue;
 using Mimi.Ads.Adapters.Extensions.SingularAdRevenue;
@@ -22,6 +19,7 @@ using Mimi.Ads.Extensions.Requests;
 using Mimi.Analytics.Sessions;
 using Mimi.Analytics.Tracking.Firebase;
 using Mimi.Analytics.Tracking.Trackers;
+using Mimi.Audio;
 using Mimi.Configs;
 using Mimi.DataSources.GoogleSheet;
 using Mimi.Events;
@@ -29,6 +27,8 @@ using Mimi.Events.AsyncBus;
 using Mimi.Games.InitSteps;
 using Mimi.Games.Plugins;
 using Mimi.Games.ProjectConfigs;
+using Mimi.IAP;
+using Mimi.IAP.Providers.Unity;
 using Mimi.Network.Monitors;
 using Mimi.Persistence.LocalPrefs;
 using Mimi.Prototypes.Pooling;
@@ -47,6 +47,7 @@ namespace Mimi.Prototypes
         [SerializeField] private SheetAsset localizeAsset;
         [SerializeField] private BaseAudioServiceSO audioService;
         [SerializeField] private DialogManager dialogManager;
+        [SerializeField, SoundKey] private string bgmSoundKey;
 
         public RuntimeState RuntimeState { private set; get; }
         public bool IsAdmobConsentUpdateCompleted { private set; get; }
@@ -58,6 +59,7 @@ namespace Mimi.Prototypes
         public IAsyncSubscriber EventSubscriber { private set; get; }
         public IConfigProvider RemoteConfig { private set; get; }
         public IAdAdapter Ads { private set; get; }
+        public IPurchasingProvider InAppPurchaseStore { private set; get; }
         public IAnalyticTracker AnalyticTracker { private set; get; }
         public IAudioService AudioService { private set; get; }
         public ILocalizationService Localization { private set; get; }
@@ -165,10 +167,14 @@ namespace Mimi.Prototypes
             CreateGameData();
             CreateSaveService();
             CreateAnalyticService();
+            LogInitializeEvent("init_analytic_service");
             CreateAudioService();
-
+            LogInitializeEvent("init_audio_service");
+            
             await InitConfigService();
             LogInitializeEvent("init_config");
+            await InitIAPService();
+            LogInitializeEvent("init_iap");
             await InitAdmobConsent();
             LogInitializeEvent("init_admob_consent");
             await InitGoogleMobileAds();
@@ -183,9 +189,7 @@ namespace Mimi.Prototypes
 
         private void CreateAnalyticService()
         {
-            // AnalyticTracker = new ReflectionTracker(new FirebaseTrackingProvider());
-            AnalyticTracker = new NullTracker();
-
+            AnalyticTracker = new ReflectionTracker(new FirebaseTrackingProvider());
 #if UNITY_EDITOR
             AnalyticTracker = new NullTracker();
 #endif
@@ -237,12 +241,23 @@ namespace Mimi.Prototypes
         {
             this.AudioService = new AudioServiceAdapter(this.audioService);
             ServiceLocator.Global.Register(this.AudioService);
+            HandleFirstAudio();
         }
 
         private void CreateSaveService()
         {
             SaveManager = new ConvertibleSaveManager(this);
             SaveManager.AddSaveLoadStrategy(new GameSaver(this), new GameLoader(this));
+        }
+
+        private async UniTask InitIAPService()
+        {
+            InAppPurchaseStore = new UnityPurchasingProvider(new MockPurchaseValidator());
+            // InAppPurchaseStore.Initialize(new[]
+            // {
+            //     new ProductMetadata(ProductKey.RemoveAds_Android, ProductType.NonConsumable),
+            // });
+            InAppPurchaseStore.Initialize(Array.Empty<ProductMetadata>());
         }
 
         private void InitInternetMonitor()
@@ -288,7 +303,7 @@ namespace Mimi.Prototypes
                 return;
             }
 
-            // FirebaseAnalytics.LogEvent(eventName);
+            FirebaseAnalytics.LogEvent(eventName);
         }
 
         private async UniTask InitGoogleMobileAds()
@@ -370,17 +385,17 @@ namespace Mimi.Prototypes
                     {
                         Debug.Log($"--- (ADS) Admob Banner Ads initializing...");
                         Ads.SetBanner(new AutoRequestBanner(bannerRequestStrategy,
-                            // new FirebaseMeasureRevenueBanner(
-                            new SingularRevenueBanner(
-                                new AdmobBanner(AdmobBannerId))));
+                            new FirebaseMeasureRevenueBanner(
+                                new SingularRevenueBanner(
+                                    new AdmobBanner(AdmobBannerId)))));
                     }
                     else
                     {
                         Ads.SetBanner(new AutoRequestBanner(bannerRequestStrategy,
-                            // new FirebaseMeasureRevenueBanner(
-                            new SingularRevenueBanner(
-                                new AmazonMaxBanner(TabletAmazonBannerId,
-                                    PhoneAmazonUnitId, MaxBannerUnitId))));
+                            new FirebaseMeasureRevenueBanner(
+                                new SingularRevenueBanner(
+                                    new AmazonMaxBanner(TabletAmazonBannerId,
+                                        PhoneAmazonUnitId, MaxBannerUnitId)))));
                     }
                 }
                 else
@@ -394,10 +409,10 @@ namespace Mimi.Prototypes
 
                     Ads.SetInterstitial(
                         new AutoRequestInterstitial(interstitialRequestStrategy,
-                            // new FirebaseMeasureRevenueInterstitial(
-                            new SingularLogInterstitial(
-                                new SingularRevenueInterstitial(
-                                    new MaxInterstitial(MaxInterUnityId)))));
+                            new FirebaseMeasureRevenueInterstitial(
+                                new SingularLogInterstitial(
+                                    new SingularRevenueInterstitial(
+                                        new MaxInterstitial(MaxInterUnityId))))));
                 }
                 else
                 {
@@ -421,17 +436,17 @@ namespace Mimi.Prototypes
 
                     Ads.SetAppOpen(
                         new AutoRequestAppOpen(appOpenRequestStrategy,
-                            // new FirebaseMeasureRevenueAppOpen(
-                            new SingularRevenueAppOpen(
-                                new MaxAppOpen(MaxAOAUnitId))));
+                            new FirebaseMeasureRevenueAppOpen(
+                                new SingularRevenueAppOpen(
+                                    new MaxAppOpen(MaxAOAUnitId)))));
                 }
                 else
                 {
                     Ads.SetAppOpen(
                         new AutoRequestAppOpen(appOpenRequestStrategy,
-                            // new FirebaseMeasureRevenueAppOpen(
-                            new SingularRevenueAppOpen(
-                                new AdmobAppOpen(AdmobAOAUnitId))));
+                            new FirebaseMeasureRevenueAppOpen(
+                                new SingularRevenueAppOpen(
+                                    new AdmobAppOpen(AdmobAOAUnitId)))));
                 }
             }
             else
@@ -451,10 +466,10 @@ namespace Mimi.Prototypes
                 var rewardVideoRequestStrategy = new ExponentialCooldown(999, 2, InternetMonitor);
                 Ads.SetRewardVideo(
                     new AutoRequestRewardVideo(rewardVideoRequestStrategy,
-                        // new FirebaseMeasureRevenueRewardVideo(
-                        new SingularLogRewardVideo(
-                            new SingularRevenueRewardVideo(
-                                new MaxRewardVideo(MaxRewardUnitId)))));
+                        new FirebaseMeasureRevenueRewardVideo(
+                            new SingularLogRewardVideo(
+                                new SingularRevenueRewardVideo(
+                                    new MaxRewardVideo(MaxRewardUnitId))))));
             }
             else
             {
@@ -485,7 +500,7 @@ namespace Mimi.Prototypes
                 new Parameter(FirebaseAnalytics.ParameterCurrency, "USD"),
                 new Parameter(FirebaseAnalytics.ParameterValue, impressionData.Revenue)
             };
-            // FirebaseAnalytics.LogEvent("ad_impression_mediation", parameters);
+            FirebaseAnalytics.LogEvent("ad_impression_mediation", parameters);
         }
 
         private void CreateMrecWithCustomPosition()
@@ -496,8 +511,8 @@ namespace Mimi.Prototypes
             var mrecRequestStrategy = new ExponentialCooldown(999, 2, InternetMonitor);
 
             Ads.SetMrec(new AutoRequestMrec(mrecRequestStrategy,
-                // new FirebaseAdRevenueMrec(
-                new SingularRevenueMrec(this.maxMrec)));
+                new FirebaseAdRevenueMrec(
+                    new SingularRevenueMrec(this.maxMrec))));
         }
 
         private void CalculateMrecPos()
@@ -528,8 +543,7 @@ namespace Mimi.Prototypes
             this.IsRemoteConfigInitialized = false;
 
 #if !UNITY_EDITOR
-            // RemoteConfig = new Mimi.Configs.Firebase.FirebaseConfigProvider(new PlayPrefCache());
-                        RemoteConfig = NullConfigProvider.Instance;
+            RemoteConfig = new Mimi.Configs.Firebase.FirebaseConfigProvider(new PlayPrefCache());
 #else
             RemoteConfig = NullConfigProvider.Instance;
 #endif
@@ -629,6 +643,16 @@ namespace Mimi.Prototypes
                 Time.timeScale = 1f;
                 EventPublisher.PublishAsync(new GameUnpaused());
             }
+        }
+        
+        private void HandleFirstAudio()
+        {
+            this.AudioService.PlaySound(this.bgmSoundKey);
+            this.AudioService.SetMusicVolPercentage(this.GameData.SettingModel.MusicOn ? 1 : 0);
+            this.AudioService.SetSoundVolPercentage(this.GameData.SettingModel.SoundOn ? 1 : 0);
+
+            // Debug.Log($"--- (Audio) MusicOn: {this.GameData.SettingModel.MusicOn} --- {this.AudioService.MusicVolPercentage}");
+            // Debug.Log($"--- (Audio) SoundOn: {this.GameData.SettingModel.SoundOn} --- {this.AudioService.SoundVolPercentage}");
         }
     }
 }
