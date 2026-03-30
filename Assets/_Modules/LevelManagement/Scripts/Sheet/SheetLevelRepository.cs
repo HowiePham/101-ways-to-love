@@ -17,7 +17,7 @@ namespace Mimi.Prototypes.LevelManagement
 
             foreach (SheetLevelModel levelData in levels)
             {
-                var levelInfo = new LevelInfo(levelData.Id, levelData.PrefabAddress, stageNumber, levelData.Chapter);
+                var levelInfo = new LevelInfo(levelData.Id, levelData.PrefabAddress, stageNumber);
                 this.lookup.Add(levelData.Id, levelInfo);
                 stageNumber++;
             }

@@ -21,9 +21,9 @@ namespace Mimi.Prototypes
             // var selectLevelViewPresenter = new SelectLevelPresenter(this, this.Transform, gameContext.LevelRepository,
             //     gameContext.AudioService, gameContext.Ads, gameContext.RuntimeState, gameContext.EventPublisher);
             // AddViewPresenter(selectLevelViewPresenter);
-            var chapterSelectLevelViewPresenter = new ChapterSelectLevelPresenter(this, this.Transform, gameContext.LevelRepository,
+            var chapterSelectLevelViewPresenter = new ChapterSelectLevelPresenter(this, this.Transform, gameContext.ChapterLevelRepo,
                 gameContext.LevelOrder, gameContext.AudioService, gameContext.Ads, gameContext.RuntimeState, gameContext.EventPublisher,
-                gameContext.EventSubscriber, gameContext.LifeSystem, gameContext.ChapterModels);
+                gameContext.EventSubscriber, gameContext.LifeSystem);
             AddViewPresenter(chapterSelectLevelViewPresenter);
             Debug.Log($"--- (PRESENTER) Init GameplayViewPresenter");
             var gameplayViewPresenter = new GameplayViewPresenter(this, this.Transform, gameContext.EventPublisher, gameContext.EventSubscriber,

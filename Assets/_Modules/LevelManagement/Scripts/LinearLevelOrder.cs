@@ -10,20 +10,26 @@ namespace Mimi.Prototypes.LevelManagement
         private readonly ILevelRepository levelRepository;
         private readonly List<LevelInfo> orderedLevels;
 
-        public LinearLevelOrder(ILevelRepository levelRepository, IEnumerable<string> levelIdOrders)
+        public LinearLevelOrder(ILevelRepository levelRepository, IEnumerable<LevelOrderEntry> levelOrderEntries)
         {
             this.levelRepository = levelRepository;
             this.orderedLevels = new List<LevelInfo>(levelRepository.NumberOfLevels);
-            foreach (string levelId in levelIdOrders)
+            foreach (LevelOrderEntry entry in levelOrderEntries)
             {
-                if (levelRepository.TryGet(levelId, out LevelInfo levelInfo))
+                if (levelRepository.TryGet(entry.Id, out LevelInfo levelInfo))
                 {
-                    this.orderedLevels.Add(levelInfo);
+                    var withChapter = new LevelInfo(
+                        levelInfo.Id,
+                        levelInfo.PrefabAddress,
+                        levelInfo.StageNumber,
+                        entry.Chapter,
+                        levelInfo.IconName);
+                    this.orderedLevels.Add(withChapter);
                 }
                 else
                 {
                     MiLogger.LogError(
-                        $"Miss match level order and level repository! Level id not found: {levelId}");
+                        $"Miss match level order and level repository! Level id not found: {entry.Id}");
                 }
             }
         }
@@ -100,6 +106,11 @@ namespace Mimi.Prototypes.LevelManagement
         {
             int prevOrder = Mathf.Clamp(order - 1, 0, this.orderedLevels.Count - 1);
             return this.orderedLevels[prevOrder];
+        }
+
+        public IEnumerable<LevelInfo> GetAllOrdered()
+        {
+            return this.orderedLevels;
         }
 
     }

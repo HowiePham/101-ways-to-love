@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Mimi.Prototypes.LevelManagement
 {
     public interface ILevelOrder
@@ -11,5 +13,6 @@ namespace Mimi.Prototypes.LevelManagement
         LevelInfo GetPreviousLevel(string id);
         LevelInfo GetNextLevel(int currentOrder);
         LevelInfo GetPreviousLevel(int currentOrder);
+        IEnumerable<LevelInfo> GetAllOrdered();
     }
 }
