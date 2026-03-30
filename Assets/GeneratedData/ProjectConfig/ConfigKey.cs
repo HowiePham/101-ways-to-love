@@ -15,7 +15,6 @@
         public const string HintLevel = "level_hint";
         public const string RequireInternet = "require_internet";
         public const string InternetFailedDelay = "internet_failed_delay";
-        public const string ShowAOA = "show_open_ads";
         public const string RemoveAdProductId = "remove_ads_product_id";
         public const string CollapsibleCooldown = "collapsible_cooldown";
         public const string ShowCollapAdManually = "show_collap_ad_manually";

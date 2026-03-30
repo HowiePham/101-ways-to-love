@@ -40,7 +40,7 @@ namespace Ads
             CancellationToken cancellationToken)
         {
             await UniTask.CompletedTask;
-            if (this.remoteConfig.GetValue(ConfigKey.ShowAOA).Boolean)
+            if (this.remoteConfig.GetValue(ConfigKey.IsShowAOA).Boolean)
             {
                 Debug.Log($"--- (PLUGIN) Showing Open Ad After boot game handling...");
 
