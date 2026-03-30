@@ -39,12 +39,14 @@ public class HardLevelView : BaseView
     [SerializeField] private Vector3 timeoutGroupStartLocalPosition;
     [SerializeField] private Button getMoreTimeButton;
     [SerializeField] private Button replayButton;
+    [SerializeField] private Button homeButton;
     [SerializeField] private Image timeoutWarning;
     [SerializeField] private TMP_Text additionalTimeText;
 
     public event Action OnClickPlay;
     public event Action OnClickGetMoreTime;
     public event Action OnClickReplay;
+    public event Action OnClickHome;
 
     public override void Initialize()
     {
@@ -52,6 +54,7 @@ public class HardLevelView : BaseView
         this.playButton.onClick.AddListener(() => OnClickPlay?.Invoke());
         this.getMoreTimeButton.onClick.AddListener(() => OnClickGetMoreTime?.Invoke());
         this.replayButton.onClick.AddListener(() => OnClickReplay?.Invoke());
+        this.homeButton.onClick.AddListener(() => OnClickHome?.Invoke());
     }
 
     public override void Show()
@@ -196,6 +199,7 @@ public class HardLevelView : BaseView
         SetTimeOutGroupActive(true);
         this.getMoreTimeButton.transform.localScale = Vector3.zero;
         this.replayButton.transform.localScale = Vector3.zero;
+        this.homeButton.transform.localScale = Vector3.zero;
         var originPosition = this.timeoutPanel.transform.localPosition;
         this.timeoutPanel.transform.localPosition = this.timeoutGroupStartLocalPosition;
         this.timeoutPanel.transform.DOLocalMove(originPosition, 0.4f).SetEase(Ease.OutBack);
@@ -203,6 +207,8 @@ public class HardLevelView : BaseView
         this.getMoreTimeButton.transform.DOScale(Vector3.one, 0.2f).SetEase(Ease.OutBack);
         yield return Timing.WaitForSeconds(0.1f);
         this.replayButton.transform.DOScale(Vector3.one, 0.2f).SetEase(Ease.OutBack);
+        yield return Timing.WaitForSeconds(0.1f);
+        this.homeButton.transform.DOScale(Vector3.one, 0.2f).SetEase(Ease.OutBack);
     }
 
     public void SetTimeOutGroupActive(bool active)

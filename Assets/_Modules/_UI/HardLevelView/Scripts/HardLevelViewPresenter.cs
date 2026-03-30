@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using _Modules._UI.LoseView.Scripts;
+using _Modules.GameEvent.Scripts;
 using DG.Tweening;
 using FrogunnerGames;
 using MEC;
@@ -71,6 +72,7 @@ public class HardLevelViewPresenter : BaseViewPresenter
         this.hardLevelView.OnClickPlay += ClickPlayHandler;
         this.hardLevelView.OnClickGetMoreTime += ClickGetMoreTimeHandler;
         this.hardLevelView.OnClickReplay += ClickReplayHandler;
+        this.hardLevelView.OnClickHome += ClickHomeHandler;
         this.hardLevelView.SetAdditionalTimeText(this.configProvider.GetValue(ConfigKey.HardLevelAdditionalTime).Int);
     }
 
@@ -91,6 +93,7 @@ public class HardLevelViewPresenter : BaseViewPresenter
         this.hardLevelView.OnClickPlay -= ClickPlayHandler;
         this.hardLevelView.OnClickGetMoreTime -= ClickGetMoreTimeHandler;
         this.hardLevelView.OnClickReplay -= ClickReplayHandler;
+        this.hardLevelView.OnClickHome -= ClickHomeHandler;
     }
 
     private void RewardShowFailHandler(AdReward adReward, AdError adError)
@@ -116,6 +119,15 @@ public class HardLevelViewPresenter : BaseViewPresenter
         this.hardLevelView.SetTimeOutGroupActive(false);
         Messenger.Broadcast(EventKey.PauseLevel, false);
         this.eventPublisher.PublishAsync(new LevelTryAgain());
+    }
+
+    private void ClickHomeHandler()
+    {
+        ScenePresenter.GetViewPresenter<GameplayViewPresenter>().Hide();
+        Hide();
+        this.hardLevelView.SetTimeOutGroupActive(false);
+        Messenger.Broadcast(EventKey.PauseLevel, false);
+        this.eventPublisher.PublishAsync(new BackHome());
     }
 
     private void RewardedHandler(AdReward reward)
