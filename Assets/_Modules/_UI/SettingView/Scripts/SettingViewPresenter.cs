@@ -1,3 +1,5 @@
+using _Modules._UI.LoseView.Scripts;
+using _Modules.GameEvent.Scripts;
 using Mimi.Events.AsyncBus;
 using Mimi.Games.Events;
 using Mimi.Persistence.LocalPrefs;
@@ -41,6 +43,8 @@ public class SettingViewPresenter : BaseViewPresenter
         base.OnShow();
 
         this.settingView.OnCloseClicked += CloseClickedHandler;
+        this.settingView.OnReplayClicked += ReplayClickedHandler;
+        this.settingView.OnHomeClicked += HomeClickedHandler;
         this.settingView.OnMusicClicked += MusicClickedHandler;
         this.settingView.OnSoundClicked += SoundClickedHandler;
         this.settingView.OnVibrationClicked += VibrationClickedHandler;
@@ -53,6 +57,8 @@ public class SettingViewPresenter : BaseViewPresenter
         base.OnHide();
 
         this.settingView.OnCloseClicked -= CloseClickedHandler;
+        this.settingView.OnReplayClicked -= ReplayClickedHandler;
+        this.settingView.OnHomeClicked -= HomeClickedHandler;
         this.settingView.OnMusicClicked -= MusicClickedHandler;
         this.settingView.OnSoundClicked -= SoundClickedHandler;
         this.settingView.OnVibrationClicked -= VibrationClickedHandler;
@@ -87,5 +93,36 @@ public class SettingViewPresenter : BaseViewPresenter
         int currentLevelOrder = this.runtimeState.CurrentLevelOrder.Value + 1;
         this.eventPublisher.PublishAsync(new LevelResumed(currentLevelOrder.ToString()));
         Hide();
+    }
+
+    private void ReplayClickedHandler()
+    {
+        Debug.Log($"--- (SETTING) Replay Level");
+        HideGameplayViews();
+        this.eventPublisher.PublishAsync(new LevelTryAgain());
+        Hide();
+    }
+
+    private void HomeClickedHandler()
+    {
+        Debug.Log($"--- (SETTING) Back Home");
+        HideGameplayViews();
+        this.eventPublisher.PublishAsync(new BackHome());
+        Hide();
+    }
+
+    private void HideGameplayViews()
+    {
+        var gameplayViewPresenter = this.ScenePresenter.GetViewPresenter<GameplayViewPresenter>();
+        if (gameplayViewPresenter.IsShowing)
+        {
+            gameplayViewPresenter.Hide();
+        }
+
+        var hardLevelViewPresenter = this.ScenePresenter.GetViewPresenter<HardLevelViewPresenter>();
+        if (hardLevelViewPresenter.IsShowing)
+        {
+            hardLevelViewPresenter.Hide();
+        }
     }
 }
