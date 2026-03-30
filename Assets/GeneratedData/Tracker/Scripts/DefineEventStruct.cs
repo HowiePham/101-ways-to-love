@@ -129,5 +129,14 @@ public struct Feature_LEVEL_EXIT : IEventData{
 	 public string play_duration{ get; set; }
 }
 
+public struct Feature_LEVEL_REOPEN : IEventData{
+	 public enum EVENT_NAME {
+		 level_reopen}
+
+	 public EVENT_NAME eventName { get; set; }
+	 public string level{ get; set; }
+	 public string mode{ get; set; }
+}
+
 	}
 
