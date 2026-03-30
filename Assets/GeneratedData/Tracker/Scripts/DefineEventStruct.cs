@@ -82,5 +82,48 @@ public struct Feature_SKIP : IEventData{
 	 public string level{ get; set; }
 }
 
+public struct Feature_AD_CLICK : IEventData{
+	 public enum EVENT_NAME {
+		 ad_click}
+
+	 public EVENT_NAME eventName { get; set; }
+	 public string ad_format{ get; set; }
+	 public string ad_platform{ get; set; }
+	 public string ad_network{ get; set; }
+	 public string placement{ get; set; }
+}
+
+public struct Feature_AD_COMPLETE : IEventData{
+	 public enum EVENT_NAME {
+		 ad_complete}
+
+	 public EVENT_NAME eventName { get; set; }
+	 public string ad_format{ get; set; }
+	 public string ad_platform{ get; set; }
+	 public string ad_network{ get; set; }
+	 public string end_type{ get; set; }
+	 public string ad_duration{ get; set; }
+	 public string placement{ get; set; }
+}
+
+public struct Feature_AD_REQUEST : IEventData{
+	 public enum STATUS {
+		NONE,
+		 _start,
+		 _success,
+		 _fail
+}
+
+	 public enum EVENT_NAME {
+		 ad_request}
+
+	 public EVENT_NAME eventName { get; set; }
+	 public string ad_format{ get; set; }
+	 public string ad_platform{ get; set; }
+	 public string ad_network{ get; set; }
+	 public string placement{ get; set; }
+	 public STATUS status{ get; set; }
+}
+
 	}
 

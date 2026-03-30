@@ -62,6 +62,9 @@ namespace Mimi.Prototypes
             pluginInstaller.AddPlugin(new LogLevelStartPlugin(this.RuntimeState, this.EventSubscriber, this.AnalyticTracker));
             pluginInstaller.AddPlugin(new LogLevelCompletedPlugin(this.RuntimeState, this.EventSubscriber, this.AnalyticTracker));
             pluginInstaller.AddPlugin(new LogLevelSkipPlugin(this.RuntimeState, this.EventSubscriber, this.AnalyticTracker));
+            pluginInstaller.AddPlugin(new LogAdClickPlugin(this.Ads, this.AnalyticTracker));
+            pluginInstaller.AddPlugin(new LogAdCompletePlugin(this.Ads, this.AnalyticTracker));
+            pluginInstaller.AddPlugin(new LogAdRequestPlugin(this.Ads, this.AnalyticTracker));
         }
 
         private void CreateLevelServices()
