@@ -119,5 +119,15 @@ public struct Feature_AD_REQUEST : IEventData{
 	 public string load_time{ get; set; }
 }
 
+public struct Feature_LEVEL_EXIT : IEventData{
+	 public enum EVENT_NAME {
+		 level_exit}
+
+	 public EVENT_NAME eventName { get; set; }
+	 public string level{ get; set; }
+	 public string mode{ get; set; }
+	 public string play_duration{ get; set; }
+}
+
 	}
 
