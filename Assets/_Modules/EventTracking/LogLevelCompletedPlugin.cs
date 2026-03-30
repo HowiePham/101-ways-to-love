@@ -73,7 +73,7 @@ namespace Tracking
                 eventName = Feature_LEVEL_END.EVENT_NAME.level_end,
                 level = currentLevelOrder.ToString(),
                 level_mode = "normal",
-                success = "true",
+                result = levelCompleted.Status.ToString(),
                 use_hint = this.useHint.ToString().ToLower(),
                 use_skip = this.useSkip.ToString().ToLower()
             });
