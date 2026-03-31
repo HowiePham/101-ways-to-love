@@ -10,16 +10,15 @@ using UnityEngine.UI;
 public class ChapterSelectLevelView : BaseView, IEnhancedScrollerDelegate
 {
     [SerializeField] private Image bgFade;
-    [Header("Button")]
-    [SerializeField] private Button settingButton;
+    [Header("Button")] [SerializeField] private Button settingButton;
     [SerializeField] private Button goToTopButton;
     [SerializeField] private Button goToBottomButton;
 
-    [Header("Life View")]
-    [SerializeField] private NumberBasedLifeView lifeView;
+    [Header("Life View")] [SerializeField] private NumberBasedLifeView lifeView;
 
-    [Header("Enhance scroller")]
-    [SerializeField] private float cellViewSize;
+    [Header("Enhance scroller")] [SerializeField]
+    private float cellViewSize;
+
     [SerializeField] private EnhancedScroller scroller;
     [SerializeField] private ChapterPageCell cellViewPrefab;
 
@@ -34,6 +33,8 @@ public class ChapterSelectLevelView : BaseView, IEnhancedScrollerDelegate
     public event Action OnTopButtonClick;
     public event Action OnBottomButtonClick;
 
+    private bool isMaxLevel;
+
     public override void Initialize()
     {
         base.Initialize();
@@ -41,6 +42,7 @@ public class ChapterSelectLevelView : BaseView, IEnhancedScrollerDelegate
         {
             this.lifeView.Initialize();
         }
+
         this.scroller.Delegate = this;
         this.settingButton.onClick.AddListener(() => OnClickSetting?.Invoke());
         this.goToTopButton.onClick.AddListener(() => OnTopButtonClick?.Invoke());
@@ -70,9 +72,10 @@ public class ChapterSelectLevelView : BaseView, IEnhancedScrollerDelegate
         this.scroller.ReloadData();
     }
 
-    public void LoadPageData(List<ChapterInfo> chapters, int currentLevelOrder)
+    public void LoadPageData(List<ChapterInfo> chapters, int currentLevelOrder, bool isMaxLevel)
     {
         this.currentLevelOrder = currentLevelOrder;
+        this.isMaxLevel = isMaxLevel;
         this.chapterData.Clear();
 
         foreach (var chapter in chapters)
@@ -103,7 +106,7 @@ public class ChapterSelectLevelView : BaseView, IEnhancedScrollerDelegate
     {
         int reversedPageOrder = (this.TotalPage - 1) - dataIndex;
         var pageCellView = scroller.GetCellView(this.cellViewPrefab) as ChapterPageCell;
-        pageCellView.SetData(reversedPageOrder, this.currentLevelOrder, this.chapterData);
+        pageCellView.SetData(reversedPageOrder, this.currentLevelOrder, this.chapterData, this.isMaxLevel);
 
         return pageCellView;
     }

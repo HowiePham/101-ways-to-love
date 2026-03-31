@@ -16,14 +16,14 @@ public class ChapterPageCell : EnhancedScrollerCellView
         this.cells = GetComponentsInChildren<ChapterCellView>();
     }
 
-    public void SetData(int pageOrder, int currentLevelOrder, SmallList<ChapterInfo> chapters)
+    public void SetData(int pageOrder, int currentLevelOrder, SmallList<ChapterInfo> chapters, bool isMaxLevel)
     {
         this.currentLevelOrder = currentLevelOrder;
         this.chapterData = chapters;
-        LoadCellData(pageOrder);
+        LoadCellData(pageOrder, isMaxLevel);
     }
 
-    private void LoadCellData(int pageOrder)
+    private void LoadCellData(int pageOrder, bool isMaxLevel)
     {
         int firstChapterInPage = pageOrder * this.TotalChapterInAPage;
 
@@ -35,7 +35,7 @@ public class ChapterPageCell : EnhancedScrollerCellView
             if (cellData != null)
             {
                 CellStatus cellStatus = SetCellStatus(cellData);
-                float progress = CalculateProgress(cellData, cellStatus);
+                float progress = CalculateProgress(cellData, cellStatus, isMaxLevel);
                 this.cells[cellId].SetData(cellData.ChapterNumber, cellData.ChapterIconAddress, cellStatus, progress);
                 this.cells[cellId].SetChapterOrderText(cellData.ChapterNumber, cellData.ChapterName);
             }
@@ -47,9 +47,9 @@ public class ChapterPageCell : EnhancedScrollerCellView
         }
     }
 
-    private float CalculateProgress(ChapterInfo chapter, CellStatus status)
+    private float CalculateProgress(ChapterInfo chapter, CellStatus status, bool isMaxLevel)
     {
-        if (status == CellStatus.Complete)
+        if (status == CellStatus.Complete || isMaxLevel)
         {
             return 1f;
         }
@@ -63,6 +63,7 @@ public class ChapterPageCell : EnhancedScrollerCellView
         int firstStage = chapter.Levels[0].StageNumber;
         int currentStage = this.currentLevelOrder + 1;
         int completedInChapter = currentStage - firstStage;
+        Debug.Log($"--- (CHAPTER) Chapter {chapter.ChapterNumber} --- {currentStage}/{firstStage} ---> {completedInChapter}");
         return (float)completedInChapter / chapter.LevelCount;
     }
 

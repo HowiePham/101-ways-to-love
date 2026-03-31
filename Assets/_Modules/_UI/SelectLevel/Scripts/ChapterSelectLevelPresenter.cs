@@ -1,9 +1,11 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using _Modules.Gameflow_Events_.Scripts;
 using Cysharp.Threading.Tasks;
 using EnhancedUI.EnhancedScroller;
 using Games;
+using Mimi;
 using Mimi.Ads.Adapters;
 using Mimi.Events.AsyncBus;
 using Mimi.Games;
@@ -30,6 +32,7 @@ public class ChapterSelectLevelPresenter : BaseViewPresenter
     private readonly LifeSystem lifeSystem;
     private readonly List<ChapterInfo> listChapter;
     private int currentPageOrder = 1;
+    private bool IsMaxLevel => this.levelOrder.IsLast(this.levelOrder.GetByOrder(this.runtimeState.TopLevelOrder.Value).Id);
 
     public ChapterSelectLevelPresenter(BaseScenePresenter scenePresenter, Transform transform,
         ChapterLevelRepository chapterLevelRepo, ILevelOrder levelOrder,
@@ -105,7 +108,9 @@ public class ChapterSelectLevelPresenter : BaseViewPresenter
     private void LoadChapterPageData()
     {
         int topLevel = this.runtimeState.TopLevelOrder.Value;
-        this.chapterView.LoadPageData(this.listChapter, topLevel);
+
+        Debug.Log($"--- (CHAPTER) Is Max Level: {this.runtimeState.TopLevelOrder.Value}/{this.levelOrder.GetAllOrdered().ToList().Count} ---> {IsMaxLevel}");
+        this.chapterView.LoadPageData(this.listChapter, topLevel, IsMaxLevel);
     }
 
     private void JumpToCurrentPage()
