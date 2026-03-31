@@ -153,6 +153,7 @@ public class HardLevelViewPresenter : BaseViewPresenter
     {
         if (this.adAdapter.RewardVideo.IsReady)
         {
+            this.eventPublisher.PublishAsync(new _Modules.GameEvent.Scripts.AdShowRequested());
             this.adAdapter.RewardVideo.Show(new AdReward("GetMoreTime"), new AdPlacement("hard_level"));
         }
         else

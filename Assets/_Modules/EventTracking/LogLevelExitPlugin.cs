@@ -23,11 +23,10 @@ namespace Tracking
         private IDisposable levelCompletedSub;
         private IDisposable gamePausedSub;
         private IDisposable backHomeSub;
-        private IDisposable gameUnpausedSub;
+        private IDisposable adShowRequestedSub;
 
         private bool isInLevel;
         private bool isWatchingRewardVideo;
-        private bool wasAdPlayedDuringPause;
         private DateTime levelStartTime;
         private CancellationTokenSource pauseCancelSource;
 
@@ -46,7 +45,7 @@ namespace Tracking
             this.levelCompletedSub = this.eventSubscriber.Subscribe<LevelCompleted>(LevelCompletedHandler);
             this.gamePausedSub = this.eventSubscriber.Subscribe<GamePaused>(GamePausedHandler);
             this.backHomeSub = this.eventSubscriber.Subscribe<BackHome>(BackHomeHandler);
-            this.gameUnpausedSub = this.eventSubscriber.Subscribe<GameUnpaused>(GameUnpausedHandler);
+            this.adShowRequestedSub = this.eventSubscriber.Subscribe<AdShowRequested>(AdShowRequestedHandler);
             this.ads.Interstitial.OnShowSucceeded += OnInterShowed;
             this.ads.Interstitial.OnClosed += OnInterClosed;
             this.ads.Interstitial.OnShowFailed += OnInterShowFailed;
@@ -69,13 +68,20 @@ namespace Tracking
             this.isInLevel = false;
         }
 
+        private async UniTask AdShowRequestedHandler(AdShowRequested adShowRequested, CancellationToken cancellationToken)
+        {
+            await UniTask.CompletedTask;
+            this.isWatchingRewardVideo = true;
+        }
+
         private async UniTask GamePausedHandler(GamePaused gamePaused, CancellationToken cancellationToken)
         {
             await UniTask.CompletedTask;
+            if (this.isWatchingRewardVideo) return;
+
             pauseCancelSource?.Cancel();
             pauseCancelSource?.Dispose();
             pauseCancelSource = new CancellationTokenSource();
-            wasAdPlayedDuringPause = false;
 
             try
             {
@@ -85,24 +91,15 @@ namespace Tracking
             catch (OperationCanceledException) { }
         }
 
-        private async UniTask GameUnpausedHandler(GameUnpaused gameUnpaused, CancellationToken cancellationToken)
-        {
-            await UniTask.CompletedTask;
-            if (this.wasAdPlayedDuringPause)
-            {
-                pauseCancelSource?.Cancel();
-            }
-        }
-
         private async UniTask BackHomeHandler(BackHome backHome, CancellationToken cancellationToken)
         {
             await UniTask.CompletedTask;
             LogLevelExit();
         }
-        private void OnInterShowed(AdPlacement adPlacement) { this.isWatchingRewardVideo = true; this.wasAdPlayedDuringPause = true; }
+        private void OnInterShowed(AdPlacement adPlacement) => this.isWatchingRewardVideo = true;
         private void OnInterClosed(AdPlacement adPlacement) => this.isWatchingRewardVideo = false;
         private void OnInterShowFailed(AdError adError) => this.isWatchingRewardVideo = false;
-        private void OnRewardVideoOpened(AdReward reward) { this.isWatchingRewardVideo = true; this.wasAdPlayedDuringPause = true; }
+        private void OnRewardVideoOpened(AdReward reward) => this.isWatchingRewardVideo = true;
         private void OnRewardVideoClosed(AdReward reward) => this.isWatchingRewardVideo = false;
         private void OnRewardVideoShowFailed(AdReward reward, AdError error) => this.isWatchingRewardVideo = false;
 
@@ -132,7 +129,7 @@ namespace Tracking
             this.levelCompletedSub.Dispose();
             this.gamePausedSub.Dispose();
             this.backHomeSub.Dispose();
-            this.gameUnpausedSub.Dispose();
+            this.adShowRequestedSub.Dispose();
             this.pauseCancelSource?.Cancel();
             this.pauseCancelSource?.Dispose();
             this.ads.Interstitial.OnShowSucceeded -= OnInterShowed;

@@ -137,6 +137,7 @@ public class GameplayViewPresenter : BaseViewPresenter
     {
         if (this.adAdapter.RewardVideo.IsReady)
         {
+            this.eventPublisher.PublishAsync(new _Modules.GameEvent.Scripts.AdShowRequested());
             this.adAdapter.RewardVideo.Show(new AdReward("hint"), new AdPlacement("gameplay"));
         }
         else
@@ -290,6 +291,7 @@ public class GameplayViewPresenter : BaseViewPresenter
     {
         if (this.adAdapter.RewardVideo.IsReady)
         {
+            this.eventPublisher.PublishAsync(new _Modules.GameEvent.Scripts.AdShowRequested());
             this.adAdapter.RewardVideo.Show(new AdReward("skip_level"), new AdPlacement("gameplay"));
         }
         else

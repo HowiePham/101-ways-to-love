@@ -96,6 +96,7 @@ public class LifeSystem
     {
         if (this.adAdapter.RewardVideo.IsReady)
         {
+            this.publisher.PublishAsync(new _Modules.GameEvent.Scripts.AdShowRequested());
             this.adAdapter.RewardVideo.Show(new AdReward("extra_life"), new AdPlacement("life_system"));
         }
         else
