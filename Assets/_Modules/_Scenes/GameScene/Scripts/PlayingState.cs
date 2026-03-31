@@ -159,6 +159,7 @@ namespace Mimi
 
         private void DestroyOldLevelRoot()
         {
+            TurnOffOldLevelGeneralSound();
             this.levelPlayer.Cancel();
             ServiceLocator.Global.Get<IPoolService>().Despawn(this.levelRoot);
         }
