@@ -18,16 +18,18 @@ namespace _Modules._UI.WinView.Scripts
         private readonly LevelConfig showAdLevelConfig;
         private readonly IAdAdapter adsAdapter;
         private readonly RuntimeState runtimeState;
+        private readonly GameData gameData;
 
         public WinViewPresenter(BaseScenePresenter scenePresenter, Transform transform, IAsyncPublisher eventPublisher,
             RuntimeState runtimeState, IAdAdapter adsAdapter,
-            LevelConfig showAdLevelConfig) : base(scenePresenter,
+            LevelConfig showAdLevelConfig, GameData gameData) : base(scenePresenter,
             transform)
         {
             this.eventPublisher = eventPublisher;
             this.runtimeState = runtimeState;
             this.adsAdapter = adsAdapter;
             this.showAdLevelConfig = showAdLevelConfig;
+            this.gameData = gameData;
         }
 
         protected override void AddViews()
@@ -98,8 +100,11 @@ namespace _Modules._UI.WinView.Scripts
                 }
             }
 
-            bool showAds = allowShowAd && isAdAvailable;
+            bool adCooldown = this.gameData.IsAdCoolDowning;
+            bool showAds = allowShowAd && isAdAvailable && !adCooldown;
             Debug.LogError("--- (NEXT) Ad Available Interstitial: " + isAdAvailable);
+            Debug.LogError("--- (NEXT) Ad Level: " + allowShowAd);
+            Debug.LogError("--- (NEXT) ads cooldown: " + adCooldown);
             Debug.LogError("--- (NEXT) showAds: " + showAds);
 
             if (showAds)
@@ -142,7 +147,7 @@ namespace _Modules._UI.WinView.Scripts
             this.eventPublisher.PublishAsync(new BackHome());
             Hide();
         }
-        
+
         private void InterstitialClosedHandler(AdPlacement adPlacement)
         {
             if (adPlacement.location == "level_complete")

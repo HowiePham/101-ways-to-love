@@ -357,7 +357,10 @@ namespace Mimi.Prototypes
                 Ads = new AdminToolAdapter(DebugAdAdapter.Instance);
                 // Ads = new AdminToolAdapter(DebugAdAdapter.Instance);
                 var interstitialRequestStrategy = new ExponentialCooldown(999, 2, InternetMonitor);
-                Ads.SetInterstitial(new AutoRequestInterstitial(interstitialRequestStrategy, EditorInterstitialAdapter.Instance));
+                var interCooldown = RemoteConfig.GetValue(ConfigKey.AdCooldown).Float;
+                Ads.SetInterstitial(
+                    new ThrottleInterstitialByCooldown(
+                        new AutoRequestInterstitial(interstitialRequestStrategy, EditorInterstitialAdapter.Instance), interCooldown, this.GameData));
                 Ads.SetRewardVideo(EditorRewardVideoAdapter.Instance);
                 return;
             }
@@ -412,13 +415,14 @@ namespace Mimi.Prototypes
                 if (RemoteConfig.GetValue(ConfigKey.ShowInterstitial).Boolean)
                 {
                     Debug.Log($"--- (ADS) Inter Ads initializing...");
-
+                    var interCooldown = RemoteConfig.GetValue(ConfigKey.AdCooldown).Float;
                     Ads.SetInterstitial(
-                        new AutoRequestInterstitial(interstitialRequestStrategy,
-                            new FirebaseMeasureRevenueInterstitial(
-                                new SingularLogInterstitial(
-                                    new SingularRevenueInterstitial(
-                                        new MaxInterstitial(MaxInterUnityId))))));
+                        new ThrottleInterstitialByCooldown(
+                            new AutoRequestInterstitial(interstitialRequestStrategy,
+                                new FirebaseMeasureRevenueInterstitial(
+                                    new SingularLogInterstitial(
+                                        new SingularRevenueInterstitial(
+                                            new MaxInterstitial(MaxInterUnityId))))), interCooldown, this.GameData));
                 }
                 else
                 {
