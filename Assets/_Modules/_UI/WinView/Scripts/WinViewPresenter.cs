@@ -54,6 +54,9 @@ namespace _Modules._UI.WinView.Scripts
             this.adsAdapter.Interstitial.OnShowFailed += InterstitialShowFailedHandler;
             this.adsAdapter.Interstitial.OnClosed += InterstitialClosedHandler;
             
+            var baseGameContext = (BaseGameContext)this.Context;
+            this.winView.SetActiveRemoveAdsButton(!baseGameContext.IsRemoveAds);
+            
             this.adsAdapter.Mrec.Show(new AdPlacement("win_view"));
             // this.currencyView.OnAddCurrencyClicked += AddCurrencyClickedHandler;
         }

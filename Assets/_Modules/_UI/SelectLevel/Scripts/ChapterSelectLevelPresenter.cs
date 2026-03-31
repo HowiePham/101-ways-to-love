@@ -69,6 +69,9 @@ public class ChapterSelectLevelPresenter : BaseViewPresenter
         this.chapterView.OnBottomButtonClick += JumpToLastPage;
         this.chapterView.OnIAPButtonClick += IAPClickHandler;
 
+        var baseGameContext = (BaseGameContext)this.Context;
+        this.chapterView.SetActiveRemoveAdsButton(!baseGameContext.IsRemoveAds);
+
         Messenger.AddListener<ChapterCellView>(EventKey.SelectChapter, OnChapterCellSelected);
 
         this.lifeView.Show();
