@@ -6,11 +6,11 @@ using UnityEngine.UI;
 
 public class ChapterPageCell : EnhancedScrollerCellView
 {
-    public int TotalChapterInAPage = 9;
+    public int TotalChapterInAPage = 1;
 
     [SerializeField] private RectMask2D containerMask;
-    [SerializeField] private float topPaddingWhenNextPagePlaying;
-    [SerializeField] private float topPaddingDefault;
+    [SerializeField] private float topPaddingWhenNextPagePlaying = -79;
+    [SerializeField] private float topPaddingDefault = -150;
 
     private ChapterCellView[] cells;
     private SmallList<ChapterInfo> chapterData = new SmallList<ChapterInfo>();

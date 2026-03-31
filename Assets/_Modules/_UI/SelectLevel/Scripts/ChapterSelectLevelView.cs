@@ -5,6 +5,7 @@ using EnhancedUI.EnhancedScroller;
 using Mimi.Prototypes.LevelManagement;
 using Mimi.Prototypes.UI;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class ChapterSelectLevelView : BaseView, IEnhancedScrollerDelegate
@@ -21,13 +22,14 @@ public class ChapterSelectLevelView : BaseView, IEnhancedScrollerDelegate
     private float cellViewSize;
 
     [SerializeField] private EnhancedScroller scroller;
-    [SerializeField] private ChapterPageCell cellViewPrefab;
+    [SerializeField] private ChapterPageCell cellViewPrefabRight;
+    [SerializeField] private ChapterPageCell cellViewPrefabLeft;
 
     private int currentLevelOrder;
     private SmallList<ChapterInfo> chapterData = new SmallList<ChapterInfo>();
 
     public NumberBasedLifeView LifeView => this.lifeView;
-    public int TotalChapterInAPage => this.cellViewPrefab.TotalChapterInAPage;
+    public int TotalChapterInAPage => this.cellViewPrefabRight.TotalChapterInAPage;
     public int TotalPage { private set; get; }
 
     public event Action OnClickSetting;
@@ -108,8 +110,11 @@ public class ChapterSelectLevelView : BaseView, IEnhancedScrollerDelegate
     public EnhancedScrollerCellView GetCellView(EnhancedScroller scroller, int dataIndex, int cellIndex)
     {
         int reversedPageOrder = (this.TotalPage - 1) - dataIndex;
-        var pageCellView = scroller.GetCellView(this.cellViewPrefab) as ChapterPageCell;
-
+        bool isRightSide = reversedPageOrder % 2 == 0;
+        ChapterPageCell pageCellView = isRightSide
+            ? scroller.GetCellView(this.cellViewPrefabRight) as ChapterPageCell
+            : scroller.GetCellView(this.cellViewPrefabLeft) as ChapterPageCell;
+        
         bool isFirstChapterOfNextPagePlaying = false;
         int nextPageOrder = reversedPageOrder + 1;
         if (nextPageOrder < this.TotalPage)
