@@ -26,9 +26,9 @@ def GetConfigValue(String key){
     configData = configData.split("\n")
     for(it in configData)
     {
-        def lineData = it.split("=")
-        if(lineData[0].trim() == key){
-            return lineData[1].trim();
+        def lineData = it.split("=", 2)
+        if(lineData.length >= 2 && lineData[0].trim() == key){
+            return lineData[1].trim().replaceAll('^"|"$', '')
         }
     }
     return ""
@@ -77,6 +77,17 @@ pipeline {
                     }
 
                     script {
+                        // Resolve Slack token from Jenkins credential store.
+                        // Create a "Secret text" credential with ID 'slack-bot-token' in Jenkins.
+                        try {
+                            withCredentials([string(credentialsId: 'slack-bot-token', variable: 'SLACK_TOKEN_FROM_CREDS')]) {
+                                env.SLACK_BOT_TOKEN = SLACK_TOKEN_FROM_CREDS
+                            }
+                        } catch (ignored) {
+                            echo "[Slack] WARNING: Jenkins credential 'slack-bot-token' not found. Slack notifications will be skipped."
+                            env.SLACK_BOT_TOKEN = ""
+                        }
+
                         def fileName = 'buildlog.txt'
                         if (fileExists(fileName)) {
                             echo "File '${fileName}' found, deleting..."
@@ -124,7 +135,7 @@ pipeline {
                     script {
                         sh 'printenv | sort'
                         def PYTHON_PATH
-                        
+
                         if (isUnix()) {
                             env.ISUNIX = "TRUE" // cache isUnix() function to prevent blueocean show too many duplicate step (Checks if running on a Unix-like node) in python function below
                             sh 'python3 -m venv pyenv'
@@ -135,7 +146,7 @@ pipeline {
                             powershell(script:"py -3 -m venv pyenv") // window not allow call python3.exe with venv. https://github.com/msys2/MINGW-packages/issues/5001
                             PYTHON_PATH =  sh(script: 'echo ${WORKSPACE}/pyenv/Scripts/', returnStdout: true).trim()
                         }
-                        
+
                         env.PYTHON_PATH = PYTHON_PATH
                         echo "PYTHON_PATH = ${env.PYTHON_PATH}"
 
@@ -179,7 +190,7 @@ pipeline {
 
                         dir('src')
                         {
-                            Python(" -u  $env.UNITY_PROJECT_ROOT/Jenkins/Scripts/ConfigEnvironment.py ")
+                            Python(" -u  $env.UNITY_PROJECT_ROOT/Jenkins/Scripts/config_environment.py ")
                         }
 
                         BUNDLE_ID = GetConfigValue("BUNDLE_ID")
@@ -189,20 +200,19 @@ pipeline {
                         {
                             withCredentials([file(credentialsId: "google-play-console-credentials", variable: 'GCLOUD_SERVICE_ACCOUNT_CREDENTIALS')])
                             {
-                                // TODO: Re-enable when Firebase Remote Config is set up
-                                // try
-                                // {
-                                //     dir('src') {
-                                //         Python(" -u ${env.UNITY_PROJECT_ROOT}/Jenkins/Scripts/ValidateRemoteConfig.py")
-                                //     }
-                                // }
-                                // catch(err)
-                                // {
-                                //     def msg = "Validate Remote Config failed: ${err.message ?: err.toString()}"
-                                //     echo msg
-                                //     currentBuild.description = msg
-                                //     error(msg)
-                                // }
+                                try
+                                {
+                                    dir('src') {
+                                        Python(" -u ${env.UNITY_PROJECT_ROOT}/Jenkins/Scripts/validate_remote_config.py")
+                                    }
+                                }
+                                catch(err)
+                                {
+                                    def msg = "Validate Remote Config failed: ${err.message ?: err.toString()}"
+                                    echo msg
+                                    currentBuild.description = msg
+                                    error(msg)
+                                }
                                 try
                                 {
                                     // get latest app version and version code from Google Console then save into environment variables
@@ -234,7 +244,7 @@ pipeline {
                             }
                         }
 
-                        def available = Python(" $env.UNITY_PROJECT_ROOT/Jenkins/Scripts/VerifyUnityInstallation.py")
+                        def available = Python(" $env.UNITY_PROJECT_ROOT/Jenkins/Scripts/verify_unity_installation.py")
                         if (available == 1) {
                             timeout(time: 30, unit: 'MINUTES') {
                                 echo 'Start Installing Unity'
@@ -244,7 +254,7 @@ pipeline {
                         }
                         // sh([script: "rm -R Library", returnStatus:true, label:'Clean library'])
                         // sh([script: "pkill -f java ", returnStatus:true, label:'Kill java from previous build'])
-                        ExecuteAllPythonScriptsInDirectory("AfterUnitySetup")
+                        ExecuteHooks("after_unity_setup")
                     }
                 }
             }
@@ -288,7 +298,7 @@ pipeline {
                 withEnv(['BUILD_CURRENT_STEP=Build Project']) {
                     script {
                         try {
-                            ExecuteAllPythonScriptsInDirectory("BeforeBuild")
+                            ExecuteHooks("before_build")
 
                             if(isAndroid)
                             {
@@ -296,7 +306,7 @@ pipeline {
                             }
 
                             PIPELINE_NAME = GetConfigValue("PIPELINE")
-                            SLACK_TOKEN = GetConfigValue("SLACK_BOT_TOKEN")
+                            SLACK_TOKEN = env.SLACK_BOT_TOKEN
                             JOB_URL = GetConfigValue("JOB_URL")
 
                             withCredentials(
@@ -304,10 +314,10 @@ pipeline {
                                 usernamePassword(credentialsId: 'admin-jenkins-api-token', usernameVariable: 'JENKINS_API_USER', passwordVariable: 'JENKINS_API_TOKEN')]) {
                                 dir('src'){
                                     println("Clean up python build monitor progress")
-                                    KillPythonScript("UpdateBuildProgress.py")
+                                    KillPythonScript("update_build_progress.py")
                                     println("Start python build monitor progress")
                                     withEnv(['JENKINS_NODE_COOKIE=dontKillMe']){
-                                        PythonBackground(" -u $env.UNITY_PROJECT_ROOT/Jenkins/Scripts/UpdateBuildProgress.py --job-url '${env.BUILD_URL}' --build-number ${env.BUILD_NUMBER} --jenkins-user ${JENKINS_API_USER} --jenkins-token ${JENKINS_API_TOKEN} --slack-token ${SLACK_TOKEN} --pipeline-name ${PIPELINE_NAME} --interval 5")
+                                        PythonBackground(" -u $env.UNITY_PROJECT_ROOT/Jenkins/Scripts/update_build_progress.py --job-url '${env.BUILD_URL}' --build-number ${env.BUILD_NUMBER} --jenkins-user ${JENKINS_API_USER} --jenkins-token ${JENKINS_API_TOKEN} --slack-token ${SLACK_TOKEN} --pipeline-name ${PIPELINE_NAME} --interval 5")
                                     }
                                 }
                             }
@@ -321,14 +331,14 @@ pipeline {
                                 timeout(time: 100, unit: 'MINUTES') {
                                     if (isUnix()) {
                                         def shellCmd = GetConfig("UNITY_BUILD_COMMAND").trim()
-                                        def unixBuildStatus = sh([script: "${shellCmd} -username ${UNITY_USERNAME} -password ${UNITY_PASSWORD} keystore-name=${KEYSTORE_NAME} keystore-password=${KEYSTORE_PASSWORD} keyalias-name=${KEYALIAS_NAME} keyalias-password=${KEYALIAS_PASSWORD} ", returnStatus:true, label:'Build unity on Unix'])
+                                        def unixBuildStatus = sh([script: "${shellCmd} -username ${UNITY_USERNAME} -password ${UNITY_PASSWORD} keystore-path=${WORKSPACE}/${KEYSTORE_NAME} keystore-password=${KEYSTORE_PASSWORD} keyalias-name=${KEYALIAS_NAME} keyalias-password=${KEYALIAS_PASSWORD} ", returnStatus:true, label:'Build unity on Unix'])
                                         if (unixBuildStatus != 0) {
                                             currentBuild.result = 'FAILED'
                                             error 'Build Failed by Unity. Check above log for more detail'
                                         }
                                     }
                                     else {
-                                        def buildStatus = powershell([script: "$env.UNITY_PROJECT_ROOT/Jenkins/Scripts/UnityBuild.ps1 -config '$env.UNITY_PROJECT_ROOT/Jenkins/config.cfg' -quit -batchmode -silent-crashes -username ${UNITY_USERNAME} -password ${UNITY_PASSWORD} keystore-name=${KEYSTORE_NAME} keystore-password=${KEYSTORE_PASSWORD} keyalias-name=${KEYALIAS_NAME} keyalias-password=${KEYALIAS_PASSWORD} ", returnStatus:true, label:'Build unity on Windows'])
+                                        def buildStatus = powershell([script: "$env.UNITY_PROJECT_ROOT/Jenkins/Scripts/UnityBuild.ps1 -config '$env.UNITY_PROJECT_ROOT/Jenkins/config.cfg' -quit -batchmode -silent-crashes -username ${UNITY_USERNAME} -password ${UNITY_PASSWORD} keystore-path=${WORKSPACE}/${KEYSTORE_NAME} keystore-password=${KEYSTORE_PASSWORD} keyalias-name=${KEYALIAS_NAME} keyalias-password=${KEYALIAS_PASSWORD} ", returnStatus:true, label:'Build unity on Windows'])
                                         if (buildStatus != 0) {
                                             currentBuild.result = 'FAILED'
                                             error 'Build Failed by Unity. Check above log for more detail'
@@ -351,7 +361,7 @@ pipeline {
                 failure {
                     script {
                         dir('src') {
-                            ExecuteAllPythonScriptsInDirectory("AfterBuildFailure")
+                            ExecuteHooks("after_build_failure")
                         }
 
                         SetConfig('BUILD_ERROR_MESSAGE', 'Unity build failed')
@@ -367,23 +377,6 @@ pipeline {
                 }
             }
         }
-//         stage('Post Build') {
-//             agent { label BUILD_TARGET }
-//             steps {
-//                 withEnv(['BUILD_CURRENT_STEP=Post Build']) {
-//                     script {
-//                         dir('src') {
-//                             ExecuteAllPythonScriptsInDirectory("AfterBuild")
-//
-//     //                         if("${BUILD_TARGET}" == "android" && env.BRANCH_NAME.toLowerCase().contains("-release") && "${FIREBASE_APP_ID}" != "")
-//     //                         {
-//     //                             Python(" -u  $env.UNITY_PROJECT_ROOT/Jenkins/Scripts/SendSymbolToFirebase.py")
-//     //                         }
-//                         }
-//                     }
-//                 }
-//             }
-//         }
         // Only send test version to Test Flight.
         // Android send apk to Tester or aab to Test version
         stage('Publish') {
@@ -415,61 +408,59 @@ pipeline {
                             }
                         }
 
+                        // iOS: Build IPA with Fastlane and upload to TestFlight
+                        if (isIOS) {
+                            def xcode_dir = "${env.WORKSPACE}/build/iOS"
+                            def fastlane_src = "${env.UNITY_PROJECT_ROOT}/Jenkins/Fastlane"
+
+                            sh "cp -r ${fastlane_src}/fastlane ${xcode_dir}/fastlane"
+                            sh "cp ${fastlane_src}/Gemfile ${xcode_dir}/Gemfile"
+                            sh "cp ${fastlane_src}/Gemfile.lock ${xcode_dir}/Gemfile.lock 2>/dev/null || true"
+                            sh "cp ${fastlane_src}/PodfilePostInstall.rb ${xcode_dir}/PodfilePostInstall.rb"
+
+                            dir(xcode_dir) {
+                                sh(script: "bundle install --jobs 4 --retry 3", label: "Install Fastlane gems")
+
+                                def lane = GetConfigValue("IOS_FASTLANE_LANE") ?: "beta"
+
+                                withCredentials([
+                                    string(credentialsId: 'asc-key-id', variable: 'ASC_KEY_ID'),
+                                    string(credentialsId: 'asc-issuer-id', variable: 'ASC_ISSUER_ID'),
+                                    file(credentialsId: 'asc-key-file', variable: 'ASC_KEY_PATH'),
+                                    string(credentialsId: 'match-password', variable: 'MATCH_PASSWORD'),
+                                    string(credentialsId: 'match-git-url', variable: 'MATCH_GIT_URL'),
+                                    string(credentialsId: 'ios-team-id', variable: 'IOS_TEAM_ID')
+                                ]) {
+                                    withEnv([
+                                        "IOS_BUNDLE_ID=${BUNDLE_ID}",
+                                        "MATCH_GIT_URL=${MATCH_GIT_URL}"
+                                    ]) {
+                                        sh(
+                                            script: "bundle exec fastlane ${lane} --verbose 2>&1 | tee ${env.WORKSPACE}/fastlane_log.txt",
+                                            label: "Fastlane ${lane}"
+                                        )
+                                    }
+                                }
+
+                                // Copy IPA to build folder for archiving and Slack upload
+                                sh "cp -f *.ipa ${env.WORKSPACE}/build/iOS/ 2>/dev/null || true"
+                            }
+                        }
+
                         try {
-                            Python(" -u $env.UNITY_PROJECT_ROOT/Jenkins/Scripts/SendBuildOutputToSlack.py")
+                            Python(" -u $env.UNITY_PROJECT_ROOT/Jenkins/Scripts/send_build_output_to_slack.py")
                         } catch (err) {
                             echo "Slack post failed: ${err.getMessage()}"
                         }
-
-
-//                         if (isIOS)
-//                         {
-//                             def xcode_dir = "$env.WORKSPACE/build/iOS"
-//                             sh "yes | cp -rf $env.UNITY_PROJECT_ROOT/Jenkins/Scripts/FastLaneFiles/.  $xcode_dir"
-//                             dir(xcode_dir)
-//                             {
-//                                 sh "printenv | sort"
-//                                 sh "pod install"
-//
-//                                 def lane = "beta"
-//                                 if(isRelease)
-//                                     lane = "publish"
-//                                 sh(script:"fastlane ${lane} --verbose 2>&1 | tee ${workspace}/fastlane_log.txt ; ( exit \${PIPESTATUS[0]} )", label: 'Fastlane')
-//
-//                                 withCredentials([string(credentialsId: 'KEYCHAIN_PASSWORD', variable: 'KEYCHAIN_PASSWORD'),
-//                                                 string(credentialsId: 'FASTLANE_PASSWORD', variable: 'FASTLANE_PASSWORD'),
-//                                                 string(credentialsId: 'FASTLANE_USER', variable: 'FASTLANE_USER'),
-//                                                 string(credentialsId: 'MATCH_PASSWORD', variable: 'MATCH_PASSWORD')])
-//                                 {
-//                                     sshagent (credentials: ['appstore_github'])
-//                                     {
-//                                         // Enable below code if fastlane still cant find ssh key. It add all ssh in ~/.ssh key if jenkins have sudo power (you shouldn't give CI root and fastlane cant run in sudo shell)
-//                                         // sh "ssh-add -A"
-//                                         sh "printenv | sort"
-//
-//                                         // For proper keychain setup with fastlane. Create new keychain user in macbook with custom password. login.keychain is the default keychain
-//                                         // That included all login for appstore, github, and certification use for fastlane.
-//                                         // sh "security list-keychains"
-//                                         sh(script:'security -v unlock-keychain -p "${KEYCHAIN_PASSWORD}" ~/Library/Keychains/login.keychain', label: 'Unlock Keychain')
-//                                         // sh "security list-keychains"
-//
-//                                         def lane = "beta"
-//                                         if( env.BRANCH_NAME.toLowerCase().contains("-release"))
-//                                             lane = "publish"
-//
-//                                         sh(script:"fastlane ${lane} --verbose 2>&1 | tee ${workspace}/fastlane_log.txt ; ( exit \${PIPESTATUS[0]} )", label: 'Fastlane')
-//                                     }
-//                                 }
-//                             }
-//                         }
                     }
                 }
             }
             post {
                 success {
                     archiveArtifacts artifacts: "build/iOS/*.ipa", fingerprint: true, allowEmptyArchive: true
+                    archiveArtifacts artifacts: "build/iOS/**/*.dSYM.zip", allowEmptyArchive: true
                     script {
-                        ExecuteAllPythonScriptsInDirectory("AfterPublishSuccess")
+                        ExecuteHooks("after_publish_success")
                     }
                 }
                 always {
@@ -477,7 +468,7 @@ pipeline {
                 }
                 failure {
                     script {
-                        ExecuteAllPythonScriptsInDirectory("AfterPublishFailure")
+                        ExecuteHooks("after_publish_failure")
                     }
                 }
             }
@@ -494,22 +485,19 @@ pipeline {
             steps {
                 withEnv(['BUILD_CURRENT_STEP=Test']) {
                     script {
-                        dir("src")
-                        {
-                            Python(" -u  $env.UNITY_PROJECT_ROOT/Jenkins/Scripts/RunAndroidTests.py $env.BRANCH_NAME $env.GIT_COMMIT_HASH $env.GIT_COMMIT_DATE")
-                        }
+                        echo "Android test runner not configured. Skipping."
                     }
                 }
             }
             post {
                 success {
                     script {
-                        ExecuteAllPythonScriptsInDirectory("AfterTestSuccess")
+                        ExecuteHooks("after_test_success")
                     }
                 }
                 failure {
                     script {
-                        ExecuteAllPythonScriptsInDirectory("AfterTestFailure")
+                        ExecuteHooks("after_test_failure")
                     }
                 }
             }
@@ -519,14 +507,12 @@ pipeline {
         always {
             node(BUILD_TARGET) {
                 script {
-                    script {
-                        echo "==== Post final build status ===="
-                        withCredentials(
-                        [
-                            usernamePassword(credentialsId: 'admin-jenkins-api-token', usernameVariable: 'JENKINS_API_USER', passwordVariable: 'JENKINS_API_TOKEN')]) {
-                            dir('src'){
-                                Python(" -u $env.UNITY_PROJECT_ROOT/Jenkins/Scripts/UpdateFinalSlackStatus.py --jenkins-user ${JENKINS_API_USER} --jenkins-token ${JENKINS_API_TOKEN}")
-                            }
+                    echo "==== Post final build status ===="
+                    withCredentials(
+                    [
+                        usernamePassword(credentialsId: 'admin-jenkins-api-token', usernameVariable: 'JENKINS_API_USER', passwordVariable: 'JENKINS_API_TOKEN')]) {
+                        dir('src'){
+                            Python(" -u $env.UNITY_PROJECT_ROOT/Jenkins/Scripts/update_final_slack_status.py --jenkins-user ${JENKINS_API_USER} --jenkins-token ${JENKINS_API_TOKEN}")
                         }
                     }
                 }
@@ -539,7 +525,7 @@ pipeline {
                     [
                         usernamePassword(credentialsId: 'admin-jenkins-api-token', usernameVariable: 'JENKINS_API_USER', passwordVariable: 'JENKINS_API_TOKEN')]) {
                         dir('src'){
-                            Python(" -u $env.UNITY_PROJECT_ROOT/Jenkins/Scripts/ParseAndPostErrors.py --jenkins-user ${JENKINS_API_USER} --jenkins-token ${JENKINS_API_TOKEN}")
+                            Python(" -u $env.UNITY_PROJECT_ROOT/Jenkins/Scripts/parse_and_post_errors.py --jenkins-user ${JENKINS_API_USER} --jenkins-token ${JENKINS_API_TOKEN}")
                         }
                     }
                 }
@@ -548,14 +534,21 @@ pipeline {
     }
 }
 
-// Think of this like python stage that jenkins dont care about. Just execute.
-def ExecuteAllPythonScriptsInDirectory(String subDirectory) {
+// Run lifecycle hook scripts registered for the given event.
+// Each hook in hooks/ declares HOOK_EVENTS and HOOK_ORDER.
+def ExecuteHooks(String eventName) {
     try {
-        Python("-u $env.UNITY_PROJECT_ROOT/Jenkins/Scripts/RunAllPythonScript.py ${subDirectory}")
+        Python("-u $env.UNITY_PROJECT_ROOT/Jenkins/Scripts/run_hooks.py ${eventName}")
     } catch (err) {
         echo err.getMessage()
-        unstable "Python script have errors. Mark stage as unstable"
+        unstable "Hook scripts have errors. Mark stage as unstable"
     }
+}
+
+// Legacy: kept for backward compatibility during migration. Prefer ExecuteHooks().
+def ExecuteAllPythonScriptsInDirectory(String subDirectory) {
+    // RunHooks.py auto-maps legacy directory names to event names
+    ExecuteHooks(subDirectory)
 }
 
 // Get and Set is the same as Load .groovy into global env
@@ -577,11 +570,12 @@ def SetConfig(String configKey, String configValue) {
 // Several plugins like WithPyenv is not working perfectly across platform when using Virtual Env.
 // Do the venv manually this way is much better.
 def Python(String command) {
+    def scriptsDir = "${env.UNITY_PROJECT_ROOT}/Jenkins/Scripts"
     if (env.ISUNIX == "TRUE") {
-        sh script:"source ${WORKSPACE}/pyenv/bin/activate && python ${command}", label: "python ${command}"
+        sh script:"export PYTHONPATH=\"${scriptsDir}:\${PYTHONPATH}\" && source ${WORKSPACE}/pyenv/bin/activate && python ${command}", label: "python ${command}"
     }
     else {
-        powershell script:"${WORKSPACE}\\pyenv\\Scripts\\Activate.ps1 ; python ${command}", label: "python ${command}"
+        powershell script:"\$env:PYTHONPATH = '${scriptsDir}' + ';' + \$env:PYTHONPATH; \$env:PYTHONCASEOK = '1'; ${WORKSPACE}\\pyenv\\Scripts\\Activate.ps1 ; python ${command}", label: "python ${command}"
     }
 }
 
@@ -589,6 +583,7 @@ def Python(String command) {
 def PythonBackground(String command) {
     // Escape ký tự % để tránh lỗi khi chạy trong shell/batch
     def escapedCommand = command.replaceAll('%', '%%')
+    def scriptsDir = "${env.UNITY_PROJECT_ROOT}/Jenkins/Scripts"
 
     if (env.ISUNIX == "TRUE") {
         sh script: """
@@ -596,6 +591,7 @@ def PythonBackground(String command) {
 
             echo "[INFO] Starting new Python background task..."
             export BUILD_ID=dontKillMe
+            export PYTHONPATH="${scriptsDir}:\${PYTHONPATH}"
             source ${WORKSPACE}/pyenv/bin/activate
 
             # Tách process khỏi Jenkins session
@@ -610,6 +606,8 @@ def PythonBackground(String command) {
 
             echo [INFO] Starting new Python background task...
             set BUILD_ID=dontKillMe
+            set PYTHONPATH=${scriptsDir};%PYTHONPATH%
+            set PYTHONCASEOK=1
             call ${WORKSPACE}\\pyenv\\Scripts\\activate.bat
 
             REM Dùng start "" cmd /C để detach hoàn toàn khỏi Jenkins
@@ -621,10 +619,17 @@ def PythonBackground(String command) {
 }
 
 def KillPythonScript(String match) {
-    sh """
-        echo "[INFO] Killing python scripts containing: ${match}"
-        pkill -f "${match}" || true
-    """
+    if (env.ISUNIX == "TRUE") {
+        sh """
+            echo "[INFO] Killing python scripts containing: ${match}"
+            pkill -f "${match}" || true
+        """
+    } else {
+        bat """
+            echo [INFO] Killing python scripts containing: ${match}
+            taskkill /F /FI "IMAGENAME eq python.exe" /FI "WINDOWTITLE eq *${match}*" >nul 2>&1 || exit /b 0
+        """
+    }
 }
 
 def ConvertPathSeparator(String path){
@@ -641,9 +646,13 @@ def ToUnixPath(String path){
 }
 
 def PostSlackMessage(String channelId, String text) {
+    if (!env.SLACK_BOT_TOKEN?.trim()) {
+        echo "[Slack] No token configured — skipping postMessage."
+        return null
+    }
     def resp = sh(script: """
         curl -s -X POST \
-        -H "Authorization: Bearer ${GetConfigValue('SLACK_BOT_TOKEN')}" \
+        -H "Authorization: Bearer ${env.SLACK_BOT_TOKEN}" \
         -H 'Content-type: application/json; charset=utf-8' \
         --data '{
             "channel": "${channelId}",
@@ -664,14 +673,14 @@ def PostSlackMessage(String channelId, String text) {
 }
 
 def UpdateSlackMessage(String channelId, String ts, String text) {
-    if (!ts) {
-        echo "No Slack message timestamp found — skipping update."
+    if (!ts || !env.SLACK_BOT_TOKEN?.trim()) {
+        echo "[Slack] No token or timestamp — skipping update."
         return
     }
 
     def resp = sh(script: """
         curl -s -X POST \
-        -H "Authorization: Bearer ${GetConfigValue('SLACK_BOT_TOKEN')}" \
+        -H "Authorization: Bearer ${env.SLACK_BOT_TOKEN}" \
         -H 'Content-type: application/json; charset=utf-8' \
         --data '{
             "channel": "${channelId}",
@@ -693,14 +702,14 @@ def UpdateSlackMessage(String channelId, String ts, String text) {
 }
 
 def DeleteSlackMessage(String channelId, String ts) {
-    if (!ts) {
-        echo "No Slack message timestamp found — skipping delete."
+    if (!ts || !env.SLACK_BOT_TOKEN?.trim()) {
+        echo "[Slack] No token or timestamp — skipping delete."
         return
     }
 
     def resp = sh(script: """
         curl -s -X POST \
-        -H "Authorization: Bearer ${GetConfigValue('SLACK_BOT_TOKEN')}" \
+        -H "Authorization: Bearer ${env.SLACK_BOT_TOKEN}" \
         -H 'Content-type: application/json; charset=utf-8' \
         --data '{
             "channel": "${channelId}",
@@ -721,8 +730,8 @@ def DeleteSlackMessage(String channelId, String ts) {
 }
 
 def UpdateSlackMessageFailedStage() {
-    if (!env.SLACK_MESSAGE_TS?.trim()) {
-        echo "[Slack] No SLACK_MESSAGE_TS found — skipping update."
+    if (!env.SLACK_MESSAGE_TS?.trim() || !env.SLACK_BOT_TOKEN?.trim()) {
+        echo "[Slack] No token or SLACK_MESSAGE_TS — skipping update."
         return
     }
 
@@ -735,7 +744,7 @@ def UpdateSlackMessageFailedStage() {
     }
 
     def ts = env.SLACK_MESSAGE_TS
-    def token = GetConfigValue('SLACK_BOT_TOKEN')
+    def token = env.SLACK_BOT_TOKEN
 
     def emoji = ":x:"
     def status = "FAILED at stage *${stageName}*"

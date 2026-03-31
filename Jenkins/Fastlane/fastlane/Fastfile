@@ -1,0 +1,144 @@
+default_platform(:ios)
+
+before_all do
+  setup_ci if is_ci
+end
+
+# ─── Shared Lanes ──────────────────────────────────────────────────────
+
+desc "Authenticate with App Store Connect and install appstore signing certificates"
+lane :prepare_signing do
+  api_key = app_store_connect_api_key(
+    key_id: ENV["ASC_KEY_ID"],
+    issuer_id: ENV["ASC_ISSUER_ID"],
+    key_filepath: ENV["ASC_KEY_PATH"],
+    in_house: false
+  )
+  match(
+    type: "appstore",
+    readonly: is_ci,
+    api_key: api_key
+  )
+  api_key
+end
+
+desc "Install CocoaPods with escalating retry (normal → repo update → full clean)"
+lane :install_pods do
+  # Inject post_install fixes for deployment target, bitcode, signing, Swift version, etc.
+  inject_podfile_fixes
+
+  begin
+    cocoapods(podfile: ".", clean_install: false)
+  rescue => ex1
+    UI.warn("pod install failed (attempt 1): #{ex1.message}")
+    begin
+      sh("pod repo update")
+      cocoapods(podfile: ".", clean_install: false, try_repo_update_on_error: true)
+    rescue => ex2
+      UI.warn("pod install failed (attempt 2): #{ex2.message}")
+      UI.important("Performing full clean pod install...")
+      sh("pod deintegrate || true")
+      sh("rm -rf Pods Podfile.lock")
+      sh("pod cache clean --all")
+      cocoapods(podfile: ".", clean_install: true)
+    end
+  end
+end
+
+desc "Build IPA from Unity-generated Xcode workspace"
+lane :build_ipa do |options|
+  export_method = options[:export_method] || "app-store"
+  install_pods
+  build_app(
+    workspace: "Unity-iPhone.xcworkspace",
+    scheme: "Unity-iPhone",
+    configuration: "Release",
+    export_method: export_method,
+    clean: true,
+    output_directory: ".",
+    output_name: "build.ipa",
+    include_symbols: true,
+    xcargs: "-allowProvisioningUpdates"
+  )
+end
+
+# ─── Distribution Lanes ────────────────────────────────────────────────
+
+desc "Build and upload to TestFlight"
+lane :beta do
+  api_key = prepare_signing
+  build_ipa(export_method: "app-store")
+  upload_to_testflight(
+    api_key: api_key,
+    ipa: "build.ipa",
+    skip_waiting_for_build_processing: true,
+    distribute_external: false
+  )
+  UI.success("Uploaded to TestFlight successfully!")
+end
+
+desc "Build ad-hoc IPA for internal testing (no upload)"
+lane :adhoc do
+  prepare_signing_adhoc
+  build_ipa(export_method: "ad-hoc")
+  UI.success("Ad-hoc IPA built: build.ipa")
+end
+
+desc "Build and submit to App Store Connect (does not submit for review)"
+lane :appstore do
+  api_key = prepare_signing
+  build_ipa(export_method: "app-store")
+  upload_to_app_store(
+    api_key: api_key,
+    ipa: "build.ipa",
+    skip_screenshots: true,
+    skip_metadata: true,
+    precheck_include_in_app_purchases: false,
+    submit_for_review: false
+  )
+  UI.success("Uploaded to App Store Connect successfully!")
+end
+
+# ─── Error Handling ────────────────────────────────────────────────────
+
+error do |lane, exception|
+  UI.error("Lane '#{lane}' failed: #{exception.message}")
+  UI.error(exception.backtrace.first(5).join("\n")) if exception.backtrace
+end
+
+# ─── Helpers ───────────────────────────────────────────────────────────
+
+private_lane :prepare_signing_adhoc do
+  api_key = app_store_connect_api_key(
+    key_id: ENV["ASC_KEY_ID"],
+    issuer_id: ENV["ASC_ISSUER_ID"],
+    key_filepath: ENV["ASC_KEY_PATH"],
+    in_house: false
+  )
+  match(
+    type: "adhoc",
+    readonly: is_ci,
+    api_key: api_key
+  )
+end
+
+private_lane :inject_podfile_fixes do
+  post_install_path = File.expand_path("../../PodfilePostInstall.rb", __FILE__)
+
+  unless File.exist?(post_install_path)
+    UI.warn("PodfilePostInstall.rb not found at #{post_install_path}, skipping injection")
+    next
+  end
+
+  podfile_path = "Podfile"
+  podfile_content = File.read(podfile_path)
+
+  if podfile_content.include?("# MIMI_POST_INSTALL")
+    UI.message("PodfilePostInstall already injected, skipping")
+    next
+  end
+
+  post_install_content = File.read(post_install_path)
+  File.write(podfile_path, podfile_content + "\n# MIMI_POST_INSTALL\n" + post_install_content)
+  UI.message("Injected PodfilePostInstall.rb into Podfile")
+end

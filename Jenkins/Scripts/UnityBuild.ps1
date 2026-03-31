@@ -43,7 +43,7 @@ foreach ($arg in $args)
     [void]$stringbuilder.AppendFormat(" {0} ", $arg)
 }
 
-AddArgumentIfFound "buildTarget "  "BUILD_TARGET"
+AddArgumentIfFound "buildTarget" "BUILD_TARGET"
 AddArgumentIfFound "logFile" "UNITY_BUILD_LOG"
 AddArgumentIfFound "projectPath" "UNITY_PROJECT"
 AddArgumentIfFound "executeMethod"  "BUILD_METHOD_NAME"
@@ -67,16 +67,20 @@ $pinfo.UseShellExecute = $false
 $pinfo.Arguments = "$arguments"
 $p = New-Object System.Diagnostics.Process
 $p.StartInfo = $pinfo
+# Read stdout/stderr asynchronously to prevent deadlock when buffers fill
 $p.Start() | Out-Null
+$stdoutTask = $p.StandardOutput.ReadToEndAsync()
+$stderrTask = $p.StandardError.ReadToEndAsync()
+$p.WaitForExit()
 
-$stdout = $p.StandardOutput.ReadToEnd()
-$stderr = $p.StandardError.ReadToEnd()
-Write-Host "exit code: " + $p.ExitCode
-Write-Output "$stdout"
+$stdout = $stdoutTask.Result
+$stderr = $stderrTask.Result
+
+Write-Host "exit code: $($p.ExitCode)"
+Write-Output $stdout
 if ($stderr)
 {
-    Write-Error "$stderr"
+    Write-Error $stderr
 }
 
-$p.WaitForExit()
 exit $p.ExitCode
