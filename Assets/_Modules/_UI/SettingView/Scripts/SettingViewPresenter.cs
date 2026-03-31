@@ -71,6 +71,16 @@ public class SettingViewPresenter : BaseViewPresenter
         this.adsAdapter.Mrec.Hide();
     }
 
+    public void SetActiveHomeButton(bool active)
+    {
+        this.settingView.SetActiveHomeButton(active);
+    }
+
+    public void SetActiveReplayButton(bool active)
+    {
+        this.settingView.SetActiveReplayButton(active);
+    }
+
     private void VibrationClickedHandler(bool value)
     {
         Debug.Log($"--- (SETTING) Vibration Setting changed to: {value}");

@@ -86,4 +86,14 @@ public class SettingView : BaseView
         var toggleSpriteSwap = toggle.GetComponent<SpriteSwapToggle>();
         toggleSpriteSwap.ValueChangeHandler(toggle.isOn);
     }
+
+    public void SetActiveHomeButton(bool active)
+    {
+        this.homeButton.gameObject.SetActive(active);
+    }
+
+    public void SetActiveReplayButton(bool active)
+    {
+        this.replayButton.gameObject.SetActive(active);
+    }
 }

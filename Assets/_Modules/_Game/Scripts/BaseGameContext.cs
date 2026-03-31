@@ -621,6 +621,15 @@ namespace Mimi.Prototypes
                 Debug.Log($"--- (CONFIG) {ConfigKey.LevelProduction}: {RemoteConfig.GetValue(ConfigKey.LevelProduction).String}");
                 Debug.Log($"--- (CONFIG) {ConfigKey.ChapterProduction}: {RemoteConfig.GetValue(ConfigKey.ChapterProduction).String}");
                 Debug.Log($"--- (CONFIG) {ConfigKey.ChapterDevelopment}: {RemoteConfig.GetValue(ConfigKey.ChapterDevelopment).String}");
+                Debug.Log($"--- (CONFIG) {ConfigKey.ShowAdLevels}: {RemoteConfig.GetValue(ConfigKey.ShowAdLevels).String}");
+                Debug.Log($"--- (CONFIG) {ConfigKey.HardLevel}: {RemoteConfig.GetValue(ConfigKey.HintLevel).String}");
+                Debug.Log($"--- (CONFIG) {ConfigKey.HardLevel}: {RemoteConfig.GetValue(ConfigKey.HardLevel).String}");
+                Debug.Log($"--- (CONFIG) {ConfigKey.HardLevelBaseTime}: {RemoteConfig.GetValue(ConfigKey.HardLevelBaseTime).Int}");
+                Debug.Log($"--- (CONFIG) {ConfigKey.HardLevelAdditionalTime}: {RemoteConfig.GetValue(ConfigKey.HardLevelAdditionalTime).Int}");
+                Debug.Log($"--- (CONFIG) {ConfigKey.HardLevelWarningTime}: {RemoteConfig.GetValue(ConfigKey.HardLevelWarningTime).Int}");
+                Debug.Log($"--- (CONFIG) {ConfigKey.MaxLife}: {RemoteConfig.GetValue(ConfigKey.MaxLife).Int}");
+                Debug.Log($"--- (CONFIG) {ConfigKey.LifeCooldown}: {RemoteConfig.GetValue(ConfigKey.LifeCooldown).Int}");
+                Debug.Log($"--- (CONFIG) {ConfigKey.AdCooldown}: {RemoteConfig.GetValue(ConfigKey.AdCooldown).Float}");
             };
 
             this.RemoteConfig.OnFetchError += (configFetchError) =>
@@ -629,7 +638,7 @@ namespace Mimi.Prototypes
                 Debug.LogError($"[RemoteConfig] Fetching Error: " + configFetchError);
             };
 
-            var timeOutSeconds = 4f;
+            var timeOutSeconds = 2f;
             var cts = new CancellationTokenSource();
             cts.CancelAfterSlim(TimeSpan.FromSeconds(timeOutSeconds));
 

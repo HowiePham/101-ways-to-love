@@ -285,6 +285,8 @@ public class GameplayViewPresenter : BaseViewPresenter
 
         var settingViewPresenter = this.ScenePresenter.GetViewPresenter<SettingViewPresenter>();
         settingViewPresenter.Show();
+        settingViewPresenter.SetActiveReplayButton(true);
+        settingViewPresenter.SetActiveHomeButton(true);
         Messenger.Broadcast(EventKey.PauseLevel);
     }
 

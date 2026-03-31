@@ -28,7 +28,6 @@ namespace Tracking
         private bool isInLevel;
         private bool isWatchingRewardVideo;
         private DateTime levelStartTime;
-        private CancellationTokenSource pauseCancelSource;
 
         public LogLevelExitPlugin(RuntimeState runtimeState, IAsyncSubscriber eventSubscriber, IAnalyticTracker analyticTracker, IAdAdapter ads)
         {
@@ -79,16 +78,7 @@ namespace Tracking
             await UniTask.CompletedTask;
             if (this.isWatchingRewardVideo) return;
 
-            pauseCancelSource?.Cancel();
-            pauseCancelSource?.Dispose();
-            pauseCancelSource = new CancellationTokenSource();
-
-            try
-            {
-                await UniTask.WaitForSeconds(1.5f, ignoreTimeScale: true, cancellationToken: pauseCancelSource.Token);
-                LogLevelExit();
-            }
-            catch (OperationCanceledException) { }
+            LogLevelExit();
         }
 
         private async UniTask BackHomeHandler(BackHome backHome, CancellationToken cancellationToken)
@@ -96,6 +86,7 @@ namespace Tracking
             await UniTask.CompletedTask;
             LogLevelExit();
         }
+
         private void OnInterShowed(AdPlacement adPlacement) => this.isWatchingRewardVideo = true;
         private void OnInterClosed(AdPlacement adPlacement) => this.isWatchingRewardVideo = false;
         private void OnInterShowFailed(AdError adError) => this.isWatchingRewardVideo = false;
@@ -130,8 +121,6 @@ namespace Tracking
             this.gamePausedSub.Dispose();
             this.backHomeSub.Dispose();
             this.adShowRequestedSub.Dispose();
-            this.pauseCancelSource?.Cancel();
-            this.pauseCancelSource?.Dispose();
             this.ads.Interstitial.OnShowSucceeded -= OnInterShowed;
             this.ads.Interstitial.OnClosed -= OnInterClosed;
             this.ads.Interstitial.OnShowFailed -= OnInterShowFailed;
