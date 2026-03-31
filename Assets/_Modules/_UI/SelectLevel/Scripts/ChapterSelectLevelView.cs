@@ -47,6 +47,8 @@ public class ChapterSelectLevelView : BaseView, IEnhancedScrollerDelegate
             this.lifeView.Initialize();
         }
 
+        this.cellViewPrefabRight.cellIdentifier = "ChapterPageCell_R";
+        this.cellViewPrefabLeft.cellIdentifier = "ChapterPageCell_L";
         this.scroller.Delegate = this;
         this.settingButton.onClick.AddListener(() => OnClickSetting?.Invoke());
         this.goToTopButton.onClick.AddListener(() => OnTopButtonClick?.Invoke());
