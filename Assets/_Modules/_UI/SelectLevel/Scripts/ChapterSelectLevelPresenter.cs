@@ -224,15 +224,12 @@ public class ChapterSelectLevelPresenter : BaseViewPresenter
 
     private void OnClickSettingHandler()
     {
-        PlayClickSound();
-        this.ScenePresenter.GetViewPresenter<SettingViewPresenter>().Show();
+        var settingViewPresenter = this.ScenePresenter.GetViewPresenter<SettingViewPresenter>();
+        settingViewPresenter.Show();
+        settingViewPresenter.SetActiveHomeButton(false);
+        settingViewPresenter.SetActiveReplayButton(false);
     }
-
-    private void PlayClickSound()
-    {
-        this.audioService.PlaySound("SFX_Click");
-    }
-
+    
     protected override void AddChildren()
     {
     }

@@ -41,7 +41,7 @@ public class SelectLevelPresenter : BaseViewPresenter
 
         foreach (LevelInfo levelData in levelDataRepository.GetAll())
         {
-            this.listLevel.Add(new LevelInfo(levelData.Id, levelData.PrefabAddress, 
+            this.listLevel.Add(new LevelInfo(levelData.Id, levelData.PrefabAddress,
                 levelData.StageNumber, levelData.Chapter, levelData.IconName));
         }
     }
@@ -93,7 +93,10 @@ public class SelectLevelPresenter : BaseViewPresenter
     private void OnClickSettingHandler()
     {
         PlayClickSound();
-        this.ScenePresenter.GetViewPresenter<SettingViewPresenter>().Show();
+        var settingViewPresenter = this.ScenePresenter.GetViewPresenter<SettingViewPresenter>();
+        settingViewPresenter.Show();
+        settingViewPresenter.SetActiveHomeButton(false);
+        settingViewPresenter.SetActiveReplayButton(false);
     }
 
     private void ReloadLevelSelectionPage()
