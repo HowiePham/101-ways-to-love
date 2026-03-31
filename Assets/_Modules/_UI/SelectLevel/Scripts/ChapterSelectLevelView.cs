@@ -11,6 +11,7 @@ public class ChapterSelectLevelView : BaseView, IEnhancedScrollerDelegate
 {
     [SerializeField] private Image bgFade;
     [Header("Button")] [SerializeField] private Button settingButton;
+    [SerializeField] private Button iapButton;
     [SerializeField] private Button goToTopButton;
     [SerializeField] private Button goToBottomButton;
 
@@ -32,6 +33,7 @@ public class ChapterSelectLevelView : BaseView, IEnhancedScrollerDelegate
     public event Action OnClickSetting;
     public event Action OnTopButtonClick;
     public event Action OnBottomButtonClick;
+    public event Action OnIAPButtonClick;
 
     private bool isMaxLevel;
 
@@ -47,6 +49,7 @@ public class ChapterSelectLevelView : BaseView, IEnhancedScrollerDelegate
         this.settingButton.onClick.AddListener(() => OnClickSetting?.Invoke());
         this.goToTopButton.onClick.AddListener(() => OnTopButtonClick?.Invoke());
         this.goToBottomButton.onClick.AddListener(() => OnBottomButtonClick?.Invoke());
+        this.iapButton.onClick.AddListener(() => OnIAPButtonClick?.Invoke());
     }
 
     public override void Show()

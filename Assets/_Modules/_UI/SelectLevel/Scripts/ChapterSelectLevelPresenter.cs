@@ -67,6 +67,7 @@ public class ChapterSelectLevelPresenter : BaseViewPresenter
         this.chapterView.OnClickSetting += OnClickSettingHandler;
         this.chapterView.OnTopButtonClick += JumpToFirstPage;
         this.chapterView.OnBottomButtonClick += JumpToLastPage;
+        this.chapterView.OnIAPButtonClick += IAPClickHandler;
 
         Messenger.AddListener<ChapterCellView>(EventKey.SelectChapter, OnChapterCellSelected);
 
@@ -90,12 +91,18 @@ public class ChapterSelectLevelPresenter : BaseViewPresenter
         this.chapterView.OnClickSetting -= OnClickSettingHandler;
         this.chapterView.OnTopButtonClick -= JumpToFirstPage;
         this.chapterView.OnBottomButtonClick -= JumpToLastPage;
+        this.chapterView.OnIAPButtonClick -= IAPClickHandler;
 
         Messenger.RemoveListener<ChapterCellView>(EventKey.SelectChapter, OnChapterCellSelected);
 
         this.lifeView.OnLifeButtonClicked -= LifeButtonClickedHandler;
         this.lifeView.Hide();
         this.disposeBag.Dispose();
+    }
+
+    private void IAPClickHandler()
+    {
+        this.ScenePresenter.GetViewPresenter<RemoveAdsViewPresenter>().Show();
     }
 
     private void ReloadChapterSelectionPage()
