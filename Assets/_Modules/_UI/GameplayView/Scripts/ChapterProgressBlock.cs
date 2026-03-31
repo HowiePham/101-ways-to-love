@@ -1,3 +1,4 @@
+using System;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
@@ -34,25 +35,25 @@ public class ChapterProgressBlock : MonoBehaviour
     public void ResetFill()
     {
         CacheFullWidth();
-        this.maskRect.sizeDelta = new Vector2(this.fullWidth, this.maskRect.sizeDelta.y);
+        this.maskRect.sizeDelta = new Vector2(0, this.maskRect.sizeDelta.y);
     }
 
     public void HideFill()
     {
         CacheFullWidth();
-        this.maskRect.sizeDelta = new Vector2(0f, this.maskRect.sizeDelta.y);
+        this.maskRect.sizeDelta = new Vector2(-this.fullWidth, this.maskRect.sizeDelta.y);
     }
 
     public Sequence PlayCurrentBlockAnimation()
     {
         CacheFullWidth();
-        this.maskRect.sizeDelta = new Vector2(0f, this.maskRect.sizeDelta.y);
+        this.maskRect.sizeDelta = new Vector2(-this.fullWidth, this.maskRect.sizeDelta.y);
 
         return DOTween.Sequence()
             .Append(DOTween.To(
                 () => this.maskRect.sizeDelta.x,
                 x => this.maskRect.sizeDelta = new Vector2(x, this.maskRect.sizeDelta.y),
-                this.fullWidth,
+                0,
                 0.9f
             ).SetEase(Ease.OutCubic));
     }
