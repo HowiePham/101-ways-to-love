@@ -35,7 +35,8 @@ namespace Mimi.Prototypes
             AddViewPresenter(hardLevelViewPresenter);
             Debug.Log($"--- (PRESENTER) Init SettingViewPresenter");
             var settingViewPresenter = new SettingViewPresenter(this, this.Transform,
-                gameContext.EventPublisher, gameContext.GameData.SettingModel, gameContext.SaveManager, gameContext.RuntimeState, gameContext.AudioService);
+                gameContext.EventPublisher, gameContext.GameData.SettingModel, gameContext.SaveManager,
+                gameContext.RuntimeState, gameContext.AudioService, gameContext.Ads);
             AddViewPresenter(settingViewPresenter);
             Debug.Log($"--- (PRESENTER) Init WinViewPresenter");
             var winViewPresenter = new WinViewPresenter(this, this.Transform, gameContext.EventPublisher,

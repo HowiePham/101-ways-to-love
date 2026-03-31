@@ -53,6 +53,8 @@ namespace _Modules._UI.WinView.Scripts
             this.winView.OnHomeClicked += HomeClickedHandler;
             this.adsAdapter.Interstitial.OnShowFailed += InterstitialShowFailedHandler;
             this.adsAdapter.Interstitial.OnClosed += InterstitialClosedHandler;
+            
+            this.adsAdapter.Mrec.Show(new AdPlacement("win_view"));
             // this.currencyView.OnAddCurrencyClicked += AddCurrencyClickedHandler;
         }
 
@@ -67,6 +69,8 @@ namespace _Modules._UI.WinView.Scripts
             this.winView.OnHomeClicked -= HomeClickedHandler;
             this.adsAdapter.Interstitial.OnShowFailed -= InterstitialShowFailedHandler;
             this.adsAdapter.Interstitial.OnClosed -= InterstitialClosedHandler;
+            
+            this.adsAdapter.Mrec.Hide();
             // this.currencyView.OnAddCurrencyClicked -= AddCurrencyClickedHandler;
         }
 
