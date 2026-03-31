@@ -43,10 +43,14 @@ namespace Tracking
             this.levelCompletedSub = this.eventSubscriber.Subscribe<LevelCompleted>(LevelCompletedHandler);
             this.gamePausedSub = this.eventSubscriber.Subscribe<GamePaused>(GamePausedHandler);
             this.backHomeSub = this.eventSubscriber.Subscribe<BackHome>(BackHomeHandler);
+            this.ads.Interstitial.OnShowSucceeded += OnInterShowed;
+            this.ads.Interstitial.OnClosed += OnInterClosed;
+            this.ads.Interstitial.OnShowFailed += OnInterShowFailed;
             this.ads.RewardVideo.OnVideoOpened += OnRewardVideoOpened;
             this.ads.RewardVideo.OnVideoClosed += OnRewardVideoClosed;
             this.ads.RewardVideo.OnShowFailed += OnRewardVideoShowFailed;
         }
+
 
         private async UniTask LevelStartedHandler(LevelStarted levelStarted, CancellationToken cancellationToken)
         {
@@ -73,7 +77,9 @@ namespace Tracking
             await UniTask.CompletedTask;
             LogLevelExit();
         }
-
+        private void OnInterShowed(AdPlacement adPlacement) => this.isWatchingRewardVideo = true;
+        private void OnInterClosed(AdPlacement adPlacement) => this.isWatchingRewardVideo = false;
+        private void OnInterShowFailed(AdError adError) => this.isWatchingRewardVideo = false;
         private void OnRewardVideoOpened(AdReward reward) => this.isWatchingRewardVideo = true;
         private void OnRewardVideoClosed(AdReward reward) => this.isWatchingRewardVideo = false;
         private void OnRewardVideoShowFailed(AdReward reward, AdError error) => this.isWatchingRewardVideo = false;
@@ -104,6 +110,9 @@ namespace Tracking
             this.levelCompletedSub.Dispose();
             this.gamePausedSub.Dispose();
             this.backHomeSub.Dispose();
+            this.ads.Interstitial.OnShowSucceeded -= OnInterShowed;
+            this.ads.Interstitial.OnClosed -= OnInterClosed;
+            this.ads.Interstitial.OnShowFailed -= OnInterShowFailed;
             this.ads.RewardVideo.OnVideoOpened -= OnRewardVideoOpened;
             this.ads.RewardVideo.OnVideoClosed -= OnRewardVideoClosed;
             this.ads.RewardVideo.OnShowFailed -= OnRewardVideoShowFailed;
