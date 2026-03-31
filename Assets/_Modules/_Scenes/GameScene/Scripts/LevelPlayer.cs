@@ -39,19 +39,13 @@ namespace GameScenes
         {
             Cancel();
 
-            if (this.disableObjectsWhenWin.Count > 0)
+            foreach (GameObject gameObject in this.disableObjectsWhenWin)
             {
-                foreach (GameObject gameObject in this.disableObjectsWhenWin)
-                {
-                    gameObject.SetActive(false);
-                }
+                if (gameObject != null) gameObject.SetActive(false);
             }
-            if (this.activeObjectsWhenWin.Count > 0)
+            foreach (GameObject gameObject in this.activeObjectsWhenWin)
             {
-                foreach (GameObject gameObject in this.activeObjectsWhenWin)
-                {
-                    gameObject.SetActive(true);
-                }
+                if (gameObject != null) gameObject.SetActive(true);
             }
 
             this.levelUIRoot.SetActive(false);
@@ -60,8 +54,8 @@ namespace GameScenes
             for (var i = 0; i < this.skeletonAnimations.Count; i++)
             {
                 SkeletonAnimation skeletonAnimation = this.skeletonAnimations[i];
-
-                if (string.IsNullOrEmpty(this.winAnimation[i]) || i >= this.winAnimation.Count)
+                if (skeletonAnimation == null) continue;
+                if (i >= this.winAnimation.Count || string.IsNullOrEmpty(this.winAnimation[i]))
                 {
                     continue;
                 }
@@ -69,10 +63,17 @@ namespace GameScenes
                 skeletonAnimation.AnimationState.SetAnimation(0, this.winAnimation[i], this.loopWinAnim);
             }
 
-            levelEditor.BoxInteractingObjectParent.gameObject.SetActive(false);
-            levelEditor.InteractableObjectParent.gameObject.SetActive(false);
-            levelEditor.DisableWhileRunningAnimation.gameObject.SetActive(false);
-            levelEditor.HintParent.gameObject.SetActive(false);
+            if (levelEditor != null)
+            {
+                if (levelEditor.BoxInteractingObjectParent != null)
+                    levelEditor.BoxInteractingObjectParent.gameObject.SetActive(false);
+                if (levelEditor.InteractableObjectParent != null)
+                    levelEditor.InteractableObjectParent.gameObject.SetActive(false);
+                if (levelEditor.DisableWhileRunningAnimation != null)
+                    levelEditor.DisableWhileRunningAnimation.gameObject.SetActive(false);
+                if (levelEditor.HintParent != null)
+                    levelEditor.HintParent.gameObject.SetActive(false);
+            }
 
             UpdateWinCameraPosition();
         }

@@ -1,6 +1,7 @@
 using System.Threading;
 using _Modules._UI.CheatView.Scripts;
 using _Modules._UI.WinView.Scripts;
+using _Modules.GameEvent.Scripts;
 using Cysharp.Threading.Tasks;
 using FrogunnerGames;
 using MEC;
@@ -137,6 +138,7 @@ public class GameplayViewPresenter : BaseViewPresenter
     {
         if (this.adAdapter.RewardVideo.IsReady)
         {
+            this.eventPublisher.PublishAsync(new AdShowRequested());
             this.adAdapter.RewardVideo.Show(new AdReward("hint"), new AdPlacement("gameplay"));
         }
         else
@@ -290,6 +292,7 @@ public class GameplayViewPresenter : BaseViewPresenter
     {
         if (this.adAdapter.RewardVideo.IsReady)
         {
+            this.eventPublisher.PublishAsync(new AdShowRequested());
             this.adAdapter.RewardVideo.Show(new AdReward("skip_level"), new AdPlacement("gameplay"));
         }
         else
