@@ -1,5 +1,6 @@
 using _Modules._UI.LoseView.Scripts;
 using _Modules.GameEvent.Scripts;
+using Mimi.Ads.Adapters;
 using Mimi.Events.AsyncBus;
 using Mimi.Games.Events;
 using Mimi.Persistence.LocalPrefs;
@@ -16,10 +17,11 @@ public class SettingViewPresenter : BaseViewPresenter
     private readonly SettingModel settingModel;
     private readonly RuntimeState runtimeState;
     private readonly ISaveManager saveManager;
+    private readonly IAdAdapter adsAdapter;
     private readonly IAudioService audioService;
 
     public SettingViewPresenter(BaseScenePresenter scenePresenter, Transform transform, IAsyncPublisher eventPublisher, SettingModel settingModel, ISaveManager saveManager,
-        RuntimeState runtimeState, IAudioService audioService) : base(scenePresenter,
+        RuntimeState runtimeState, IAudioService audioService, IAdAdapter adsAdapter) : base(scenePresenter,
         transform)
     {
         this.eventPublisher = eventPublisher;
@@ -27,6 +29,7 @@ public class SettingViewPresenter : BaseViewPresenter
         this.saveManager = saveManager;
         this.runtimeState = runtimeState;
         this.audioService = audioService;
+        this.adsAdapter = adsAdapter;
     }
 
     protected override void AddViews()
@@ -50,6 +53,7 @@ public class SettingViewPresenter : BaseViewPresenter
         this.settingView.OnVibrationClicked += VibrationClickedHandler;
 
         this.settingView.UpdateToggleValue(this.settingModel);
+        this.adsAdapter.Mrec.Show(new AdPlacement("setting_view"));
     }
 
     protected override void OnHide()
@@ -64,6 +68,7 @@ public class SettingViewPresenter : BaseViewPresenter
         this.settingView.OnVibrationClicked -= VibrationClickedHandler;
 
         this.saveManager.Save();
+        this.adsAdapter.Mrec.Hide();
     }
 
     private void VibrationClickedHandler(bool value)

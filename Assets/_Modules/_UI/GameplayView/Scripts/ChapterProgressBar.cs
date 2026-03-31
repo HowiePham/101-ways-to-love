@@ -43,9 +43,15 @@ public class ChapterProgressBar : MonoBehaviour
                 this.blocks[i].SetCompleted(i < completedCount);
 
                 if (i == this.currentBlockIndex)
+                {
                     this.blocks[i].HideFill();
+                    Debug.Log($"--- (CHAPTER) Block {i}: {blockType} --- Completed: {i < completedCount} --- Hide Fill");
+                }
                 else
+                {
                     this.blocks[i].ResetFill();
+                    Debug.Log($"--- (CHAPTER) Block {i}: {blockType} --- Completed: {i < completedCount} --- Reset Fill");
+                }
             }
             else
             {
@@ -59,6 +65,8 @@ public class ChapterProgressBar : MonoBehaviour
         this.currentBlockSequence?.Kill();
 
         transform.localScale = Vector3.zero;
+        this.blocks[this.currentBlockIndex].HideFill();
+        
         await transform.DOScale(1f, 0.3f).SetEase(Ease.OutBack).AsyncWaitForCompletion();
 
         if (this.currentBlockIndex >= 0 && this.currentBlockIndex < this.blocks.Count)

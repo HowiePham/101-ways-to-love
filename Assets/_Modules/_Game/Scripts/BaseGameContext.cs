@@ -70,7 +70,23 @@ namespace Mimi.Prototypes
 
         public LevelConfig RateConfig { get; } = new();
         public LevelConfig ShowInterstitialLevelConfig { protected set; get; }
-        public bool IsRemoveAds => false;
+        public bool IsRemoveAds
+        {
+            get
+            {
+                foreach (var product in InAppPurchaseStore.Products)
+                {
+                    if (product.Id.Equals(ProductKey.RemoveAds_Android))
+                    {
+                        if (product.HasReceipt)
+                        {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+        }
         public bool IsRemoteConfigInitialized;
         public bool IsFirstSession => SessionRecorder.SessionCount <= 1;
 

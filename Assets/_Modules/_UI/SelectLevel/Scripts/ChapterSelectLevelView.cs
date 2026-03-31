@@ -133,4 +133,9 @@ public class ChapterSelectLevelView : BaseView, IEnhancedScrollerDelegate
         int currentStage = this.currentLevelOrder + 1;
         return firstStage <= currentStage && currentStage <= lastStage;
     }
+
+    public void SetActiveRemoveAdsButton(bool active)
+    {
+        this.iapButton.gameObject.SetActive(active);
+    }
 }

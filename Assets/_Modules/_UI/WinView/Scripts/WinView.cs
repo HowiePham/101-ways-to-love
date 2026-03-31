@@ -120,5 +120,10 @@ namespace _Modules._UI.WinView.Scripts
                 this.loopScalingTweens.Add(uiItem, tweenCore);
             }
         }
+        
+        public void SetActiveRemoveAdsButton(bool active)
+        {
+            this.removeAdsBtnGroup.gameObject.SetActive(active);
+        }
     }
 }
