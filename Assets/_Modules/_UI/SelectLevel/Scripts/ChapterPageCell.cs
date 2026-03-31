@@ -2,10 +2,15 @@ using EnhancedUI;
 using EnhancedUI.EnhancedScroller;
 using Mimi.Prototypes.LevelManagement;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ChapterPageCell : EnhancedScrollerCellView
 {
     public int TotalChapterInAPage = 9;
+
+    [SerializeField] private RectMask2D containerMask;
+    [SerializeField] private float topPaddingWhenNextPagePlaying;
+    [SerializeField] private float topPaddingDefault;
 
     private ChapterCellView[] cells;
     private SmallList<ChapterInfo> chapterData = new SmallList<ChapterInfo>();
@@ -16,11 +21,21 @@ public class ChapterPageCell : EnhancedScrollerCellView
         this.cells = GetComponentsInChildren<ChapterCellView>();
     }
 
-    public void SetData(int pageOrder, int currentLevelOrder, SmallList<ChapterInfo> chapters, bool isMaxLevel)
+    public void SetData(int pageOrder, int currentLevelOrder, SmallList<ChapterInfo> chapters, bool isMaxLevel, bool isFirstChapterOfNextPagePlaying = false)
     {
         this.currentLevelOrder = currentLevelOrder;
         this.chapterData = chapters;
         LoadCellData(pageOrder, isMaxLevel);
+        UpdateContainerTopPadding(isFirstChapterOfNextPagePlaying);
+    }
+
+    private void UpdateContainerTopPadding(bool isNextPageFirstChapterPlaying)
+    {
+        if (this.containerMask == null) return;
+        float topPadding = isNextPageFirstChapterPlaying ? this.topPaddingWhenNextPagePlaying : this.topPaddingDefault;
+        Vector4 padding = this.containerMask.padding;
+        padding.w = topPadding;
+        this.containerMask.padding = padding;
     }
 
     private void LoadCellData(int pageOrder, bool isMaxLevel)
