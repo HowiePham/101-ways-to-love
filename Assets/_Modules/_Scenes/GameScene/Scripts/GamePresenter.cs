@@ -39,7 +39,7 @@ namespace Mimi.Prototypes
             AddViewPresenter(settingViewPresenter);
             Debug.Log($"--- (PRESENTER) Init WinViewPresenter");
             var winViewPresenter = new WinViewPresenter(this, this.Transform, gameContext.EventPublisher,
-                gameContext.RuntimeState, gameContext.Ads, gameContext.ShowInterstitialLevelConfig);
+                gameContext.RuntimeState, gameContext.Ads, gameContext.ShowInterstitialLevelConfig, gameContext.GameData);
             AddViewPresenter(winViewPresenter);
             Debug.Log($"--- (PRESENTER) Init LoseViewPresenter");
             var loseViewPresenter = new LoseViewPresenter(this, this.Transform, gameContext.EventPublisher);

@@ -64,9 +64,16 @@ namespace Mimi
             LeanTouch.OnFingerDown += ClickSoundHandler;
 
             Context.LifeSystem.RunTimer();
-            // PlayLevel(Context.RuntimeState.CurrentLevelOrder.Value);
-            var chapterSelectLevelPresenter = this.Presenter.GetViewPresenter<ChapterSelectLevelPresenter>();
-            chapterSelectLevelPresenter.Show();
+
+            if (Context.IsFirstSession)
+            {
+                PlayLevel(Context.RuntimeState.CurrentLevelOrder.Value);
+            }
+            else
+            {
+                var chapterSelectLevelPresenter = this.Presenter.GetViewPresenter<ChapterSelectLevelPresenter>();
+                chapterSelectLevelPresenter.Show();
+            }
         }
 
         private void LimitedTimeViewClickPlayHandler()
@@ -152,6 +159,7 @@ namespace Mimi
 
         private void DestroyOldLevelRoot()
         {
+            TurnOffOldLevelGeneralSound();
             this.levelPlayer.Cancel();
             ServiceLocator.Global.Get<IPoolService>().Despawn(this.levelRoot);
         }
