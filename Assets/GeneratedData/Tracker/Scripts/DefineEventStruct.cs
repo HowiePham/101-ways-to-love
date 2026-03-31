@@ -82,9 +82,9 @@ public struct Feature_SKIP : IEventData{
 	 public string level{ get; set; }
 }
 
-public struct Feature_AD_CLICK : IEventData{
+public struct Feature_AD_CLICKED : IEventData{
 	 public enum EVENT_NAME {
-		 ad_click}
+		 ad_clicked}
 
 	 public EVENT_NAME eventName { get; set; }
 	 public string ad_format{ get; set; }

@@ -14,7 +14,8 @@ namespace Mimi.Prototypes.LevelManagement
 
         public IEnumerable<LevelOrderEntry> Parse()
         {
-            RemoteOrderModel[] items = CSVSerializer.Deserialize<RemoteOrderModel>(this.levelRemoteData);
+            string normalized = this.levelRemoteData.Replace("\\n", "\n").Replace("\\r", "\r").Replace(" ", "\n");
+            RemoteOrderModel[] items = CSVSerializer.Deserialize<RemoteOrderModel>(normalized);
             return items
                 .GroupBy(x => x.Id)
                 .Select(g => g.First())

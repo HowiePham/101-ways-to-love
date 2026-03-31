@@ -67,9 +67,9 @@ namespace Tracking
         private void LogAdClick(string adFormat, ImpressionData impression, string placement)
         {
             Debug.Log($"--- (TRACKING) Ad Click - {adFormat}: {placement}");
-            this.analyticTracker.LogEvent(new Feature_AD_CLICK
+            this.analyticTracker.LogEvent(new Feature_AD_CLICKED()
             {
-                eventName = Feature_AD_CLICK.EVENT_NAME.ad_click,
+                eventName = Feature_AD_CLICKED.EVENT_NAME.ad_clicked,
                 ad_format = adFormat,
                 ad_platform = impression.AdPlatform.ToString(),
                 ad_network = impression.AdNetwork ?? "",
