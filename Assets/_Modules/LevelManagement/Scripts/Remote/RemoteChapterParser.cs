@@ -1,4 +1,4 @@
-using System.Linq;
+using System.Text.RegularExpressions;
 using Games;
 
 namespace Mimi.Prototypes.LevelManagement
@@ -14,7 +14,9 @@ namespace Mimi.Prototypes.LevelManagement
 
         public IChapterModel[] Parse()
         {
-            return CSVSerializer.Deserialize<RemoteChapterModel>(this.chapterRemoteData);
+            string normalized = this.chapterRemoteData.Replace("\\n", "\n").Replace("\\r", "\r");
+            normalized = Regex.Replace(normalized, @" (\d)", "\n$1");
+            return CSVSerializer.Deserialize<RemoteChapterModel>(normalized);
         }
     }
 }

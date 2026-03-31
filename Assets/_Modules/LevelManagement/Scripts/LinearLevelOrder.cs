@@ -14,6 +14,7 @@ namespace Mimi.Prototypes.LevelManagement
         {
             this.levelRepository = levelRepository;
             this.orderedLevels = new List<LevelInfo>(levelRepository.NumberOfLevels);
+            var stageNumber = 1;
             foreach (LevelOrderEntry entry in levelOrderEntries)
             {
                 if (levelRepository.TryGet(entry.Id, out LevelInfo levelInfo))
@@ -21,10 +22,11 @@ namespace Mimi.Prototypes.LevelManagement
                     var withChapter = new LevelInfo(
                         levelInfo.Id,
                         levelInfo.PrefabAddress,
-                        levelInfo.StageNumber,
+                        stageNumber,
                         entry.Chapter,
                         levelInfo.IconName);
                     this.orderedLevels.Add(withChapter);
+                    stageNumber++;
                 }
                 else
                 {
@@ -95,7 +97,7 @@ namespace Mimi.Prototypes.LevelManagement
             MiLogger.LogError($"Level id not found: {id}");
             return null;
         }
-        
+
         public LevelInfo GetNextLevel(int order)
         {
             int nextOrder = Mathf.Clamp(order + 1, 0, this.orderedLevels.Count - 1);
@@ -112,6 +114,5 @@ namespace Mimi.Prototypes.LevelManagement
         {
             return this.orderedLevels;
         }
-
     }
 }
