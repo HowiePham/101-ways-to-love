@@ -3,7 +3,6 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using Mimi;
 using Mimi.Ads.Adapters;
-using Mimi.Analytics.Sessions;
 using Mimi.Configs;
 using Mimi.Events;
 using Mimi.Events.AsyncBus;
@@ -17,16 +16,16 @@ namespace Ads
         private readonly IAsyncSubscriber eventSubscriber;
         private readonly IAdAdapter adAdapter;
         private readonly IConfigProvider remoteConfig;
-        private readonly ISessionRecorder sessionRecorder;
+        private bool isFirstSession;
 
         private IDisposable bootGameCompletedEventHandler;
 
-        public ShowOpenAdAfterBootPlugin(IAdAdapter adAdapter, IAsyncSubscriber eventSubscriber, IConfigProvider remoteConfig, ISessionRecorder sessionRecorder)
+        public ShowOpenAdAfterBootPlugin(IAdAdapter adAdapter, IAsyncSubscriber eventSubscriber, IConfigProvider remoteConfig, bool isFirstSession)
         {
             this.adAdapter = adAdapter;
             this.eventSubscriber = eventSubscriber;
             this.remoteConfig = remoteConfig;
-            this.sessionRecorder = sessionRecorder;
+            this.isFirstSession = isFirstSession;
         }
 
         public async UniTask Install()
@@ -44,7 +43,7 @@ namespace Ads
             {
                 Debug.Log($"--- (PLUGIN) Showing Open Ad After boot game handling...");
 
-                if (this.sessionRecorder.IsFirstSession)
+                if (this.isFirstSession)
                 {
                     if (this.remoteConfig.GetValue(ConfigKey.ShowAOAFirstOpen).Boolean)
                     {

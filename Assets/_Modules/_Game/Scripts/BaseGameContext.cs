@@ -72,6 +72,7 @@ namespace Mimi.Prototypes
         public LevelConfig ShowInterstitialLevelConfig { protected set; get; }
         public bool IsRemoveAds => false;
         public bool IsRemoteConfigInitialized;
+        public bool IsFirstSession => SessionRecorder.SessionCount <= 1;
 
         private readonly CompositePlugin globalPluginContainer = new CompositePlugin();
         private IPluginConfigInjector projectPluginInjector;
@@ -303,7 +304,7 @@ namespace Mimi.Prototypes
         protected void LogInitializeEvent(string eventName)
         {
             Debug.Log($"--- (INIT) Initializing {eventName}");
-            if (!this.SessionRecorder.IsFirstSession)
+            if (!this.IsFirstSession)
             {
                 return;
             }

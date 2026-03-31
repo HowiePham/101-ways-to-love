@@ -109,8 +109,28 @@ public class ChapterSelectLevelView : BaseView, IEnhancedScrollerDelegate
     {
         int reversedPageOrder = (this.TotalPage - 1) - dataIndex;
         var pageCellView = scroller.GetCellView(this.cellViewPrefab) as ChapterPageCell;
-        pageCellView.SetData(reversedPageOrder, this.currentLevelOrder, this.chapterData, this.isMaxLevel);
 
+        bool isFirstChapterOfNextPagePlaying = false;
+        int nextPageOrder = reversedPageOrder + 1;
+        if (nextPageOrder < this.TotalPage)
+        {
+            int firstChapterIndexOfNextPage = nextPageOrder * TotalChapterInAPage;
+            ChapterInfo firstChapterOfNextPage = this.chapterData[firstChapterIndexOfNextPage];
+            if (firstChapterOfNextPage != null)
+            {
+                isFirstChapterOfNextPagePlaying = IsChapterPlaying(firstChapterOfNextPage);
+            }
+        }
+
+        pageCellView.SetData(reversedPageOrder, this.currentLevelOrder, this.chapterData, this.isMaxLevel, isFirstChapterOfNextPagePlaying);
         return pageCellView;
+    }
+
+    private bool IsChapterPlaying(ChapterInfo chapter)
+    {
+        int firstStage = chapter.Levels[0].StageNumber;
+        int lastStage = chapter.Levels[chapter.LevelCount - 1].StageNumber;
+        int currentStage = this.currentLevelOrder + 1;
+        return firstStage <= currentStage && currentStage <= lastStage;
     }
 }

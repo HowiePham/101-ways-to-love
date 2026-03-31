@@ -17,20 +17,20 @@ namespace Ads
         private readonly IAdAdapter adAdapter;
         private readonly IAsyncSubscriber eventSubscriber;
         private readonly IConfigProvider remoteConfig;
-        private readonly ISessionRecorder sessionRecorder;
         private bool isRemoveAds;
+        private bool isFirstSession;
         private IDisposable gameResumeEventHandler;
 
         public bool resumeFromAds = false;
         private bool isBootCompleted;
 
-        public ShowOpenAdOnResumePlugin(IAdAdapter adAdapter, IAsyncSubscriber eventSubscriber, bool isRemoveAds, ISessionRecorder sessionRecorder, IConfigProvider remoteConfig)
+        public ShowOpenAdOnResumePlugin(IAdAdapter adAdapter, IAsyncSubscriber eventSubscriber, bool isRemoveAds , IConfigProvider remoteConfig, bool isFirstSession)
         {
             this.adAdapter = adAdapter;
             this.eventSubscriber = eventSubscriber;
             this.isRemoveAds = isRemoveAds;
-            this.sessionRecorder = sessionRecorder;
             this.remoteConfig = remoteConfig;
+            this.isFirstSession = isFirstSession;
         }
 
         public async UniTask Install()
@@ -86,7 +86,7 @@ namespace Ads
             Debug.Log($"--- (PLUGIN) Resume Ads handling...");
             await UniTask.WaitForEndOfFrame(cancellationToken);
             await UniTask.Delay(400, cancellationToken: cancellationToken);
-            if (this.sessionRecorder.SessionCount >= 1 && !this.isRemoveAds && this.isBootCompleted)
+            if (!this.isFirstSession && !this.isRemoveAds && this.isBootCompleted)
             {
                 ShowResumeAds();
             }

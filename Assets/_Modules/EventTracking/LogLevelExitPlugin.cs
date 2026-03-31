@@ -68,8 +68,8 @@ namespace Tracking
         private async UniTask GamePausedHandler(GamePaused gamePaused, CancellationToken cancellationToken)
         {
             await UniTask.CompletedTask;
-            await UniTask.WaitForSeconds(1.5f);
-            LogLevelExit();
+            // await UniTask.WaitForSeconds(1.5f);
+            // LogLevelExit();
         }
 
         private async UniTask BackHomeHandler(BackHome backHome, CancellationToken cancellationToken)
