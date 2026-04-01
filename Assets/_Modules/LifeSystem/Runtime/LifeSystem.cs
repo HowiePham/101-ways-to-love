@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using Economy.Resources;
+using IngameDebugConsole;
 using MEC;
 using Mimi.Ads.Adapters;
 using Mimi.Events.AsyncBus;
 using Mimi.Games;
 using Mimi.Prototypes.Currencies;
 using Mimi.Prototypes.UI;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class LifeSystem
@@ -57,6 +57,8 @@ public class LifeSystem
         }
 
         CheckLife();
+        DebugLogConsole.AddCommandInstance("add-life", "Add 1 Life", "AddLife", this);
+
     }
 
     private async UniTask LifeUsingHandler(LifeUsing lifeUsing, CancellationToken token)
