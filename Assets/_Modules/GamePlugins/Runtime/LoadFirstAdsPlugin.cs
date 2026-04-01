@@ -60,6 +60,7 @@ public class LoadFirstAdsPlugin : IPlugin
         this.gameContext.Ads.RewardVideo.Load();
         await UniTask.Delay(3000, cancellationToken: cancellationToken);
         this.gameContext.Ads.Banner.Load(new AdPlacement("Bottom"), BannerSize.Adaptive, BannerPosition.Bottom);
+        this.gameContext.Ads.Banner.Show();
     }
 
     public async UniTask Uninstall()
