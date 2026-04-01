@@ -442,8 +442,7 @@ namespace Mimi.Prototypes
                         Ads.SetBanner(new AutoRequestBanner(bannerRequestStrategy,
                             new FirebaseMeasureRevenueBanner(
                                 new SingularRevenueBanner(
-                                    new AmazonMaxBanner(TabletAmazonBannerId,
-                                        PhoneAmazonUnitId, MaxBannerUnitId)))));
+                                    new MaxBanner(MaxBannerUnitId)))));
                     }
                 }
                 else
