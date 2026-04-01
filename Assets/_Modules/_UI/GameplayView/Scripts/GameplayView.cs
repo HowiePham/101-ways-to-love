@@ -57,6 +57,8 @@ public class GameplayView : BaseView
     public Action OnStartLevelGameClicked;
     public Action OnNoLifeBlockerClicked;
 
+    public bool DelayProgressBarAnimation { get; set; }
+
     public override void Initialize()
     {
         base.Initialize();
@@ -125,7 +127,7 @@ public class GameplayView : BaseView
         await UniTask.WhenAll(scalingTask);
         if (ct.IsCancellationRequested) return;
 
-        if (this.chapterProgressBar != null)
+        if (this.chapterProgressBar != null && !DelayProgressBarAnimation)
         {
             await this.chapterProgressBar.PlayShowAnimation();
         }
@@ -136,6 +138,14 @@ public class GameplayView : BaseView
     public void SetLevelCurrent(string level)
     {
         this.levelTextCurrent.text = "Level " + level;
+    }
+
+    public async UniTask PlayChapterProgressBarAnimation()
+    {
+        if (this.chapterProgressBar != null)
+        {
+            await this.chapterProgressBar.PlayShowAnimation();
+        }
     }
 
     public void SetChapterProgress(int completedCount, int totalLevels)

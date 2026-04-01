@@ -80,6 +80,9 @@ namespace Mimi
         {
             this.levelPlayer.Play();
             HardLevelViewPresenter.StartTimer();
+
+            var gameplayViewPresenter = this.Presenter.GetViewPresenter<GameplayViewPresenter>();
+            gameplayViewPresenter.PlayChapterProgressBarAnimation().Forget();
         }
 
         private async UniTask SkipLevelHandler(SkipLevel skipLevel, CancellationToken cancellation)
@@ -233,6 +236,11 @@ namespace Mimi
             this.levelPlayer = this.levelRoot.GetComponent<LevelPlayer>();
             TurnOffOldLevelGeneralSound();
             UpdateLevelGeneralSound();
+
+            bool isHardLevel = Context.HardLevelConfig.HasLevel(StringNumber.IntToText(levelOrder + 1));
+            var gameplayViewPresenter = this.Presenter.GetViewPresenter<GameplayViewPresenter>();
+            gameplayViewPresenter.SetDelayProgressBarAnimation(isHardLevel);
+
             ShowGameplayView();
             this.Context.StopSound(this.bgmSoundKey);
 
@@ -241,7 +249,7 @@ namespace Mimi
 
             await Context.EventPublisher.PublishAsync(new LevelStarted(currentLevelInfo.Id));
 
-            if (Context.HardLevelConfig.HasLevel(StringNumber.IntToText(levelOrder + 1)))
+            if (isHardLevel)
             {
                 HardLevelViewPresenter.SetClockStartTime(Context.RemoteConfig.GetValue(ConfigKey.HardLevelBaseTime).Int);
                 HardLevelViewPresenter.Show();
