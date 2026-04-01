@@ -13,6 +13,7 @@ namespace Mimi.Prototypes.SaveLoad
             // //Level
             playerSave.CurrentLevel = context.RuntimeState.CurrentLevelOrder.Value;
             playerSave.TopLevel = context.RuntimeState.TopLevelOrder.Value;
+            playerSave.TopCompleteLevel = context.RuntimeState.TopCompletedLevelOrder.Value;
             // playerSave.LastCompleteLevel = context.GameData.LastCompletedLevelOrder;
             // playerSave.TopLevel = context.GameData.LevelTop;
             // //Games

@@ -32,7 +32,7 @@ public class ChapterSelectLevelPresenter : BaseViewPresenter
     private readonly LifeSystem lifeSystem;
     private readonly List<ChapterInfo> listChapter;
     private int currentPageOrder = 1;
-    private bool IsMaxLevel => this.levelOrder.IsLast(this.levelOrder.GetByOrder(this.runtimeState.TopLevelOrder.Value).Id);
+    private bool IsMaxLevel => this.levelOrder.IsLast(this.levelOrder.GetByOrder(this.runtimeState.TopCompletedLevelOrder.Value).Id);
 
     public ChapterSelectLevelPresenter(BaseScenePresenter scenePresenter, Transform transform,
         ChapterLevelRepository chapterLevelRepo, ILevelOrder levelOrder,

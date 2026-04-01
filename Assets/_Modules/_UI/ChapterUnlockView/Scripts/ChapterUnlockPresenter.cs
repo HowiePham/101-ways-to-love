@@ -14,17 +14,15 @@ public class ChapterUnlockPresenter : BaseViewPresenter
     private readonly ChapterLevelRepository chapterLevelRepo;
     private readonly ILevelOrder levelOrder;
     private readonly RuntimeState runtimeState;
-    private readonly IAudioService audioService;
 
     public ChapterUnlockPresenter(BaseScenePresenter scenePresenter, Transform transform,
         IAsyncPublisher eventPublisher, ChapterLevelRepository chapterLevelRepo,
-        ILevelOrder levelOrder, RuntimeState runtimeState, IAudioService audioService) : base(scenePresenter, transform)
+        ILevelOrder levelOrder, RuntimeState runtimeState) : base(scenePresenter, transform)
     {
         this.eventPublisher = eventPublisher;
         this.chapterLevelRepo = chapterLevelRepo;
         this.levelOrder = levelOrder;
         this.runtimeState = runtimeState;
-        this.audioService = audioService;
     }
 
     protected override void AddViews()
@@ -63,11 +61,7 @@ public class ChapterUnlockPresenter : BaseViewPresenter
     public void ShowForChapter(int chapterNumber)
     {
         this.eventPublisher.PublishAsync(new DestroyLevelRequested());
-
-        string soundKey = this.chapterUnlockView.MusicSoundKey;
-        if (!string.IsNullOrEmpty(soundKey))
-            this.audioService.PlaySound(soundKey);
-
+        
         ChapterInfo chapter = this.chapterLevelRepo.GetChapter(chapterNumber);
         Sprite icon = Resources.Load<Sprite>("Icons/" + chapter.ChapterIconAddress);
         this.chapterUnlockView.SetChapterData(icon, "Chapter " + chapter.ChapterNumber + ": " + chapter.ChapterName);
