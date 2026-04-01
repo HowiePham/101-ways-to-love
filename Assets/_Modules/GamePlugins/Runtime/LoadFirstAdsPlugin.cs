@@ -1,6 +1,5 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using IngameDebugConsole;
 using Mimi.Ads.Adapters;
 using Mimi.Events;
 using Mimi.Games;
@@ -22,9 +21,6 @@ public class LoadFirstAdsPlugin : IPlugin
     public async UniTask Install()
     {
         await UniTask.CompletedTask;
-        DebugLogConsole.AddCommandInstance("auto-pass-rewarded-ads", "Auto Pass Rewarded Ads", "AutoPassRewardedAds", this);
-
-
         this.gameContext.EventSubscriber.Subscribe<BootGameCompleted>(BootGameCompleted).AddToBag(this.disposeBag);
         this.gameContext.Ads.Interstitial.OnLoadSucceeded += AdsLoadSucceeded;
         this.gameContext.Ads.Interstitial.OnLoadFailed += AdsLoadFailed;
@@ -50,11 +46,6 @@ public class LoadFirstAdsPlugin : IPlugin
     private void AdsLoadSucceeded()
     {
         Debug.Log($"--- (ADS) Ads load SUCCEEDED");
-    }
-
-    private void AutoPassRewardedAds()
-    {
-        this.gameContext.Ads.SetRewardVideo(EditorRewardVideoAdapter.Instance);
     }
 
     private async UniTask BootGameCompleted(BootGameCompleted bootGameCompleted, CancellationToken cancellationToken)
