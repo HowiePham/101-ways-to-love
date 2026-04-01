@@ -212,10 +212,9 @@ namespace Mimi.Prototypes
 
             await InitConfigService();
             LogInitializeEvent("init_config");
-            await InitIAPService();
-            LogInitializeEvent("init_iap");
-            await InitAdmobConsent();
-            LogInitializeEvent("init_admob_consent");
+
+            await UniTask.WhenAll(InitIAPService(), InitAdmobConsent());
+
             await InitGoogleMobileAds();
             LogInitializeEvent("init_gma");
 #if !UNITY_EDITOR
@@ -301,6 +300,7 @@ namespace Mimi.Prototypes
             //     new ProductMetadata(ProductKey.RemoveAds_Android, ProductType.NonConsumable),
             // });
             InAppPurchaseStore.Initialize(Array.Empty<ProductMetadata>());
+            LogInitializeEvent("init_iap");
         }
 
         private void InitInternetMonitor()
@@ -366,7 +366,7 @@ namespace Mimi.Prototypes
             MobileAds.Initialize(status => { completed = true; });
 
             var cts = new CancellationTokenSource();
-            cts.CancelAfterSlim(TimeSpan.FromSeconds(10f));
+            cts.CancelAfterSlim(TimeSpan.FromSeconds(5f));
             try
             {
                 await UniTask.WaitUntil(() => completed, cancellationToken: cts.Token);
@@ -386,6 +386,7 @@ namespace Mimi.Prototypes
             this.ConsentHandler = new ConsentHandler();
             await this.ConsentHandler.InitAdmobConsent();
             this.IsAdmobConsentUpdateCompleted = true;
+            LogInitializeEvent("init_admob_consent");
         }
 
         private async UniTask InitAdsService()
