@@ -5,7 +5,9 @@ using DG.Tweening;
 using DG.Tweening.Core;
 using DG.Tweening.Plugins.Options;
 using Mimi.Audio;
+using Mimi.Prototypes;
 using Mimi.Prototypes.UI;
+using Mimi.ServiceLocators;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -24,10 +26,15 @@ public class ChapterUnlockView : BaseView
     [SerializeField] private Button continueButton;
     [SerializeField] private Button backHomeButton;
     [SerializeField] private float lockBarSlideUpOffset = 80f;
-    [SerializeField, SoundKey] private string musicSoundKey;
 
-    public string MusicSoundKey => this.musicSoundKey;
+    [Header("Sound")] [SerializeField, SoundKey]
+    private string musicSoundKey;
 
+    [SerializeField, SoundKey] private string unlockSoundKey;
+    [SerializeField, SoundKey] private string highlightFxSoundKey;
+
+
+    private IAudioService AudioService => ServiceLocator.Global.Get<IAudioService>();
     private CancellationTokenSource showCts;
     private TweenerCore<Vector3, Vector3, VectorOptions> continuePulseTween;
     private RectTransform ContinueBtnRect => this.continueBtnGroup.GetComponent<RectTransform>();
@@ -58,6 +65,7 @@ public class ChapterUnlockView : BaseView
         this.showCts?.Dispose();
         this.showCts = new CancellationTokenSource();
 
+        PlayAudio(this.musicSoundKey);
         HandleUIEffect(this.showCts.Token).Forget();
     }
 
@@ -114,6 +122,7 @@ public class ChapterUnlockView : BaseView
         if (ct.IsCancellationRequested) return;
 
         // === Phase 3: Lock bar slides up (simulate unlock action) ===
+        PlayAudio(this.unlockSoundKey);
         await this.lockBarIcon.rectTransform
             .DOAnchorPosY(lockBarOriginalPos.y + this.lockBarSlideUpOffset, 0.4f)
             .SetEase(Ease.InBack)
@@ -138,6 +147,7 @@ public class ChapterUnlockView : BaseView
         this.lockBarIcon.rectTransform.anchoredPosition = lockBarOriginalPos;
 
         // === Phase 4: Dark icon fades out, bright icon + highlight fade in ===
+        PlayAudio(this.highlightFxSoundKey);
         this.chapterIconDark.DOFade(0f, 0.3f);
         this.highlightFx.DOFade(1f, 0.4f);
         await UniTask.Delay(400, cancellationToken: ct);
@@ -152,5 +162,15 @@ public class ChapterUnlockView : BaseView
         this.continuePulseTween = this.ContinueBtnRect.DOScale(1.1f, 1f)
             .SetEase(Ease.InOutQuad)
             .SetLoops(-1, LoopType.Yoyo);
+    }
+
+    private void PlayAudio(string audioKey)
+    {
+        if (String.IsNullOrEmpty(audioKey))
+        {
+            return;
+        }
+
+        AudioService.PlaySound(audioKey);
     }
 }

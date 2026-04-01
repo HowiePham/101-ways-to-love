@@ -50,8 +50,7 @@ namespace Mimi.Prototypes
                 gameContext.EventPublisher,
                 gameContext.ChapterLevelRepo,
                 gameContext.LevelOrder,
-                gameContext.RuntimeState,
-                gameContext.AudioService);
+                gameContext.RuntimeState);
             AddViewPresenter(chapterUnlockPresenter);
             var removeAdsViewPresenter = new RemoveAdsViewPresenter(this, this.Transform, gameContext.EventPublisher);
             AddViewPresenter(removeAdsViewPresenter);
