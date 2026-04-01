@@ -73,6 +73,7 @@ public class ChapterSelectLevelPresenter : BaseViewPresenter
         this.chapterView.SetActiveRemoveAdsButton(!baseGameContext.IsRemoveAds);
 
         Messenger.AddListener<ChapterCellView>(EventKey.SelectChapter, OnChapterCellSelected);
+        Messenger.AddListener(EventKey.RemoveAdsCompleted, HideRemoveAdsButton);
 
         this.lifeView.Show();
         this.lifeView.OnLifeButtonClicked += LifeButtonClickedHandler;
@@ -97,10 +98,16 @@ public class ChapterSelectLevelPresenter : BaseViewPresenter
         this.chapterView.OnIAPButtonClick -= IAPClickHandler;
 
         Messenger.RemoveListener<ChapterCellView>(EventKey.SelectChapter, OnChapterCellSelected);
+        Messenger.RemoveListener(EventKey.RemoveAdsCompleted, HideRemoveAdsButton);
 
         this.lifeView.OnLifeButtonClicked -= LifeButtonClickedHandler;
         this.lifeView.Hide();
         this.disposeBag.Dispose();
+    }
+
+    private void HideRemoveAdsButton()
+    {
+        this.chapterView.SetActiveRemoveAdsButton(false);
     }
 
     private void IAPClickHandler()
@@ -229,7 +236,7 @@ public class ChapterSelectLevelPresenter : BaseViewPresenter
         settingViewPresenter.SetActiveHomeButton(false);
         settingViewPresenter.SetActiveReplayButton(false);
     }
-    
+
     protected override void AddChildren()
     {
     }

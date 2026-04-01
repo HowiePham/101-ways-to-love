@@ -4,6 +4,7 @@ using Mimi.Ads.Adapters;
 using Mimi.Events;
 using Mimi.Events.AsyncBus;
 using Mimi.Prototypes;
+using Mimi.Prototypes.Events;
 using Mimi.Prototypes.UI;
 using Mimi.Rx.Variables;
 using UnityEngine;
@@ -54,6 +55,8 @@ namespace _Modules._UI.WinView.Scripts
             this.adsAdapter.Interstitial.OnShowFailed += InterstitialShowFailedHandler;
             this.adsAdapter.Interstitial.OnClosed += InterstitialClosedHandler;
 
+            Messenger.AddListener(EventKey.RemoveAdsCompleted, HideRemoveAdsButton);
+
             var baseGameContext = (BaseGameContext)this.Context;
             this.winView.SetActiveRemoveAdsButton(!baseGameContext.IsRemoveAds);
 
@@ -72,9 +75,15 @@ namespace _Modules._UI.WinView.Scripts
             this.winView.OnHomeClicked -= HomeClickedHandler;
             this.adsAdapter.Interstitial.OnShowFailed -= InterstitialShowFailedHandler;
             this.adsAdapter.Interstitial.OnClosed -= InterstitialClosedHandler;
+            Messenger.RemoveListener(EventKey.RemoveAdsCompleted, HideRemoveAdsButton);
 
             this.adsAdapter.Mrec.Hide();
             // this.currencyView.OnAddCurrencyClicked -= AddCurrencyClickedHandler;
+        }
+
+        private void HideRemoveAdsButton()
+        {
+            this.winView.SetActiveRemoveAdsButton(false);
         }
 
         private void ShowRemoveAdsView()

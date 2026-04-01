@@ -70,10 +70,17 @@ namespace Mimi.Prototypes
 
         public LevelConfig RateConfig { get; } = new();
         public LevelConfig ShowInterstitialLevelConfig { protected set; get; }
+
         public bool IsRemoveAds
         {
             get
             {
+#if DEVELOPMENT
+                if (PlayerPrefs.GetInt("RemoveAdsCheat", 0) != 0)
+                {
+                    return true;
+                }
+
                 foreach (var product in InAppPurchaseStore.Products)
                 {
                     if (product.Id.Equals(ProductKey.RemoveAds_Android))
@@ -84,9 +91,22 @@ namespace Mimi.Prototypes
                         }
                     }
                 }
+#else
+                foreach (var product in InAppPurchaseStore.Products)
+                {
+                    if (product.Id.Equals(ProductKey.RemoveAds_Android))
+                    {
+                        if (product.HasReceipt)
+                        {
+                            return true;
+                        }
+                    }
+                }
+#endif
                 return false;
             }
         }
+
         public bool IsRemoteConfigInitialized;
         public bool IsFirstSession => SessionRecorder.SessionCount <= 1;
 
