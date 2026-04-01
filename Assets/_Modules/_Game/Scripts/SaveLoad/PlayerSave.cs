@@ -9,7 +9,7 @@ namespace Mimi.Prototypes.SaveLoad
         // public float Music = 100;
 
         public int CurrentLevel = 0;
-        public int LastCompleteLevel;
+        public int TopCompleteLevel;
         public int TopLevel = 0;
 
         public int CurrentLevelChallenge = 0;

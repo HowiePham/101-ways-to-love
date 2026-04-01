@@ -23,6 +23,11 @@ namespace Mimi.Prototypes.SaveLoad
                 ? playerSaver.TopLevel
                 : playerSaver.CurrentLevel;
             context.RuntimeState.TopLevelOrder.Set(topLevel);
+            
+            int topCompleteLevel = playerSaver.TopCompleteLevel > playerSaver.TopLevel
+                ? playerSaver.TopCompleteLevel
+                : playerSaver.TopLevel;
+            context.RuntimeState.TopCompletedLevelOrder.Set(topCompleteLevel);
         }
     }
 }

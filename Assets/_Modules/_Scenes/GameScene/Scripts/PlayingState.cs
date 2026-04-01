@@ -93,6 +93,7 @@ namespace Mimi
             {
                 Debug.LogError($"[SkipLevel] EndLevel failed: {e}");
             }
+
             Messenger.Broadcast(EventKey.LevelWin);
         }
 
@@ -107,6 +108,11 @@ namespace Mimi
             this.winCamera.SetActive(true);
             int currentLevelOrder = this.Context.RuntimeState.CurrentLevelOrder.Value;
             this.Context.EventPublisher.PublishAsync(new LevelCompleted(currentLevelOrder.ToString(), LevelCompletionStatus.Win));
+            
+            if (currentLevelOrder >= this.Context.RuntimeState.TopCompletedLevelOrder.Value)
+            {
+                this.Context.RuntimeState.TopCompletedLevelOrder.Set(currentLevelOrder);
+            }
 
             if (!IsLastLevel())
             {
