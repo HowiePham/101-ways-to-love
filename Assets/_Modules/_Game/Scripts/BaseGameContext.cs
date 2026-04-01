@@ -110,6 +110,8 @@ namespace Mimi.Prototypes
         public bool IsRemoteConfigInitialized;
         public bool IsFirstSession => SessionRecorder.SessionCount <= 1;
 
+        public string BGMSoundKey => this.bgmSoundKey;
+
         private readonly CompositePlugin globalPluginContainer = new CompositePlugin();
         private IPluginConfigInjector projectPluginInjector;
         private MaxMrec maxMrec;
@@ -714,7 +716,7 @@ namespace Mimi.Prototypes
 
         private void HandleFirstAudio()
         {
-            this.AudioService.PlaySound(this.bgmSoundKey);
+            this.AudioService.PlaySound(this.BGMSoundKey);
             this.AudioService.SetMusicVolPercentage(this.GameData.SettingModel.MusicOn ? 1 : 0);
             this.AudioService.SetSoundVolPercentage(this.GameData.SettingModel.SoundOn ? 1 : 0);
 

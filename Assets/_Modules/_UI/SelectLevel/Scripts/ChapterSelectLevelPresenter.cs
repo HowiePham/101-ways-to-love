@@ -86,6 +86,8 @@ public class ChapterSelectLevelPresenter : BaseViewPresenter
 
         this.adAdapter.Mrec.Hide();
         ReloadChapterSelectionPage();
+
+        this.audioService.PlaySound(baseGameContext.BGMSoundKey);
     }
 
     protected override void OnHide()
