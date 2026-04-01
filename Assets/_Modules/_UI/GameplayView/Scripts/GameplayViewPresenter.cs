@@ -129,6 +129,16 @@ public class GameplayViewPresenter : BaseViewPresenter
         this.gameplayView.SetActiveHintButton(!isHintLevel, delay);
     }
 
+    public void SetDelayProgressBarAnimation(bool delay)
+    {
+        this.gameplayView.DelayProgressBarAnimation = delay;
+    }
+
+    public async UniTask PlayChapterProgressBarAnimation()
+    {
+        await this.gameplayView.PlayChapterProgressBarAnimation();
+    }
+
     public void InitStepPoint(int stepNumber)
     {
         this.gameplayView.InitStepPoint(stepNumber);
