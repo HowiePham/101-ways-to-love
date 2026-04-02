@@ -216,11 +216,6 @@ public class LifeSystem
 
     private void CheckLife()
     {
-        if (this.lifeData.AddedNextTime.Count <= 0)
-        {
-            return;
-        }
-
         for (var i = 0; i < this.lifeData.AddedNextTime.Count; i++)
         {
             string nextTime = this.lifeData.AddedNextTime[i];
@@ -241,6 +236,13 @@ public class LifeSystem
         if (IsLifeIsFull() && this.lifeData.AddedNextTime.Count > 0)
         {
             this.lifeData.AddedNextTime.Clear();
+        }
+        
+        int livesNeeded = this.maxLifeCount - CurrentLifeCount;
+        int timersShortfall = livesNeeded - this.lifeData.AddedNextTime.Count;
+        for (int i = 0; i < timersShortfall; i++)
+        {
+            SetTimeToAddNextLife();
         }
 
         SaveLifeData();
