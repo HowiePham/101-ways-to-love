@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using Mimi.Prototypes.Events;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using VisualFlow;
@@ -13,6 +14,7 @@ namespace Games
         [SerializeField] private BaseHint[] hints;
         [SerializeField] private int totalStep;
         private bool levelTutorial;
+        private bool isAnimationPlaying;
 
         public bool HasHint => this.hints.Length > 0;
         public bool LevelTutorial => this.levelTutorial;
@@ -20,6 +22,28 @@ namespace Games
         public int TotalStep => this.totalStep;
 
         private readonly CancellationTokenSource tokenSource = new();
+
+        private void OnEnable()
+        {
+            Messenger.AddListener(EventKey.AnimationStart, OnAnimationStart);
+            Messenger.AddListener(EventKey.AnimationComplete, OnAnimationComplete);
+        }
+
+        private void OnDisable()
+        {
+            Messenger.RemoveListener(EventKey.AnimationStart, OnAnimationStart);
+            Messenger.RemoveListener(EventKey.AnimationComplete, OnAnimationComplete);
+        }
+
+        private void OnAnimationStart()
+        {
+            this.isAnimationPlaying = true;
+        }
+
+        private void OnAnimationComplete()
+        {
+            this.isAnimationPlaying = false;
+        }
 
         public void SetLevelTutorial(bool levelTutorial)
         {
@@ -69,6 +93,13 @@ namespace Games
                 }
 
                 await this.hints[i].Execute(this.tokenSource.Token);
+
+                // Wait for any running animation to complete before showing next hint
+                if (this.isAnimationPlaying)
+                {
+                    await UniTask.WaitUntil(() => !this.isAnimationPlaying,
+                        cancellationToken: this.tokenSource.Token);
+                }
             }
         }
 
