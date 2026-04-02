@@ -26,6 +26,7 @@ public class ChapterUnlockView : BaseView
     [SerializeField] private Button continueButton;
     [SerializeField] private Button backHomeButton;
     [SerializeField] private float lockBarSlideUpOffset = 80f;
+    [SerializeField] private float darkIconAlpha = 0.9f;
 
     [Header("Sound")] [SerializeField, SoundKey]
     private string musicSoundKey;
@@ -100,6 +101,7 @@ public class ChapterUnlockView : BaseView
 
         // Dark icon visible, bright icon hidden
         this.chapterIconDark.gameObject.SetActive(true);
+        this.chapterIconDark.DOFade(this.darkIconAlpha, 0);
 
         // Lock panel visible, lock bar at original position
         this.unlockIconPanel.gameObject.SetActive(true);
