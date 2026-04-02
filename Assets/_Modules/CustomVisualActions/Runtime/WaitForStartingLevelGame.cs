@@ -21,7 +21,7 @@ public class WaitForStartingLevelGame : VisualAction
     {
         if (!this.waitForStartingLevel)
         {
-            StartLevelGameHandler();
+            Messenger.Broadcast(EventKey.StartLevelGame);
         }
         else
         {

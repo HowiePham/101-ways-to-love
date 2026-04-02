@@ -79,7 +79,6 @@ namespace Mimi
         private void LimitedTimeViewClickPlayHandler()
         {
             this.levelPlayer.Play();
-            HardLevelViewPresenter.StartTimer();
 
             var gameplayViewPresenter = this.Presenter.GetViewPresenter<GameplayViewPresenter>();
             gameplayViewPresenter.PlayChapterProgressBarAnimation().Forget();
