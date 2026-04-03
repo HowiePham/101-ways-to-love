@@ -314,6 +314,24 @@ namespace Mimi.Prototypes
 
         private void NetworkStateChanged(InternetState internetState)
         {
+            if (internetState != InternetState.Available)
+            {
+                return;
+            }
+
+            if (IsRemoveAds)
+            {
+                this.Ads.RewardVideo.Load();
+            }
+            else
+            {
+                this.Ads.Interstitial.Load();
+                this.Ads.RewardVideo.Load();
+                this.Ads.Mrec.Load();
+                this.Ads.AppOpen.Load();
+                this.Ads.Banner.Load(new AdPlacement("Bottom"), BannerSize.Adaptive, BannerPosition.Bottom);
+            }
+
             // if (!RemoteConfig.GetValue(ConfigKey.RequireInternet).Boolean) return;
             //
             // if (internetState == InternetState.Unavailable)
