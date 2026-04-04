@@ -10,7 +10,11 @@ public class ExecuteVisualAction : VisualAction
 
     protected override async UniTask OnExecuting(CancellationToken cancellationToken)
     {
-        this.visualAction.Execute(cancellationToken);
+        if (this.visualAction != null)
+        {
+            this.visualAction.Execute(cancellationToken);
+        }
+
         Messenger.Broadcast(EventKey.ResetAction);
         await UniTask.CompletedTask;
     }

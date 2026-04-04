@@ -55,10 +55,10 @@ public class LoadFirstAdsPlugin : IPlugin
         Debug.Log($"--- (PLUGIN) Inter IsReady before load: {this.gameContext.Ads.Interstitial.IsReady}");
         Debug.Log($"--- (PLUGIN) Loading first ads inter...");
         this.gameContext.Ads.Interstitial.Load();
-        await UniTask.Delay(3000, cancellationToken: cancellationToken);
+        await UniTask.Delay(1000, cancellationToken: cancellationToken);
         Debug.Log($"--- (PLUGIN) Loading first ads reward...");
         this.gameContext.Ads.RewardVideo.Load();
-        await UniTask.Delay(3000, cancellationToken: cancellationToken);
+        await UniTask.Delay(1000, cancellationToken: cancellationToken);
         this.gameContext.Ads.Banner.Load(new AdPlacement("Bottom"), BannerSize.Adaptive, BannerPosition.Bottom);
         this.gameContext.Ads.Banner.Show();
     }

@@ -131,8 +131,12 @@ namespace Mimi.Prototypes
         private const string MaxBannerUnitId = "3d6cf94b8b39a0b1";
         private const string MaxMrecUnitId = "b21d09db69c6a7a5";
 
+        private UniTask configServiceTask;
+
         protected override async UniTask OnInitializing()
         {
+            this.configServiceTask = InitConfigService();
+
             await UniTask.WaitUntil(() => BootLoader.IsBootViewReady);
 
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
@@ -210,7 +214,7 @@ namespace Mimi.Prototypes
             CreateAudioService();
             LogInitializeEvent("init_audio_service");
 
-            await InitConfigService();
+            await this.configServiceTask;
             LogInitializeEvent("init_config");
 
             await UniTask.WhenAll(InitIAPService(), InitAdmobConsent());
