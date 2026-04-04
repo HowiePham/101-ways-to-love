@@ -14,7 +14,7 @@ namespace Mimi.Prototypes
     {
         [SerializeField] private BaseGameContext gameContext;
         [SerializeField] private BootView bootView;
-        [SerializeField] private float fakeLoadingSecs = 15f;
+        [SerializeField] private float fakeLoadingSecs;
 
         [SerializeField, ValueDropdown("GetSoundGroups")]
         private string backgroundMusic;
@@ -72,13 +72,10 @@ namespace Mimi.Prototypes
 
         private async UniTask Load()
         {
-            float loadingSecs = Application.isEditor ? 1f : fakeLoadingSecs;
-
             await UniTask.WaitUntil(() => this.gameContext.IsRemoteConfigInitialized);
 
             this.gameContext.CreateServices();
 
-            // this.earlyProgressTween?.Kill();
             await this.earlyProgressTween.AsyncWaitForCompletion();
 
             UniTask fakeLoadingBarProgress = DOTween.To(() => this.loadingPercentage,
@@ -86,7 +83,7 @@ namespace Mimi.Prototypes
                 {
                     this.loadingPercentage = value;
                     this.bootView.SetLoadingPercentage(this.loadingPercentage);
-                }, 0.8f, loadingSecs * 0.3f).AsyncWaitForCompletion().AsUniTask();
+                }, 0.8f, 0.3f).AsyncWaitForCompletion().AsUniTask();
 
             UniTask waitForContextInitialized = UniTask.WaitUntil(() => this.gameContext.IsInitialized);
             await UniTask.WhenAll(fakeLoadingBarProgress, waitForContextInitialized);
