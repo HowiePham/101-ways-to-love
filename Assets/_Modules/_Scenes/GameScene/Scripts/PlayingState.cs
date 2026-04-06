@@ -1,5 +1,6 @@
 using System.Threading;
 using _Modules._UI.LoseView.Scripts;
+using _Modules._UI.TransitionView.Scripts;
 using _Modules.GameEvent.Scripts;
 using _Modules.Gameflow_Events_.Scripts;
 using Cysharp.Threading.Tasks;
@@ -110,7 +111,7 @@ namespace Mimi
             this.winCamera.SetActive(true);
             int currentLevelOrder = this.Context.RuntimeState.CurrentLevelOrder.Value;
             this.Context.EventPublisher.PublishAsync(new LevelCompleted(currentLevelOrder.ToString(), LevelCompletionStatus.Win));
-            
+
             if (currentLevelOrder >= this.Context.RuntimeState.TopCompletedLevelOrder.Value)
             {
                 this.Context.RuntimeState.TopCompletedLevelOrder.Set(currentLevelOrder);
@@ -138,7 +139,6 @@ namespace Mimi
         {
             if (this.levelPlayer != null)
             {
-                DestroyOldLevelRoot();
                 var gameplayViewPresenter = this.Presenter.GetViewPresenter<GameplayViewPresenter>();
                 gameplayViewPresenter.Hide();
             }
@@ -160,8 +160,6 @@ namespace Mimi
 
         private async UniTask TryAgainLevelHandler(LevelTryAgain levelTryAgain, CancellationToken cancellationToken)
         {
-            DestroyOldLevelRoot();
-
             PlayLevel(Context.RuntimeState.CurrentLevelOrder.Value);
             await UniTask.CompletedTask;
         }
@@ -181,8 +179,6 @@ namespace Mimi
 
         private async UniTask NextLevelHandler(NextLevelClicked nextLevelClicked, CancellationToken cancellationToken)
         {
-            DestroyOldLevelRoot();
-
             if (!IsLastLevel())
             {
                 int oldValue = this.Context.RuntimeState.CurrentLevelOrder.Value;
@@ -223,11 +219,17 @@ namespace Mimi
             this.currentLevel = Context.LevelOrder.GetByOrder(levelOrder);
             this.nextLevel = Context.LevelOrder.GetNextLevel(levelOrder);
             Debug.Log($"--- (LEVEL) Playing level : {levelOrder + 1} --- PrefabAddress: {this.currentLevel.PrefabAddress}");
-            await PlayLevel(this.currentLevel, levelOrder);
+            var transitionPresenter = Presenter.GetViewPresenter<TransitionViewPresenter>();
+            transitionPresenter.ShowEffect(() => PlayLevel(this.currentLevel, levelOrder), 0.1f);
         }
 
         private async UniTask PlayLevel(LevelInfo currentLevelInfo, int levelOrder)
         {
+            if (this.levelPlayer != null)
+            {
+                DestroyOldLevelRoot();
+            }
+
             this.winCamera.SetActive(false);
             GameObject levelPrefab = await this.levelLoader.Load(currentLevelInfo.Id);
             this.levelRoot = ServiceLocator.Global.Get<IPoolService>().Spawn(levelPrefab);

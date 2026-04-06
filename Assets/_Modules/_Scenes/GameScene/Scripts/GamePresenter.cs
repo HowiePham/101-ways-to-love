@@ -1,5 +1,6 @@
 using _Modules._UI.CheatView.Scripts;
 using _Modules._UI.LoseView.Scripts;
+using _Modules._UI.TransitionView.Scripts;
 using _Modules._UI.WinView.Scripts;
 using Mimi.Prototypes.UI;
 using UnityEngine;
@@ -54,6 +55,8 @@ namespace Mimi.Prototypes
             AddViewPresenter(chapterUnlockPresenter);
             var removeAdsViewPresenter = new RemoveAdsViewPresenter(this, this.Transform, gameContext.EventPublisher);
             AddViewPresenter(removeAdsViewPresenter);
+            var transitionViewPresenter = new TransitionViewPresenter(this, this.Transform);
+            AddViewPresenter(transitionViewPresenter);
 
 #if DEVELOPMENT
             var cheatViewPresenter = new CheatViewPresenter(this, this.Transform, gameContext.EventPublisher);
