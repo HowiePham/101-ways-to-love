@@ -5,6 +5,7 @@ using Mimi.Events.AsyncBus;
 using Mimi.Games.Events;
 using Mimi.Persistence.LocalPrefs;
 using Mimi.Prototypes;
+using Mimi.Prototypes.Events;
 using Mimi.Prototypes.SaveLoad;
 using Mimi.Prototypes.UI;
 using UnityEngine;
@@ -69,6 +70,7 @@ public class SettingViewPresenter : BaseViewPresenter
 
         this.saveManager.Save();
         this.adsAdapter.Mrec.Hide();
+        Messenger.Broadcast(EventKey.PauseLevel, false);
     }
 
     public void SetActiveHomeButton(bool active)

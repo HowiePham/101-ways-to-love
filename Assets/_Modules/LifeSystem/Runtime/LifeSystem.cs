@@ -9,6 +9,7 @@ using Mimi.Ads.Adapters;
 using Mimi.Events.AsyncBus;
 using Mimi.Games;
 using Mimi.Prototypes.Currencies;
+using Mimi.Prototypes.Events;
 using Mimi.Prototypes.UI;
 using UnityEngine;
 
@@ -31,7 +32,8 @@ public class LifeSystem
 
     public int CurrentLifeCount => (int)this.playerResources.GetAmount(LifeResourceId);
 
-    public LifeSystem(int maxLifeCount, int timeToAddLifeInSeconds, IResourceCollection playerResources, IAsyncPublisher publisher, IAsyncSubscriber subscriber, DialogManager dialogManager, IAdAdapter adAdapter)
+    public LifeSystem(int maxLifeCount, int timeToAddLifeInSeconds, IResourceCollection playerResources, IAsyncPublisher publisher, IAsyncSubscriber subscriber, DialogManager dialogManager,
+        IAdAdapter adAdapter)
     {
         this.maxLifeCount = maxLifeCount;
         this.timeToAddLifeInSeconds = timeToAddLifeInSeconds;
@@ -58,7 +60,6 @@ public class LifeSystem
 
         CheckLife();
         DebugLogConsole.AddCommandInstance("add-life", "Add 1 Life", "AddLife", this);
-
     }
 
     private async UniTask LifeUsingHandler(LifeUsing lifeUsing, CancellationToken token)
@@ -86,12 +87,19 @@ public class LifeSystem
         {
             return;
         }
-        
+
         if (this.dialogManager.TryShowModalDialogOnce(dialogId, out this.activeLifeDialog))
         {
+            Messenger.Broadcast(EventKey.PauseLevel, true);
             this.dialogId = dialogId;
             this.activeLifeDialog.SetYesCallback(OnGetMoreLifeClicked);
+            this.activeLifeDialog.SetNoCallback(CloseGetMoreLifeDialog);
         }
+    }
+
+    private void CloseGetMoreLifeDialog()
+    {
+        Messenger.Broadcast(EventKey.PauseLevel, false);
     }
 
     private void OnGetMoreLifeClicked()
@@ -129,6 +137,7 @@ public class LifeSystem
 
         RunTimer();
 
+        Messenger.Broadcast(EventKey.PauseLevel, false);
         this.activeLifeDialog.Hide();
         this.activeLifeDialog = null;
     }
@@ -237,7 +246,7 @@ public class LifeSystem
         {
             this.lifeData.AddedNextTime.Clear();
         }
-        
+
         int livesNeeded = this.maxLifeCount - CurrentLifeCount;
         int timersShortfall = livesNeeded - this.lifeData.AddedNextTime.Count;
         for (int i = 0; i < timersShortfall; i++)
