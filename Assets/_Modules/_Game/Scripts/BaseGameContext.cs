@@ -299,11 +299,10 @@ namespace Mimi.Prototypes
         private async UniTask InitIAPService()
         {
             InAppPurchaseStore = new UnityPurchasingProvider(new MockPurchaseValidator());
-            // InAppPurchaseStore.Initialize(new[]
-            // {
-            //     new ProductMetadata(ProductKey.RemoveAds_Android, ProductType.NonConsumable),
-            // });
-            InAppPurchaseStore.Initialize(Array.Empty<ProductMetadata>());
+            InAppPurchaseStore.Initialize(new[]
+            {
+                new ProductMetadata(ProductKey.RemoveAds_Android, ProductType.NonConsumable),
+            });
             LogInitializeEvent("init_iap");
         }
 
