@@ -30,6 +30,9 @@ public class HoldToRotate : VisualAction
             LeanTouch.OnFingerUp += FingerUpHandler;
             LeanTouch.OnFingerDown += FingerDownHandler;
             await UniTask.WaitUntil(() => this.complete, cancellationToken: cancellationToken);
+            LeanTouch.OnFingerUpdate -= FingerUpdateHandler;
+            LeanTouch.OnFingerUp -= FingerUpHandler;
+            LeanTouch.OnFingerDown -= FingerDownHandler;
             await this.target.DORotate(this.targetRotation, 0.5f).SetEase(Ease.InOutQuad).AsyncWaitForCompletion();
         }
         catch (OperationCanceledException e)
