@@ -41,17 +41,15 @@ namespace Mimi.Prototypes
             AddViewPresenter(settingViewPresenter);
             Debug.Log($"--- (PRESENTER) Init WinViewPresenter");
             var winViewPresenter = new WinViewPresenter(this, this.Transform, gameContext.EventPublisher,
-                gameContext.RuntimeState, gameContext.Ads, gameContext.ShowInterstitialLevelConfig, gameContext.GameData);
+                gameContext.RuntimeState, gameContext.Ads, gameContext.ShowInterstitialLevelConfig, gameContext.GameData, gameContext.LevelOrder,
+                gameContext.RemoteConfig, gameContext.LifeSystem);
             AddViewPresenter(winViewPresenter);
             Debug.Log($"--- (PRESENTER) Init LoseViewPresenter");
             var loseViewPresenter = new LoseViewPresenter(this, this.Transform, gameContext.EventPublisher);
             AddViewPresenter(loseViewPresenter);
             var chapterUnlockPresenter = new ChapterUnlockPresenter(
-                this, this.Transform,
-                gameContext.EventPublisher,
-                gameContext.ChapterLevelRepo,
-                gameContext.LevelOrder,
-                gameContext.RuntimeState);
+                this, this.Transform, gameContext.EventPublisher, gameContext.ChapterLevelRepo, gameContext.LevelOrder,
+                gameContext.RuntimeState, gameContext.RemoteConfig, gameContext.DialogManager);
             AddViewPresenter(chapterUnlockPresenter);
             var removeAdsViewPresenter = new RemoveAdsViewPresenter(this, this.Transform, gameContext.EventPublisher, gameContext.DialogManager, gameContext.InAppPurchaseStore);
             AddViewPresenter(removeAdsViewPresenter);

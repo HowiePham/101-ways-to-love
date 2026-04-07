@@ -35,5 +35,6 @@
         public const string CooldownInterAfterShowReward = "cooldown_inter_after_show_reward";
         public const string LifeCooldown = "life_cooldown";
         public const string MaxLife = "max_life";
+        public const string LifeRecoverAfterChapter = "life_recover_after_chapter";
     }
 }

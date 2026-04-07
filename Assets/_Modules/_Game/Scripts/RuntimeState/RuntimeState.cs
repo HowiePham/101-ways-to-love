@@ -9,6 +9,7 @@ namespace Mimi.Prototypes
         public RxVar<int> TopCompletedLevelOrder { get; } = new RxVar<int>();
         public RxVar<int> CurrentLevelOrder { get; } = new RxVar<int>();
         public RxVar<int> TopLevelOrder { get; } = new RxVar<int>();
+        public RxVar<bool> IsNewChapterUnlocked { get; } = new RxVar<bool>();
 
         private RuntimeState()
         {

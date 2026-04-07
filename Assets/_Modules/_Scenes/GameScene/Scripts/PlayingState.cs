@@ -117,15 +117,21 @@ namespace Mimi
                 this.Context.RuntimeState.TopCompletedLevelOrder.Set(currentLevelOrder);
             }
 
+            bool isNewChapterUnlocked = false;
             if (!IsLastLevel())
             {
                 int nextLevelOrder = currentLevelOrder + 1;
                 int topLevel = this.Context.RuntimeState.TopLevelOrder.Value;
                 if (nextLevelOrder > topLevel)
                 {
+                    if (this.nextLevel != null && this.nextLevel.Chapter != this.currentLevel.Chapter)
+                    {
+                        isNewChapterUnlocked = true;
+                    }
                     this.Context.RuntimeState.TopLevelOrder.Set(nextLevelOrder);
                 }
             }
+            this.Context.RuntimeState.IsNewChapterUnlocked.Set(isNewChapterUnlocked);
 
             Context.SaveManager.Save();
         }
