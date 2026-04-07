@@ -153,7 +153,8 @@ public class LifeSystem
         if (CurrentLifeCount > 0)
         {
             this.playerResources.Sink(LifeResourceId, 1, TransactionInfo.New(LifeResourceId, "gameplay_view", "lose_life"));
-            SetTimeToAddNextLife();
+            if (CurrentLifeCount < this.maxLifeCount)
+                SetTimeToAddNextLife();
             SaveLifeData();
             this.publisher.PublishAsync(new LifeUpdated(CurrentLifeCount));
         }
@@ -181,15 +182,19 @@ public class LifeSystem
     {
         if (count <= 0) return;
 
-        int livesToAdd = Mathf.Min(count, this.maxLifeCount - CurrentLifeCount);
-        if (livesToAdd <= 0) return;
-
-        this.playerResources.Source(LifeResourceId, livesToAdd,
+        this.playerResources.Source(LifeResourceId, count,
             TransactionInfo.New(LifeResourceId, placement, "add_life"));
 
-        int timersToRemove = Mathf.Min(livesToAdd, this.lifeData.AddedNextTime.Count);
-        for (int i = 0; i < timersToRemove; i++)
-            this.lifeData.AddedNextTime.RemoveAt(this.lifeData.AddedNextTime.Count - 1);
+        if (CurrentLifeCount >= this.maxLifeCount)
+        {
+            this.lifeData.AddedNextTime.Clear();
+        }
+        else
+        {
+            int timersToRemove = Mathf.Min(count, this.lifeData.AddedNextTime.Count);
+            for (int i = 0; i < timersToRemove; i++)
+                this.lifeData.AddedNextTime.RemoveAt(this.lifeData.AddedNextTime.Count - 1);
+        }
 
         SaveLifeData();
         this.publisher.PublishAsync(new LifeUpdated(CurrentLifeCount));
