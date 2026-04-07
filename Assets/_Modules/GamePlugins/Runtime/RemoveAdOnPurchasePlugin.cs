@@ -5,7 +5,9 @@ using Mimi.Ads.Adapters;
 using Mimi.Games.Plugins;
 using Mimi.IAP;
 using Mimi.Prototypes;
+using Mimi.Prototypes.Currencies;
 using Mimi.Prototypes.Events;
+using Mimi.Prototypes.UI;
 using UnityEngine;
 
 namespace Ads
@@ -44,6 +46,12 @@ namespace Ads
             this.gameContext.Ads.SetAppOpen(NullAppOpenAdapter.Instance);
             PlayerPrefs.SetInt("RemoveAdsCheat", 1);
             Messenger.Broadcast(EventKey.RemoveAdsCompleted);
+
+            if (this.gameContext.DialogManager.TryShowModalDialogOnce(DialogId.GenericAutoHide, 
+                    out AutoHideNotificationDialog dialog))
+            {
+                dialog.SetText("Purchase Completed");
+            }
         }
 
         public async UniTask Uninstall()
