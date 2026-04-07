@@ -177,6 +177,25 @@ public class LifeSystem
         SaveLifeData();
     }
 
+    public void AddLives(int count, string placement)
+    {
+        if (count <= 0) return;
+
+        int livesToAdd = Mathf.Min(count, this.maxLifeCount - CurrentLifeCount);
+        if (livesToAdd <= 0) return;
+
+        this.playerResources.Source(LifeResourceId, livesToAdd,
+            TransactionInfo.New(LifeResourceId, placement, "add_life"));
+
+        int timersToRemove = Mathf.Min(livesToAdd, this.lifeData.AddedNextTime.Count);
+        for (int i = 0; i < timersToRemove; i++)
+            this.lifeData.AddedNextTime.RemoveAt(this.lifeData.AddedNextTime.Count - 1);
+
+        SaveLifeData();
+        this.publisher.PublishAsync(new LifeUpdated(CurrentLifeCount));
+        RunTimer();
+    }
+
     public string GetRemainingTime(TimeSpan timeSpan)
     {
         string time = String.Format("{0:00}:{1:00}", timeSpan.Minutes, timeSpan.Seconds);
