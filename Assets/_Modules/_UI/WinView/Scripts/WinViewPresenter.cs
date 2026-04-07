@@ -1,10 +1,13 @@
 using _Modules._UI.LoseView.Scripts;
 using _Modules.GameEvent.Scripts;
+using Mimi;
 using Mimi.Ads.Adapters;
+using Mimi.Configs;
 using Mimi.Events;
 using Mimi.Events.AsyncBus;
 using Mimi.Prototypes;
 using Mimi.Prototypes.Events;
+using Mimi.Prototypes.LevelManagement;
 using Mimi.Prototypes.UI;
 using Mimi.Rx.Variables;
 using UnityEngine;
@@ -20,10 +23,13 @@ namespace _Modules._UI.WinView.Scripts
         private readonly IAdAdapter adsAdapter;
         private readonly RuntimeState runtimeState;
         private readonly GameData gameData;
+        private readonly ILevelOrder levelOrder;
+        private readonly IConfigProvider remoteConfig;
+        private readonly LifeSystem lifeSystem;
 
         public WinViewPresenter(BaseScenePresenter scenePresenter, Transform transform, IAsyncPublisher eventPublisher,
             RuntimeState runtimeState, IAdAdapter adsAdapter,
-            LevelConfig showAdLevelConfig, GameData gameData) : base(scenePresenter,
+            LevelConfig showAdLevelConfig, GameData gameData, ILevelOrder levelOrder, IConfigProvider remoteConfig, LifeSystem lifeSystem) : base(scenePresenter,
             transform)
         {
             this.eventPublisher = eventPublisher;
@@ -31,6 +37,9 @@ namespace _Modules._UI.WinView.Scripts
             this.adsAdapter = adsAdapter;
             this.showAdLevelConfig = showAdLevelConfig;
             this.gameData = gameData;
+            this.remoteConfig = remoteConfig;
+            this.lifeSystem = lifeSystem;
+            this.levelOrder = levelOrder;
         }
 
         protected override void AddViews()
@@ -61,7 +70,12 @@ namespace _Modules._UI.WinView.Scripts
             this.winView.SetActiveRemoveAdsButton(!baseGameContext.IsRemoveAds);
 
             this.adsAdapter.Mrec.Show(new AdPlacement("win_view"));
-            // this.currencyView.OnAddCurrencyClicked += AddCurrencyClickedHandler;
+
+            if (CanShowNextChapter())
+            {
+                int lifeReward = this.remoteConfig.GetValue(ConfigKey.LifeRecoverAfterChapter).Int;
+                this.lifeSystem.AddLives(lifeReward, "win_view");
+            }
         }
 
         protected override void OnHide()
@@ -131,6 +145,11 @@ namespace _Modules._UI.WinView.Scripts
             {
                 NextLevelHandler();
             }
+        }
+
+        private bool CanShowNextChapter()
+        {
+            return this.runtimeState.IsNewChapterUnlocked.Value;
         }
 
         private void NextLevelHandler()

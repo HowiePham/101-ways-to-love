@@ -34,7 +34,6 @@ public class ChapterUnlockView : BaseView
     [SerializeField, SoundKey] private string unlockSoundKey;
     [SerializeField, SoundKey] private string highlightFxSoundKey;
 
-
     private IAudioService AudioService => ServiceLocator.Global.Get<IAudioService>();
     private CancellationTokenSource showCts;
     private TweenerCore<Vector3, Vector3, VectorOptions> continuePulseTween;
@@ -42,6 +41,7 @@ public class ChapterUnlockView : BaseView
 
     public Action OnContinueClicked;
     public Action OnBackHomeClicked;
+    public Action OnShowingCompleted;
 
     public override void Initialize()
     {
@@ -153,6 +153,7 @@ public class ChapterUnlockView : BaseView
         this.chapterIconDark.DOFade(0f, 0.3f);
         this.highlightFx.DOFade(1f, 0.4f);
         await UniTask.Delay(400, cancellationToken: ct);
+        OnShowingCompleted?.Invoke();
         if (ct.IsCancellationRequested) return;
 
         // === Phase 5: Buttons fade in + continue button pulse ===

@@ -653,7 +653,8 @@ namespace Mimi.Prototypes
                 .SetInt(ConfigKey.HardLevelWarningTime, 10)
                 .SetInt(ConfigKey.CooldownInterAfterShowReward, 30)
                 .SetInt(ConfigKey.LifeCooldown, 900)
-                .SetInt(ConfigKey.MaxLife, 10);
+                .SetInt(ConfigKey.MaxLife, 10)
+                .SetInt(ConfigKey.LifeRecoverAfterChapter, 2);
 
             await RemoteConfig.SetDefaultValues(blueprint);
 
