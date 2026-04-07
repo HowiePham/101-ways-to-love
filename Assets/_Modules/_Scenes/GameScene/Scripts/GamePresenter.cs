@@ -53,7 +53,7 @@ namespace Mimi.Prototypes
                 gameContext.LevelOrder,
                 gameContext.RuntimeState);
             AddViewPresenter(chapterUnlockPresenter);
-            var removeAdsViewPresenter = new RemoveAdsViewPresenter(this, this.Transform, gameContext.EventPublisher);
+            var removeAdsViewPresenter = new RemoveAdsViewPresenter(this, this.Transform, gameContext.EventPublisher, gameContext.DialogManager, gameContext.InAppPurchaseStore);
             AddViewPresenter(removeAdsViewPresenter);
             var transitionViewPresenter = new TransitionViewPresenter(this, this.Transform);
             AddViewPresenter(transitionViewPresenter);
