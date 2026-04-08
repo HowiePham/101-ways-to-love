@@ -20,4 +20,9 @@ public class RemoveAdsView : BaseView
         this.removeAdsButton.onClick.AddListener(() => this.OnBuyRemoveAdsClicked?.Invoke());
         this.closeButton.onClick.AddListener(() => this.OnCloseClicked?.Invoke());
     }
+
+    public void SetPriceText(string text)
+    {
+        this.priceText.text = text;
+    }
 }
