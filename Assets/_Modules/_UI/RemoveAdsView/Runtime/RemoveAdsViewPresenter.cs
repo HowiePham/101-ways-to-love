@@ -39,6 +39,23 @@ public class RemoveAdsViewPresenter : BaseViewPresenter
         this.removeAdsView.OnCloseClicked += CloseClickedHandler;
         this.purchasingProvider.PurchaseFailed += PurchasFailedHandler;
         this.eventPublisher.PublishAsync(new IapShow("remove_ads_view", "pack", "click", "remove_ads"));
+        
+        SetRemoveAdsPriceText();
+    }
+
+    private void SetRemoveAdsPriceText()
+    {
+        var gameContext = (BaseGameContext)this.Context;
+        string removeAdsProductId = gameContext.RemoveAdsProductId;
+        foreach (IProduct product in this.purchasingProvider.Products)
+        {
+            if (!product.Id.Equals(removeAdsProductId))
+            {
+                continue;
+            }
+
+            this.removeAdsView.SetPriceText(product.LocalizedPriceWithCurrencyCode);
+        }
     }
 
     private void PurchasFailedHandler(PurchaseError error)
@@ -52,10 +69,10 @@ public class RemoveAdsViewPresenter : BaseViewPresenter
     private void BuyRemoveAdsHandler()
     {
         var gameContext = (BaseGameContext)this.Context;
-        string productKey = gameContext.RemoveAdsProductId;
+        string removeAdsProductId = gameContext.RemoveAdsProductId;
 
         this.eventPublisher.PublishAsync(new IapClick("remove_ads_view", "pack", "click", "remove_ads"));
-        this.purchasingProvider.Purchase(productKey, new PurchaseContext("remove_ads_view"));
+        this.purchasingProvider.Purchase(removeAdsProductId, new PurchaseContext("remove_ads_view"));
     }
 
     private void CloseClickedHandler()
