@@ -51,8 +51,11 @@ public class RemoveAdsViewPresenter : BaseViewPresenter
 
     private void BuyRemoveAdsHandler()
     {
+        var gameContext = (BaseGameContext)this.Context;
+        string productKey = gameContext.RemoveAdsProductId;
+
         this.eventPublisher.PublishAsync(new IapClick("remove_ads_view", "pack", "click", "remove_ads"));
-        this.purchasingProvider.Purchase(ProductKey.RemoveAds_Android, new PurchaseContext("remove_ads_view"));
+        this.purchasingProvider.Purchase(productKey, new PurchaseContext("remove_ads_view"));
     }
 
     private void CloseClickedHandler()

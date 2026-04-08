@@ -70,20 +70,20 @@ namespace Mimi.Prototypes
 
         public LevelConfig RateConfig { get; } = new();
         public LevelConfig ShowInterstitialLevelConfig { protected set; get; }
+        public string RemoveAdsProductId { protected set; get; }
 
         public bool IsRemoveAds
         {
             get
             {
-#if DEVELOPMENT
-                if (PlayerPrefs.GetInt("RemoveAdsCheat", 0) != 0)
+                if (PlayerPrefs.GetInt("RemoveAds", 0) != 0)
                 {
                     return true;
                 }
 
                 foreach (var product in InAppPurchaseStore.Products)
                 {
-                    if (product.Id.Equals(ProductKey.RemoveAds_Android))
+                    if (product.Id.Equals(RemoveAdsProductId))
                     {
                         if (product.HasReceipt)
                         {
@@ -91,18 +91,7 @@ namespace Mimi.Prototypes
                         }
                     }
                 }
-#else
-                foreach (var product in InAppPurchaseStore.Products)
-                {
-                    if (product.Id.Equals(ProductKey.RemoveAds_Android))
-                    {
-                        if (product.HasReceipt)
-                        {
-                            return true;
-                        }
-                    }
-                }
-#endif
+
                 return false;
             }
         }
@@ -299,10 +288,12 @@ namespace Mimi.Prototypes
 
         private async UniTask InitIAPService()
         {
+            RemoveAdsProductId = RemoteConfig.GetValue(ConfigKey.RemoveAdProductId).String;
+
             InAppPurchaseStore = new UnityPurchasingProvider(new MockPurchaseValidator());
             InAppPurchaseStore.Initialize(new[]
             {
-                new ProductMetadata(ProductKey.RemoveAds_Android, ProductType.NonConsumable),
+                new ProductMetadata(RemoveAdsProductId, ProductType.NonConsumable),
             });
         }
 
@@ -634,6 +625,7 @@ namespace Mimi.Prototypes
                 .SetBool(ConfigKey.RequireInternet, true)
                 .SetFloat(ConfigKey.InternetFailedDelay, 7f)
                 .SetString(ConfigKey.ShowAdLevels, "10")
+                .SetString(ConfigKey.RemoveAdProductId, "removeads_199")
                 .SetBool(ConfigKey.ResumeAds, true)
                 .SetBool(ConfigKey.RatingPopup, true)
                 .SetBool(ConfigKey.ShowAOAFirstOpen, false)
