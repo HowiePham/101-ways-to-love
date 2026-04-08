@@ -94,7 +94,14 @@ namespace Mimi.Prototypes
                 }
             }
 
-            return GetDataSheet<SheetOrderModel>()
+            var sheetName = "LevelProd";
+#if DEVELOPMENT
+            sheetName = "LevelDev";
+#else
+            sheetName = "LevelProd";
+#endif
+
+            return GetDataSheet<SheetOrderModel>(sheetName)
                 .GroupBy(x => x.Id)
                 .Select(g => g.First())
                 .Select(x => new LevelOrderEntry(x.Id, int.TryParse(x.Chapter, out int ch) ? ch : 1));
@@ -117,7 +124,13 @@ namespace Mimi.Prototypes
                 }
             }
 
-            return GetDataSheet<SheetChapterModel>();
+            var sheetName = "ChapterProd";
+#if DEVELOPMENT
+            sheetName = "ChapterDev";
+#else
+            sheetName = "ChapterProd";
+#endif
+            return GetDataSheet<SheetChapterModel>(sheetName);
         }
 
         private void InitHintLevelConfig()
