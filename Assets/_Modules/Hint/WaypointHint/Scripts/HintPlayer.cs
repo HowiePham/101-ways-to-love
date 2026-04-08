@@ -92,14 +92,13 @@ namespace Games
                     continue;
                 }
 
-                await this.hints[i].Execute(this.tokenSource.Token);
-
-                // Wait for any running animation to complete before showing next hint
                 if (this.isAnimationPlaying)
                 {
                     await UniTask.WaitUntil(() => !this.isAnimationPlaying,
                         cancellationToken: this.tokenSource.Token);
                 }
+
+                await this.hints[i].Execute(this.tokenSource.Token);
             }
         }
 

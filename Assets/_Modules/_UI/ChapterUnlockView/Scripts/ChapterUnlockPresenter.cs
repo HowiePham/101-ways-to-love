@@ -86,7 +86,7 @@ public class ChapterUnlockPresenter : BaseViewPresenter
         if (this.dialogManager.TryShowModalDialogOnce(DialogId.GenericAutoHide, out AutoHideNotificationDialog dialog))
         {
             int rewardValue = this.remoteConfig.GetValue(ConfigKey.LifeRecoverAfterChapter).Int;
-            dialog.SetText("+" + rewardValue + "<sprite index=0>");
+            dialog.SetText("+" + rewardValue + " <sprite index=0>");
         }
     }
 

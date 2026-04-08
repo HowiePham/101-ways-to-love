@@ -157,6 +157,8 @@ public class LifeSystem
                 SetTimeToAddNextLife();
             SaveLifeData();
             this.publisher.PublishAsync(new LifeUpdated(CurrentLifeCount));
+
+            ShowUsingLifeDialog();
         }
     }
 
@@ -318,5 +320,13 @@ public class LifeSystem
 
         this.publisher.PublishAsync(new LifeUpdated(CurrentLifeCount));
         this.publisher.PublishAsync(new RecoveryLifeTimerUpdated(""));
+    }
+
+    private void ShowUsingLifeDialog()
+    {
+        if (this.dialogManager.TryShowModalDialogOnce(DialogId.GenericAutoHide, out AutoHideNotificationDialog dialog))
+        {
+            dialog.SetText("-1" + " <sprite index=0>");
+        }
     }
 }
