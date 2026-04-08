@@ -30,7 +30,7 @@ namespace Ads
 
         private void PurchaseCompletedHandler(PurchaseReceipt receipt)
         {
-            string productKey = ProductKey.RemoveAds_Android;
+            string productKey = this.gameContext.RemoveAdsProductId;
             if (!receipt.Order.ProductIds.Any(x => x.Contains(productKey))) return;
             RemoveAds();
         }
@@ -44,7 +44,7 @@ namespace Ads
             this.gameContext.Ads.SetBanner(NullBannerAdapter.Instance);
             this.gameContext.Ads.SetInterstitial(EditorInterstitialAdapter.Instance);
             this.gameContext.Ads.SetAppOpen(NullAppOpenAdapter.Instance);
-            PlayerPrefs.SetInt("RemoveAdsCheat", 1);
+            PlayerPrefs.SetInt("RemoveAds", 1);
             Messenger.Broadcast(EventKey.RemoveAdsCompleted);
 
             if (this.gameContext.DialogManager.TryShowModalDialogOnce(DialogId.GenericAutoHide, 

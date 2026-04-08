@@ -37,7 +37,7 @@ namespace Mimi.Prototypes
         private async UniTaskVoid PrepareBootView()
         {
             Application.targetFrameRate = 60;
-            
+
             this.bootView.Show();
             await this.bootView.RunLogoEffect();
             await this.bootView.ShowLoadingBarEffect();
@@ -52,8 +52,9 @@ namespace Mimi.Prototypes
 
             IsBootViewReady = true;
 
-            float loadingSecs = Application.isEditor ? 1f : fakeLoadingSecs;
-            // float loadingSecs = fakeLoadingSecs;
+            float fakeLoadingTime = this.gameContext.IsFirstSession ? 4f : this.fakeLoadingSecs;
+            float loadingSecs = Application.isEditor ? 1f : fakeLoadingTime;
+
             this.earlyProgressTween = DOTween.To(() => this.loadingPercentage,
                 value =>
                 {
