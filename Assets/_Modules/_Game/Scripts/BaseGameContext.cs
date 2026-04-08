@@ -216,9 +216,10 @@ namespace Mimi.Prototypes
 
             await this.configServiceTask;
             LogInitializeEvent("init_config");
-
-            await UniTask.WhenAll(InitIAPService(), InitAdmobConsent());
-
+            await InitIAPService();
+            LogInitializeEvent("init_iap");
+            await InitAdmobConsent();
+            LogInitializeEvent("init_admob_consent");
             await InitGoogleMobileAds();
             LogInitializeEvent("init_gma");
 #if !UNITY_EDITOR
@@ -251,7 +252,7 @@ namespace Mimi.Prototypes
         {
             SessionRecorder = new LocalSessionRecorder(EventPublisher, LocalPrefs);
             SessionRecorder.RecordSessionStart(DateTime.UtcNow);
-            Debug.Log($"--- (INIT) Session count: {SessionRecorder.SessionCount} --> IsFirstSession: {SessionRecorder.IsFirstSession}");
+            Debug.Log($"--- (INIT) Session count: {SessionRecorder.SessionCount} --> IsFirstSession: {IsFirstSession}");
         }
 
         private void CreatePoolingService()
@@ -303,7 +304,6 @@ namespace Mimi.Prototypes
             {
                 new ProductMetadata(ProductKey.RemoveAds_Android, ProductType.NonConsumable),
             });
-            LogInitializeEvent("init_iap");
         }
 
         private void InitInternetMonitor()
@@ -407,7 +407,6 @@ namespace Mimi.Prototypes
             this.ConsentHandler = new ConsentHandler();
             await this.ConsentHandler.InitAdmobConsent();
             this.IsAdmobConsentUpdateCompleted = true;
-            LogInitializeEvent("init_admob_consent");
         }
 
         private async UniTask InitAdsService()
