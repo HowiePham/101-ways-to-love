@@ -52,8 +52,7 @@ namespace Mimi.Prototypes
 
             IsBootViewReady = true;
 
-            float fakeLoadingTime = this.gameContext.IsFirstSession ? 4f : this.fakeLoadingSecs;
-            float loadingSecs = Application.isEditor ? 1f : fakeLoadingTime;
+            float loadingSecs = Application.isEditor ? 1f : this.fakeLoadingSecs;
 
             this.earlyProgressTween = DOTween.To(() => this.loadingPercentage,
                 value =>
