@@ -31,13 +31,17 @@ public class GameplayViewPresenter : BaseViewPresenter
     private readonly ILevelOrder levelOrder;
 
     private GameplayView gameplayView;
+    private TutorialOverlayView tutorialView;
     private NumberBasedLifeView numberBasedLifeView;
     private CoroutineHandle timerCoroutineHandler;
     private float timeLeft;
     private int maxProgress;
     private int currentProgress;
+    private CancellationTokenSource tutorialCts;
+    private bool isTutorialRunning;
 
     private const float TimeStep = 1f;
+    private const string TutorialCompletedKey = "tutorial_overlay_completed_v1";
 
     public GameplayViewPresenter(BaseScenePresenter scenePresenter, Transform transform, IAsyncPublisher eventPublisher, IAsyncSubscriber eventSubscriber,
         RuntimeState runtimeState, LifeSystem lifeSystem, LevelConfig hintLevelConfig, IAdAdapter adAdapter, DialogManager dialogManager,
@@ -59,6 +63,7 @@ public class GameplayViewPresenter : BaseViewPresenter
     {
         this.gameplayView = AddView<GameplayView>();
         this.numberBasedLifeView = this.gameplayView.LifeView;
+        this.tutorialView = AddView<TutorialOverlayView>(startingView: false);
     }
 
     protected override void AddChildren()
@@ -104,6 +109,110 @@ public class GameplayViewPresenter : BaseViewPresenter
         var cheatViewPresenter = this.ScenePresenter.GetViewPresenter<CheatViewPresenter>();
         cheatViewPresenter.Show();
 #endif
+
+        TryStartTutorial();
+    }
+
+    private void TryStartTutorial()
+    {
+        if (this.tutorialView == null) return;
+        if (PlayerPrefs.GetInt(TutorialCompletedKey, 0) == 1) return;
+
+        this.tutorialCts?.Cancel();
+        this.tutorialCts?.Dispose();
+        this.tutorialCts = new CancellationTokenSource();
+        RunTutorialSequence(this.tutorialCts.Token).Forget();
+    }
+
+    private async UniTaskVoid RunTutorialSequence(CancellationToken ct)
+    {
+        this.isTutorialRunning = true;
+        Messenger.Broadcast(EventKey.PauseLevel, true);
+        this.tutorialView.OnNextClicked += HandleTutorialNextClicked;
+        this.tutorialView.Show();
+
+        // Wait for GameplayView entry animations to finish
+        bool canceled = await UniTask.Delay(300, cancellationToken: ct).SuppressCancellationThrow();
+        if (canceled)
+        {
+            CleanupTutorial();
+            return;
+        }
+
+        await this.tutorialView.PlayIntroAnimation(ct);
+        if (ct.IsCancellationRequested)
+        {
+            CleanupTutorial();
+            return;
+        }
+
+        TutorialStepData[] steps = this.tutorialView.Steps;
+        for (int i = 0; i < steps.Length; i++)
+        {
+            if (ct.IsCancellationRequested)
+            {
+                CleanupTutorial();
+                return;
+            }
+
+            RectTransform target = GetTutorialTargetRect(steps[i].targetElement);
+            await this.tutorialView.TransitionToStep(steps[i], target, ct);
+            if (ct.IsCancellationRequested)
+            {
+                CleanupTutorial();
+                return;
+            }
+
+            await WaitForTutorialNext(ct);
+            if (ct.IsCancellationRequested)
+            {
+                CleanupTutorial();
+                return;
+            }
+        }
+
+        await this.tutorialView.PlayOutroAnimation(ct);
+
+        PlayerPrefs.SetInt(TutorialCompletedKey, 1);
+        PlayerPrefs.Save();
+        CleanupTutorial();
+    }
+
+    private UniTaskCompletionSource tutorialNextSource;
+
+    private UniTask WaitForTutorialNext(CancellationToken ct)
+    {
+        this.tutorialNextSource = new UniTaskCompletionSource();
+        return this.tutorialNextSource.Task.AttachExternalCancellation(ct);
+    }
+
+    private void HandleTutorialNextClicked()
+    {
+        this.tutorialNextSource?.TrySetResult();
+    }
+
+    private void CleanupTutorial()
+    {
+        this.isTutorialRunning = false;
+        this.tutorialView.OnNextClicked -= HandleTutorialNextClicked;
+        this.tutorialView.Hide();
+        Messenger.Broadcast(EventKey.PauseLevel, false);
+    }
+
+    private RectTransform GetTutorialTargetRect(TutorialTargetElement element)
+    {
+        return element switch
+        {
+            TutorialTargetElement.HintButton => this.gameplayView.HintButtonRect,
+            TutorialTargetElement.SkipButton => this.gameplayView.SkipButtonRect,
+            TutorialTargetElement.LifeView => this.gameplayView.LifeViewRect,
+            TutorialTargetElement.SettingButton => this.gameplayView.SettingButtonRect,
+            TutorialTargetElement.StepPanel => this.gameplayView.StepPanelRect,
+            TutorialTargetElement.ChapterProgressBar => this.gameplayView.ChapterProgressBarRect,
+            TutorialTargetElement.StartLevelButton => this.gameplayView.StartLevelButtonRect,
+            TutorialTargetElement.LevelTitleText => this.gameplayView.LevelTitle,
+            _ => null,
+        };
     }
 
     private void ShowStartLevelGameButtonHandler()
@@ -204,6 +313,17 @@ public class GameplayViewPresenter : BaseViewPresenter
     protected override void OnHide()
     {
         base.OnHide();
+
+        if (this.isTutorialRunning)
+        {
+            this.tutorialCts?.Cancel();
+            this.tutorialCts?.Dispose();
+            this.tutorialCts = null;
+            this.isTutorialRunning = false;
+            this.tutorialView.OnNextClicked -= HandleTutorialNextClicked;
+            Messenger.Broadcast(EventKey.PauseLevel, false);
+        }
+
         this.gameplayView.SetActiveStartLevelGameButton(false);
 
         this.gameplayView.OnSettingClicked -= SettingClickedHandler;

@@ -19,10 +19,8 @@ public class GameplayView : BaseView
 
     [Header("StepUI")] [SerializeField] private Transform stepPanel;
     [SerializeField] private StepPoint stepPointPrefab;
-    [SerializeField] private RectTransform stepTutorialUI;
 
-    [Header("Life View")]
-    [SerializeField] private NumberBasedLifeView lifeView;
+    [Header("Life View")] [SerializeField] private NumberBasedLifeView lifeView;
 
     [Header("Button")] [SerializeField] private Button settingBtn;
     [SerializeField] private Button skipBtn;
@@ -31,12 +29,12 @@ public class GameplayView : BaseView
     [SerializeField] private Button startLevelGameButton;
     [SerializeField] private Button noLifeBlocker;
 
-    [Header("Chapter Progress")]
-    [SerializeField] private ChapterProgressBar chapterProgressBar;
+    [Header("Chapter Progress")] [SerializeField]
+    private ChapterProgressBar chapterProgressBar;
 
     [Header("Popup Effect")] [SerializeField]
     private RectTransform[] showingEffectUIs;
-    
+
     private TweenerCore<Vector2, Vector2, VectorOptions> tutorialStepUITween;
     private Dictionary<RectTransform, TweenerCore<Vector3, Vector3, VectorOptions>> loopScalingTweens;
     private Dictionary<RectTransform, TweenerCore<Vector3, Vector3, VectorOptions>> movingTweens;
@@ -49,6 +47,15 @@ public class GameplayView : BaseView
 
 
     public NumberBasedLifeView LifeView => this.lifeView;
+
+    public RectTransform HintButtonRect => this.hintBtn.GetComponent<RectTransform>();
+    public RectTransform LevelTitle => this.levelTextCurrent.GetComponent<RectTransform>();
+    public RectTransform SkipButtonRect => this.skipBtn.GetComponent<RectTransform>();
+    public RectTransform SettingButtonRect => this.settingBtn.GetComponent<RectTransform>();
+    public RectTransform LifeViewRect => this.lifeView.GetComponent<RectTransform>();
+    public RectTransform StepPanelRect => this.stepPanel as RectTransform;
+    public RectTransform ChapterProgressBarRect => this.chapterProgressBar != null ? this.chapterProgressBar.GetComponent<RectTransform>() : null;
+    public RectTransform StartLevelButtonRect => this.startLevelGameButton.GetComponent<RectTransform>();
 
     public Action OnSettingClicked;
     public Action OnSkipClicked;
@@ -66,8 +73,8 @@ public class GameplayView : BaseView
         {
             this.lifeView.Initialize();
         }
+
         this.wrongSignal.gameObject.SetActive(false);
-        this.stepTutorialUI.gameObject.SetActive(false);
         this.wrongSignal.localScale = Vector3.zero;
         this.stepPoints = new List<StepPoint>();
         this.loopScalingTweens = new Dictionary<RectTransform, TweenerCore<Vector3, Vector3, VectorOptions>>();
@@ -158,19 +165,6 @@ public class GameplayView : BaseView
 
     public void SetActiveTutorialStepUI(bool value)
     {
-        this.stepTutorialUI.gameObject.SetActive(value);
-
-        if (value)
-        {
-            this.tutorialStepUITween = this.stepTutorialUI.DOAnchorPosY(this.stepTutorialUI.anchoredPosition.y - 15f, .75f)
-                .SetLoops(-1, LoopType.Yoyo)
-                .SetEase(Ease.InOutQuad);
-        }
-        else if (this.tutorialStepUITween != null)
-        {
-            this.tutorialStepUITween.Kill();
-            this.tutorialStepUITween = null;
-        }
     }
 
     public void ShowWrongSignal()
