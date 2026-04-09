@@ -326,7 +326,7 @@ public class LifeSystem
     {
         if (this.dialogManager.TryShowModalDialogOnce(DialogId.GenericAutoHide, out AutoHideNotificationDialog dialog))
         {
-            dialog.SetText("-1" + " <sprite index=0>");
+            dialog.SetText("-1" + " <sprite index=1>");
         }
     }
 }
