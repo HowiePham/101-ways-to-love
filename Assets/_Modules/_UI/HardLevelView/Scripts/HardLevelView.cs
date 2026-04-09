@@ -20,7 +20,7 @@ public class HardLevelView : BaseView
     [Title("Center group")] [SerializeField]
     private CanvasGroup centerIconGroup;
 
-    [SerializeField] private Transform warningFx;
+    // [SerializeField] private Transform warningFx;
     [SerializeField] private Image background;
 
     [Title("Clock")] [SerializeField] private CanvasGroup clockGroup;
@@ -69,7 +69,7 @@ public class HardLevelView : BaseView
         StopAllCoroutines();
         DOTween.Kill(this.centerIconGroup);
         DOTween.Kill(this.background);
-        DOTween.Kill(this.warningFx.transform);
+        // DOTween.Kill(this.warningFx.transform);
         DOTween.Kill(this.smallTitle);
         DOTween.Kill(this.clockGroup.transform);
         DOTween.Kill(this.messageGroup);
@@ -90,7 +90,7 @@ public class HardLevelView : BaseView
         ShowLogoHardLevel();
         yield return new WaitForSeconds(2.8f);
         ShowSmallTitle(smallTitleTargetPos);
-        this.warningFx.gameObject.SetActive(false);
+        // this.warningFx.gameObject.SetActive(false);
         HideCenterIconGroup();
         ShowClockGroup();
         yield return new WaitForSeconds(0.6f);
@@ -142,26 +142,26 @@ public class HardLevelView : BaseView
     {
         this.centerIconGroup.blocksRaycasts = true;
         this.centerIconGroup.alpha = 1;
-        this.warningFx.transform.localScale = Vector3.zero;
+        // this.warningFx.transform.localScale = Vector3.zero;
         var bgColor = this.background.color;
         var startBgAlpha = bgColor.a;
         bgColor.a = 0;
         this.background.color = bgColor;
 
-        this.warningFx.gameObject.SetActive(true);
+        // this.warningFx.gameObject.SetActive(true);
 
         Sequence sequence = DOTween.Sequence();
         sequence.Append(this.background.DOFade(startBgAlpha, 1).SetEase(Ease.Linear));
-        sequence.Append(DOTween.To(value =>
-        {
-            var scale = new Vector3(value, value, value);
-            this.warningFx.transform.localScale = scale;
-        }, 0, 1f, 2).SetEase(Ease.OutBack));
-        sequence.Append(DOTween.To(value =>
-        {
-            var scale = new Vector3(value, value, value);
-            this.warningFx.transform.localScale = scale;
-        }, 1f, 0f, 0.75f).SetEase(Ease.Linear));
+        // sequence.Append(DOTween.To(value =>
+        // {
+        //     var scale = new Vector3(value, value, value);
+        //     this.warningFx.transform.localScale = scale;
+        // }, 0, 1f, 2).SetEase(Ease.OutBack));
+        // sequence.Append(DOTween.To(value =>
+        // {
+        //     var scale = new Vector3(value, value, value);
+        //     this.warningFx.transform.localScale = scale;
+        // }, 1f, 0f, 0.75f).SetEase(Ease.Linear));
     }
 
     private IEnumerator TextAppearEffect(string text)
