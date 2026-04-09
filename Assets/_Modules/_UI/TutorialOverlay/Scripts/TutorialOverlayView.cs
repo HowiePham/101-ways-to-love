@@ -18,10 +18,12 @@ public class TutorialOverlayView : BaseView
     [Header("Tooltip")]
     [SerializeField] private RectTransform tooltipPanel;
     [SerializeField] private CanvasGroup tooltipCanvasGroup;
-    [SerializeField] private TMP_Text titleText;
     [SerializeField] private TMP_Text descriptionText;
     [SerializeField] private Button nextButton;
     [SerializeField] private TMP_Text nextButtonText;
+
+    [Header("Container")]
+    [SerializeField] private GameObject tutorialRoot;
 
     [Header("Steps")]
     [SerializeField] private TutorialStepData[] steps;
@@ -45,13 +47,14 @@ public class TutorialOverlayView : BaseView
         this.darkOverlayImage.color = new Color(0f, 0f, 0f, 0f);
         this.tooltipCanvasGroup.alpha = 0f;
         this.spotlightRect.localScale = Vector3.zero;
+
         this.nextButton.onClick.AddListener(() => OnNextClicked?.Invoke());
     }
 
     public override void Show()
     {
-        base.Show();
-        // Reset state in case this is reshown
+        // Do NOT call base.Show() — it disables the shared gameplay Canvas
+        this.tutorialRoot.SetActive(true);
         this.darkOverlayImage.color = new Color(0f, 0f, 0f, 0f);
         this.tooltipCanvasGroup.alpha = 0f;
         this.spotlightRect.localScale = Vector3.zero;
@@ -63,7 +66,8 @@ public class TutorialOverlayView : BaseView
         this.darkOverlayImage.color = new Color(0f, 0f, 0f, 0f);
         this.tooltipCanvasGroup.alpha = 0f;
         this.spotlightRect.localScale = Vector3.zero;
-        base.Hide();
+        // Do NOT call base.Hide() — it disables the shared gameplay Canvas
+        this.tutorialRoot.SetActive(false);
     }
 
     public async UniTask PlayIntroAnimation(CancellationToken ct)
@@ -101,18 +105,11 @@ public class TutorialOverlayView : BaseView
 
         if (ct.IsCancellationRequested) return;
 
-        // 3. Position tooltip near target (or center if no target)
-        if (targetRect != null)
-            PositionTooltipNearTarget(targetRect);
-        else
-            CenterTooltip();
+        PositionDescriptionBelowSpotlight();
 
-        // 4. Populate text
-        this.titleText.text = stepData.title;
         this.descriptionText.text = stepData.description;
         this.nextButtonText.text = stepData.isLastStep ? this.nextButtonLabelFinish : this.nextButtonLabelNext;
 
-        // 5. Fade in tooltip
         await FadeTooltip(true, ct);
     }
 
@@ -151,40 +148,16 @@ public class TutorialOverlayView : BaseView
             .SuppressCancellationThrow();
     }
 
-    private void PositionTooltipNearTarget(RectTransform target)
+    private void PositionDescriptionBelowSpotlight()
     {
-        Canvas rootCanvas = GetComponent<Canvas>();
-        RectTransform canvasRect = rootCanvas.GetComponent<RectTransform>();
-        Camera uiCamera = rootCanvas.worldCamera;
+        float spotlightHalfHeight = this.spotlightRect.rect.height * 0.5f
+            * this.spotlightRect.lossyScale.y;
+        float gap = 24f * this.spotlightRect.lossyScale.y;
 
-        Vector3 targetWorldCenter = target.TransformPoint(target.rect.center);
-        Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(uiCamera, targetWorldCenter);
+        Vector3 pos = this.spotlightRect.position;
+        pos.y -= spotlightHalfHeight + gap;
 
-        float viewportY = screenPoint.y / Screen.height;
-        bool placeAbove = viewportY < 0.5f;
-
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, screenPoint, uiCamera, out Vector2 localPos);
-
-        float targetHalfHeight = target.rect.height * 0.5f * target.lossyScale.y / canvasRect.lossyScale.y;
-        float tooltipHalfHeight = this.tooltipPanel.rect.height * 0.5f;
-        float gap = 24f;
-
-        float yOffset = placeAbove
-            ? localPos.y + targetHalfHeight + tooltipHalfHeight + gap
-            : localPos.y - targetHalfHeight - tooltipHalfHeight - gap;
-
-        float canvasHalfWidth = canvasRect.rect.width * 0.5f;
-        float tooltipHalfWidth = this.tooltipPanel.rect.width * 0.5f;
-        float clampedX = Mathf.Clamp(localPos.x,
-            -canvasHalfWidth + tooltipHalfWidth + 16f,
-             canvasHalfWidth - tooltipHalfWidth - 16f);
-
-        this.tooltipPanel.anchoredPosition = new Vector2(clampedX, yOffset);
-    }
-
-    private void CenterTooltip()
-    {
-        this.tooltipPanel.anchoredPosition = Vector2.zero;
+        this.descriptionText.rectTransform.position = pos;
     }
 
     private async UniTask FadeTooltip(bool fadeIn, CancellationToken ct)
