@@ -6,6 +6,7 @@ using UnityEngine;
 public class FollowHand : MonoBehaviour
 {
     [SerializeField] private VisualAction actionCondition;
+    [SerializeField] private Vector3 inputOffset;
     private bool isDragging;
 
     private void Start()
@@ -29,7 +30,7 @@ public class FollowHand : MonoBehaviour
             return;
         }
 
-        this.transform.position = finger.GetWorldPosition(10f, Camera.main);
+        this.transform.position = finger.GetWorldPosition(10f, Camera.main) + this.inputOffset;
     }
 
     private void StopDragging(LeanFinger finger)
