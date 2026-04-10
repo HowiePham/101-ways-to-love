@@ -115,7 +115,7 @@ public class ChapterCellView : MonoBehaviour
 
     public void SetChapterOrderText(int order, string chapterName)
     {
-        this.chapterOrderText.SetText("Chapter " + order + ": " + chapterName);
+        this.chapterOrderText.SetText(chapterName);
     }
 
     protected virtual void SelectChapter()
