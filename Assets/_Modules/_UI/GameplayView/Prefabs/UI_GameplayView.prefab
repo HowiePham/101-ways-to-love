@@ -561,7 +561,7 @@ MonoBehaviour:
   stepPanel: {fileID: 6121437999343675623}
   stepPointPrefab: {fileID: 5256322394675218930, guid: bb0ffb99260305b4bb7c3313c15d8d27, type: 3}
   lifeView: {fileID: 8422425170164606716}
-  lifePanel: {fileID: 904816593817632129}
+  lifePanel: {fileID: 2521187708872772089}
   settingBtn: {fileID: 1722529621731326455}
   skipBtn: {fileID: 2724833705943993263}
   hintBtn: {fileID: 6943315857691221436}
@@ -602,9 +602,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: adcb10fa2ee2cd544877d8c617e842f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  darkOverlayImage: {fileID: 6285571739831544169}
+  darkOverlayImage: {fileID: 3078456551357648116}
   spotlightRect: {fileID: 1562264477987009168}
-  unmask: {fileID: 8098652132822946195}
   tooltipPanel: {fileID: 8304445965595837926}
   tooltipCanvasGroup: {fileID: 4027280173829214768}
   nextButton: {fileID: 2003897443662901877}
@@ -1516,7 +1515,7 @@ GameObject:
   - component: {fileID: 1562264477987009168}
   - component: {fileID: 4761261137418470686}
   - component: {fileID: 6755550435613889678}
-  - component: {fileID: 8098652132822946195}
+  - component: {fileID: 5620336051989101042}
   m_Layer: 5
   m_Name: SpotlightCutout
   m_TagString: Untagged
@@ -1540,7 +1539,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 860}
+  m_AnchoredPosition: {x: 8.2, y: 860}
   m_SizeDelta: {x: 334, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4761261137418470686
@@ -1581,7 +1580,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 0.5
---- !u!114 &8098652132822946195
+--- !u!114 &5620336051989101042
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1590,14 +1589,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 5404301050219837691}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f752d3a51152f4e44a3ebe45ae24abcc, type: 3}
+  m_Script: {fileID: 11500000, guid: a2e184ef29bd04517ade7f4ab51ef622, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_FitTarget: {fileID: 0}
-  m_FitOnLateUpdate: 0
-  m_OnlyForChildren: 0
-  m_ShowUnmaskGraphic: 0
-  m_EdgeSmoothing: 1
+  m_MaskingMethod: 1
+  m_ShowMaskGraphic: 0
+  m_AlphaHitTest: 0
+  m_AntiAliasingThreshold: 0
+  m_SoftnessRange:
+    m_Min: 0
+    m_Max: 1
+  m_RaycastMethod: 0
 --- !u!1 &5635829516860121002
 GameObject:
   m_ObjectHideFlags: 0
@@ -2083,7 +2085,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -2109,10 +2111,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 6296162732804073718}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 31a19414c41e5ae4aae2af33fee712f6, type: 3}
+  m_Script: {fileID: 11500000, guid: 385b7d1277b6c4007a84c065696e0f8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_ShowMaskGraphic: 0
+  m_MaskingMode: 0
+  m_AlphaHitTest: 0
+  m_SoftnessRange:
+    m_Min: 0
+    m_Max: 1
+  m_DownSamplingRate: 1
+  m_AntiAliasingThreshold: 0
+  m_Alpha: -1
+  m_Softness: -1
+  m_PartOfParent: 0
 --- !u!1 &6397432202543031814
 GameObject:
   m_ObjectHideFlags: 0
@@ -2637,7 +2649,7 @@ GameObject:
   - component: {fileID: 8689407047125258942}
   - component: {fileID: 3078456551357648116}
   m_Layer: 5
-  m_Name: DarkOverlay
+  m_Name: DarkImg
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2683,7 +2695,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.9019608}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.89411765}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

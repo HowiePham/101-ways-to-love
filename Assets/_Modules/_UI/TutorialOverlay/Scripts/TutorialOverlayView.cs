@@ -1,6 +1,6 @@
 using System;
 using System.Threading;
-using Coffee.UIExtensions;
+using Coffee.UISoftMask;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Mimi.Prototypes.UI;
@@ -13,7 +13,6 @@ public class TutorialOverlayView : BaseView
     [Header("Overlay")]
     [SerializeField] private Image darkOverlayImage;
     [SerializeField] private RectTransform spotlightRect;
-    [SerializeField] private Unmask unmask;
 
     [Header("Tooltip")]
     [SerializeField] private RectTransform tooltipPanel;
@@ -132,7 +131,7 @@ public class TutorialOverlayView : BaseView
 
     private async UniTask AnimateSpotlightToTarget(RectTransform target, float padding, CancellationToken ct)
     {
-        this.unmask.FitTo(target);
+        this.spotlightRect.position = target.position;
         this.spotlightRect.sizeDelta = target.rect.size + Vector2.one * (padding * 2f);
         this.spotlightRect.localScale = Vector3.zero;
 
