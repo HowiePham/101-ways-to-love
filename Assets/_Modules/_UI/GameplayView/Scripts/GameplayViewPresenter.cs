@@ -169,7 +169,7 @@ public class GameplayViewPresenter : BaseViewPresenter
             }
 
             RectTransform target = GetTutorialTargetRect(steps[i].targetElement);
-            await this.tutorialView.TransitionToStep(steps[i], target, ct);
+            await this.tutorialView.TransitionToStep(steps[i], target, i, ct);
             if (ct.IsCancellationRequested)
             {
                 CleanupTutorial();

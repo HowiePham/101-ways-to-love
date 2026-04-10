@@ -18,9 +18,11 @@ public class TutorialOverlayView : BaseView
     [Header("Tooltip")]
     [SerializeField] private RectTransform tooltipPanel;
     [SerializeField] private CanvasGroup tooltipCanvasGroup;
-    [SerializeField] private TMP_Text descriptionText;
     [SerializeField] private Button nextButton;
     [SerializeField] private TMP_Text nextButtonText;
+
+    [Header("Step Descriptions")]
+    [SerializeField] private TMP_Text[] stepDescriptions;
 
     [Header("Container")]
     [SerializeField] private GameObject tutorialRoot;
@@ -34,8 +36,7 @@ public class TutorialOverlayView : BaseView
     [SerializeField] private float tooltipFadeDuration = 0.25f;
     [SerializeField] private float spotlightPunchScale = 1.15f;
     [SerializeField] private float spotlightScaleDuration = 0.3f;
-    [SerializeField] private float descriptionOffset = 24f;
-    [SerializeField] private float screenEdgeMargin = 16f;
+    [SerializeField] private float descriptionFadeDuration = 0.3f;
     [SerializeField] private string nextButtonLabelNext = "Tap to Continue";
     [SerializeField] private string nextButtonLabelFinish = "Got it!";
 
@@ -49,7 +50,7 @@ public class TutorialOverlayView : BaseView
         this.darkOverlayImage.color = new Color(0f, 0f, 0f, 0f);
         this.tooltipCanvasGroup.alpha = 0f;
         this.spotlightRect.localScale = Vector3.zero;
-
+        HideAllDescriptions();
         this.nextButton.onClick.AddListener(() => OnNextClicked?.Invoke());
     }
 
@@ -60,6 +61,7 @@ public class TutorialOverlayView : BaseView
         this.darkOverlayImage.color = new Color(0f, 0f, 0f, 0f);
         this.tooltipCanvasGroup.alpha = 0f;
         this.spotlightRect.localScale = Vector3.zero;
+        HideAllDescriptions();
     }
 
     public override void Hide()
@@ -68,6 +70,7 @@ public class TutorialOverlayView : BaseView
         this.darkOverlayImage.color = new Color(0f, 0f, 0f, 0f);
         this.tooltipCanvasGroup.alpha = 0f;
         this.spotlightRect.localScale = Vector3.zero;
+        HideAllDescriptions();
         // Do NOT call base.Hide() — it disables the shared gameplay Canvas
         this.tutorialRoot.SetActive(false);
     }
@@ -83,9 +86,9 @@ public class TutorialOverlayView : BaseView
             .SuppressCancellationThrow();
     }
 
-    public async UniTask TransitionToStep(TutorialStepData stepData, RectTransform targetRect, CancellationToken ct)
+    public async UniTask TransitionToStep(TutorialStepData stepData, RectTransform targetRect, int stepIndex, CancellationToken ct)
     {
-        // 1. Fade out tooltip
+        // 1. Fade out tooltip + hide current description
         await FadeTooltip(false, ct);
         if (ct.IsCancellationRequested) return;
 
@@ -107,11 +110,11 @@ public class TutorialOverlayView : BaseView
 
         if (ct.IsCancellationRequested) return;
 
-        PositionDescriptionBelowSpotlight();
+        // 3. Show this step's description text with fade-in effect
+        ShowStepDescription(stepIndex, ct).Forget();
 
-        this.descriptionText.text = stepData.description;
+        // 4. Update next button label and fade in tooltip
         this.nextButtonText.text = stepData.isLastStep ? this.nextButtonLabelFinish : this.nextButtonLabelNext;
-
         await FadeTooltip(true, ct);
     }
 
@@ -131,9 +134,7 @@ public class TutorialOverlayView : BaseView
 
     private async UniTask AnimateSpotlightToTarget(RectTransform target, float padding, CancellationToken ct)
     {
-        // Position and size the spotlight to match the target
         this.unmask.FitTo(target);
-        // Apply padding on top of the fitted size
         this.spotlightRect.sizeDelta = target.rect.size + Vector2.one * (padding * 2f);
         this.spotlightRect.localScale = Vector3.zero;
 
@@ -150,31 +151,32 @@ public class TutorialOverlayView : BaseView
             .SuppressCancellationThrow();
     }
 
-    private void PositionDescriptionBelowSpotlight()
+    private async UniTaskVoid ShowStepDescription(int stepIndex, CancellationToken ct)
     {
-        Canvas rootCanvas = GetComponent<Canvas>();
-        RectTransform canvasRect = rootCanvas.GetComponent<RectTransform>();
-        Camera uiCamera = rootCanvas.worldCamera;
+        HideAllDescriptions();
 
-        // Convert spotlight world center → canvas-local point
-        Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(uiCamera, this.spotlightRect.position);
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            canvasRect, screenPoint, uiCamera, out Vector2 localPos);
+        if (stepIndex < 0 || stepIndex >= this.stepDescriptions.Length) return;
 
-        // Y: place below spotlight bottom edge (convert world-scale height to canvas units)
-        float spotlightHalfHeight = this.spotlightRect.rect.height * 0.5f
-            * this.spotlightRect.lossyScale.y / canvasRect.lossyScale.y;
-        float targetY = localPos.y - spotlightHalfHeight - this.descriptionOffset;
+        TMP_Text desc = this.stepDescriptions[stepIndex];
+        desc.gameObject.SetActive(true);
+        desc.color = new Color(desc.color.r, desc.color.g, desc.color.b, 0f);
 
-        // X: center on spotlight, then clamp so text never clips screen edges
-        float canvasHalfWidth = canvasRect.rect.width * 0.5f;
-        float textHalfWidth = this.descriptionText.rectTransform.rect.width * 0.5f;
-        float clampedX = Mathf.Clamp(
-            localPos.x,
-            -canvasHalfWidth + textHalfWidth + this.screenEdgeMargin,
-             canvasHalfWidth - textHalfWidth - this.screenEdgeMargin);
+        await desc.DOFade(1f, this.descriptionFadeDuration)
+            .SetEase(Ease.OutCubic)
+            .AsyncWaitForCompletion()
+            .AsUniTask()
+            .AttachExternalCancellation(ct)
+            .SuppressCancellationThrow();
+    }
 
-        this.descriptionText.rectTransform.anchoredPosition = new Vector2(clampedX, targetY);
+    private void HideAllDescriptions()
+    {
+        foreach (TMP_Text desc in this.stepDescriptions)
+        {
+            if (desc == null) continue;
+            DOTween.Kill(desc);
+            desc.gameObject.SetActive(false);
+        }
     }
 
     private async UniTask FadeTooltip(bool fadeIn, CancellationToken ct)
@@ -214,6 +216,10 @@ public class TutorialOverlayView : BaseView
         DOTween.Kill(this.darkOverlayImage);
         DOTween.Kill(this.spotlightRect);
         DOTween.Kill(this.tooltipCanvasGroup);
+        foreach (TMP_Text desc in this.stepDescriptions)
+        {
+            if (desc != null) DOTween.Kill(desc);
+        }
         StopNextButtonPulse();
     }
 }
