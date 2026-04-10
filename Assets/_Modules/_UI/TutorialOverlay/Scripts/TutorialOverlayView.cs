@@ -34,6 +34,8 @@ public class TutorialOverlayView : BaseView
     [SerializeField] private float tooltipFadeDuration = 0.25f;
     [SerializeField] private float spotlightPunchScale = 1.15f;
     [SerializeField] private float spotlightScaleDuration = 0.3f;
+    [SerializeField] private float descriptionOffset = 24f;
+    [SerializeField] private float screenEdgeMargin = 16f;
     [SerializeField] private string nextButtonLabelNext = "Tap to Continue";
     [SerializeField] private string nextButtonLabelFinish = "Got it!";
 
@@ -150,14 +152,29 @@ public class TutorialOverlayView : BaseView
 
     private void PositionDescriptionBelowSpotlight()
     {
+        Canvas rootCanvas = GetComponent<Canvas>();
+        RectTransform canvasRect = rootCanvas.GetComponent<RectTransform>();
+        Camera uiCamera = rootCanvas.worldCamera;
+
+        // Convert spotlight world center → canvas-local point
+        Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(uiCamera, this.spotlightRect.position);
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            canvasRect, screenPoint, uiCamera, out Vector2 localPos);
+
+        // Y: place below spotlight bottom edge (convert world-scale height to canvas units)
         float spotlightHalfHeight = this.spotlightRect.rect.height * 0.5f
-            * this.spotlightRect.lossyScale.y;
-        float gap = 24f * this.spotlightRect.lossyScale.y;
+            * this.spotlightRect.lossyScale.y / canvasRect.lossyScale.y;
+        float targetY = localPos.y - spotlightHalfHeight - this.descriptionOffset;
 
-        Vector3 pos = this.spotlightRect.position;
-        pos.y -= spotlightHalfHeight + gap;
+        // X: center on spotlight, then clamp so text never clips screen edges
+        float canvasHalfWidth = canvasRect.rect.width * 0.5f;
+        float textHalfWidth = this.descriptionText.rectTransform.rect.width * 0.5f;
+        float clampedX = Mathf.Clamp(
+            localPos.x,
+            -canvasHalfWidth + textHalfWidth + this.screenEdgeMargin,
+             canvasHalfWidth - textHalfWidth - this.screenEdgeMargin);
 
-        this.descriptionText.rectTransform.position = pos;
+        this.descriptionText.rectTransform.anchoredPosition = new Vector2(clampedX, targetY);
     }
 
     private async UniTask FadeTooltip(bool fadeIn, CancellationToken ct)
@@ -170,6 +187,26 @@ public class TutorialOverlayView : BaseView
             .AsUniTask()
             .AttachExternalCancellation(ct)
             .SuppressCancellationThrow();
+
+        if (fadeIn)
+            StartNextButtonPulse();
+        else
+            StopNextButtonPulse();
+    }
+
+    private void StartNextButtonPulse()
+    {
+        RectTransform btnTextRect = this.nextButtonText.rectTransform;
+        DOTween.Kill(btnTextRect);
+        btnTextRect.localScale = Vector3.one;
+        btnTextRect.DOScale(1.1f, 0.6f).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo);
+    }
+
+    private void StopNextButtonPulse()
+    {
+        RectTransform btnTextRect = this.nextButtonText.rectTransform;
+        DOTween.Kill(btnTextRect);
+        btnTextRect.localScale = Vector3.one;
     }
 
     private void KillAllTweens()
@@ -177,5 +214,6 @@ public class TutorialOverlayView : BaseView
         DOTween.Kill(this.darkOverlayImage);
         DOTween.Kill(this.spotlightRect);
         DOTween.Kill(this.tooltipCanvasGroup);
+        StopNextButtonPulse();
     }
 }

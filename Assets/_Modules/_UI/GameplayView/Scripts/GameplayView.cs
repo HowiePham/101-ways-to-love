@@ -21,6 +21,7 @@ public class GameplayView : BaseView
     [SerializeField] private StepPoint stepPointPrefab;
 
     [Header("Life View")] [SerializeField] private NumberBasedLifeView lifeView;
+    [SerializeField] private RectTransform lifePanel;
 
     [Header("Button")] [SerializeField] private Button settingBtn;
     [SerializeField] private Button skipBtn;
@@ -44,15 +45,12 @@ public class GameplayView : BaseView
     private RectTransform HintBtnRect => this.hintBtn.GetComponent<RectTransform>();
     private RectTransform SkipBtnRect => this.skipBtn.GetComponent<RectTransform>();
     private RectTransform StartLevelGameBtnRect => this.startLevelGameButton.GetComponent<RectTransform>();
-
-
     public NumberBasedLifeView LifeView => this.lifeView;
-
     public RectTransform HintButtonRect => this.hintBtn.GetComponent<RectTransform>();
     public RectTransform LevelTitle => this.levelTextCurrent.GetComponent<RectTransform>();
     public RectTransform SkipButtonRect => this.skipBtn.GetComponent<RectTransform>();
     public RectTransform SettingButtonRect => this.settingBtn.GetComponent<RectTransform>();
-    public RectTransform LifeViewRect => this.lifeView.GetComponent<RectTransform>();
+    public RectTransform LifeViewRect => this.lifePanel.GetComponent<RectTransform>();
     public RectTransform StepPanelRect => this.stepPanel as RectTransform;
     public RectTransform ChapterProgressBarRect => this.chapterProgressBar != null ? this.chapterProgressBar.GetComponent<RectTransform>() : null;
     public RectTransform StartLevelButtonRect => this.startLevelGameButton.GetComponent<RectTransform>();
@@ -147,11 +145,19 @@ public class GameplayView : BaseView
         this.levelTextCurrent.text = "Level " + level;
     }
 
-    public async UniTask PlayChapterProgressBarAnimation()
+    public async UniTask PlayChapterProgressBarAnimation(bool autoHide = true)
     {
         if (this.chapterProgressBar != null)
         {
-            await this.chapterProgressBar.PlayShowAnimation();
+            await this.chapterProgressBar.PlayShowAnimation(autoHide);
+        }
+    }
+
+    public async UniTask HideChapterProgressBar()
+    {
+        if (this.chapterProgressBar != null)
+        {
+            await this.chapterProgressBar.PlayHideAnimation();
         }
     }
 

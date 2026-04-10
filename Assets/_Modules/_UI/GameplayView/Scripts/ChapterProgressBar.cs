@@ -60,13 +60,13 @@ public class ChapterProgressBar : MonoBehaviour
         }
     }
 
-    public async UniTask PlayShowAnimation()
+    public async UniTask PlayShowAnimation(bool autoHide = true)
     {
         this.currentBlockSequence?.Kill();
 
         transform.localScale = Vector3.zero;
         this.blocks[this.currentBlockIndex].HideFill();
-        
+
         await transform.DOScale(1f, 0.3f).SetEase(Ease.OutBack).AsyncWaitForCompletion();
 
         if (this.currentBlockIndex >= 0 && this.currentBlockIndex < this.blocks.Count)
@@ -75,8 +75,14 @@ public class ChapterProgressBar : MonoBehaviour
             await this.currentBlockSequence.AsyncWaitForCompletion();
         }
 
-        await UniTask.WaitForSeconds(this.hideDelay);
+        if (!autoHide) return;
 
+        await UniTask.WaitForSeconds(this.hideDelay);
+        await transform.DOScale(0f, this.hideDuration).SetEase(Ease.InBack).AsyncWaitForCompletion();
+    }
+
+    public async UniTask PlayHideAnimation()
+    {
         await transform.DOScale(0f, this.hideDuration).SetEase(Ease.InBack).AsyncWaitForCompletion();
     }
 

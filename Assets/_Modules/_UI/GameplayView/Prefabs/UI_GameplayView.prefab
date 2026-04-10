@@ -181,6 +181,7 @@ GameObject:
   - component: {fileID: 6869861497466354783}
   - component: {fileID: 4686246532460417123}
   - component: {fileID: 1386064500245705709}
+  - component: {fileID: 2288309753887402452}
   m_Layer: 5
   m_Name: LevelTitleText
   m_TagString: Untagged
@@ -205,7 +206,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: 12, y: -98}
-  m_SizeDelta: {x: 454, y: 106}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4686246532460417123
 CanvasRenderer:
@@ -306,6 +307,20 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &2288309753887402452
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 797629890878476751}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalFit: 2
+  m_VerticalFit: 2
 --- !u!1 &969239255983500570
 GameObject:
   m_ObjectHideFlags: 0
@@ -408,6 +423,7 @@ MonoBehaviour:
   stepPanel: {fileID: 6121437999343675623}
   stepPointPrefab: {fileID: 5256322394675218930, guid: bb0ffb99260305b4bb7c3313c15d8d27, type: 3}
   lifeView: {fileID: 8422425170164606716}
+  lifePanel: {fileID: 904816593817632129}
   settingBtn: {fileID: 1722529621731326455}
   skipBtn: {fileID: 2724833705943993263}
   hintBtn: {fileID: 6943315857691221436}
@@ -475,12 +491,20 @@ MonoBehaviour:
     spotlightPadding: 20
     title: Chapter Progress
     description: Chapter progression
+    isLastStep: 0
+  - stepId: Life
+    targetElement: 3
+    spotlightPadding: 20
+    title: Life
+    description: Player's life
     isLastStep: 1
   overlayFadeDuration: 0.35
   overlayTargetAlpha: 0.75
   tooltipFadeDuration: 0.25
   spotlightPunchScale: 1.15
   spotlightScaleDuration: 0.3
+  descriptionOffset: 50
+  screenEdgeMargin: 16
   nextButtonLabelNext: Tap to Continue
   nextButtonLabelFinish: Got it!
 --- !u!1 &1625742998922626529
@@ -1145,14 +1169,14 @@ MonoBehaviour:
   m_text: Tap to Continue
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2c7e423ec435ca946b29826e345a79bc, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 67cd6effa915520488477cd86ef7f148, type: 2}
+  m_sharedMaterial: {fileID: -8225090394194780310, guid: 2c7e423ec435ca946b29826e345a79bc, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4290230199
+  m_fontColor: {r: 0.7169812, g: 0.7169812, b: 0.7169812, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:

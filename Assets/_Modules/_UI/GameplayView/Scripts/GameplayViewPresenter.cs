@@ -118,6 +118,10 @@ public class GameplayViewPresenter : BaseViewPresenter
         if (this.tutorialView == null) return;
         if (PlayerPrefs.GetInt(TutorialCompletedKey, 0) == 1) return;
 
+        // Prevent HandleUIEffect from auto-playing the progress bar;
+        // the tutorial sequence will play it at the right moment.
+        this.gameplayView.DelayProgressBarAnimation = true;
+
         this.tutorialCts?.Cancel();
         this.tutorialCts?.Dispose();
         this.tutorialCts = new CancellationTokenSource();
@@ -139,6 +143,15 @@ public class GameplayViewPresenter : BaseViewPresenter
             return;
         }
 
+        // Progress bar plays first while screen is still fully visible
+        await this.gameplayView.PlayChapterProgressBarAnimation(autoHide: false);
+        if (ct.IsCancellationRequested)
+        {
+            CleanupTutorial();
+            return;
+        }
+
+        // Dark overlay fades in after progress bar has finished its animation
         await this.tutorialView.PlayIntroAnimation(ct);
         if (ct.IsCancellationRequested)
         {
@@ -196,6 +209,7 @@ public class GameplayViewPresenter : BaseViewPresenter
         this.isTutorialRunning = false;
         this.tutorialView.OnNextClicked -= HandleTutorialNextClicked;
         this.tutorialView.Hide();
+        this.gameplayView.HideChapterProgressBar().Forget();
         Messenger.Broadcast(EventKey.PauseLevel, false);
     }
 
