@@ -110,7 +110,7 @@ public class GameplayViewPresenter : BaseViewPresenter
         cheatViewPresenter.Show();
 #endif
 
-        // TryStartTutorial();
+        TryStartTutorial();
     }
 
     private void TryStartTutorial()
