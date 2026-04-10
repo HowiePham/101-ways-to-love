@@ -19,7 +19,6 @@ public class TutorialOverlayView : BaseView
     [SerializeField] private RectTransform tooltipPanel;
     [SerializeField] private CanvasGroup tooltipCanvasGroup;
     [SerializeField] private Button nextButton;
-    [SerializeField] private TMP_Text nextButtonText;
 
     [Header("Step Descriptions")]
     [SerializeField] private TMP_Text[] stepDescriptions;
@@ -37,8 +36,8 @@ public class TutorialOverlayView : BaseView
     [SerializeField] private float spotlightPunchScale = 1.15f;
     [SerializeField] private float spotlightScaleDuration = 0.3f;
     [SerializeField] private float descriptionFadeDuration = 0.3f;
-    [SerializeField] private string nextButtonLabelNext = "Tap to Continue";
-    [SerializeField] private string nextButtonLabelFinish = "Got it!";
+    [SerializeField] private float descriptionPulseScale = 1.08f;
+    [SerializeField] private float descriptionPulseDuration = 0.7f;
 
     public Action OnNextClicked;
 
@@ -113,8 +112,7 @@ public class TutorialOverlayView : BaseView
         // 3. Show this step's description text with fade-in effect
         ShowStepDescription(stepIndex, ct).Forget();
 
-        // 4. Update next button label and fade in tooltip
-        this.nextButtonText.text = stepData.isLastStep ? this.nextButtonLabelFinish : this.nextButtonLabelNext;
+        // 4. Fade in tooltip
         await FadeTooltip(true, ct);
     }
 
@@ -167,6 +165,14 @@ public class TutorialOverlayView : BaseView
             .AsUniTask()
             .AttachExternalCancellation(ct)
             .SuppressCancellationThrow();
+
+        if (ct.IsCancellationRequested) return;
+
+        // Pulse after fade-in completes
+        desc.rectTransform.localScale = Vector3.one;
+        desc.rectTransform.DOScale(this.descriptionPulseScale, this.descriptionPulseDuration)
+            .SetEase(Ease.InOutSine)
+            .SetLoops(-1, LoopType.Yoyo);
     }
 
     private void HideAllDescriptions()
@@ -175,6 +181,8 @@ public class TutorialOverlayView : BaseView
         {
             if (desc == null) continue;
             DOTween.Kill(desc);
+            DOTween.Kill(desc.rectTransform);
+            desc.rectTransform.localScale = Vector3.one;
             desc.gameObject.SetActive(false);
         }
     }
@@ -190,25 +198,6 @@ public class TutorialOverlayView : BaseView
             .AttachExternalCancellation(ct)
             .SuppressCancellationThrow();
 
-        if (fadeIn)
-            StartNextButtonPulse();
-        else
-            StopNextButtonPulse();
-    }
-
-    private void StartNextButtonPulse()
-    {
-        RectTransform btnTextRect = this.nextButtonText.rectTransform;
-        DOTween.Kill(btnTextRect);
-        btnTextRect.localScale = Vector3.one;
-        btnTextRect.DOScale(1.1f, 0.6f).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo);
-    }
-
-    private void StopNextButtonPulse()
-    {
-        RectTransform btnTextRect = this.nextButtonText.rectTransform;
-        DOTween.Kill(btnTextRect);
-        btnTextRect.localScale = Vector3.one;
     }
 
     private void KillAllTweens()
@@ -220,6 +209,5 @@ public class TutorialOverlayView : BaseView
         {
             if (desc != null) DOTween.Kill(desc);
         }
-        StopNextButtonPulse();
     }
 }
