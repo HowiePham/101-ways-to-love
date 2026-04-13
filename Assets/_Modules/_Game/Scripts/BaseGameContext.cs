@@ -106,7 +106,7 @@ namespace Mimi.Prototypes
         private MaxMrec maxMrec;
         private bool isMrecFirstSuccessLoad;
 
-        private const string MaxSDKKey = "OBxrqJJrFUnTguh-MKCJDDMfXuiQUo_ALm8Eydwh70knZsGl3mLMVXR5UBsA_CSWI2gbdgRZl77STkOI0oJJhx";
+        private const string MaxSDKKey = "PWIAAUJmCd5T2VvJ1XTAZiLr3pg1OC9wLSMuEuX8LOGdigNu3Ep6cUPtf5y5FxVUv8TrQJ64a_okXmyv0oTDNo";
         private const string TabletAmazonBannerId = "2e627403-846f-4f4e-8a28-24313ed5c55b";
         private const string PhoneAmazonUnitId = "f9c1c176-9bc7-41aa-ad4d-deb88828b696";
         private const string AdmobBannerId = "ca-app-pub-3485115086350845/9995674705";
