@@ -5,8 +5,11 @@ using System.Text;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using MEC;
+using Mimi.Audio;
+using Mimi.Prototypes;
 using Mimi.Prototypes.Events;
 using Mimi.Prototypes.UI;
+using Mimi.ServiceLocators;
 using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
@@ -20,7 +23,6 @@ public class HardLevelView : BaseView
     [Title("Center group")] [SerializeField]
     private CanvasGroup centerIconGroup;
 
-    // [SerializeField] private Transform warningFx;
     [SerializeField] private Image background;
 
     [Title("Clock")] [SerializeField] private CanvasGroup clockGroup;
@@ -42,6 +44,9 @@ public class HardLevelView : BaseView
     [SerializeField] private Button homeButton;
     [SerializeField] private Image timeoutWarning;
     [SerializeField] private TMP_Text additionalTimeText;
+
+    [Title("SFX")] [SerializeField, SoundKey]
+    private string hardLevelAudioKey;
 
     public event Action OnClickPlay;
     public event Action OnClickGetMoreTime;
@@ -81,6 +86,11 @@ public class HardLevelView : BaseView
 
     private IEnumerator ShowIntro()
     {
+        if (!string.IsNullOrEmpty(this.hardLevelAudioKey))
+        {
+            ServiceLocator.Global.Get<IAudioService>().PlaySound(this.hardLevelAudioKey);
+        }
+
         SetVisibilityWarningFX(false);
         Messenger.Broadcast(EventKey.PauseLevel, true);
         this.clockGroup.transform.localScale = Vector3.zero;
