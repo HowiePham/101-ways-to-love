@@ -68,7 +68,7 @@ namespace Mimi
 
             if (Context.IsFirstSession)
             {
-                PlayLevel(Context.RuntimeState.CurrentLevelOrder.Value);
+                ShowChapterOneAndPlay().Forget();
             }
             else
             {
@@ -218,6 +218,13 @@ namespace Mimi
             LeanTouch.OnFingerDown -= ClickSoundHandler;
 
             this.eventBag.Dispose();
+        }
+
+        private async UniTaskVoid ShowChapterOneAndPlay()
+        {
+            var chapterUnlockPresenter = this.Presenter.GetViewPresenter<ChapterUnlockPresenter>();
+            await chapterUnlockPresenter.ShowForFirstSession(1);
+            PlayLevel(Context.RuntimeState.CurrentLevelOrder.Value);
         }
 
         private async void PlayLevel(int levelOrder)

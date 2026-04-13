@@ -168,8 +168,7 @@ public class GameplayViewPresenter : BaseViewPresenter
                 return;
             }
 
-            RectTransform target = GetTutorialTargetRect(steps[i].targetElement);
-            await this.tutorialView.TransitionToStep(steps[i], target, i, ct);
+            await this.tutorialView.TransitionToStep(steps[i], ct);
             if (ct.IsCancellationRequested)
             {
                 CleanupTutorial();
@@ -211,22 +210,6 @@ public class GameplayViewPresenter : BaseViewPresenter
         this.tutorialView.Hide();
         this.gameplayView.HideChapterProgressBar().Forget();
         Messenger.Broadcast(EventKey.PauseLevel, false);
-    }
-
-    private RectTransform GetTutorialTargetRect(TutorialTargetElement element)
-    {
-        return element switch
-        {
-            TutorialTargetElement.HintButton => this.gameplayView.HintButtonRect,
-            TutorialTargetElement.SkipButton => this.gameplayView.SkipButtonRect,
-            TutorialTargetElement.LifeView => this.gameplayView.LifeViewRect,
-            TutorialTargetElement.SettingButton => this.gameplayView.SettingButtonRect,
-            TutorialTargetElement.StepPanel => this.gameplayView.StepPanelRect,
-            TutorialTargetElement.ChapterProgressBar => this.gameplayView.ChapterProgressBarRect,
-            TutorialTargetElement.StartLevelButton => this.gameplayView.StartLevelButtonRect,
-            TutorialTargetElement.LevelTitleText => this.gameplayView.LevelTitle,
-            _ => null,
-        };
     }
 
     private void ShowStartLevelGameButtonHandler()
