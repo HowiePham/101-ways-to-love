@@ -11,7 +11,6 @@ using GoogleMobileAds.Api;
 using Mimi.Ads.Adapters;
 using Mimi.Ads.Adapters.Admob;
 using Mimi.Ads.Adapters.Extensions.AdminTools;
-using Mimi.Ads.Adapters.Extensions.Amazons.Maxs;
 using Mimi.Ads.Adapters.Extensions.FirebaseAdRevenue;
 using Mimi.Ads.Adapters.Extensions.SingularAdRevenue;
 using Mimi.Ads.Adapters.Max;
@@ -67,7 +66,6 @@ namespace Mimi.Prototypes
         public IInternetMonitor InternetMonitor { private set; get; }
         public GameData GameData { private set; get; }
         public ConsentHandler ConsentHandler { private set; get; }
-
         public LevelConfig RateConfig { get; } = new();
         public LevelConfig ShowInterstitialLevelConfig { protected set; get; }
         public string RemoveAdsProductId { protected set; get; }
@@ -619,7 +617,7 @@ namespace Mimi.Prototypes
                     "Id,ChapterName,ChapterIconAddress 1,Kindness,Chapter1 2,Love Bloom,Chapter2 3,Family,Chapter3 4,No Fear,Chapter4 5,Warm Hearts,Chapter5 6,Discovery,Chapter6 7,Love Drama,Chapter7 8,Helping Hands,Chapter8 9,Exploration,Chapter9 10,Tender Love,Chapter10 11,Animals,Chapter11 12,Heart Help,Chapter12")
                 .SetString(ConfigKey.ClientVersion, Application.version)
                 .SetFloat(ConfigKey.AdCooldown, 60f)
-                .SetString(ConfigKey.RateLevel, "10,35,65")
+                .SetString(ConfigKey.RateLevel, "10")
                 .SetString(ConfigKey.HintLevel, "1")
                 .SetBool(ConfigKey.IsShowAOA, true)
                 .SetBool(ConfigKey.RequireInternet, true)

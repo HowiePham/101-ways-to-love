@@ -5,7 +5,9 @@ using Cysharp.Threading.Tasks;
 using Mimi.Analytics.Tracking.Trackers;
 using Mimi.Events.AsyncBus;
 using Mimi.Games.Plugins;
+using Mimi.IAP;
 using UnityEngine;
+using UnityEngine.Purchasing;
 
 namespace Tracking
 {
@@ -13,15 +15,17 @@ namespace Tracking
     {
         private readonly IAsyncSubscriber eventSubscriber;
         private readonly IAnalyticTracker analyticTracker;
+        private readonly IPurchasingProvider purchasingProvider;
 
         private IDisposable iapShowSub;
         private IDisposable iapClickSub;
         private IDisposable iapPurchaseSub;
 
-        public LogIapPlugin(IAsyncSubscriber eventSubscriber, IAnalyticTracker analyticTracker)
+        public LogIapPlugin(IAsyncSubscriber eventSubscriber, IAnalyticTracker analyticTracker, IPurchasingProvider purchasingProvider)
         {
             this.eventSubscriber = eventSubscriber;
             this.analyticTracker = analyticTracker;
+            this.purchasingProvider = purchasingProvider;
         }
 
         public async UniTask Install()
@@ -30,6 +34,38 @@ namespace Tracking
             this.iapShowSub = this.eventSubscriber.Subscribe<IapShow>(IapShowHandler);
             this.iapClickSub = this.eventSubscriber.Subscribe<IapClick>(IapClickHandler);
             this.iapPurchaseSub = this.eventSubscriber.Subscribe<IapPurchase>(IapPurchaseHandler);
+            this.purchasingProvider.PurchaseCompleted += PurchaseCompletedHandler;
+        }
+
+        private void PurchaseCompletedHandler(PurchaseReceipt receipt)
+        {
+            foreach (var productId in receipt.Order.ProductIds)
+            {
+                string placement = receipt.Context.GameLocation;
+                bool tryGetProduct = this.purchasingProvider.TryGetProduct(productId, out IProduct product);
+
+                if (!tryGetProduct)
+                {
+                    continue;
+                }
+
+                string price = product.LocalizedPriceWithCurrencyCode;
+                string currency = product.CurrencyCode;
+                string showType = "pack";
+                string triggerType = "click";
+
+                Debug.Log($"--- (TRACKING) IAP Purchase: placement={placement}, pack={productId}, price={price} {currency}");
+                this.analyticTracker.LogEvent(new Feature_IAP_PURCHASE
+                {
+                    eventName = Feature_IAP_PURCHASE.EVENT_NAME.iap_purchase,
+                    placement = placement,
+                    show_type = showType,
+                    trigger_type = triggerType,
+                    pack_name = productId,
+                    price = price,
+                    currency = currency
+                });
+            }
         }
 
         private async UniTask IapShowHandler(IapShow iapShow, CancellationToken cancellationToken)
@@ -82,6 +118,7 @@ namespace Tracking
             this.iapShowSub.Dispose();
             this.iapClickSub.Dispose();
             this.iapPurchaseSub.Dispose();
+            this.purchasingProvider.PurchaseCompleted -= PurchaseCompletedHandler;
         }
 
         public async UniTask Begin()

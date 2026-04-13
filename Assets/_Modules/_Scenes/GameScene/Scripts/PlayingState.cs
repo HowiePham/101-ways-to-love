@@ -14,6 +14,7 @@ using Mimi.Events;
 using Mimi.Games;
 using Mimi.Games.Events;
 using Mimi.Prototypes;
+using Mimi.Prototypes.Currencies;
 using Mimi.Prototypes.Events;
 using Mimi.Prototypes.LevelManagement;
 using Mimi.Prototypes.Pooling;
@@ -47,8 +48,6 @@ namespace Mimi
         public override void Enter()
         {
             base.Enter();
-            Context.EventSubscriber.Subscribe<StageCompleted>(StageCompletedHandler).AddToBag(this.eventBag);
-            Context.EventSubscriber.Subscribe<StageFailed>(StageFailedHandler).AddToBag(this.eventBag);
             Context.EventSubscriber.Subscribe<NextLevelClicked>(NextLevelHandler).AddToBag(this.eventBag);
             Context.EventSubscriber.Subscribe<SkipLevel>(SkipLevelHandler).AddToBag(this.eventBag);
             Context.EventSubscriber.Subscribe<LevelTryAgain>(TryAgainLevelHandler).AddToBag(this.eventBag);
@@ -117,6 +116,8 @@ namespace Mimi
                 this.Context.RuntimeState.TopCompletedLevelOrder.Set(currentLevelOrder);
             }
 
+            ShowRatePopup(currentLevelOrder + 1);
+
             bool isNewChapterUnlocked = false;
             if (!IsLastLevel())
             {
@@ -128,12 +129,29 @@ namespace Mimi
                     {
                         isNewChapterUnlocked = true;
                     }
+
                     this.Context.RuntimeState.TopLevelOrder.Set(nextLevelOrder);
                 }
             }
+
             this.Context.RuntimeState.IsNewChapterUnlocked.Set(isNewChapterUnlocked);
 
             Context.SaveManager.Save();
+        }
+
+        private void ShowRatePopup(int currentLevelOrder)
+        {
+            bool showRate = Context.RateConfig.HasLevel(currentLevelOrder.ToString())
+                            && Context.RemoteConfig.GetValue(ConfigKey.RatingPopup).Boolean;
+
+            if (!showRate)
+            {
+                return;
+            }
+
+            if (Context.DialogManager.TryShowModalDialogOnce(DialogId.Rate, out RatingDialog rateDialog))
+            {
+            }
         }
 
         private void ClickSoundHandler(LeanFinger finger)
@@ -200,16 +218,6 @@ namespace Mimi
         private bool IsLastLevel()
         {
             return Context.LevelOrder.IsLast(this.currentLevel.Id);
-        }
-
-        private async UniTask StageFailedHandler(StageFailed stageFailed, CancellationToken cancellationToken)
-        {
-            await UniTask.CompletedTask;
-        }
-
-        private async UniTask StageCompletedHandler(StageCompleted stageCompleted, CancellationToken cancellationToken)
-        {
-            await UniTask.CompletedTask;
         }
 
         public override void Exit()
