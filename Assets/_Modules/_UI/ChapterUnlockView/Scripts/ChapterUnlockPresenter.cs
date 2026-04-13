@@ -1,12 +1,9 @@
 using _Modules.GameEvent.Scripts;
 using Cysharp.Threading.Tasks;
-using Mimi;
-using Mimi.Audio;
 using Mimi.Configs;
 using Mimi.Events;
 using Mimi.Events.AsyncBus;
 using Mimi.Prototypes;
-using Mimi.Prototypes.Currencies;
 using Mimi.Prototypes.LevelManagement;
 using Mimi.Prototypes.UI;
 using UnityEngine;
