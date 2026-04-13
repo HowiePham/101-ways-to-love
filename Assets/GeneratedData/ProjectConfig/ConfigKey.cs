@@ -36,5 +36,6 @@
         public const string LifeCooldown = "life_cooldown";
         public const string MaxLife = "max_life";
         public const string LifeRecoverAfterChapter = "life_recover_after_chapter";
+        public const string ShowTutorialUI = "is_show_tutorial_ui";
     }
 }
