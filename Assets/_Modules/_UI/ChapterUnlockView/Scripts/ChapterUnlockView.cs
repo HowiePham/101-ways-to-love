@@ -38,6 +38,8 @@ public class ChapterUnlockView : BaseView
     private CancellationTokenSource showCts;
     private TweenerCore<Vector3, Vector3, VectorOptions> continuePulseTween;
     private RectTransform ContinueBtnRect => this.continueBtnGroup.GetComponent<RectTransform>();
+    private bool autoMode;
+    private UniTaskCompletionSource autoCompletionSource;
 
     public Action OnContinueClicked;
     public Action OnBackHomeClicked;
@@ -56,6 +58,14 @@ public class ChapterUnlockView : BaseView
         this.chapterIcon.sprite = icon;
         this.chapterIconDark.sprite = icon;
         this.chapterTitleText.SetText(title);
+    }
+
+    public UniTask ShowAuto()
+    {
+        this.autoMode = true;
+        this.autoCompletionSource = new UniTaskCompletionSource();
+        Show();
+        return this.autoCompletionSource.Task;
     }
 
     public override void Show()
@@ -155,6 +165,13 @@ public class ChapterUnlockView : BaseView
         await UniTask.Delay(400, cancellationToken: ct);
         OnShowingCompleted?.Invoke();
         if (ct.IsCancellationRequested) return;
+
+        if (this.autoMode)
+        {
+            this.autoMode = false;
+            this.autoCompletionSource.TrySetResult();
+            return;
+        }
 
         // === Phase 5: Buttons fade in + continue button pulse ===
         this.backHomeBtnGroup.DOFade(1f, 0.5f);

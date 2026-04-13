@@ -1,4 +1,5 @@
 using _Modules.GameEvent.Scripts;
+using Cysharp.Threading.Tasks;
 using Mimi;
 using Mimi.Audio;
 using Mimi.Configs;
@@ -41,6 +42,18 @@ public class ChapterUnlockPresenter : BaseViewPresenter
     {
     }
 
+    public async UniTask ShowForFirstSession(int chapterNumber)
+    {
+        ChapterInfo chapter = this.chapterLevelRepo.GetChapter(chapterNumber);
+        Sprite icon = Resources.Load<Sprite>("Icons/" + chapter.ChapterIconAddress);
+        this.chapterUnlockView.SetChapterData(icon, "Chapter " + chapter.ChapterNumber + ": " + chapter.ChapterName);
+
+        await this.chapterUnlockView.ShowAuto();
+        await UniTask.WaitForSeconds(2f);
+
+        this.chapterUnlockView.Hide();
+    }
+
     public bool TryShowForNextChapter()
     {
         if (!this.runtimeState.IsNewChapterUnlocked.Value) return false;
@@ -69,7 +82,6 @@ public class ChapterUnlockPresenter : BaseViewPresenter
 
         this.chapterUnlockView.OnContinueClicked += ContinueClickedHandler;
         this.chapterUnlockView.OnBackHomeClicked += BackHomeClickedHandler;
-        this.chapterUnlockView.OnShowingCompleted += ShowingCompletedHandler;
     }
 
     protected override void OnHide()
@@ -78,16 +90,6 @@ public class ChapterUnlockPresenter : BaseViewPresenter
 
         this.chapterUnlockView.OnContinueClicked -= ContinueClickedHandler;
         this.chapterUnlockView.OnBackHomeClicked -= BackHomeClickedHandler;
-        this.chapterUnlockView.OnShowingCompleted -= ShowingCompletedHandler;
-    }
-
-    private void ShowingCompletedHandler()
-    {
-        if (this.dialogManager.TryShowModalDialogOnce(DialogId.GenericAutoHide, out AutoHideNotificationDialog dialog))
-        {
-            int rewardValue = this.remoteConfig.GetValue(ConfigKey.LifeRecoverAfterChapter).Int;
-            dialog.SetText("+" + rewardValue + " <sprite index=0>");
-        }
     }
 
     private void ContinueClickedHandler()
