@@ -25,6 +25,7 @@ namespace Mimi.Prototypes
         public LifeSystem LifeSystem { private set; get; }
         public LevelConfig HintLevelConfig { private set; get; }
         public LevelConfig HardLevelConfig { private set; get; }
+
         private CompositeLootProcessor lootProcessor;
         private CompositeLootFactory lootFactory;
 
@@ -34,8 +35,14 @@ namespace Mimi.Prototypes
             InitShowInterstitialLevelConfig();
             InitHintLevelConfig();
             InitHardLevelConfig();
+            InitRateLevelConfig();
             InitLootSystem();
             InitLifeSystem();
+        }
+
+        private void InitRateLevelConfig()
+        {
+            RateConfig.ParseConfig(this.RemoteConfig.GetValue(ConfigKey.RateLevel).String);
         }
 
         private void InitHardLevelConfig()
@@ -64,7 +71,7 @@ namespace Mimi.Prototypes
             pluginInstaller.AddPlugin(new LogLevelExitPlugin(this.RuntimeState, this.EventSubscriber, this.AnalyticTracker, this.Ads));
             pluginInstaller.AddPlugin(new LogLevelReopenPlugin(this.RuntimeState, this.EventSubscriber, this.AnalyticTracker));
             pluginInstaller.AddPlugin(new LogResourceChangedPlugin((ResourceCollection)this.PlayerResources, this.AnalyticTracker));
-            pluginInstaller.AddPlugin(new LogIapPlugin(this.EventSubscriber, this.AnalyticTracker));
+            pluginInstaller.AddPlugin(new LogIapPlugin(this.EventSubscriber, this.AnalyticTracker, this.InAppPurchaseStore));
             pluginInstaller.AddPlugin(new RemoveAdOnPurchasePlugin(this));
         }
 
