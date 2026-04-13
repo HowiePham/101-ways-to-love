@@ -646,7 +646,7 @@ namespace Mimi.Prototypes
                 .SetInt(ConfigKey.LifeCooldown, 900)
                 .SetInt(ConfigKey.MaxLife, 10)
                 .SetInt(ConfigKey.LifeRecoverAfterChapter, 2)
-                .SetBool(ConfigKey.ShowTutorialUI, true);
+                .SetBool(ConfigKey.ShowTutorialUI, false);
 
             await RemoteConfig.SetDefaultValues(blueprint);
 
