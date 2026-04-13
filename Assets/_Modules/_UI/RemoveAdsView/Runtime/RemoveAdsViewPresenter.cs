@@ -38,9 +38,15 @@ public class RemoveAdsViewPresenter : BaseViewPresenter
         this.removeAdsView.OnBuyRemoveAdsClicked += BuyRemoveAdsHandler;
         this.removeAdsView.OnCloseClicked += CloseClickedHandler;
         this.purchasingProvider.PurchaseFailed += PurchasFailedHandler;
+        this.purchasingProvider.PurchaseCompleted += PurchaseCompletedHandler;
         this.eventPublisher.PublishAsync(new IapShow("remove_ads_view", "pack", "click", "remove_ads"));
-        
+
         SetRemoveAdsPriceText();
+    }
+
+    private void PurchaseCompletedHandler(PurchaseReceipt receipt)
+    {
+        Hide();
     }
 
     private void SetRemoveAdsPriceText()
@@ -87,5 +93,6 @@ public class RemoveAdsViewPresenter : BaseViewPresenter
         this.removeAdsView.OnBuyRemoveAdsClicked -= BuyRemoveAdsHandler;
         this.removeAdsView.OnCloseClicked -= CloseClickedHandler;
         this.purchasingProvider.PurchaseFailed -= PurchasFailedHandler;
+        this.purchasingProvider.PurchaseCompleted -= PurchaseCompletedHandler;
     }
 }

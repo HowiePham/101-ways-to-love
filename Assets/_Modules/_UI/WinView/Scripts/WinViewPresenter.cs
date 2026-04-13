@@ -1,5 +1,6 @@
 using _Modules._UI.LoseView.Scripts;
 using _Modules.GameEvent.Scripts;
+using Cysharp.Threading.Tasks;
 using Mimi;
 using Mimi.Ads.Adapters;
 using Mimi.Configs;
@@ -154,15 +155,25 @@ namespace _Modules._UI.WinView.Scripts
 
         private void NextLevelHandler()
         {
-            var chapterUnlockPresenter = this.ScenePresenter.GetViewPresenter<ChapterUnlockPresenter>();
-            if (chapterUnlockPresenter.TryShowForNextChapter())
+            if (CanShowNextChapter())
             {
-                Hide();
+                ShowLifeRewardThenChapterUnlock().Forget();
                 return;
             }
 
             this.eventPublisher.PublishAsync(new NextLevelClicked());
             Hide();
+        }
+
+        private async UniTaskVoid ShowLifeRewardThenChapterUnlock()
+        {
+            Hide();
+
+            var lifeRewardPresenter = this.ScenePresenter.GetViewPresenter<RewardPresenter>();
+            await lifeRewardPresenter.ShowAndWait();
+
+            var chapterUnlockPresenter = this.ScenePresenter.GetViewPresenter<ChapterUnlockPresenter>();
+            chapterUnlockPresenter.TryShowForNextChapter();
         }
 
         private void ReplayClickedHandler()

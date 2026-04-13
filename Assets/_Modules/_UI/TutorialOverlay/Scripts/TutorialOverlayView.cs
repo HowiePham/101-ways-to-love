@@ -11,11 +11,9 @@ public class TutorialOverlayView : BaseView
     [Header("Overlay")]
     [SerializeField] private CanvasGroup overlayCanvasGroup;
 
-    [Header("Slide Card")]
-    [SerializeField] private CanvasGroup slideCardCanvasGroup;
-
     [Header("Navigation")]
     [SerializeField] private Button tapToContinueButton;
+    [SerializeField] private CanvasGroup nextButtonCanvasGroup;
 
     [Header("Container")]
     [SerializeField] private GameObject tutorialRoot;
@@ -26,7 +24,7 @@ public class TutorialOverlayView : BaseView
     [Header("Animation Settings")]
     [SerializeField] private float overlayFadeDuration = 0.35f;
     [SerializeField] private float overlayTargetAlpha = 0.95f;
-    [SerializeField] private float cardFadeDuration = 0.25f;
+    [SerializeField] private float cardScaleDuration = 0.25f;
 
     public Action OnNextClicked;
 
@@ -38,7 +36,7 @@ public class TutorialOverlayView : BaseView
     {
         base.Initialize();
         this.overlayCanvasGroup.alpha = 0f;
-        this.slideCardCanvasGroup.alpha = 0f;
+        this.nextButtonCanvasGroup.alpha = 0f;
         HideAllStepContents();
         this.tapToContinueButton.onClick.AddListener(() => OnNextClicked?.Invoke());
     }
@@ -48,7 +46,7 @@ public class TutorialOverlayView : BaseView
         // Do NOT call base.Show() — it disables the shared gameplay Canvas
         this.tutorialRoot.SetActive(true);
         this.overlayCanvasGroup.alpha = 0f;
-        this.slideCardCanvasGroup.alpha = 0f;
+        this.nextButtonCanvasGroup.alpha = 0f;
         HideAllStepContents();
     }
 
@@ -56,7 +54,7 @@ public class TutorialOverlayView : BaseView
     {
         KillAllTweens();
         this.overlayCanvasGroup.alpha = 0f;
-        this.slideCardCanvasGroup.alpha = 0f;
+        this.nextButtonCanvasGroup.alpha = 0f;
         HideAllStepContents();
         // Do NOT call base.Hide() — it disables the shared gameplay Canvas
         this.tutorialRoot.SetActive(false);
@@ -75,12 +73,34 @@ public class TutorialOverlayView : BaseView
 
     public async UniTask TransitionToStep(TutorialStepData stepData, CancellationToken ct)
     {
-        // Fade out card if already visible (skip on first step)
-        if (this.slideCardCanvasGroup.alpha > 0f)
+        // Fade out button + scale down current step simultaneously
+        if (this.currentStepContent != null)
         {
-            await this.slideCardCanvasGroup
-                .DOFade(0f, this.cardFadeDuration)
-                .SetEase(Ease.InCubic)
+            var outSeq = DOTween.Sequence();
+            outSeq.Join(this.nextButtonCanvasGroup.DOFade(0f, this.cardScaleDuration).SetEase(Ease.InCubic));
+            outSeq.Join(this.currentStepContent.transform.DOScale(0f, this.cardScaleDuration).SetEase(Ease.InBack));
+
+            await outSeq.AsyncWaitForCompletion()
+                .AsUniTask()
+                .AttachExternalCancellation(ct)
+                .SuppressCancellationThrow();
+
+            if (ct.IsCancellationRequested) return;
+
+            this.currentStepContent.SetActive(false);
+        }
+
+        // Activate and scale up the next step
+        this.currentStepContent = stepData.stepContent;
+
+        if (this.currentStepContent != null)
+        {
+            this.currentStepContent.transform.localScale = Vector3.zero;
+            this.currentStepContent.SetActive(true);
+
+            await this.currentStepContent.transform
+                .DOScale(1f, this.cardScaleDuration)
+                .SetEase(Ease.OutBack)
                 .AsyncWaitForCompletion()
                 .AsUniTask()
                 .AttachExternalCancellation(ct)
@@ -89,18 +109,9 @@ public class TutorialOverlayView : BaseView
             if (ct.IsCancellationRequested) return;
         }
 
-        // Swap active step content
-        if (this.currentStepContent != null)
-            this.currentStepContent.SetActive(false);
-
-        this.currentStepContent = stepData.stepContent;
-
-        if (this.currentStepContent != null)
-            this.currentStepContent.SetActive(true);
-
-        // Fade in card
-        await this.slideCardCanvasGroup
-            .DOFade(1f, this.cardFadeDuration)
+        // Fade in button after new step is fully visible
+        await this.nextButtonCanvasGroup
+            .DOFade(1f, this.cardScaleDuration)
             .SetEase(Ease.OutCubic)
             .AsyncWaitForCompletion()
             .AsUniTask()
@@ -111,8 +122,13 @@ public class TutorialOverlayView : BaseView
     public async UniTask PlayOutroAnimation(CancellationToken ct)
     {
         KillAllTweens();
+
         var seq = DOTween.Sequence();
-        seq.Join(this.slideCardCanvasGroup.DOFade(0f, this.cardFadeDuration).SetEase(Ease.InCubic));
+
+        if (this.currentStepContent != null)
+            seq.Join(this.currentStepContent.transform.DOScale(0f, this.cardScaleDuration).SetEase(Ease.InBack));
+
+        seq.Join(this.nextButtonCanvasGroup.DOFade(0f, this.cardScaleDuration).SetEase(Ease.InCubic));
         seq.Join(this.overlayCanvasGroup.DOFade(0f, this.overlayFadeDuration).SetEase(Ease.InCubic));
 
         await seq.AsyncWaitForCompletion()
@@ -126,14 +142,17 @@ public class TutorialOverlayView : BaseView
         this.currentStepContent = null;
         foreach (TutorialStepData step in this.steps)
         {
-            if (step.stepContent != null)
-                step.stepContent.SetActive(false);
+            if (step.stepContent == null) continue;
+            step.stepContent.transform.localScale = Vector3.zero;
+            step.stepContent.SetActive(false);
         }
     }
 
     private void KillAllTweens()
     {
         DOTween.Kill(this.overlayCanvasGroup);
-        DOTween.Kill(this.slideCardCanvasGroup);
+        DOTween.Kill(this.nextButtonCanvasGroup);
+        if (this.currentStepContent != null)
+            DOTween.Kill(this.currentStepContent.transform);
     }
 }
