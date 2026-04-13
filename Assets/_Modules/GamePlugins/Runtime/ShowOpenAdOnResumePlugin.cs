@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using _Modules.GameEvent.Scripts;
 using Cysharp.Threading.Tasks;
 using Mimi;
 using Mimi.Ads.Adapters;
@@ -19,12 +20,14 @@ namespace Ads
         private readonly IConfigProvider remoteConfig;
         private bool isRemoveAds;
         private bool isFirstSession;
+        private IDisposable iapClickSub;
         private IDisposable gameResumeEventHandler;
 
         public bool resumeFromAds = false;
+        public bool resumeFromIap = false;
         private bool isBootCompleted;
 
-        public ShowOpenAdOnResumePlugin(IAdAdapter adAdapter, IAsyncSubscriber eventSubscriber, bool isRemoveAds , IConfigProvider remoteConfig, bool isFirstSession)
+        public ShowOpenAdOnResumePlugin(IAdAdapter adAdapter, IAsyncSubscriber eventSubscriber, bool isRemoveAds, IConfigProvider remoteConfig, bool isFirstSession)
         {
             this.adAdapter = adAdapter;
             this.eventSubscriber = eventSubscriber;
@@ -43,6 +46,7 @@ namespace Ads
             this.adAdapter.Banner.OnClicked += BannerClickHandler;
             this.adAdapter.Mrec.OnClicked += MrecClickHandler;
             this.adAdapter.AppOpen.OnShowSucceeded += AdShownHandler;
+            this.iapClickSub = this.eventSubscriber.Subscribe<IapClick>(IapClickHandler);
 
             this.gameResumeEventHandler = this.eventSubscriber.Subscribe<BootGameCompleted>(BootGameCompletedHandler);
             this.gameResumeEventHandler = this.eventSubscriber.Subscribe<GameUnpaused>(GameResumedHandler);
@@ -60,6 +64,10 @@ namespace Ads
             this.resumeFromAds = true;
         }
 
+        private async UniTask IapClickHandler(IapClick iapClick, CancellationToken cancellationToken)
+        {
+            this.resumeFromIap = true;
+        }
 
         private void BannerClickHandler(AdPlacement placement)
         {
@@ -86,18 +94,19 @@ namespace Ads
             Debug.Log($"--- (PLUGIN) Resume Ads handling...");
             await UniTask.WaitForEndOfFrame(cancellationToken);
             await UniTask.Delay(400, cancellationToken: cancellationToken);
-            if (!this.isFirstSession && !this.isRemoveAds && this.isBootCompleted)
+            if (!this.isFirstSession && !this.isRemoveAds && !this.resumeFromIap && this.isBootCompleted)
             {
                 ShowResumeAds();
             }
 
             this.resumeFromAds = false;
+            this.resumeFromIap = false;
         }
 
         private void ShowResumeAds()
         {
             if (this.remoteConfig.GetValue(ConfigKey.ResumeAds).Boolean &&
-                !this.resumeFromAds)
+                !this.resumeFromAds && !this.resumeFromIap)
             {
                 this.adAdapter.AppOpen.Show(new AdPlacement("resume_app"));
             }
@@ -107,6 +116,7 @@ namespace Ads
         {
             await UniTask.CompletedTask;
             this.gameResumeEventHandler.Dispose();
+            this.iapClickSub.Dispose();
             this.adAdapter.Interstitial.OnShowSucceeded -= InterstitialShowSuccessHandler;
             this.adAdapter.RewardVideo.OnVideoOpened -= RewardVideoShowSuccessHandler;
             this.adAdapter.Banner.OnClicked -= BannerClickHandler;
