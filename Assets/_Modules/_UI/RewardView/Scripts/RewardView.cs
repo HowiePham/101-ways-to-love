@@ -11,13 +11,15 @@ using UnityEngine;
 
 public class RewardView : BaseView
 {
+    [SerializeField] private RectTransform contentPanel;
     [SerializeField] private RectTransform heartIcon;
     [SerializeField] private TMP_Text rewardText;
     [SerializeField] private TMP_Text subtitleText;
     [SerializeField] private RectTransform[] bonusHearts;
 
-    [Header("Sound")]
-    [SerializeField, SoundKey] private string rewardSoundKey;
+    [Header("Sound")] [SerializeField, SoundKey]
+    private string rewardSoundKey;
+
     [SerializeField, SoundKey] private string heartPopSoundKey;
 
     private IAudioService AudioService => ServiceLocator.Global.Get<IAudioService>();
@@ -29,7 +31,7 @@ public class RewardView : BaseView
     public void SetData(int amount)
     {
         this.rewardAmount = amount;
-        this.rewardText.SetText("+" + amount);
+        this.rewardText.SetText(amount.ToString());
 
         for (int i = 0; i < this.bonusHearts.Length; i++)
         {
@@ -55,6 +57,12 @@ public class RewardView : BaseView
         this.showCts?.Cancel();
         this.showCts?.Dispose();
         this.showCts = null;
+
+        if (this.contentPanel != null)
+        {
+            DOTween.Kill(this.contentPanel);
+            this.contentPanel.localScale = Vector3.one;
+        }
 
         DOTween.Kill(this.heartIcon);
         DOTween.Kill(this.rewardText);
@@ -90,17 +98,19 @@ public class RewardView : BaseView
         // === Phase 2: Heart icon punches in (0.4s) + confetti + sound ===
         PlayAudio(this.rewardSoundKey);
 
+        this.rewardText.DOFade(1f, 0f);
+        this.rewardText.rectTransform.DOScale(1f, 0f);
         await this.heartIcon.DOScale(1.3f, 0.25f).SetEase(Ease.OutBack).AsyncWaitForCompletion();
         if (ct.IsCancellationRequested) return;
         await this.heartIcon.DOScale(1f, 0.15f).SetEase(Ease.InOutQuad).AsyncWaitForCompletion();
         if (ct.IsCancellationRequested) return;
 
         // === Phase 3: Reward text punches in (0.25s) ===
-        this.rewardText.DOFade(1f, 0.2f);
-        await this.rewardText.rectTransform.DOScale(1.15f, 0.15f).SetEase(Ease.OutBack).AsyncWaitForCompletion();
-        if (ct.IsCancellationRequested) return;
-        await this.rewardText.rectTransform.DOScale(1f, 0.1f).AsyncWaitForCompletion();
-        if (ct.IsCancellationRequested) return;
+        // this.rewardText.DOFade(1f, 0.2f);
+        // await this.rewardText.rectTransform.DOScale(1.15f, 0.15f).SetEase(Ease.OutBack).AsyncWaitForCompletion();
+        // if (ct.IsCancellationRequested) return;
+        // await this.rewardText.rectTransform.DOScale(1f, 0.1f).AsyncWaitForCompletion();
+        // if (ct.IsCancellationRequested) return;
 
         // === Phase 4: Subtitle fades in ===
         await this.subtitleText.DOFade(1f, 0.25f).AsyncWaitForCompletion();
@@ -122,10 +132,31 @@ public class RewardView : BaseView
         }
 
         // === Phase 6: Hold ===
-        await UniTask.Delay(700, cancellationToken: ct);
+        await UniTask.Delay(1500, cancellationToken: ct);
         if (ct.IsCancellationRequested) return;
 
-        // === Phase 7: Fade out ===
+        // === Phase 7: Dismiss — all UI scales down together ===
+        if (this.contentPanel != null)
+        {
+            // Whole panel shrinks as one unit — cleanest dismiss
+            await this.contentPanel.DOScale(0f, 0.3f).SetEase(Ease.InBack).AsyncWaitForCompletion();
+        }
+        else
+        {
+            // Fallback: animate each element individually if no contentPanel assigned
+            var hideSeq = DOTween.Sequence();
+            hideSeq.Join(this.heartIcon.DOScale(0f, 0.3f).SetEase(Ease.InBack));
+            hideSeq.Join(this.rewardText.rectTransform.DOScale(0f, 0.25f).SetEase(Ease.InBack));
+            hideSeq.Join(this.subtitleText.rectTransform.DOScale(0f, 0.2f).SetEase(Ease.InBack));
+            if (this.bonusHearts != null)
+            {
+                foreach (var heart in this.bonusHearts)
+                    hideSeq.Join(heart.DOScale(0f, 0.22f).SetEase(Ease.InBack));
+            }
+
+            await hideSeq.AsyncWaitForCompletion();
+        }
+
         if (ct.IsCancellationRequested) return;
 
         OnAnimationCompleted?.Invoke();
