@@ -5,6 +5,7 @@ using _Modules.GameEvent.Scripts;
 using Cysharp.Threading.Tasks;
 using FrogunnerGames;
 using MEC;
+using Mimi;
 using Mimi.Ads.Adapters;
 using Mimi.Configs;
 using Mimi.Events.AsyncBus;
@@ -24,6 +25,7 @@ public class GameplayViewPresenter : BaseViewPresenter
     private readonly DisposableBag eventBag = new DisposableBag();
     private readonly RuntimeState runtimeState;
     private readonly LevelConfig hintLevelConfig;
+    private readonly IConfigProvider remoteConfig;
     private readonly LifeSystem lifeSystem;
     private readonly IAdAdapter adAdapter;
     private readonly DialogManager dialogManager;
@@ -40,12 +42,11 @@ public class GameplayViewPresenter : BaseViewPresenter
     private CancellationTokenSource tutorialCts;
     private bool isTutorialRunning;
 
-    private const float TimeStep = 1f;
     private const string TutorialCompletedKey = "tutorial_overlay_completed_v1";
 
     public GameplayViewPresenter(BaseScenePresenter scenePresenter, Transform transform, IAsyncPublisher eventPublisher, IAsyncSubscriber eventSubscriber,
         RuntimeState runtimeState, LifeSystem lifeSystem, LevelConfig hintLevelConfig, IAdAdapter adAdapter, DialogManager dialogManager,
-        ChapterLevelRepository chapterLevelRepo, ILevelOrder levelOrder) :
+        ChapterLevelRepository chapterLevelRepo, ILevelOrder levelOrder, IConfigProvider remoteConfig) :
         base(scenePresenter, transform)
     {
         this.eventPublisher = eventPublisher;
@@ -57,6 +58,7 @@ public class GameplayViewPresenter : BaseViewPresenter
         this.dialogManager = dialogManager;
         this.chapterLevelRepo = chapterLevelRepo;
         this.levelOrder = levelOrder;
+        this.remoteConfig = remoteConfig;
     }
 
     protected override void AddViews()
@@ -115,11 +117,9 @@ public class GameplayViewPresenter : BaseViewPresenter
 
     private void TryStartTutorial()
     {
-        if (this.tutorialView == null) return;
+        if (this.tutorialView == null || !this.remoteConfig.GetValue(ConfigKey.ShowTutorialUI).Boolean) return;
         if (PlayerPrefs.GetInt(TutorialCompletedKey, 0) == 1) return;
 
-        // Prevent HandleUIEffect from auto-playing the progress bar;
-        // the tutorial sequence will play it at the right moment.
         this.gameplayView.DelayProgressBarAnimation = true;
 
         this.tutorialCts?.Cancel();
