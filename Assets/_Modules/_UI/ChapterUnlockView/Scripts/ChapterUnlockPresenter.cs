@@ -46,7 +46,7 @@ public class ChapterUnlockPresenter : BaseViewPresenter
     {
         ChapterInfo chapter = this.chapterLevelRepo.GetChapter(chapterNumber);
         Sprite icon = Resources.Load<Sprite>("Icons/" + chapter.ChapterIconAddress);
-        this.chapterUnlockView.SetChapterData(icon, "Chapter " + chapter.ChapterNumber + ": " + chapter.ChapterName);
+        this.chapterUnlockView.SetChapterData(icon, chapter.ChapterName);
 
         await this.chapterUnlockView.ShowAuto();
         await UniTask.WaitForSeconds(2f);
@@ -72,7 +72,7 @@ public class ChapterUnlockPresenter : BaseViewPresenter
 
         ChapterInfo chapter = this.chapterLevelRepo.GetChapter(chapterNumber);
         Sprite icon = Resources.Load<Sprite>("Icons/" + chapter.ChapterIconAddress);
-        this.chapterUnlockView.SetChapterData(icon, "Chapter " + chapter.ChapterNumber + ": " + chapter.ChapterName);
+        this.chapterUnlockView.SetChapterData(icon, chapter.ChapterName);
         Show();
     }
 
