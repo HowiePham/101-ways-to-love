@@ -580,8 +580,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   overlayCanvasGroup: {fileID: 1447131608716068421}
-  slideCardCanvasGroup: {fileID: 4027280173829214768}
   tapToContinueButton: {fileID: 2003897443662901877}
+  nextButtonCanvasGroup: {fileID: 5848848740264588912}
   tutorialRoot: {fileID: 7844581341829961210}
   steps:
   - stepContent: {fileID: 5776102044206760768}
@@ -589,8 +589,8 @@ MonoBehaviour:
   - stepContent: {fileID: 9191718801202142958}
   - stepContent: {fileID: 4166309002906250174}
   overlayFadeDuration: 0.35
-  overlayTargetAlpha: 0.95
-  cardFadeDuration: 0.25
+  overlayTargetAlpha: 0.98
+  cardScaleDuration: 0.25
 --- !u!1 &1137298584031994188
 GameObject:
   m_ObjectHideFlags: 0
@@ -657,6 +657,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: 'Hint
+
 
     Showing hint in current level'
   m_isRightToLeft: 0
@@ -1159,6 +1160,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'Skip
 
+
     Skipping current level'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2c7e423ec435ca946b29826e345a79bc, type: 2}
@@ -1660,6 +1662,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: 'Chapter progression
+
 
     Showing progression in current chapter and the
     reward'
@@ -2315,6 +2318,7 @@ GameObject:
   - component: {fileID: 2114756643104493066}
   - component: {fileID: 2003897443662901877}
   - component: {fileID: 4129102174038510617}
+  - component: {fileID: 5848848740264588912}
   m_Layer: 5
   m_Name: NextButton
   m_TagString: Untagged
@@ -2424,6 +2428,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!225 &5848848740264588912
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6295693899977504855}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &6296162732804073718
 GameObject:
   m_ObjectHideFlags: 0
@@ -3534,8 +3550,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Player's Life. It will be decreased after choosing wrong option or losing
-    hard level
+  m_text: "Life\n \nDecreased after choosing wrong option or losing hard level"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2c7e423ec435ca946b29826e345a79bc, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 67cd6effa915520488477cd86ef7f148, type: 2}
