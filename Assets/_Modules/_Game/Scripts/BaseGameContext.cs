@@ -501,11 +501,11 @@ namespace Mimi.Prototypes
                 }
                 else
                 {
-                    Ads.SetAppOpen(
-                        new AutoRequestAppOpen(appOpenRequestStrategy,
-                            new FirebaseMeasureRevenueAppOpen(
-                                new SingularRevenueAppOpen(
-                                    new AdmobAppOpen(AdmobAOAUnitId)))));
+                    // Ads.SetAppOpen(
+                    //     new AutoRequestAppOpen(appOpenRequestStrategy,
+                    //         new FirebaseMeasureRevenueAppOpen(
+                    //             new SingularRevenueAppOpen(
+                    //                 new AdmobAppOpen(AdmobAOAUnitId)))));
                 }
             }
             else
