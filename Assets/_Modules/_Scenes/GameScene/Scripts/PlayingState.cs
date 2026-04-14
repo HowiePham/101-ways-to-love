@@ -18,6 +18,7 @@ using Mimi.Prototypes.Currencies;
 using Mimi.Prototypes.Events;
 using Mimi.Prototypes.LevelManagement;
 using Mimi.Prototypes.Pooling;
+using Mimi.Prototypes.UI;
 using Mimi.ServiceLocators;
 using Mimi.VisualActions.Audio;
 using UnityEngine;
@@ -151,6 +152,15 @@ namespace Mimi
 
             if (Context.DialogManager.TryShowModalDialogOnce(DialogId.Rate, out RatingDialog rateDialog))
             {
+                rateDialog.SetYesCallback(ShowThanksDialog);
+            }
+        }
+
+        private void ShowThanksDialog()
+        {
+            if (this.Context.DialogManager.TryShowModalDialogOnce(DialogId.GenericAutoHide, out AutoHideNotificationDialog dialog))
+            {
+                dialog.SetText("Thanks for voting!");
             }
         }
 
