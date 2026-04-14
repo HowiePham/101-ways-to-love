@@ -33,7 +33,7 @@ public class RewardView : BaseView
     public void SetData(int amount)
     {
         this.rewardAmount = amount;
-        this.rewardText.SetText(amount.ToString());
+        this.rewardText.SetText("+" + amount);
 
         for (int i = 0; i < this.bonusHearts.Length; i++)
         {
