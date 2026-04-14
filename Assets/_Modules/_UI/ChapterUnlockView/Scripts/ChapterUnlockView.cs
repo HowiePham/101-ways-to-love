@@ -93,7 +93,9 @@ public class ChapterUnlockView : BaseView
 
         DOTween.Kill(this.ContinueBtnRect);
         this.ContinueBtnRect.localScale = Vector3.one;
-
+        this.continueBtnGroup.DOFade(0f, 0f);
+        this.backHomeBtnGroup.DOFade(0f, 0f);
+        
         DOTween.Kill(this.unlockIconPanel);
         this.unlockIconPanel.localRotation = Quaternion.identity;
         DOTween.Kill(this.lockBarIcon.rectTransform);

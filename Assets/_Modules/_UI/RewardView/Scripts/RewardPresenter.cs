@@ -30,8 +30,6 @@ public class RewardPresenter : BaseViewPresenter
 
     public async UniTask ShowAndWait()
     {
-        this.eventPublisher.PublishAsync(new DestroyLevelRequested());
-
         int rewardAmount = this.remoteConfig.GetValue(ConfigKey.LifeRecoverAfterChapter).Int;
         this.rewardView.SetData(rewardAmount);
 

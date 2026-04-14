@@ -17,6 +17,10 @@ public class ChapterUnlockPresenter : BaseViewPresenter
     private readonly IConfigProvider remoteConfig;
     private readonly DialogManager dialogManager;
     private readonly RuntimeState runtimeState;
+    private bool suppressEventPublish;
+    private bool backHomeRequested;
+
+    public bool WasBackHomeRequested => this.backHomeRequested;
 
     public ChapterUnlockPresenter(BaseScenePresenter scenePresenter, Transform transform,
         IAsyncPublisher eventPublisher, ChapterLevelRepository chapterLevelRepo,
@@ -63,6 +67,34 @@ public class ChapterUnlockPresenter : BaseViewPresenter
         return true;
     }
 
+    public async UniTask<bool> TryShowForNextChapterAndWait()
+    {
+        if (!this.runtimeState.IsNewChapterUnlocked.Value) return false;
+
+        int currentOrder = this.runtimeState.CurrentLevelOrder.Value;
+        LevelInfo nextLevel = this.levelOrder.GetNextLevel(currentOrder);
+        if (nextLevel == null) return false;
+        this.eventPublisher.PublishAsync(new DestroyLevelRequested());
+
+        this.backHomeRequested = false;
+        this.suppressEventPublish = true;
+
+        var tcs = new UniTaskCompletionSource();
+        void OnDismiss() => tcs.TrySetResult();
+
+        ShowForChapter(nextLevel.Chapter);
+        this.chapterUnlockView.OnContinueClicked += OnDismiss;
+        this.chapterUnlockView.OnBackHomeClicked += OnDismiss;
+
+        await tcs.Task;
+
+        this.chapterUnlockView.OnContinueClicked -= OnDismiss;
+        this.chapterUnlockView.OnBackHomeClicked -= OnDismiss;
+        this.suppressEventPublish = false;
+
+        return true;
+    }
+
     public void ShowForChapter(int chapterNumber)
     {
         ChapterInfo chapter = this.chapterLevelRepo.GetChapter(chapterNumber);
@@ -89,13 +121,16 @@ public class ChapterUnlockPresenter : BaseViewPresenter
 
     private void ContinueClickedHandler()
     {
-        this.eventPublisher.PublishAsync(new NextLevelClicked());
         Hide();
+        if (!this.suppressEventPublish)
+            this.eventPublisher.PublishAsync(new NextLevelClicked());
     }
 
     private void BackHomeClickedHandler()
     {
-        this.eventPublisher.PublishAsync(new BackHome());
+        this.backHomeRequested = true;
         Hide();
+        if (!this.suppressEventPublish)
+            this.eventPublisher.PublishAsync(new BackHome());
     }
 }

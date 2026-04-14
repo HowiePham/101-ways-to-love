@@ -157,7 +157,7 @@ namespace _Modules._UI.WinView.Scripts
         {
             if (CanShowNextChapter())
             {
-                ShowLifeRewardThenChapterUnlock().Forget();
+                ShowChapterUnlockThenReward().Forget();
                 return;
             }
 
@@ -165,15 +165,20 @@ namespace _Modules._UI.WinView.Scripts
             Hide();
         }
 
-        private async UniTaskVoid ShowLifeRewardThenChapterUnlock()
+        private async UniTaskVoid ShowChapterUnlockThenReward()
         {
             Hide();
+
+            var chapterUnlockPresenter = this.ScenePresenter.GetViewPresenter<ChapterUnlockPresenter>();
+            bool chapterShown = await chapterUnlockPresenter.TryShowForNextChapterAndWait();
 
             var lifeRewardPresenter = this.ScenePresenter.GetViewPresenter<RewardPresenter>();
             await lifeRewardPresenter.ShowAndWait();
 
-            var chapterUnlockPresenter = this.ScenePresenter.GetViewPresenter<ChapterUnlockPresenter>();
-            chapterUnlockPresenter.TryShowForNextChapter();
+            if (chapterShown && chapterUnlockPresenter.WasBackHomeRequested)
+                this.eventPublisher.PublishAsync(new BackHome());
+            else
+                this.eventPublisher.PublishAsync(new NextLevelClicked());
         }
 
         private void ReplayClickedHandler()
