@@ -16,14 +16,16 @@ public class RewardView : BaseView
     [SerializeField] private TMP_Text rewardText;
     [SerializeField] private TMP_Text subtitleText;
     [SerializeField] private RectTransform[] bonusHearts;
+    [SerializeField] private int delayTimeMs = 2000;
 
     [Header("Sound")] [SerializeField, SoundKey]
     private string rewardSoundKey;
 
     [SerializeField, SoundKey] private string heartPopSoundKey;
-
+    [SerializeField, SoundKey] private string musicSoundKey;
     private IAudioService AudioService => ServiceLocator.Global.Get<IAudioService>();
     private CancellationTokenSource showCts;
+    private Tweener pulseTween;
     private int rewardAmount;
 
     public Action OnAnimationCompleted;
@@ -64,6 +66,8 @@ public class RewardView : BaseView
             this.contentPanel.localScale = Vector3.one;
         }
 
+        this.pulseTween?.Kill();
+        this.pulseTween = null;
         DOTween.Kill(this.heartIcon);
         DOTween.Kill(this.rewardText);
         DOTween.Kill(this.subtitleText);
@@ -79,6 +83,8 @@ public class RewardView : BaseView
 
     private async UniTask HandleUIEffect(CancellationToken ct)
     {
+        PlayAudio(this.musicSoundKey);
+
         // === Reset initial state ===
         this.heartIcon.localScale = Vector3.zero;
         this.rewardText.alpha = 0f;
@@ -104,6 +110,11 @@ public class RewardView : BaseView
         if (ct.IsCancellationRequested) return;
         await this.heartIcon.DOScale(1f, 0.15f).SetEase(Ease.InOutQuad).AsyncWaitForCompletion();
         if (ct.IsCancellationRequested) return;
+
+        // === Pulse: heart breathes continuously ===
+        this.pulseTween = this.heartIcon.DOScale(1.08f, 0.6f)
+            .SetEase(Ease.InOutSine)
+            .SetLoops(-1, LoopType.Yoyo);
 
         // === Phase 3: Reward text punches in (0.25s) ===
         // this.rewardText.DOFade(1f, 0.2f);
@@ -132,10 +143,14 @@ public class RewardView : BaseView
         }
 
         // === Phase 6: Hold ===
-        await UniTask.Delay(1500, cancellationToken: ct);
+        await UniTask.Delay(this.delayTimeMs, cancellationToken: ct);
         if (ct.IsCancellationRequested) return;
 
         // === Phase 7: Dismiss — all UI scales down together ===
+        this.pulseTween?.Kill();
+        this.pulseTween = null;
+        this.heartIcon.localScale = Vector3.one;
+
         if (this.contentPanel != null)
         {
             // Whole panel shrinks as one unit — cleanest dismiss
