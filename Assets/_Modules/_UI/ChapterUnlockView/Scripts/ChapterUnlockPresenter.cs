@@ -65,8 +65,6 @@ public class ChapterUnlockPresenter : BaseViewPresenter
 
     public void ShowForChapter(int chapterNumber)
     {
-        this.eventPublisher.PublishAsync(new DestroyLevelRequested());
-
         ChapterInfo chapter = this.chapterLevelRepo.GetChapter(chapterNumber);
         Sprite icon = Resources.Load<Sprite>("Icons/" + chapter.ChapterIconAddress);
         this.chapterUnlockView.SetChapterData(icon, chapter.ChapterName);

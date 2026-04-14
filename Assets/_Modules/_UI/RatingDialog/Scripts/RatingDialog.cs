@@ -15,7 +15,6 @@ public class RatingDialog : BaseModalDialog
         base.Show();
         this.submitBut.onClick.AddListener(AcceptRating);
         this.laterBut.onClick.AddListener(Hide);
-        if (tmTittle != null) tmTittle.text = $"Rate {Application.productName}?";
     }
 
     private void AcceptRating()
