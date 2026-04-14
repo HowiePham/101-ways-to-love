@@ -129,6 +129,8 @@ public class LifeSystem
         if (reward.RewardId != "extra_life") return;
 
         AddLife();
+        ShowLifeChangedDialog("+1",true);
+
         if (this.lifeData.AddedNextTime.Count > 0)
         {
             this.lifeData.AddedNextTime.RemoveAt(this.lifeData.AddedNextTime.Count - 1);
@@ -158,7 +160,7 @@ public class LifeSystem
             SaveLifeData();
             this.publisher.PublishAsync(new LifeUpdated(CurrentLifeCount));
 
-            ShowUsingLifeDialog();
+            ShowLifeChangedDialog("-1",false);
         }
     }
 
@@ -322,11 +324,12 @@ public class LifeSystem
         this.publisher.PublishAsync(new RecoveryLifeTimerUpdated(""));
     }
 
-    private void ShowUsingLifeDialog()
+    private void ShowLifeChangedDialog(string changedString, bool increased)
     {
+        var spriteString = increased ? "<sprite index=0>" : "<sprite index=1>";
         if (this.dialogManager.TryShowModalDialogOnce(DialogId.GenericAutoHide, out AutoHideNotificationDialog dialog))
         {
-            dialog.SetText("-1" + " <sprite index=1>");
+            dialog.SetText(changedString + " " + spriteString);
         }
     }
 }
