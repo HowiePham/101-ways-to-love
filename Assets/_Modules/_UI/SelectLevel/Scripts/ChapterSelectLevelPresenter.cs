@@ -32,6 +32,7 @@ public class ChapterSelectLevelPresenter : BaseViewPresenter
     private readonly LifeSystem lifeSystem;
     private readonly List<ChapterInfo> listChapter;
     private int currentPageOrder = 1;
+    private int previousLifeCount;
     private bool IsMaxLevel => this.levelOrder.IsLast(this.levelOrder.GetByOrder(this.runtimeState.TopCompletedLevelOrder.Value).Id);
 
     public ChapterSelectLevelPresenter(BaseScenePresenter scenePresenter, Transform transform,
@@ -80,6 +81,7 @@ public class ChapterSelectLevelPresenter : BaseViewPresenter
         this.eventSubscriber.Subscribe<LifeUpdated>(OnLifeUpdate).AddToBag(this.disposeBag);
         this.eventSubscriber.Subscribe<RecoveryLifeTimerUpdated>(OnRecoveryTimerUpdate).AddToBag(this.disposeBag);
 
+        this.previousLifeCount = this.lifeSystem.CurrentLifeCount;
         this.lifeView.SetLifeCount(this.lifeSystem.CurrentLifeCount);
         this.lifeView.SetTimeRemaining(this.lifeSystem.IsLifeIsFull() ? "FULL" : this.lifeSystem.GetRemainingTime());
         this.lifeView.SetAddLifeIconActive(!this.lifeSystem.IsLifeIsFull());
@@ -209,6 +211,19 @@ public class ChapterSelectLevelPresenter : BaseViewPresenter
     private async UniTask OnLifeUpdate(LifeUpdated lifeUpdated, CancellationToken cancellationToken)
     {
         int currentLifeCount = lifeUpdated.LifeCount;
+
+        if (currentLifeCount < this.previousLifeCount)
+        {
+            this.lifeView.PlayLifeLostEffect();
+            await UniTask.Delay(200, cancellationToken: cancellationToken);
+        }
+        else if (currentLifeCount > this.previousLifeCount)
+        {
+            this.lifeView.PlayLifeGainedEffect();
+            await UniTask.Delay(200, cancellationToken: cancellationToken);
+        }
+
+        this.previousLifeCount = currentLifeCount;
         this.lifeView.SetLifeCount(currentLifeCount);
         this.lifeView.SetAddLifeIconActive(!this.lifeSystem.IsLifeIsFull());
 
@@ -216,8 +231,6 @@ public class ChapterSelectLevelPresenter : BaseViewPresenter
         {
             this.lifeView.SetTimeRemaining("FULL");
         }
-
-        await UniTask.CompletedTask;
     }
 
     private async UniTask OnRecoveryTimerUpdate(RecoveryLifeTimerUpdated recoveryLifeTimerUpdated, CancellationToken cancellationToken)

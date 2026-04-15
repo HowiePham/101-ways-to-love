@@ -36,6 +36,7 @@ public class GameplayViewPresenter : BaseViewPresenter
     private TutorialOverlayView tutorialView;
     private NumberBasedLifeView numberBasedLifeView;
     private CoroutineHandle timerCoroutineHandler;
+    private int previousLifeCount;
     private float timeLeft;
     private int maxProgress;
     private int currentProgress;
@@ -102,6 +103,7 @@ public class GameplayViewPresenter : BaseViewPresenter
         ShowLevelInfo();
         ShowChapterProgress();
 
+        this.previousLifeCount = this.lifeSystem.CurrentLifeCount;
         this.numberBasedLifeView.SetLifeCount(this.lifeSystem.CurrentLifeCount);
         this.numberBasedLifeView.SetTimeRemaining(this.lifeSystem.GetRemainingTime());
         this.numberBasedLifeView.SetAddLifeIconActive(!this.lifeSystem.IsLifeIsFull());
@@ -351,10 +353,22 @@ public class GameplayViewPresenter : BaseViewPresenter
     private async UniTask OnLifeUpdate(LifeUpdated lifeUpdated, CancellationToken cancellationToken)
     {
         int currentLifeCount = lifeUpdated.LifeCount;
+
+        if (currentLifeCount < this.previousLifeCount)
+        {
+            this.numberBasedLifeView.PlayLifeLostEffect();
+            await UniTask.Delay(200, cancellationToken: cancellationToken);
+        }
+        else if (currentLifeCount > this.previousLifeCount)
+        {
+            this.numberBasedLifeView.PlayLifeGainedEffect();
+            await UniTask.Delay(200, cancellationToken: cancellationToken);
+        }
+
+        this.previousLifeCount = currentLifeCount;
         this.numberBasedLifeView.SetLifeCount(currentLifeCount);
         this.numberBasedLifeView.SetAddLifeIconActive(!this.lifeSystem.IsLifeIsFull());
         this.gameplayView.SetActiveNoLifeBlocker(currentLifeCount <= 0);
-        await UniTask.CompletedTask;
     }
 
     private async UniTask OnRecoveryTimerUpdate(RecoveryLifeTimerUpdated recoveryLifeTimerUpdated, CancellationToken cancellationToken)
