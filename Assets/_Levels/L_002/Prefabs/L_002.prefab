@@ -67,9 +67,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1365636204749407058}
-  - component: {fileID: 1184613376522603249}
+  - component: {fileID: 3300282980230215108}
   m_Layer: 3
-  m_Name: ChangeSpriteWhileDragging
+  m_Name: SpriteSwapWhileDragging
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -90,7 +90,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 828505989765834396}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1184613376522603249
+--- !u!114 &3300282980230215108
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -99,11 +99,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 460284143120819959}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4294727c1faae904094830be96ecd427, type: 3}
+  m_Script: {fileID: 11500000, guid: bd23418dab084a7eb2f4dd8caa63dab3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   swappedSprite: {fileID: 21300000, guid: 235959c485e06b14680ca78df6b1adcb, type: 3}
   itemSprite: {fileID: 4248860920676134102}
+  changeDelay: 0
+  rollbackDelay: 0.1
 --- !u!1 &488029394413468627
 GameObject:
   m_ObjectHideFlags: 0
@@ -3773,7 +3775,7 @@ PrefabInstance:
     - target: {fileID: 4145438229222622694, guid: cbcec8d86ca5e2847a8e2370ba2e9ec1, type: 3}
       propertyPath: 'draggableExtensions.Array.data[4]'
       value: 
-      objectReference: {fileID: 1184613376522603249}
+      objectReference: {fileID: 3300282980230215108}
     - target: {fileID: 4756922915197561101, guid: cbcec8d86ca5e2847a8e2370ba2e9ec1, type: 3}
       propertyPath: soundKey
       value: SFX_RunRay
