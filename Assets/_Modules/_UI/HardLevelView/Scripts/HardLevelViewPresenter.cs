@@ -130,6 +130,8 @@ public class HardLevelViewPresenter : BaseViewPresenter
     private void ClickHomeHandler()
     {
         ScenePresenter.GetViewPresenter<GameplayViewPresenter>().Hide();
+        this.eventPublisher.PublishAsync(new LifeUsing());
+
         Hide();
         this.hardLevelView.SetTimeOutGroupActive(false);
         Messenger.Broadcast(EventKey.PauseLevel, false);

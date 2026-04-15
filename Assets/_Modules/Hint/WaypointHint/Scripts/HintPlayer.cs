@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using Lean.Touch;
 using Mimi.Prototypes.Events;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -15,6 +16,7 @@ namespace Games
         [SerializeField] private int totalStep;
         private bool levelTutorial;
         private bool isAnimationPlaying;
+        private bool isFingerDown;
 
         public bool HasHint => this.hints.Length > 0;
         public bool LevelTutorial => this.levelTutorial;
@@ -27,12 +29,16 @@ namespace Games
         {
             Messenger.AddListener(EventKey.AnimationStart, OnAnimationStart);
             Messenger.AddListener(EventKey.AnimationComplete, OnAnimationComplete);
+            LeanTouch.OnFingerDown += OnFingerDown;
+            LeanTouch.OnFingerUp += OnFingerUp;
         }
 
         private void OnDisable()
         {
             Messenger.RemoveListener(EventKey.AnimationStart, OnAnimationStart);
             Messenger.RemoveListener(EventKey.AnimationComplete, OnAnimationComplete);
+            LeanTouch.OnFingerDown -= OnFingerDown;
+            LeanTouch.OnFingerUp -= OnFingerUp;
         }
 
         private void OnAnimationStart()
@@ -44,6 +50,9 @@ namespace Games
         {
             this.isAnimationPlaying = false;
         }
+
+        private void OnFingerDown(LeanFinger finger) => this.isFingerDown = true;
+        private void OnFingerUp(LeanFinger finger)   => this.isFingerDown = false;
 
         public void SetLevelTutorial(bool levelTutorial)
         {
@@ -92,9 +101,9 @@ namespace Games
                     continue;
                 }
 
-                if (this.isAnimationPlaying)
+                if (this.isAnimationPlaying || this.isFingerDown)
                 {
-                    await UniTask.WaitUntil(() => !this.isAnimationPlaying,
+                    await UniTask.WaitUntil(() => !this.isAnimationPlaying && !this.isFingerDown,
                         cancellationToken: this.tokenSource.Token);
                 }
 

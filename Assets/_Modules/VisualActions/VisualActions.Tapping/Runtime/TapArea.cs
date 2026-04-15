@@ -31,7 +31,8 @@ namespace Mimi.VisualActions.Tapping
             try
             {
                 this.complete = false;
-                LeanTouch.OnFingerTap += FingerTapHandler;
+                // LeanTouch.OnFingerTap += FingerTapHandler;
+                LeanTouch.OnFingerDown += FingerTapHandler;
                 await UniTask.WaitUntil(() => this.complete, PlayerLoopTiming.Update, cancellationToken);
             }
             catch (OperationCanceledException e)
@@ -39,7 +40,8 @@ namespace Mimi.VisualActions.Tapping
             }
             finally
             {
-                LeanTouch.OnFingerTap -= FingerTapHandler;
+                // LeanTouch.OnFingerTap -= FingerTapHandler;
+                LeanTouch.OnFingerDown -= FingerTapHandler;
             }
         }
 
