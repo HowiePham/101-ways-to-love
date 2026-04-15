@@ -1,4 +1,5 @@
 using System;
+using DG.Tweening;
 using Mimi.Prototypes.UI;
 using TMPro;
 using UnityEngine;
@@ -35,5 +36,31 @@ public class NumberBasedLifeView : BaseView
     public void SetAddLifeIconActive(bool isActive)
     {
         this.addLifeIconObject.SetActive(isActive);
+    }
+
+    public void PlayLifeGainedEffect()
+    {
+        this.lifeCount.transform.DOKill();
+        this.lifeCount.DOKill();
+
+        this.lifeCount.transform.DOPunchScale(Vector3.one * 0.5f, 0.7f, vibrato: 6, elasticity: 0.6f);
+
+        var colorSeq = DOTween.Sequence();
+        colorSeq.Append(this.lifeCount.DOColor(Color.green, 0.15f));
+        colorSeq.Append(this.lifeCount.DOColor(Color.white, 0.55f));
+        colorSeq.Play();
+    }
+
+    public void PlayLifeLostEffect()
+    {
+        this.lifeCount.transform.DOKill();
+        this.lifeCount.DOKill();
+
+        this.lifeCount.transform.DOPunchScale(Vector3.one * 0.5f, 0.7f, vibrato: 6, elasticity: 0.6f);
+
+        var colorSeq = DOTween.Sequence();
+        colorSeq.Append(this.lifeCount.DOColor(Color.red, 0.15f));
+        colorSeq.Append(this.lifeCount.DOColor(Color.white, 0.55f));
+        colorSeq.Play();
     }
 }
