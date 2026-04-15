@@ -1,3 +1,4 @@
+using System;
 using Cysharp.Threading.Tasks;
 using Mimi.Interactions.Dragging;
 using Mimi.Interactions.Dragging.DraggableExtensions;
@@ -8,6 +9,7 @@ public class ReturnStartPosition : MonoDraggableExtension
 {
     [SerializeField] private Vector3Field offsetField;
     [SerializeField] private float delaySeconds;
+    private bool isInitialized = false;
     private Vector3 startPosition;
 
     public override void Init(BaseDraggable draggable)
@@ -24,6 +26,8 @@ public class ReturnStartPosition : MonoDraggableExtension
                 this.offsetField = this.gameObject.AddComponent<Vector3Field>();
             }
         }
+
+        this.isInitialized = true;
     }
 
     public override void StartDrag()
@@ -37,6 +41,16 @@ public class ReturnStartPosition : MonoDraggableExtension
     public override void EndDrag()
     {
         ReturnPos(this.BaseDraggable);
+    }
+
+    private void OnDisable()
+    {
+        if (!this.isInitialized)
+        {
+            return;
+        }
+
+        this.BaseDraggable.transform.position = this.startPosition;
     }
 
     async UniTask ReturnPos(BaseDraggable draggable)
