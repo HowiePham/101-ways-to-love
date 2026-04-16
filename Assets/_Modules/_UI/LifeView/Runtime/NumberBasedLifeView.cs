@@ -14,6 +14,8 @@ public class NumberBasedLifeView : BaseView
 
     public Action OnLifeButtonClicked;
 
+    private Sequence colorSeq;
+
     public override void Initialize()
     {
         base.Initialize();
@@ -21,6 +23,17 @@ public class NumberBasedLifeView : BaseView
         {
             this.lifeButton.onClick.AddListener(() => OnLifeButtonClicked?.Invoke());
         }
+    }
+
+    public override void Hide()
+    {
+        base.Hide();
+        this.lifeCount.transform.DOKill();
+        this.lifeCount.DOKill();
+        this.colorSeq?.Kill();
+        this.colorSeq = null;
+        this.lifeCount.transform.localScale = Vector3.one;
+        this.lifeCount.color = Color.white;
     }
 
     public void SetLifeCount(int count)
@@ -42,25 +55,29 @@ public class NumberBasedLifeView : BaseView
     {
         this.lifeCount.transform.DOKill();
         this.lifeCount.DOKill();
+        this.colorSeq?.Kill();
+        this.lifeCount.transform.localScale = Vector3.one;
 
         this.lifeCount.transform.DOPunchScale(Vector3.one * 0.5f, 0.7f, vibrato: 6, elasticity: 0.6f);
 
-        var colorSeq = DOTween.Sequence();
-        colorSeq.Append(this.lifeCount.DOColor(Color.green, 0.15f));
-        colorSeq.Append(this.lifeCount.DOColor(Color.white, 0.55f));
-        colorSeq.Play();
+        this.colorSeq = DOTween.Sequence();
+        this.colorSeq.Append(this.lifeCount.DOColor(Color.green, 0.15f));
+        this.colorSeq.Append(this.lifeCount.DOColor(Color.white, 0.55f));
+        this.colorSeq.Play();
     }
 
     public void PlayLifeLostEffect()
     {
         this.lifeCount.transform.DOKill();
         this.lifeCount.DOKill();
+        this.colorSeq?.Kill();
+        this.lifeCount.transform.localScale = Vector3.one;
 
         this.lifeCount.transform.DOPunchScale(Vector3.one * 0.5f, 0.7f, vibrato: 6, elasticity: 0.6f);
 
-        var colorSeq = DOTween.Sequence();
-        colorSeq.Append(this.lifeCount.DOColor(Color.red, 0.15f));
-        colorSeq.Append(this.lifeCount.DOColor(Color.white, 0.55f));
-        colorSeq.Play();
+        this.colorSeq = DOTween.Sequence();
+        this.colorSeq.Append(this.lifeCount.DOColor(Color.red, 0.15f));
+        this.colorSeq.Append(this.lifeCount.DOColor(Color.white, 0.55f));
+        this.colorSeq.Play();
     }
 }
