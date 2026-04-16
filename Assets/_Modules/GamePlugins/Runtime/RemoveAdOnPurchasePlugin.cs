@@ -26,7 +26,6 @@ namespace Ads
             await UniTask.CompletedTask;
             this.gameContext.InAppPurchaseStore.PurchaseCompleted += PurchaseCompletedHandler;
             DebugLogConsole.AddCommandInstance("buy-remove-ads-iap", "Buy Remove Ads", "RemoveAds", this);
-            DebugLogConsole.AddCommandInstance("remove-rewarded-ads", "Remove Rewarded Ads", "RemoveRewardedAds", this);
         }
 
         private void PurchaseCompletedHandler(PurchaseReceipt receipt)

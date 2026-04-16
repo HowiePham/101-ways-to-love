@@ -254,8 +254,11 @@ public class GameplayViewPresenter : BaseViewPresenter
 
     private void HintClickedHandler()
     {
+        Debug.Log($"--- (HINT) Hint button clicked --- Reward ready: {this.adAdapter.RewardVideo.IsReady}");
         if (this.adAdapter.RewardVideo.IsReady)
         {
+            Debug.Log($"--- (ADS) Showing ads for hint");
+
             this.eventPublisher.PublishAsync(new AdShowRequested());
             this.adAdapter.RewardVideo.Show(new AdReward("hint"), new AdPlacement("gameplay"));
         }
@@ -268,6 +271,7 @@ public class GameplayViewPresenter : BaseViewPresenter
     private void OnRewardCompleted(AdReward reward)
     {
         string rewardRewardId = reward.RewardId;
+        Debug.Log($"--- (ADS) GameplayView Reward: {rewardRewardId}");
 
         switch (rewardRewardId)
         {
