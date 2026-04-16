@@ -9,7 +9,7 @@ public class FollowHand : MonoBehaviour
     [SerializeField] private Vector3 inputOffset;
     private bool isDragging;
 
-    private void Start()
+    private void OnEnable()
     {
         LeanTouch.OnFingerDown += StartDragging;
         LeanTouch.OnFingerUp += StopDragging;
