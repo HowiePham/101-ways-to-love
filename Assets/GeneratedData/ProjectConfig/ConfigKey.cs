@@ -2,7 +2,6 @@
 {
     public static class ConfigKey
     {
-        
         public const string ClientVersion = "client_version";
         public const string LevelDevelopment = "level_dev";
         public const string LevelProduction = "level_prod";
