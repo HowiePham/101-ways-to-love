@@ -26,6 +26,7 @@ namespace Ads
             await UniTask.CompletedTask;
             this.gameContext.InAppPurchaseStore.PurchaseCompleted += PurchaseCompletedHandler;
             DebugLogConsole.AddCommandInstance("buy-remove-ads-iap", "Buy Remove Ads", "RemoveAds", this);
+            DebugLogConsole.AddCommandInstance("remove-rewarded-ads", "Remove Rewarded Ads", "RemoveRewardedAds", this);
         }
 
         private void PurchaseCompletedHandler(PurchaseReceipt receipt)
@@ -47,11 +48,16 @@ namespace Ads
             PlayerPrefs.SetInt("RemoveAds", 1);
             Messenger.Broadcast(EventKey.RemoveAdsCompleted);
 
-            if (this.gameContext.DialogManager.TryShowModalDialogOnce(DialogId.GenericAutoHide, 
+            if (this.gameContext.DialogManager.TryShowModalDialogOnce(DialogId.GenericAutoHide,
                     out AutoHideNotificationDialog dialog))
             {
                 dialog.SetText("Purchase Completed");
             }
+        }
+
+        private void RemoveRewardedAds()
+        {
+            this.gameContext.Ads.SetRewardVideo(EditorRewardVideoAdapter.Instance);
         }
 
         public async UniTask Uninstall()

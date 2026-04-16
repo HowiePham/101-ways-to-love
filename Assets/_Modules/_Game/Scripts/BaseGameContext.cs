@@ -549,15 +549,15 @@ namespace Mimi.Prototypes
 
         private static void AdsImpressionHandler(ImpressionData impressionData)
         {
-            Parameter[] parameters =
-            {
-                new Parameter("ad_platform", "ApplovinMax"),
-                new Parameter("ad_source", impressionData.AdNetwork),
-                new Parameter("ad_format", impressionData.AdUnit),
-                new Parameter(FirebaseAnalytics.ParameterCurrency, "USD"),
-                new Parameter(FirebaseAnalytics.ParameterValue, impressionData.Revenue)
-            };
-            FirebaseAnalytics.LogEvent("ad_impression_mediation", parameters);
+            // Parameter[] parameters =
+            // {
+            //     new Parameter("ad_platform", "ApplovinMax"),
+            //     new Parameter("ad_source", impressionData.AdNetwork),
+            //     new Parameter("ad_format", impressionData.AdUnit),
+            //     new Parameter(FirebaseAnalytics.ParameterCurrency, "USD"),
+            //     new Parameter(FirebaseAnalytics.ParameterValue, impressionData.Revenue)
+            // };
+            // FirebaseAnalytics.LogEvent("ad_impression_mediation", parameters);
         }
 
         private void CreateMrecWithCustomPosition()
