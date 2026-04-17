@@ -64,6 +64,7 @@ public struct Feature_LEVEL_END : IEventData{
 	 public string result{ get; set; }
 	 public string use_hint{ get; set; }
 	 public string use_skip{ get; set; }
+	 public string play_duration{ get; set; }
 }
 
 public struct Feature_HINT : IEventData{

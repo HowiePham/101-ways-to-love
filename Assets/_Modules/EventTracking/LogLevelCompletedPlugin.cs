@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using Mimi.Ads.Adapters;
 using Mimi.Analytics.Tracking.Trackers;
 using Mimi.Events;
 using Mimi.Events.AsyncBus;
@@ -17,6 +18,7 @@ namespace Tracking
         private readonly RuntimeState runtimeState;
         private readonly IAsyncSubscriber eventSubscriber;
         private readonly IAnalyticTracker analyticTracker;
+        private readonly IAdAdapter ads;
 
         private IDisposable levelCompletedSub;
         private IDisposable levelStartSub;
@@ -25,12 +27,15 @@ namespace Tracking
         private bool useSkip;
         private bool useHint;
         private DateTime startTime;
+        private DateTime adStartTime;
+        private long totalAdDurationMs;
 
-        public LogLevelCompletedPlugin(RuntimeState runtimeState, IAsyncSubscriber eventSubscriber, IAnalyticTracker analyticTracker)
+        public LogLevelCompletedPlugin(RuntimeState runtimeState, IAsyncSubscriber eventSubscriber, IAnalyticTracker analyticTracker, IAdAdapter ads)
         {
             this.runtimeState = runtimeState;
             this.eventSubscriber = eventSubscriber;
             this.analyticTracker = analyticTracker;
+            this.ads = ads;
         }
 
         public async UniTask Install()
@@ -40,6 +45,10 @@ namespace Tracking
             this.levelStartSub = this.eventSubscriber.Subscribe<LevelStarted>(LevelStartedHandler);
             this.levelSkipSub = this.eventSubscriber.Subscribe<SkipLevel>(SkipHandler);
             this.levelHintSub = this.eventSubscriber.Subscribe<UseHint>(HintHandler);
+            this.ads.Interstitial.OnShowSucceeded += OnAdOpened;
+            this.ads.Interstitial.OnClosed += OnAdClosed;
+            this.ads.RewardVideo.OnVideoOpened += OnRewardOpened;
+            this.ads.RewardVideo.OnVideoClosed += OnRewardClosed;
         }
 
         private async UniTask SkipHandler(SkipLevel skipLevel, CancellationToken cancellation)
@@ -54,19 +63,41 @@ namespace Tracking
             this.useHint = true;
         }
 
+        private void OnAdOpened(AdPlacement adPlacement)
+        {
+            this.adStartTime = DateTime.UtcNow;
+        }
+
+        private void OnAdClosed(AdPlacement adPlacement)
+        {
+            this.totalAdDurationMs += (long)(DateTime.UtcNow - this.adStartTime).TotalMilliseconds;
+        }
+
+        private void OnRewardOpened(AdReward reward)
+        {
+            this.adStartTime = DateTime.UtcNow;
+        }
+
+        private void OnRewardClosed(AdReward reward)
+        {
+            this.totalAdDurationMs += (long)(DateTime.UtcNow - this.adStartTime).TotalMilliseconds;
+        }
+
         private async UniTask LevelStartedHandler(LevelStarted levelStarted, CancellationToken cancellationToken)
         {
             await UniTask.CompletedTask;
             this.useHint = false;
             this.useSkip = false;
             this.startTime = DateTime.UtcNow;
+            this.totalAdDurationMs = 0;
         }
 
         private async UniTask LevelCompletedHandler(LevelCompleted levelCompleted, CancellationToken cancellationToken)
         {
             await UniTask.CompletedTask;
             int currentLevelOrder = this.runtimeState.CurrentLevelOrder.Value + 1;
-            Debug.Log($"--- (TRACKING) Log level Completed: {currentLevelOrder} --- Hint: {this.useHint} --- Skip: {this.useSkip}");
+            long playDurationMs = (long)(DateTime.UtcNow - this.startTime).TotalMilliseconds - this.totalAdDurationMs;
+            Debug.Log($"--- (TRACKING) Log level Completed: {currentLevelOrder} --- Hint: {this.useHint} --- Skip: {this.useSkip} --- Duration: {playDurationMs}ms");
 
             this.analyticTracker.LogEvent(new Feature_LEVEL_END()
             {
@@ -75,7 +106,8 @@ namespace Tracking
                 level_mode = "normal",
                 result = levelCompleted.Status.ToString(),
                 use_hint = this.useHint.ToString().ToLower(),
-                use_skip = this.useSkip.ToString().ToLower()
+                use_skip = this.useSkip.ToString().ToLower(),
+                play_duration = playDurationMs.ToString()
             });
         }
 
@@ -86,6 +118,10 @@ namespace Tracking
             this.levelStartSub.Dispose();
             this.levelHintSub.Dispose();
             this.levelSkipSub.Dispose();
+            this.ads.Interstitial.OnShowSucceeded -= OnAdOpened;
+            this.ads.Interstitial.OnClosed -= OnAdClosed;
+            this.ads.RewardVideo.OnVideoOpened -= OnRewardOpened;
+            this.ads.RewardVideo.OnVideoClosed -= OnRewardClosed;
         }
 
         public async UniTask Begin()

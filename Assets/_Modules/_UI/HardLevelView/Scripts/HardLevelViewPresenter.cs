@@ -118,7 +118,10 @@ public class HardLevelViewPresenter : BaseViewPresenter
 
     private void ClickReplayHandler()
     {
+        int currentLevelOrder = this.runtimeState.CurrentLevelOrder.Value;
+
         this.eventPublisher.PublishAsync(new LifeUsing());
+        this.eventPublisher.PublishAsync(new LevelCompleted(currentLevelOrder.ToString(), LevelCompletionStatus.Lose));
 
         ScenePresenter.GetViewPresenter<GameplayViewPresenter>().Hide();
         Hide();
@@ -129,8 +132,11 @@ public class HardLevelViewPresenter : BaseViewPresenter
 
     private void ClickHomeHandler()
     {
+        int currentLevelOrder = this.runtimeState.CurrentLevelOrder.Value;
+
         ScenePresenter.GetViewPresenter<GameplayViewPresenter>().Hide();
         this.eventPublisher.PublishAsync(new LifeUsing());
+        this.eventPublisher.PublishAsync(new LevelCompleted(currentLevelOrder.ToString(), LevelCompletionStatus.Lose));
 
         Hide();
         this.hardLevelView.SetTimeOutGroupActive(false);
@@ -221,8 +227,6 @@ public class HardLevelViewPresenter : BaseViewPresenter
         Messenger.Broadcast(EventKey.PauseLevel, true);
         FinishTimer();
         Timing.RunCoroutine(this.hardLevelView.TimeoutAppearFromTopEffect());
-        int currentLevelOrder = this.runtimeState.CurrentLevelOrder.Value;
-        this.eventPublisher.PublishAsync(new LevelCompleted(currentLevelOrder.ToString(), LevelCompletionStatus.Lose));
     }
 
     public void SetClockStartTime(int time)
