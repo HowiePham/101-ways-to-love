@@ -644,6 +644,10 @@ namespace Mimi.Prototypes
                 .SetInt(ConfigKey.LifeCooldown, 900)
                 .SetInt(ConfigKey.MaxLife, 10)
                 .SetInt(ConfigKey.LifeRecoverAfterChapter, 2)
+                .SetInt(ConfigKey.ShowHintButtonAfterWrongTimes, 1)
+                .SetInt(ConfigKey.ShowSkipButtonAfterWrongTimes, 2)
+                .SetFloat(ConfigKey.HintButtonDelay, 20f)
+                .SetFloat(ConfigKey.SkipButtonDelay, 30f)
                 .SetBool(ConfigKey.ShowTutorialUI, false);
 
             await RemoteConfig.SetDefaultValues(blueprint);

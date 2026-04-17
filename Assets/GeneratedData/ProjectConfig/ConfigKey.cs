@@ -6,7 +6,7 @@
         public const string LevelDevelopment = "level_dev";
         public const string LevelProduction = "level_prod";
         public const string ChapterDevelopment = "chapter_dev";
-        public const string ChapterProduction= "chapter_prod";
+        public const string ChapterProduction = "chapter_prod";
         public const string IsShowAOA = "is_show_aoa";
         public const string AdCooldown = "ads_interval";
         public const string RateLevel = "level_rate";
@@ -36,5 +36,9 @@
         public const string MaxLife = "max_life";
         public const string LifeRecoverAfterChapter = "life_recover_after_chapter";
         public const string ShowTutorialUI = "is_show_tutorial_ui";
+        public const string HintButtonDelay = "hint_button_delay";
+        public const string SkipButtonDelay = "skip_button_delay";
+        public const string ShowHintButtonAfterWrongTimes = "show_hint_button_after_wrong_times";
+        public const string ShowSkipButtonAfterWrongTimes = "show_skip_button_after_wrong_times";
     }
 }

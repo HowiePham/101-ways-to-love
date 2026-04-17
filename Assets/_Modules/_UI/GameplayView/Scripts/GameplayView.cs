@@ -173,12 +173,14 @@ public class GameplayView : BaseView
     {
     }
 
-    public void ShowWrongSignal()
+    public async UniTask ShowWrongSignal()
     {
         this.wrongSignal.gameObject.SetActive(true);
         Sequence sequence = DOTween.Sequence();
         sequence.Append(this.wrongSignal.DOScale(this.maxScale * Vector3.one, this.signalDuration / 2));
         sequence.Append(this.wrongSignal.DOScale(Vector3.zero, this.signalDuration / 2));
+
+        await sequence.AsyncWaitForCompletion();
     }
 
     public void InitStepPoint(int stepNumber)

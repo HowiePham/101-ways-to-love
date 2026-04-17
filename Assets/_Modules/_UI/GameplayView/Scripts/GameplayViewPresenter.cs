@@ -42,6 +42,11 @@ public class GameplayViewPresenter : BaseViewPresenter
     private int currentProgress;
     private CancellationTokenSource tutorialCts;
     private bool isTutorialRunning;
+    private int wrongAnswerCount;
+    private bool isHintButtonShown;
+    private bool isSkipButtonShown;
+    private CancellationTokenSource hintButtonCts;
+    private CancellationTokenSource skipButtonCts;
 
     private const string TutorialCompletedKey = "tutorial_overlay_completed_v1";
 
@@ -98,8 +103,15 @@ public class GameplayViewPresenter : BaseViewPresenter
         Messenger.AddListener(EventKey.ActionFailed, ActionFailedHandler);
         Messenger.AddListener(EventKey.ShowStartLevelGameButton, ShowStartLevelGameButtonHandler);
 
-        HandleHintButtonVisible(3f);
-        HandleSkipButtonVisible(5f);
+        this.wrongAnswerCount = 0;
+        this.isHintButtonShown = false;
+        this.isSkipButtonShown = false;
+
+        float hintButtonDelay = this.remoteConfig.GetValue(ConfigKey.HintButtonDelay).Float;
+        float skipButtonDelay = this.remoteConfig.GetValue(ConfigKey.SkipButtonDelay).Float;
+        HandleHintButtonVisible(hintButtonDelay);
+        HandleSkipButtonVisible(skipButtonDelay);
+
         ShowLevelInfo();
         ShowChapterProgress();
 
@@ -227,14 +239,43 @@ public class GameplayViewPresenter : BaseViewPresenter
 
     private void HandleSkipButtonVisible(float delay = 0)
     {
-        this.gameplayView.SetActiveSkipButton(true, delay);
+        if (this.isSkipButtonShown) return;
+
+        this.skipButtonCts?.Cancel();
+        this.skipButtonCts?.Dispose();
+        this.skipButtonCts = new CancellationTokenSource();
+        ScheduleSkipButton(delay, this.skipButtonCts.Token).Forget();
+    }
+
+    private async UniTaskVoid ScheduleSkipButton(float delay, CancellationToken ct)
+    {
+        if (delay > 0f)
+            await UniTask.Delay(System.TimeSpan.FromSeconds(delay), cancellationToken: ct);
+        if (ct.IsCancellationRequested) return;
+        this.isSkipButtonShown = true;
+        this.gameplayView.SetActiveSkipButton(true).Forget();
     }
 
     private void HandleHintButtonVisible(float delay = 0)
     {
+        if (this.isHintButtonShown) return;
         int currentLevelOrder = this.runtimeState.CurrentLevelOrder.Value + 1;
         bool isHintLevel = this.hintLevelConfig.HasLevel(currentLevelOrder.ToString());
-        this.gameplayView.SetActiveHintButton(!isHintLevel, delay);
+        if (isHintLevel) return;
+
+        this.hintButtonCts?.Cancel();
+        this.hintButtonCts?.Dispose();
+        this.hintButtonCts = new CancellationTokenSource();
+        ScheduleHintButton(delay, this.hintButtonCts.Token).Forget();
+    }
+
+    private async UniTaskVoid ScheduleHintButton(float delay, CancellationToken ct)
+    {
+        if (delay > 0f)
+            await UniTask.Delay(System.TimeSpan.FromSeconds(delay), cancellationToken: ct);
+        if (ct.IsCancellationRequested) return;
+        this.isHintButtonShown = true;
+        this.gameplayView.SetActiveHintButton(true).Forget();
     }
 
     public void SetDelayProgressBarAnimation(bool delay)
@@ -420,8 +461,21 @@ public class GameplayViewPresenter : BaseViewPresenter
 
     private void ActionFailedHandler()
     {
-        this.gameplayView.ShowWrongSignal();
         this.eventPublisher.PublishAsync(new LifeUsing());
+        HandleFailedUI();
+    }
+
+    private async UniTask HandleFailedUI()
+    {
+        await this.gameplayView.ShowWrongSignal();
+        int wrongCountForHint = this.remoteConfig.GetValue(ConfigKey.ShowHintButtonAfterWrongTimes).Int;
+        int wrongCountForSkip = this.remoteConfig.GetValue(ConfigKey.ShowSkipButtonAfterWrongTimes).Int;
+
+        this.wrongAnswerCount++;
+        if (this.wrongAnswerCount >= wrongCountForHint)
+            HandleHintButtonVisible(0f);
+        if (this.wrongAnswerCount >= wrongCountForSkip)
+            HandleSkipButtonVisible(0f);
     }
 
     private void SettingClickedHandler()
