@@ -20,6 +20,11 @@ namespace VisualFlow
             if (this.spineRenderer == null)
                 this.spineRenderer = this.skeletonAnimation.GetComponent<Renderer>();
 
+            if (this.spineRenderer == null)
+            {
+                return;
+            }
+
             this.spineRenderer.enabled = active;
         }
 
