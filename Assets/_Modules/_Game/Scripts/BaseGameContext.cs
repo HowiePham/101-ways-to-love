@@ -70,6 +70,7 @@ namespace Mimi.Prototypes
         public LevelConfig RateConfig { get; } = new();
         public LevelConfig ShowInterstitialLevelConfig { protected set; get; }
         public string RemoveAdsProductId { protected set; get; }
+        public bool IsServiceInitialized { protected set; get; }
 
         public bool IsRemoveAds
         {
