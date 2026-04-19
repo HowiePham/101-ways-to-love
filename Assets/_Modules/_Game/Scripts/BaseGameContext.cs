@@ -376,7 +376,8 @@ namespace Mimi.Prototypes
             MobileAds.Initialize(status => { completed = true; });
 
             var cts = new CancellationTokenSource();
-            cts.CancelAfterSlim(TimeSpan.FromSeconds(5f));
+            float gmaTimeOutSec = 3f;
+            cts.CancelAfterSlim(TimeSpan.FromSeconds(gmaTimeOutSec));
             try
             {
                 await UniTask.WaitUntil(() => completed, cancellationToken: cts.Token);
