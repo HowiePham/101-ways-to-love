@@ -38,6 +38,8 @@ namespace Mimi.Prototypes
             InitRateLevelConfig();
             InitLootSystem();
             InitLifeSystem();
+
+            this.IsServiceInitialized = true;
         }
 
         private void InitRateLevelConfig()

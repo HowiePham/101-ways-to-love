@@ -77,12 +77,11 @@ namespace Mimi.Prototypes
 
         private async UniTask Load()
         {
-            await UniTask.WaitUntil(() => this.gameContext.IsRemoteConfigInitialized);
-            Debug.Log($"--- (BOOT) RemoteConfig ready at {this.totalLoadingStopwatch.ElapsedMilliseconds}ms");
+            await UniTask.WaitUntil(() => this.gameContext.IsInitialized);
+            Debug.Log($"--- (BOOT) Core Service initialized at {this.totalLoadingStopwatch.ElapsedMilliseconds}ms");
+            this.earlyProgressTween?.Kill();
 
             this.gameContext.CreateServices();
-
-            await this.earlyProgressTween.AsyncWaitForCompletion();
 
             UniTask fakeLoadingBarProgress = DOTween.To(() => this.loadingPercentage,
                 value =>
@@ -91,9 +90,9 @@ namespace Mimi.Prototypes
                     this.bootView.SetLoadingPercentage(this.loadingPercentage);
                 }, 0.8f, 0.3f).AsyncWaitForCompletion().AsUniTask();
 
-            UniTask waitForContextInitialized = UniTask.WaitUntil(() => this.gameContext.IsInitialized);
-            await UniTask.WhenAll(fakeLoadingBarProgress, waitForContextInitialized);
-            Debug.Log($"--- (BOOT) GameContext initialized at {this.totalLoadingStopwatch.ElapsedMilliseconds}ms");
+            UniTask waitForServiceInitialized = UniTask.WaitUntil(() => this.gameContext.IsServiceInitialized);
+            await UniTask.WhenAll(fakeLoadingBarProgress, waitForServiceInitialized);
+            Debug.Log($"--- (BOOT) Other Services initialized at {this.totalLoadingStopwatch.ElapsedMilliseconds}ms");
 
             var sceneLoadStart = this.totalLoadingStopwatch.ElapsedMilliseconds;
             await this.gameContext.LoadSceneAsync(this.nextSceneType.Type);
