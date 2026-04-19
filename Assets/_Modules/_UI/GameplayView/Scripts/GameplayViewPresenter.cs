@@ -356,6 +356,14 @@ public class GameplayViewPresenter : BaseViewPresenter
 
     protected override void OnHide()
     {
+        this.hintButtonCts?.Cancel();
+        this.hintButtonCts?.Dispose();
+        this.hintButtonCts = null;
+
+        this.skipButtonCts?.Cancel();
+        this.skipButtonCts?.Dispose();
+        this.skipButtonCts = null;
+
         base.OnHide();
 
         if (this.isTutorialRunning)

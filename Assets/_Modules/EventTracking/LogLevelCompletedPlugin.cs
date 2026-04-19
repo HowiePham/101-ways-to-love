@@ -1,6 +1,8 @@
 using System;
 using System.Threading;
+using _Modules.GameEvent.Scripts;
 using Cysharp.Threading.Tasks;
+using FrogunnerGames;
 using Mimi.Ads.Adapters;
 using Mimi.Analytics.Tracking.Trackers;
 using Mimi.Events;
@@ -8,6 +10,7 @@ using Mimi.Events.AsyncBus;
 using Mimi.Games.Events;
 using Mimi.Games.Plugins;
 using Mimi.Prototypes;
+using Mimi.Prototypes.Events;
 using UnityEngine;
 
 namespace Tracking
@@ -29,6 +32,7 @@ namespace Tracking
         private DateTime startTime;
         private DateTime adStartTime;
         private long totalAdDurationMs;
+        private int falseCount;
 
         public LogLevelCompletedPlugin(RuntimeState runtimeState, IAsyncSubscriber eventSubscriber, IAnalyticTracker analyticTracker, IAdAdapter ads)
         {
@@ -49,6 +53,12 @@ namespace Tracking
             this.ads.Interstitial.OnClosed += OnAdClosed;
             this.ads.RewardVideo.OnVideoOpened += OnRewardOpened;
             this.ads.RewardVideo.OnVideoClosed += OnRewardClosed;
+            Messenger.AddListener(EventKey.ActionFailed, OnActionFailed);
+        }
+
+        private void OnActionFailed()
+        {
+            this.falseCount++;
         }
 
         private async UniTask SkipHandler(SkipLevel skipLevel, CancellationToken cancellation)
@@ -90,6 +100,7 @@ namespace Tracking
             this.useSkip = false;
             this.startTime = DateTime.UtcNow;
             this.totalAdDurationMs = 0;
+            this.falseCount = 0;
         }
 
         private async UniTask LevelCompletedHandler(LevelCompleted levelCompleted, CancellationToken cancellationToken)
@@ -107,7 +118,8 @@ namespace Tracking
                 result = levelCompleted.Status.ToString(),
                 use_hint = this.useHint.ToString().ToLower(),
                 use_skip = this.useSkip.ToString().ToLower(),
-                play_duration = playDurationMs.ToString()
+                play_duration = playDurationMs.ToString(),
+                false_count = this.falseCount.ToString()
             });
         }
 
@@ -122,6 +134,7 @@ namespace Tracking
             this.ads.Interstitial.OnClosed -= OnAdClosed;
             this.ads.RewardVideo.OnVideoOpened -= OnRewardOpened;
             this.ads.RewardVideo.OnVideoClosed -= OnRewardClosed;
+            Messenger.RemoveListener(EventKey.ActionFailed, OnActionFailed);
         }
 
         public async UniTask Begin()

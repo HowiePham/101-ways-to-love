@@ -52,7 +52,8 @@ namespace Mimi.Prototypes
 
             IsBootViewReady = true;
 
-            float loadingSecs = Application.isEditor ? 1f : this.fakeLoadingSecs;
+            // float loadingSecs = Application.isEditor ? 1f : this.fakeLoadingSecs;
+            float loadingSecs = this.fakeLoadingSecs;
 
             this.earlyProgressTween = DOTween.To(() => this.loadingPercentage,
                 value =>

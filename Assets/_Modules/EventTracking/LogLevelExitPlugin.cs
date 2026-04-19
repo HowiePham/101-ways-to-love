@@ -1,13 +1,15 @@
 using System;
 using System.Threading;
+using _Modules.GameEvent.Scripts;
 using Cysharp.Threading.Tasks;
+using FrogunnerGames;
 using Mimi.Ads.Adapters;
 using Mimi.Analytics.Tracking.Trackers;
 using Mimi.Events;
-using _Modules.GameEvent.Scripts;
 using Mimi.Events.AsyncBus;
 using Mimi.Games.Plugins;
 using Mimi.Prototypes;
+using Mimi.Prototypes.Events;
 using UnityEngine;
 
 namespace Tracking
@@ -28,6 +30,7 @@ namespace Tracking
         private bool isInLevel;
         private bool isWatchingRewardVideo;
         private DateTime levelStartTime;
+        private int falseCount;
 
         public LogLevelExitPlugin(RuntimeState runtimeState, IAsyncSubscriber eventSubscriber, IAnalyticTracker analyticTracker, IAdAdapter ads)
         {
@@ -51,6 +54,12 @@ namespace Tracking
             this.ads.RewardVideo.OnVideoOpened += OnRewardVideoOpened;
             this.ads.RewardVideo.OnVideoClosed += OnRewardVideoClosed;
             this.ads.RewardVideo.OnShowFailed += OnRewardVideoShowFailed;
+            Messenger.AddListener(EventKey.ActionFailed, OnActionFailed);
+        }
+
+        private void OnActionFailed()
+        {
+            this.falseCount++;
         }
 
 
@@ -59,6 +68,7 @@ namespace Tracking
             await UniTask.CompletedTask;
             this.isInLevel = true;
             this.levelStartTime = DateTime.UtcNow;
+            this.falseCount = 0;
         }
 
         private async UniTask LevelCompletedHandler(LevelCompleted levelCompleted, CancellationToken cancellationToken)
@@ -109,7 +119,8 @@ namespace Tracking
                 eventName = Feature_LEVEL_EXIT.EVENT_NAME.level_exit,
                 level = currentLevelOrder.ToString(),
                 mode = "normal",
-                play_duration = playDurationMs.ToString()
+                play_duration = playDurationMs.ToString(),
+                false_count = this.falseCount.ToString()
             });
         }
 
@@ -127,6 +138,7 @@ namespace Tracking
             this.ads.RewardVideo.OnVideoOpened -= OnRewardVideoOpened;
             this.ads.RewardVideo.OnVideoClosed -= OnRewardVideoClosed;
             this.ads.RewardVideo.OnShowFailed -= OnRewardVideoShowFailed;
+            Messenger.RemoveListener(EventKey.ActionFailed, OnActionFailed);
         }
 
         public async UniTask Begin()

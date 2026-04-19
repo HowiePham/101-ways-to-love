@@ -19,7 +19,7 @@ namespace _Modules.Ads
         public event Action OnConsentShowed;
         public event Action OnConsentShowFailed;
 
-        private const float TimeOutSeconds = 5f;
+        private const float TimeOutSeconds = 3f;
 
         public async UniTask InitAdmobConsent()
         {

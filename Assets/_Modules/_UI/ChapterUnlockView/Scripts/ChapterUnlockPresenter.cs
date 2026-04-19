@@ -50,7 +50,7 @@ public class ChapterUnlockPresenter : BaseViewPresenter
         this.chapterUnlockView.SetChapterData(icon, chapter.ChapterName);
 
         await this.chapterUnlockView.ShowAuto();
-        await UniTask.WaitForSeconds(2f);
+        await UniTask.WaitForSeconds(1f);
 
         this.chapterUnlockView.Hide();
     }
