@@ -7,6 +7,7 @@ using Mimi.Prototypes.SceneManagement;
 using Sirenix.OdinInspector;
 using TypeReferences;
 using UnityEngine;
+using Stopwatch = System.Diagnostics.Stopwatch;
 
 namespace Mimi.Prototypes
 {
@@ -26,11 +27,13 @@ namespace Mimi.Prototypes
 
         private Tween earlyProgressTween;
         private float loadingPercentage;
+        private readonly Stopwatch totalLoadingStopwatch = new Stopwatch();
 
         private void Awake()
         {
             DontDestroyOnLoad(this);
             IsBootViewReady = false;
+            this.totalLoadingStopwatch.Restart();
             PrepareBootView().Forget();
         }
 
@@ -52,7 +55,6 @@ namespace Mimi.Prototypes
 
             IsBootViewReady = true;
 
-            // float loadingSecs = Application.isEditor ? 1f : this.fakeLoadingSecs;
             float loadingSecs = this.fakeLoadingSecs;
 
             this.earlyProgressTween = DOTween.To(() => this.loadingPercentage,
@@ -68,12 +70,15 @@ namespace Mimi.Prototypes
             await Load();
             this.gameContext.EventPublisher.PublishAsync(new BootGameCompleted());
             this.bootView.Hide();
+            this.totalLoadingStopwatch.Stop();
+            Debug.Log($"--- (BOOT) Total game loading time: {this.totalLoadingStopwatch.ElapsedMilliseconds}ms");
             Destroy(gameObject);
         }
 
         private async UniTask Load()
         {
             await UniTask.WaitUntil(() => this.gameContext.IsRemoteConfigInitialized);
+            Debug.Log($"--- (BOOT) RemoteConfig ready at {this.totalLoadingStopwatch.ElapsedMilliseconds}ms");
 
             this.gameContext.CreateServices();
 
@@ -88,8 +93,11 @@ namespace Mimi.Prototypes
 
             UniTask waitForContextInitialized = UniTask.WaitUntil(() => this.gameContext.IsInitialized);
             await UniTask.WhenAll(fakeLoadingBarProgress, waitForContextInitialized);
+            Debug.Log($"--- (BOOT) GameContext initialized at {this.totalLoadingStopwatch.ElapsedMilliseconds}ms");
 
+            var sceneLoadStart = this.totalLoadingStopwatch.ElapsedMilliseconds;
             await this.gameContext.LoadSceneAsync(this.nextSceneType.Type);
+            Debug.Log($"--- (BOOT) Next scene loaded in {this.totalLoadingStopwatch.ElapsedMilliseconds - sceneLoadStart}ms (total {this.totalLoadingStopwatch.ElapsedMilliseconds}ms)");
 
             await DOTween.To(() => this.loadingPercentage,
                 value =>

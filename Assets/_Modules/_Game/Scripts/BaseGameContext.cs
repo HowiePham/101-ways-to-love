@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
+using Stopwatch = System.Diagnostics.Stopwatch;
 using _Modules.Ads;
 using Cysharp.Threading.Tasks;
 using Economy.Resources;
@@ -119,15 +120,18 @@ namespace Mimi.Prototypes
         private const string MaxMrecUnitId = "b21d09db69c6a7a5";
 
         private UniTask configServiceTask;
+        private readonly Stopwatch initStopwatch = new Stopwatch();
+        private readonly Stopwatch stepStopwatch = new Stopwatch();
+        private long configServiceElapsedMs;
 
         protected override async UniTask OnInitializing()
         {
+            this.initStopwatch.Restart();
             this.configServiceTask = InitConfigService();
 
             await UniTask.WaitUntil(() => BootLoader.IsBootViewReady);
 
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-            Application.targetFrameRate = 60;
 
 #if RELEASE
             Debug.unityLogger.filterLogType = LogType.Exception;
@@ -196,25 +200,37 @@ namespace Mimi.Prototypes
             CreatePlayerResourceService();
             CreateGameData();
             CreateSaveService();
+
             CreateAnalyticService();
             LogInitializeEvent("init_analytic_service");
             CreateAudioService();
             LogInitializeEvent("init_audio_service");
 
+            this.stepStopwatch.Restart();
             await this.configServiceTask;
-            LogInitializeEvent("init_config");
+            LogInitializeEvent("init_config", this.stepStopwatch.ElapsedMilliseconds, this.configServiceElapsedMs);
+
+            this.stepStopwatch.Restart();
             await InitIAPService();
-            LogInitializeEvent("init_iap");
+            LogInitializeEvent("init_iap", this.stepStopwatch.ElapsedMilliseconds);
+
+            this.stepStopwatch.Restart();
             await InitAdmobConsent();
-            LogInitializeEvent("init_admob_consent");
+            LogInitializeEvent("init_admob_consent", this.stepStopwatch.ElapsedMilliseconds);
+
+            this.stepStopwatch.Restart();
             await InitGoogleMobileAds();
-            LogInitializeEvent("init_gma");
+            LogInitializeEvent("init_gma", this.stepStopwatch.ElapsedMilliseconds);
 #if !UNITY_EDITOR
+            this.stepStopwatch.Restart();
             SingularSDK.InitializeSingularSDK();
-            LogInitializeEvent("init_mmp");
+            LogInitializeEvent("init_mmp", this.stepStopwatch.ElapsedMilliseconds);
 #endif
+            this.stepStopwatch.Restart();
             await InitAdsService();
-            LogInitializeEvent("init_ads");
+            LogInitializeEvent("init_ads", this.stepStopwatch.ElapsedMilliseconds);
+
+            Debug.Log($"--- (INIT) CreateCoreServices total: {this.initStopwatch.ElapsedMilliseconds}ms");
         }
 
         private void CreateAnalyticService()
@@ -323,35 +339,24 @@ namespace Mimi.Prototypes
                 this.Ads.AppOpen.Load();
                 this.Ads.Banner.Load(new AdPlacement("Bottom"), BannerSize.Adaptive, BannerPosition.Bottom);
             }
-
-            // if (!RemoteConfig.GetValue(ConfigKey.RequireInternet).Boolean) return;
-            //
-            // if (internetState == InternetState.Unavailable)
-            // {
-            //     if (this.showRequireInternetPopupHandler == default)
-            //     {
-            //         this.showRequireInternetPopupHandler = Timing.RunCoroutine(_ShowRequireInternetDialog());
-            //     }
-            // }
-            // else if (internetState == InternetState.Available)
-            // {
-            //     if (this.showRequireInternetPopupHandler.IsValid)
-            //     {
-            //         Timing.KillCoroutines(this.showRequireInternetPopupHandler);
-            //         this.showRequireInternetPopupHandler = default;
-            //     }
-            //
-            //     if (this.requireInternetDialog != null)
-            //     {
-            //         this.requireInternetDialog.Hide();
-            //         this.requireInternetDialog = null;
-            //     }
-            // }
         }
 
-        protected void LogInitializeEvent(string eventName)
+        protected void LogInitializeEvent(string eventName, long elapsedMs = -1, long actualDurationMs = -1)
         {
-            Debug.Log($"--- (INIT) Initializing {eventName}");
+            long totalMs = this.initStopwatch.ElapsedMilliseconds;
+            if (elapsedMs >= 0 && actualDurationMs >= 0)
+            {
+                Debug.Log($"--- (BOOT) {eventName} blocked={elapsedMs}ms actual={actualDurationMs}ms (total {totalMs}ms)");
+            }
+            else if (elapsedMs >= 0)
+            {
+                Debug.Log($"--- (BOOT) {eventName} took {elapsedMs}ms (total {totalMs}ms)");
+            }
+            else
+            {
+                Debug.Log($"--- (BOOT) Initializing {eventName} (total {totalMs}ms)");
+            }
+
             if (!this.IsFirstSession)
             {
                 return;
@@ -598,6 +603,7 @@ namespace Mimi.Prototypes
 
         public async UniTask InitConfigService()
         {
+            var configStopwatch = Stopwatch.StartNew();
             this.IsRemoteConfigInitialized = false;
 
 #if !UNITY_EDITOR
@@ -708,6 +714,8 @@ namespace Mimi.Prototypes
             {
                 cts.Dispose();
                 this.IsRemoteConfigInitialized = true;
+                configStopwatch.Stop();
+                this.configServiceElapsedMs = configStopwatch.ElapsedMilliseconds;
             }
         }
 
