@@ -65,6 +65,7 @@ public struct Feature_LEVEL_END : IEventData{
 	 public string use_hint{ get; set; }
 	 public string use_skip{ get; set; }
 	 public string play_duration{ get; set; }
+	 public string false_count{ get; set; }
 }
 
 public struct Feature_HINT : IEventData{
@@ -128,6 +129,7 @@ public struct Feature_LEVEL_EXIT : IEventData{
 	 public string level{ get; set; }
 	 public string mode{ get; set; }
 	 public string play_duration{ get; set; }
+	 public string false_count{ get; set; }
 }
 
 public struct Feature_LEVEL_REOPEN : IEventData{
