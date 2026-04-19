@@ -91,12 +91,12 @@ namespace Mimi.Prototypes
                 }, 0.8f, 0.3f).AsyncWaitForCompletion().AsUniTask();
 
             UniTask waitForServiceInitialized = UniTask.WaitUntil(() => this.gameContext.IsServiceInitialized);
-            await UniTask.WhenAll(fakeLoadingBarProgress, waitForServiceInitialized);
-            Debug.Log($"--- (BOOT) Other Services initialized at {this.totalLoadingStopwatch.ElapsedMilliseconds}ms");
 
             var sceneLoadStart = this.totalLoadingStopwatch.ElapsedMilliseconds;
-            await this.gameContext.LoadSceneAsync(this.nextSceneType.Type);
-            Debug.Log($"--- (BOOT) Next scene loaded in {this.totalLoadingStopwatch.ElapsedMilliseconds - sceneLoadStart}ms (total {this.totalLoadingStopwatch.ElapsedMilliseconds}ms)");
+            UniTask sceneLoadTask = this.gameContext.LoadSceneAsync(this.nextSceneType.Type);
+
+            await UniTask.WhenAll(fakeLoadingBarProgress, waitForServiceInitialized, sceneLoadTask);
+            Debug.Log($"--- (BOOT) Services + scene ready in {this.totalLoadingStopwatch.ElapsedMilliseconds - sceneLoadStart}ms (total {this.totalLoadingStopwatch.ElapsedMilliseconds}ms)");
 
             await DOTween.To(() => this.loadingPercentage,
                 value =>
