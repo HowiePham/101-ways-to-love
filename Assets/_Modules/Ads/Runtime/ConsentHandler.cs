@@ -19,7 +19,7 @@ namespace _Modules.Ads
         public event Action OnConsentShowed;
         public event Action OnConsentShowFailed;
 
-        private const float TimeOutSeconds = 3f;
+        private const float TimeOutSeconds = 2f;
 
         public async UniTask InitAdmobConsent()
         {
@@ -38,6 +38,16 @@ namespace _Modules.Ads
                         "BAB7D139-24B3-4699-A6AF-3DC8DFF555F4",
                     }
             };
+#endif
+
+#if !UNITY_EDITOR
+            if (ConsentInformation.CanRequestAds())
+            {
+                Debug.Log("[UMP] Consent cached — skipping form load, refreshing in background");
+                this.IsConsentLoaded = true;
+                ConsentInformation.Update(request, _ => { });
+                return;
+            }
 #endif
 
             ConsentInformation.Update(request, OnConsentInfoUpdated);
