@@ -15,13 +15,15 @@ namespace Tracking
         private readonly RuntimeState runtimeState;
         private readonly IAsyncSubscriber eventSubscriber;
         private readonly IAnalyticTracker analyticTracker;
+        private readonly LifeSystem lifeSystem;
         private IDisposable levelStartedSub;
 
-        public LogLevelStartPlugin(RuntimeState runtimeState, IAsyncSubscriber eventSubscriber, IAnalyticTracker analyticTracker)
+        public LogLevelStartPlugin(RuntimeState runtimeState, IAsyncSubscriber eventSubscriber, IAnalyticTracker analyticTracker, LifeSystem lifeSystem)
         {
             this.runtimeState = runtimeState;
             this.eventSubscriber = eventSubscriber;
             this.analyticTracker = analyticTracker;
+            this.lifeSystem = lifeSystem;
         }
 
         public async UniTask Install()
@@ -40,7 +42,8 @@ namespace Tracking
             {
                 eventName = Feature_LEVEL_START.EVENT_NAME.level_start,
                 level = currentLevelOrder.ToString(),
-                level_mode = "normal"
+                level_mode = "normal",
+                life_count = this.lifeSystem.CurrentLifeCount.ToString()
             });
         }
 

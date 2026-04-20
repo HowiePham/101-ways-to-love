@@ -22,6 +22,7 @@ namespace Tracking
         private readonly IAsyncSubscriber eventSubscriber;
         private readonly IAnalyticTracker analyticTracker;
         private readonly IAdAdapter ads;
+        private readonly LifeSystem lifeSystem;
 
         private IDisposable levelCompletedSub;
         private IDisposable levelStartSub;
@@ -34,12 +35,13 @@ namespace Tracking
         private long totalAdDurationMs;
         private int falseCount;
 
-        public LogLevelCompletedPlugin(RuntimeState runtimeState, IAsyncSubscriber eventSubscriber, IAnalyticTracker analyticTracker, IAdAdapter ads)
+        public LogLevelCompletedPlugin(RuntimeState runtimeState, IAsyncSubscriber eventSubscriber, IAnalyticTracker analyticTracker, IAdAdapter ads, LifeSystem lifeSystem)
         {
             this.runtimeState = runtimeState;
             this.eventSubscriber = eventSubscriber;
             this.analyticTracker = analyticTracker;
             this.ads = ads;
+            this.lifeSystem = lifeSystem;
         }
 
         public async UniTask Install()
@@ -119,7 +121,8 @@ namespace Tracking
                 use_hint = this.useHint.ToString().ToLower(),
                 use_skip = this.useSkip.ToString().ToLower(),
                 play_duration = playDurationMs.ToString(),
-                false_count = this.falseCount.ToString()
+                false_count = this.falseCount.ToString(),
+                life_count = this.lifeSystem.CurrentLifeCount.ToString()
             });
         }
 
