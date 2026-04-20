@@ -39,6 +39,7 @@ public class TappingHint : BaseHint
 
     protected override void EnableHint(bool enable)
     {
+        if (this.hintGraphic == null) return;
         this.hintGraphic.SetActive(enable);
         this.hintGraphic.enabled = enable;
     }

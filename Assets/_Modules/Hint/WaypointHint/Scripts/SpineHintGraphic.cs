@@ -17,6 +17,8 @@ namespace VisualFlow
 
         public override void SetActive(bool active)
         {
+            if (this.skeletonAnimation == null) return;
+
             if (this.spineRenderer == null)
                 this.spineRenderer = this.skeletonAnimation.GetComponent<Renderer>();
 

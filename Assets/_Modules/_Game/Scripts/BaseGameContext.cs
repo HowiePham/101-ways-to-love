@@ -81,6 +81,8 @@ namespace Mimi.Prototypes
                     return true;
                 }
 
+                if (InAppPurchaseStore == null) return false;
+
                 foreach (var product in InAppPurchaseStore.Products)
                 {
                     if (product.Id.Equals(RemoveAdsProductId))
@@ -333,6 +335,11 @@ namespace Mimi.Prototypes
                 return;
             }
 
+            if (this.Ads == null)
+            {
+                return;
+            }
+
             if (IsRemoveAds)
             {
                 this.Ads.RewardVideo.Load();
@@ -399,6 +406,7 @@ namespace Mimi.Prototypes
             }
             finally
             {
+                cts.Cancel();
                 cts.Dispose();
             }
         }
@@ -491,6 +499,11 @@ namespace Mimi.Prototypes
                 if (RemoteConfig.GetValue(ConfigKey.ShowMREC).Boolean)
                 {
                     CreateMrecWithCustomPosition();
+                    Ads.Mrec.OnLoadSucceeded += () =>
+                    {
+                        CalculateMrecPos();
+                        this.isMrecFirstSuccessLoad = true;
+                    };
                 }
                 else
                 {
@@ -550,11 +563,6 @@ namespace Mimi.Prototypes
             Ads.Mrec.OnImpressionSuccess += AdsImpressionHandler;
             Ads.RewardVideo.OnImpressionSuccess += AdsImpressionHandler;
             Ads.AppOpen.OnImpressionSuccess += AdsImpressionHandler;
-            Ads.Mrec.OnLoadSucceeded += () =>
-            {
-                CalculateMrecPos();
-                this.isMrecFirstSuccessLoad = true;
-            };
 
             await EventPublisher.PublishAsync(new InitAdCompleted());
         }
@@ -718,6 +726,7 @@ namespace Mimi.Prototypes
             }
             finally
             {
+                cts.Cancel();
                 cts.Dispose();
                 this.IsRemoteConfigInitialized = true;
                 configStopwatch.Stop();
