@@ -71,6 +71,7 @@ namespace Mimi.Prototypes
         public LevelConfig ShowInterstitialLevelConfig { protected set; get; }
         public string RemoveAdsProductId { protected set; get; }
         public bool IsServiceInitialized { protected set; get; }
+        public LifeSystem LifeSystem { protected set; get; }
 
         public bool IsRemoveAds
         {
@@ -233,6 +234,8 @@ namespace Mimi.Prototypes
             await InitAdsService();
             LogInitializeEvent("init_ads", this.stepStopwatch.ElapsedMilliseconds);
 
+            InitLifeSystem();
+            
             Debug.Log($"--- (INIT) CreateCoreServices total: {this.initStopwatch.ElapsedMilliseconds}ms");
         }
 
@@ -762,6 +765,14 @@ namespace Mimi.Prototypes
 
             // Debug.Log($"--- (Audio) MusicOn: {this.GameData.SettingModel.MusicOn} --- {this.AudioService.MusicVolPercentage}");
             // Debug.Log($"--- (Audio) SoundOn: {this.GameData.SettingModel.SoundOn} --- {this.AudioService.SoundVolPercentage}");
+        }
+        
+        private void InitLifeSystem()
+        {
+            var lifeCooldown = this.RemoteConfig.GetValue(ConfigKey.LifeCooldown).Int;
+            var maxLife = this.RemoteConfig.GetValue(ConfigKey.MaxLife).Int;
+            LifeSystem = new LifeSystem(maxLife, lifeCooldown, this.PlayerResources, this.EventPublisher, this.EventSubscriber, this.DialogManager, this.Ads);
+            LogInitializeEvent("init_life_system");
         }
     }
 }
