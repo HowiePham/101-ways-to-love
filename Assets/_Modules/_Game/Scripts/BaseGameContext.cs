@@ -333,6 +333,11 @@ namespace Mimi.Prototypes
                 return;
             }
 
+            if (this.Ads == null)
+            {
+                return;
+            }
+
             if (IsRemoveAds)
             {
                 this.Ads.RewardVideo.Load();
