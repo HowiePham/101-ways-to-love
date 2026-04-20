@@ -200,5 +200,23 @@ public struct Feature_IAP_PURCHASE : IEventData{
 	 public string currency{ get; set; }
 }
 
+public struct Feature_LOADING_START : IEventData{
+	 public enum EVENT_NAME {
+		 loading_start}
+
+	 public EVENT_NAME eventName { get; set; }
+	 public string placement{ get; set; }
+}
+
+public struct Feature_LOADING_FINISH : IEventData{
+	 public enum EVENT_NAME {
+		 loading_finish}
+
+	 public EVENT_NAME eventName { get; set; }
+	 public string placement{ get; set; }
+	 public string is_load{ get; set; }
+	 public string load_time{ get; set; }
+}
+
 	}
 

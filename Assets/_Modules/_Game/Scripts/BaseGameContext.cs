@@ -240,6 +240,11 @@ namespace Mimi.Prototypes
 #if UNITY_EDITOR
             AnalyticTracker = new NullTracker();
 #endif
+            this.AnalyticTracker.LogEvent(new Feature_LOADING_START()
+            {
+                eventName = Feature_LOADING_START.EVENT_NAME.loading_start,
+                placement = "app_open"
+            });
         }
 
         private void CreateGameData()
