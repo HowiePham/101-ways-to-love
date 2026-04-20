@@ -81,6 +81,8 @@ namespace Mimi.Prototypes
                     return true;
                 }
 
+                if (InAppPurchaseStore == null) return false;
+
                 foreach (var product in InAppPurchaseStore.Products)
                 {
                     if (product.Id.Equals(RemoveAdsProductId))
