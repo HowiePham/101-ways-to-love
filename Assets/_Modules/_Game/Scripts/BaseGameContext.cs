@@ -497,6 +497,11 @@ namespace Mimi.Prototypes
                 if (RemoteConfig.GetValue(ConfigKey.ShowMREC).Boolean)
                 {
                     CreateMrecWithCustomPosition();
+                    Ads.Mrec.OnLoadSucceeded += () =>
+                    {
+                        CalculateMrecPos();
+                        this.isMrecFirstSuccessLoad = true;
+                    };
                 }
                 else
                 {
@@ -556,11 +561,6 @@ namespace Mimi.Prototypes
             Ads.Mrec.OnImpressionSuccess += AdsImpressionHandler;
             Ads.RewardVideo.OnImpressionSuccess += AdsImpressionHandler;
             Ads.AppOpen.OnImpressionSuccess += AdsImpressionHandler;
-            Ads.Mrec.OnLoadSucceeded += () =>
-            {
-                CalculateMrecPos();
-                this.isMrecFirstSuccessLoad = true;
-            };
 
             await EventPublisher.PublishAsync(new InitAdCompleted());
         }
