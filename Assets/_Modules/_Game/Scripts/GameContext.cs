@@ -22,7 +22,6 @@ namespace Mimi.Prototypes
         public ILevelRepository LevelRepository { private set; get; }
         public ILevelOrder LevelOrder { private set; get; }
         public ChapterLevelRepository ChapterLevelRepo { private set; get; }
-        public LifeSystem LifeSystem { private set; get; }
         public LevelConfig HintLevelConfig { private set; get; }
         public LevelConfig HardLevelConfig { private set; get; }
 
@@ -37,7 +36,6 @@ namespace Mimi.Prototypes
             InitHardLevelConfig();
             InitRateLevelConfig();
             InitLootSystem();
-            InitLifeSystem();
 
             this.IsServiceInitialized = true;
         }
@@ -164,14 +162,6 @@ namespace Mimi.Prototypes
             this.lootProcessor = new CompositeLootProcessor();
             this.lootProcessor.AddProcessor("Currency", new CurrencyLootProcessor(PlayerResources));
             LogInitializeEvent("init_loot_system");
-        }
-
-        private void InitLifeSystem()
-        {
-            var lifeCooldown = this.RemoteConfig.GetValue(ConfigKey.LifeCooldown).Int;
-            var maxLife = this.RemoteConfig.GetValue(ConfigKey.MaxLife).Int;
-            LifeSystem = new LifeSystem(maxLife, lifeCooldown, this.PlayerResources, this.EventPublisher, this.EventSubscriber, this.DialogManager, this.Ads);
-            LogInitializeEvent("init_life_system");
         }
 
         [Button]
