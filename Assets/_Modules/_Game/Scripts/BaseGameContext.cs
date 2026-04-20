@@ -124,6 +124,7 @@ namespace Mimi.Prototypes
         private const string MaxMrecUnitId = "b21d09db69c6a7a5";
 
         private UniTask configServiceTask;
+        private UniTask consentLoadTask;
         private readonly Stopwatch initStopwatch = new Stopwatch();
         private readonly Stopwatch stepStopwatch = new Stopwatch();
         private long configServiceElapsedMs;
@@ -132,6 +133,9 @@ namespace Mimi.Prototypes
         {
             this.initStopwatch.Restart();
             this.configServiceTask = InitConfigService();
+
+            this.ConsentHandler = new ConsentHandler();
+            this.consentLoadTask = this.ConsentHandler.LoadConsentAsync();
 
             await UniTask.WaitUntil(() => BootLoader.IsBootViewReady);
 
@@ -215,11 +219,11 @@ namespace Mimi.Prototypes
             LogInitializeEvent("init_config", this.stepStopwatch.ElapsedMilliseconds, this.configServiceElapsedMs);
 
             this.stepStopwatch.Restart();
-            await InitIAPService();
+            InitIAPService();
             LogInitializeEvent("init_iap", this.stepStopwatch.ElapsedMilliseconds);
 
             this.stepStopwatch.Restart();
-            await InitAdmobConsent();
+            await ShowAdmobConsent();
             LogInitializeEvent("init_admob_consent", this.stepStopwatch.ElapsedMilliseconds);
 
             this.stepStopwatch.Restart();
@@ -235,8 +239,15 @@ namespace Mimi.Prototypes
             LogInitializeEvent("init_ads", this.stepStopwatch.ElapsedMilliseconds);
 
             InitLifeSystem();
-            
+
             Debug.Log($"--- (INIT) CreateCoreServices total: {this.initStopwatch.ElapsedMilliseconds}ms");
+        }
+
+        private async UniTask ShowAdmobConsent()
+        {
+            await this.consentLoadTask;
+            this.ConsentHandler.ShowConsentIfNeeded();
+            this.IsAdmobConsentUpdateCompleted = true;
         }
 
         private void CreateAnalyticService()
@@ -412,13 +423,6 @@ namespace Mimi.Prototypes
                 cts.Cancel();
                 cts.Dispose();
             }
-        }
-
-        private async UniTask InitAdmobConsent()
-        {
-            this.ConsentHandler = new ConsentHandler();
-            await this.ConsentHandler.InitAdmobConsent();
-            this.IsAdmobConsentUpdateCompleted = true;
         }
 
         private async UniTask InitAdsService()
@@ -766,7 +770,7 @@ namespace Mimi.Prototypes
             // Debug.Log($"--- (Audio) MusicOn: {this.GameData.SettingModel.MusicOn} --- {this.AudioService.MusicVolPercentage}");
             // Debug.Log($"--- (Audio) SoundOn: {this.GameData.SettingModel.SoundOn} --- {this.AudioService.SoundVolPercentage}");
         }
-        
+
         private void InitLifeSystem()
         {
             var lifeCooldown = this.RemoteConfig.GetValue(ConfigKey.LifeCooldown).Int;
