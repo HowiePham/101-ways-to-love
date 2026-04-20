@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using DarkTonic.MasterAudio;
 using DG.Tweening;
+using Mimi.Analytics.Tracking.Trackers;
 using Mimi.Events;
 using Mimi.Prototypes.SceneManagement;
 using Sirenix.OdinInspector;
@@ -97,6 +98,14 @@ namespace Mimi.Prototypes
 
             await UniTask.WhenAll(fakeLoadingBarProgress, waitForServiceInitialized, sceneLoadTask);
             Debug.Log($"--- (BOOT) Services + scene ready in {this.totalLoadingStopwatch.ElapsedMilliseconds - sceneLoadStart}ms (total {this.totalLoadingStopwatch.ElapsedMilliseconds}ms)");
+
+            this.gameContext.AnalyticTracker.LogEvent(new Feature_LOADING_FINISH()
+            {
+                eventName = Feature_LOADING_FINISH.EVENT_NAME.loading_finish,
+                placement = "app_open",
+                is_load = "1",
+                load_time = this.totalLoadingStopwatch.ElapsedMilliseconds.ToString()
+            });
 
             await DOTween.To(() => this.loadingPercentage,
                 value =>
