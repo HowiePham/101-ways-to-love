@@ -34,13 +34,14 @@ namespace Mimi.Prototypes
         {
             DontDestroyOnLoad(this);
             IsBootViewReady = false;
-            this.totalLoadingStopwatch.Restart();
             PrepareBootView().Forget();
         }
 
         private async UniTaskVoid PrepareBootView()
         {
             Application.targetFrameRate = 60;
+            this.totalLoadingStopwatch.Restart();
+            Debug.Log($"--- (BOOT) Start Loading Time");
 
             this.bootView.Show();
             await this.bootView.RunLogoEffect();
@@ -52,7 +53,7 @@ namespace Mimi.Prototypes
                 {
                     this.loadingPercentage = value;
                     this.bootView.SetLoadingPercentage(this.loadingPercentage);
-                }, 0.1f, 0.5f).AsyncWaitForCompletion();
+                }, 0.1f, 0.1f).AsyncWaitForCompletion();
 
             IsBootViewReady = true;
 
