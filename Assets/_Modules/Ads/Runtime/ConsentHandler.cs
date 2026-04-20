@@ -21,7 +21,7 @@ namespace _Modules.Ads
 
         private const float TimeOutSeconds = 2f;
 
-        public async UniTask InitAdmobConsent()
+        public async UniTask LoadConsentAsync()
         {
             ConsentRequestParameters request = new ConsentRequestParameters
             {
@@ -58,26 +58,32 @@ namespace _Modules.Ads
             try
             {
                 await UniTask.WaitUntil(() => this.IsConsentLoaded || this.IsConsentLoadFailed, cancellationToken: cts.Token);
-                Debug.Log("Google Admob Consent Loaded before timeout");
-
-                if (!this.IsConsentLoadFailed && CanShowConsent())
-                {
-                    //Show Consent
-                    ShowConsent();
-                }
+                Debug.Log("[UMP] Consent form loaded");
             }
             catch (OperationCanceledException ex)
             {
                 if (ex.CancellationToken == cts.Token)
-                {
-                    Debug.Log("Google Admob Consent Timeout");
-                }
+                    Debug.Log("[UMP] Consent load timeout");
             }
             finally
             {
                 cts.Cancel();
                 cts.Dispose();
             }
+        }
+
+        public void ShowConsentIfNeeded()
+        {
+            if (!this.IsConsentLoadFailed && CanShowConsent())
+            {
+                ShowConsent();
+            }
+        }
+
+        public async UniTask InitAdmobConsent()
+        {
+            await LoadConsentAsync();
+            ShowConsentIfNeeded();
         }
 
         public void ShowConsent()
