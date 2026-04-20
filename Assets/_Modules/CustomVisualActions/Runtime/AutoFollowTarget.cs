@@ -7,6 +7,11 @@ public class AutoFollowTarget : MonoBehaviour
 
     private void Update()
     {
+        if (this.target == null)
+        {
+            return;
+        }
+
         this.transform.position = this.target.position;
     }
 }
