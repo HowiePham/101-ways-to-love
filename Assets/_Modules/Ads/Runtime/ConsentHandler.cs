@@ -75,6 +75,7 @@ namespace _Modules.Ads
             }
             finally
             {
+                cts.Cancel();
                 cts.Dispose();
             }
         }

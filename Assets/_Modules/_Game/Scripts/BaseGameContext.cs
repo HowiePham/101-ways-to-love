@@ -399,6 +399,7 @@ namespace Mimi.Prototypes
             }
             finally
             {
+                cts.Cancel();
                 cts.Dispose();
             }
         }
@@ -718,6 +719,7 @@ namespace Mimi.Prototypes
             }
             finally
             {
+                cts.Cancel();
                 cts.Dispose();
                 this.IsRemoteConfigInitialized = true;
                 configStopwatch.Stop();
