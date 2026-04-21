@@ -211,6 +211,7 @@ namespace Mimi.Prototypes
             CreateSaveService();
             CreateAnalyticService();
             LogInitializeEvent("init_analytic_service");
+            SetUserProperties();
             CreateAudioService();
             LogInitializeEvent("init_audio_service");
 
@@ -263,8 +264,6 @@ namespace Mimi.Prototypes
                 eventName = Feature_LOADING_START.EVENT_NAME.loading_start,
                 placement = "app_open"
             });
-
-            SetUserProperties();
         }
 
         private void SetUserProperties()
@@ -273,7 +272,7 @@ namespace Mimi.Prototypes
             {
                 user_properties = USER_PROPERTIES_TYPE.current_level
             };
-            AnalyticTracker.SetUserProperties(userProperty);
+            this.AnalyticTracker.SetUserProperties(userProperty);
         }
 
         private void CreateGameData()
