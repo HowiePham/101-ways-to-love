@@ -27,6 +27,7 @@ namespace Tracking
         private IDisposable gamePausedSub;
         private IDisposable backHomeSub;
         private IDisposable adShowRequestedSub;
+        private IDisposable actionFailedSub;
 
         private bool isInLevel;
         private bool isWatchingRewardVideo;
@@ -50,18 +51,19 @@ namespace Tracking
             this.gamePausedSub = this.eventSubscriber.Subscribe<GamePaused>(GamePausedHandler);
             this.backHomeSub = this.eventSubscriber.Subscribe<BackHome>(BackHomeHandler);
             this.adShowRequestedSub = this.eventSubscriber.Subscribe<AdShowRequested>(AdShowRequestedHandler);
+            this.actionFailedSub = this.eventSubscriber.Subscribe<ActionFailedMessage>(OnActionFailed);
             this.ads.Interstitial.OnShowSucceeded += OnInterShowed;
             this.ads.Interstitial.OnClosed += OnInterClosed;
             this.ads.Interstitial.OnShowFailed += OnInterShowFailed;
             this.ads.RewardVideo.OnVideoOpened += OnRewardVideoOpened;
             this.ads.RewardVideo.OnVideoClosed += OnRewardVideoClosed;
             this.ads.RewardVideo.OnShowFailed += OnRewardVideoShowFailed;
-            Messenger.AddListener(EventKey.ActionFailed, OnActionFailed);
         }
 
-        private void OnActionFailed()
+        private void OnActionFailed(ActionFailedMessage actionFailedMessage)
         {
             this.falseCount++;
+            Debug.Log($"--- (TRACKING)LogLevelExit Count false: {this.falseCount}");
         }
 
 
@@ -135,13 +137,13 @@ namespace Tracking
             this.gamePausedSub.Dispose();
             this.backHomeSub.Dispose();
             this.adShowRequestedSub.Dispose();
+            this.actionFailedSub.Dispose();
             this.ads.Interstitial.OnShowSucceeded -= OnInterShowed;
             this.ads.Interstitial.OnClosed -= OnInterClosed;
             this.ads.Interstitial.OnShowFailed -= OnInterShowFailed;
             this.ads.RewardVideo.OnVideoOpened -= OnRewardVideoOpened;
             this.ads.RewardVideo.OnVideoClosed -= OnRewardVideoClosed;
             this.ads.RewardVideo.OnShowFailed -= OnRewardVideoShowFailed;
-            Messenger.RemoveListener(EventKey.ActionFailed, OnActionFailed);
         }
 
         public async UniTask Begin()

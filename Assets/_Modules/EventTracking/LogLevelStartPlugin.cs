@@ -38,6 +38,8 @@ namespace Tracking
             int currentLevelOrder = this.runtimeState.CurrentLevelOrder.Value + 1;
             Debug.Log($"--- (TRACKING) Log level Start: {currentLevelOrder}");
 
+            UpdateUserProperties(currentLevelOrder);
+
             this.analyticTracker.LogEvent(new Feature_LEVEL_START()
             {
                 eventName = Feature_LEVEL_START.EVENT_NAME.level_start,
@@ -45,6 +47,16 @@ namespace Tracking
                 level_mode = "normal",
                 life_count = this.lifeSystem.CurrentLifeCount.ToString()
             });
+        }
+
+        private void UpdateUserProperties(int currentLevelOrder)
+        {
+            IUserPropertyData userProperty = new USER_PROPERTIES()
+            {
+                user_properties = USER_PROPERTIES_TYPE.current_level,
+                value = currentLevelOrder.ToString()
+            };
+            this.analyticTracker.SetUserProperties(userProperty);
         }
 
         public async UniTask Uninstall()

@@ -137,6 +137,8 @@ namespace Mimi.Prototypes
             this.ConsentHandler = new ConsentHandler();
             this.consentLoadTask = this.ConsentHandler.LoadConsentAsync();
 
+            this.projectPluginInjector = new UnityResourcePluginConfigInjector();
+
             await UniTask.WaitUntil(() => BootLoader.IsBootViewReady);
 
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
@@ -146,7 +148,6 @@ namespace Mimi.Prototypes
 #endif
 
             InitSheetAssets();
-            this.projectPluginInjector = new UnityResourcePluginConfigInjector();
             IProjectConfigRepository projectConfigRepository = new ResourceProjectConfigRepository();
             ProjectConfig projectConfig = projectConfigRepository.Get();
             RuntimeState = RuntimeState.Get();
@@ -208,7 +209,6 @@ namespace Mimi.Prototypes
             CreatePlayerResourceService();
             CreateGameData();
             CreateSaveService();
-
             CreateAnalyticService();
             LogInitializeEvent("init_analytic_service");
             CreateAudioService();
@@ -234,8 +234,10 @@ namespace Mimi.Prototypes
             SingularSDK.InitializeSingularSDK();
             LogInitializeEvent("init_mmp", this.stepStopwatch.ElapsedMilliseconds);
 #endif
+
             this.stepStopwatch.Restart();
-            await InitAdsService();
+            UniTask adsInitTask = InitAdsService();
+            await UniTask.WhenAny(adsInitTask, UniTask.Delay(TimeSpan.FromSeconds(5)));
             LogInitializeEvent("init_ads", this.stepStopwatch.ElapsedMilliseconds);
 
             InitLifeSystem();
@@ -261,6 +263,17 @@ namespace Mimi.Prototypes
                 eventName = Feature_LOADING_START.EVENT_NAME.loading_start,
                 placement = "app_open"
             });
+
+            SetUserProperties();
+        }
+
+        private void SetUserProperties()
+        {
+            IUserPropertyData userProperty = new USER_PROPERTIES()
+            {
+                user_properties = USER_PROPERTIES_TYPE.current_level
+            };
+            AnalyticTracker.SetUserProperties(userProperty);
         }
 
         private void CreateGameData()
@@ -408,7 +421,7 @@ namespace Mimi.Prototypes
             MobileAds.Initialize(status => { completed = true; });
 
             var cts = new CancellationTokenSource();
-            float gmaTimeOutSec = 3f;
+            float gmaTimeOutSec = 2f;
             cts.CancelAfterSlim(TimeSpan.FromSeconds(gmaTimeOutSec));
             try
             {
@@ -546,8 +559,6 @@ namespace Mimi.Prototypes
                 Ads.SetMrec(NullMrecAdapter.Instance);
             }
 
-            Ads.AppOpen.Load();
-
             if (RemoteConfig.GetValue(ConfigKey.ShowRewarded).Boolean)
             {
                 Debug.Log($"--- (ADS) Rewarded Ads initializing...");
@@ -571,6 +582,7 @@ namespace Mimi.Prototypes
             Ads.RewardVideo.OnImpressionSuccess += AdsImpressionHandler;
             Ads.AppOpen.OnImpressionSuccess += AdsImpressionHandler;
 
+            Ads.AppOpen.Load();
             await EventPublisher.PublishAsync(new InitAdCompleted());
         }
 
