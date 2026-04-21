@@ -139,7 +139,7 @@ namespace Mimi.Prototypes
 
             this.projectPluginInjector = new UnityResourcePluginConfigInjector();
 
-            await UniTask.WaitUntil(() => BootLoader.IsBootViewReady);
+            // await UniTask.WaitUntil(() => BootLoader.IsBootViewReady);
 
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 
