@@ -270,7 +270,8 @@ namespace Mimi.Prototypes
         {
             IUserPropertyData userProperty = new USER_PROPERTIES()
             {
-                user_properties = USER_PROPERTIES_TYPE.current_level
+                user_properties = USER_PROPERTIES_TYPE.current_level,
+                value = "0"
             };
             this.AnalyticTracker.SetUserProperties(userProperty);
         }
