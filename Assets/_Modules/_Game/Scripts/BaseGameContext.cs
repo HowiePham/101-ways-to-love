@@ -137,6 +137,10 @@ namespace Mimi.Prototypes
             this.ConsentHandler = new ConsentHandler();
             this.consentLoadTask = this.ConsentHandler.LoadConsentAsync();
 
+            CreateAnalyticService();
+            LogInitializeEvent("init_analytic_service");
+            this.projectPluginInjector = new UnityResourcePluginConfigInjector();
+
             await UniTask.WaitUntil(() => BootLoader.IsBootViewReady);
 
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
@@ -146,7 +150,6 @@ namespace Mimi.Prototypes
 #endif
 
             InitSheetAssets();
-            this.projectPluginInjector = new UnityResourcePluginConfigInjector();
             IProjectConfigRepository projectConfigRepository = new ResourceProjectConfigRepository();
             ProjectConfig projectConfig = projectConfigRepository.Get();
             RuntimeState = RuntimeState.Get();
@@ -209,8 +212,6 @@ namespace Mimi.Prototypes
             CreateGameData();
             CreateSaveService();
 
-            CreateAnalyticService();
-            LogInitializeEvent("init_analytic_service");
             CreateAudioService();
             LogInitializeEvent("init_audio_service");
 
@@ -408,7 +409,7 @@ namespace Mimi.Prototypes
             MobileAds.Initialize(status => { completed = true; });
 
             var cts = new CancellationTokenSource();
-            float gmaTimeOutSec = 3f;
+            float gmaTimeOutSec = 2f;
             cts.CancelAfterSlim(TimeSpan.FromSeconds(gmaTimeOutSec));
             try
             {
@@ -454,7 +455,8 @@ namespace Mimi.Prototypes
             Debug.Log($"--- (ADS) Ads initializing...");
 
             // var amazonMaxAdapter = new AmazonMaxAdapter(AmazonMaxId, new MaxAdapter(MaxSDKKey, SystemInfo.deviceUniqueIdentifier));
-            var maxAdapter = new AdminToolAdapter(new MaxAdapter(MaxSDKKey, SystemInfo.deviceUniqueIdentifier));
+            var maxAdapter = new AdminToolAdapter(
+                new TimeoutAdAdapter(new MaxAdapter(MaxSDKKey, SystemInfo.deviceUniqueIdentifier), timeoutSeconds: 5f));
             Ads = maxAdapter;
             await Ads.Initialize();
 
