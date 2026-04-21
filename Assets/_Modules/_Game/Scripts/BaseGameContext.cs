@@ -235,8 +235,10 @@ namespace Mimi.Prototypes
             SingularSDK.InitializeSingularSDK();
             LogInitializeEvent("init_mmp", this.stepStopwatch.ElapsedMilliseconds);
 #endif
+            
             this.stepStopwatch.Restart();
-            await InitAdsService();
+            UniTask adsInitTask = InitAdsService();
+            await UniTask.WhenAny(adsInitTask, UniTask.Delay(TimeSpan.FromSeconds(5)));
             LogInitializeEvent("init_ads", this.stepStopwatch.ElapsedMilliseconds);
 
             InitLifeSystem();
@@ -466,8 +468,7 @@ namespace Mimi.Prototypes
             Debug.Log($"--- (ADS) Ads initializing...");
 
             // var amazonMaxAdapter = new AmazonMaxAdapter(AmazonMaxId, new MaxAdapter(MaxSDKKey, SystemInfo.deviceUniqueIdentifier));
-            var maxAdapter = new AdminToolAdapter(
-                new TimeoutAdAdapter(new MaxAdapter(MaxSDKKey, SystemInfo.deviceUniqueIdentifier), timeoutSeconds: 5f));
+            var maxAdapter = new AdminToolAdapter(new MaxAdapter(MaxSDKKey, SystemInfo.deviceUniqueIdentifier));
             Ads = maxAdapter;
             await Ads.Initialize();
 
@@ -559,8 +560,6 @@ namespace Mimi.Prototypes
                 Ads.SetMrec(NullMrecAdapter.Instance);
             }
 
-            Ads.AppOpen.Load();
-
             if (RemoteConfig.GetValue(ConfigKey.ShowRewarded).Boolean)
             {
                 Debug.Log($"--- (ADS) Rewarded Ads initializing...");
@@ -584,6 +583,7 @@ namespace Mimi.Prototypes
             Ads.RewardVideo.OnImpressionSuccess += AdsImpressionHandler;
             Ads.AppOpen.OnImpressionSuccess += AdsImpressionHandler;
 
+            Ads.AppOpen.Load();
             await EventPublisher.PublishAsync(new InitAdCompleted());
         }
 
