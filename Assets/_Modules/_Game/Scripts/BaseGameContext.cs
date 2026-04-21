@@ -262,6 +262,17 @@ namespace Mimi.Prototypes
                 eventName = Feature_LOADING_START.EVENT_NAME.loading_start,
                 placement = "app_open"
             });
+
+            SetUserProperties();
+        }
+
+        private void SetUserProperties()
+        {
+            IUserPropertyData userProperty = new USER_PROPERTIES()
+            {
+                user_properties = USER_PROPERTIES_TYPE.current_level
+            };
+            AnalyticTracker.SetUserProperties(userProperty);
         }
 
         private void CreateGameData()
