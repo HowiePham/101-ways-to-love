@@ -28,6 +28,7 @@ namespace Tracking
         private IDisposable levelStartSub;
         private IDisposable levelSkipSub;
         private IDisposable levelHintSub;
+        private IDisposable actionFailedSub;
         private bool useSkip;
         private bool useHint;
         private DateTime startTime;
@@ -51,16 +52,17 @@ namespace Tracking
             this.levelStartSub = this.eventSubscriber.Subscribe<LevelStarted>(LevelStartedHandler);
             this.levelSkipSub = this.eventSubscriber.Subscribe<SkipLevel>(SkipHandler);
             this.levelHintSub = this.eventSubscriber.Subscribe<UseHint>(HintHandler);
+            this.actionFailedSub = this.eventSubscriber.Subscribe<ActionFailedMessage>(OnActionFailed);
             this.ads.Interstitial.OnShowSucceeded += OnAdOpened;
             this.ads.Interstitial.OnClosed += OnAdClosed;
             this.ads.RewardVideo.OnVideoOpened += OnRewardOpened;
             this.ads.RewardVideo.OnVideoClosed += OnRewardClosed;
-            Messenger.AddListener(EventKey.ActionFailed, OnActionFailed);
         }
 
-        private void OnActionFailed()
+        private void OnActionFailed(ActionFailedMessage actionFailedMessage)
         {
             this.falseCount++;
+            Debug.Log($"--- (TRACKING) LogLevelCompleted Count false: {this.falseCount}");
         }
 
         private async UniTask SkipHandler(SkipLevel skipLevel, CancellationToken cancellation)
@@ -110,7 +112,8 @@ namespace Tracking
             await UniTask.CompletedTask;
             int currentLevelOrder = this.runtimeState.CurrentLevelOrder.Value + 1;
             long playDurationMs = (long)(DateTime.UtcNow - this.startTime).TotalMilliseconds - this.totalAdDurationMs;
-            Debug.Log($"--- (TRACKING) Log level Completed: {currentLevelOrder} --- Hint: {this.useHint} --- Skip: {this.useSkip} --- Duration: {playDurationMs}ms");
+            Debug.Log(
+                $"--- (TRACKING) Log level Completed: {currentLevelOrder} --- Hint: {this.useHint} --- Skip: {this.useSkip} --- False: {this.falseCount} --- Life: {this.lifeSystem.CurrentLifeCount}--- Duration: {playDurationMs}ms");
 
             this.analyticTracker.LogEvent(new Feature_LEVEL_END()
             {
@@ -133,11 +136,11 @@ namespace Tracking
             this.levelStartSub.Dispose();
             this.levelHintSub.Dispose();
             this.levelSkipSub.Dispose();
+            this.actionFailedSub.Dispose();
             this.ads.Interstitial.OnShowSucceeded -= OnAdOpened;
             this.ads.Interstitial.OnClosed -= OnAdClosed;
             this.ads.RewardVideo.OnVideoOpened -= OnRewardOpened;
             this.ads.RewardVideo.OnVideoClosed -= OnRewardClosed;
-            Messenger.RemoveListener(EventKey.ActionFailed, OnActionFailed);
         }
 
         public async UniTask Begin()

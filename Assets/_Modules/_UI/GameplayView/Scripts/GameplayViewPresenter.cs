@@ -470,6 +470,7 @@ public class GameplayViewPresenter : BaseViewPresenter
     private void ActionFailedHandler()
     {
         this.eventPublisher.PublishAsync(new LifeUsing());
+        this.eventPublisher.PublishAsync(new ActionFailedMessage());
         HandleFailedUI();
     }
 

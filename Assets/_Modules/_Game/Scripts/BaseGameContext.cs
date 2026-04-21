@@ -137,8 +137,6 @@ namespace Mimi.Prototypes
             this.ConsentHandler = new ConsentHandler();
             this.consentLoadTask = this.ConsentHandler.LoadConsentAsync();
 
-            CreateAnalyticService();
-            LogInitializeEvent("init_analytic_service");
             this.projectPluginInjector = new UnityResourcePluginConfigInjector();
 
             await UniTask.WaitUntil(() => BootLoader.IsBootViewReady);
@@ -211,7 +209,8 @@ namespace Mimi.Prototypes
             CreatePlayerResourceService();
             CreateGameData();
             CreateSaveService();
-
+            CreateAnalyticService();
+            LogInitializeEvent("init_analytic_service");
             CreateAudioService();
             LogInitializeEvent("init_audio_service");
 
@@ -235,7 +234,7 @@ namespace Mimi.Prototypes
             SingularSDK.InitializeSingularSDK();
             LogInitializeEvent("init_mmp", this.stepStopwatch.ElapsedMilliseconds);
 #endif
-            
+
             this.stepStopwatch.Restart();
             UniTask adsInitTask = InitAdsService();
             await UniTask.WhenAny(adsInitTask, UniTask.Delay(TimeSpan.FromSeconds(5)));
