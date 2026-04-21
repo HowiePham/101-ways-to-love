@@ -73,7 +73,7 @@ namespace Mimi.Prototypes
             this.gameContext.EventPublisher.PublishAsync(new BootGameCompleted());
             this.bootView.Hide();
             this.totalLoadingStopwatch.Stop();
-            Debug.Log($"--- (BOOT) Total game loading time: {this.totalLoadingStopwatch.ElapsedMilliseconds}ms");
+            Debug.LogError($"--- (BOOT) Total game loading time: {this.totalLoadingStopwatch.ElapsedMilliseconds}ms");
             Destroy(gameObject);
         }
 
