@@ -141,6 +141,8 @@ namespace Mimi.Prototypes
 
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 
+            await UniTask.WaitUntil(() => BootLoader.IsBootViewReady);
+
 #if RELEASE
             Debug.unityLogger.filterLogType = LogType.Exception;
 #endif
