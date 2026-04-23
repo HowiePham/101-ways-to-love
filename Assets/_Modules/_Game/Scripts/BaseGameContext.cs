@@ -139,8 +139,6 @@ namespace Mimi.Prototypes
 
             this.projectPluginInjector = new UnityResourcePluginConfigInjector();
 
-            // await UniTask.WaitUntil(() => BootLoader.IsBootViewReady);
-
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 
 #if RELEASE
@@ -216,7 +214,7 @@ namespace Mimi.Prototypes
             LogInitializeEvent("init_audio_service");
 
             this.stepStopwatch.Restart();
-            await this.configServiceTask;
+            await WaitConfigService();
             LogInitializeEvent("init_config", this.stepStopwatch.ElapsedMilliseconds, this.configServiceElapsedMs);
 
             this.stepStopwatch.Restart();
@@ -230,9 +228,10 @@ namespace Mimi.Prototypes
             this.stepStopwatch.Restart();
             await InitGoogleMobileAds();
             LogInitializeEvent("init_gma", this.stepStopwatch.ElapsedMilliseconds);
+
 #if !UNITY_EDITOR
             this.stepStopwatch.Restart();
-            SingularSDK.InitializeSingularSDK();
+            HandleInitializingSingularSDK();
             LogInitializeEvent("init_mmp", this.stepStopwatch.ElapsedMilliseconds);
 #endif
 
@@ -244,6 +243,32 @@ namespace Mimi.Prototypes
             InitLifeSystem();
 
             Debug.Log($"--- (INIT) CreateCoreServices total: {this.initStopwatch.ElapsedMilliseconds}ms");
+        }
+
+        private async UniTask WaitConfigService()
+        {
+            try
+            {
+                await this.configServiceTask;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[Config] Config task failed: {ex.Message}");
+                if (this.RemoteConfig == null) this.RemoteConfig = NullConfigProvider.Instance;
+                this.IsRemoteConfigInitialized = true;
+            }
+        }
+
+        private async UniTask HandleInitializingSingularSDK()
+        {
+            try
+            {
+                SingularSDK.InitializeSingularSDK();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[MMP] Singular SDK init failed: {ex.Message}");
+            }
         }
 
         private async UniTask ShowAdmobConsent()
@@ -716,23 +741,15 @@ namespace Mimi.Prototypes
                 Debug.LogError($"[RemoteConfig] Fetching Error: " + configFetchError);
             };
 
-            var timeOutSeconds = 2f;
+            var timeOutSeconds = 3f;
             var cts = new CancellationTokenSource();
             cts.CancelAfterSlim(TimeSpan.FromSeconds(timeOutSeconds));
 
             try
             {
-                await this.RemoteConfig.Fetch();
-
-                if (this.IsRemoteConfigInitialized)
-                {
-                    Debug.Log("[RemoteConfig] Firebase Remote Config Initialized immediately");
-                }
-                else
-                {
-                    await UniTask.WaitUntil(() => this.IsRemoteConfigInitialized, cancellationToken: cts.Token);
-                    Debug.Log("[RemoteConfig] Firebase Remote Config Initialized before timeout");
-                }
+                this.RemoteConfig.Fetch();
+                await UniTask.WaitUntil(() => this.IsRemoteConfigInitialized, cancellationToken: cts.Token);
+                Debug.Log("[RemoteConfig] Firebase Remote Config Initialized before timeout");
             }
             catch (OperationCanceledException ex)
             {
