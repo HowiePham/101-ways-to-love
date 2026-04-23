@@ -100,6 +100,7 @@ namespace Mimi.Prototypes
         }
 
         public bool IsRemoteConfigInitialized;
+        public bool IsRemoteConfigLoadSuccess;
         public bool IsFirstSession => SessionRecorder.SessionCount <= 1;
 
         public string BGMSoundKey => this.bgmSoundKey;
@@ -665,6 +666,7 @@ namespace Mimi.Prototypes
         {
             var configStopwatch = Stopwatch.StartNew();
             this.IsRemoteConfigInitialized = false;
+            this.IsRemoteConfigLoadSuccess = false;
 
 #if !UNITY_EDITOR
             RemoteConfig = new Mimi.Configs.Firebase.FirebaseConfigProvider(new PlayPrefCache());
@@ -722,6 +724,7 @@ namespace Mimi.Prototypes
             this.RemoteConfig.OnFetchSuccess += () =>
             {
                 this.IsRemoteConfigInitialized = true;
+                this.IsRemoteConfigLoadSuccess = true;
                 Debug.Log($"--- (CONFIG) {ConfigKey.LevelDevelopment}: {RemoteConfig.GetValue(ConfigKey.LevelDevelopment).String}");
                 Debug.Log($"--- (CONFIG) {ConfigKey.LevelProduction}: {RemoteConfig.GetValue(ConfigKey.LevelProduction).String}");
                 Debug.Log($"--- (CONFIG) {ConfigKey.ChapterProduction}: {RemoteConfig.GetValue(ConfigKey.ChapterProduction).String}");
@@ -740,6 +743,7 @@ namespace Mimi.Prototypes
             this.RemoteConfig.OnFetchError += (configFetchError) =>
             {
                 this.IsRemoteConfigInitialized = true;
+                this.IsRemoteConfigLoadSuccess = false;
                 Debug.LogError($"[RemoteConfig] Fetching Error: " + configFetchError);
             };
 
@@ -760,6 +764,7 @@ namespace Mimi.Prototypes
                     Debug.Log("[RemoteConfig] Firebase Remote Config Initialized Timeout");
                 }
 
+                this.IsRemoteConfigLoadSuccess = false;
                 Debug.LogException(ex);
             }
             finally

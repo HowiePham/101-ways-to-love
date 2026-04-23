@@ -219,6 +219,7 @@ public struct Feature_LOADING_FINISH : IEventData{
 	 public string placement{ get; set; }
 	 public string is_load{ get; set; }
 	 public string load_time{ get; set; }
+	 public string is_remote_config_loaded{ get; set; }
 }
 
 	}
