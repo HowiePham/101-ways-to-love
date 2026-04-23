@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using Economy.Resources;
@@ -60,6 +61,13 @@ public class LifeSystem
 
         CheckLife();
         DebugLogConsole.AddCommandInstance("add-life", "Add 1 Life", "AddLife", this);
+    }
+
+    private static bool TryParseDateTime(string str, out DateTime result)
+    {
+        if (DateTime.TryParse(str, CultureInfo.InvariantCulture, DateTimeStyles.None, out result))
+            return true;
+        return DateTime.TryParse(str, out result);
     }
 
     private async UniTask LifeUsingHandler(LifeUsing lifeUsing, CancellationToken token)
@@ -219,7 +227,9 @@ public class LifeSystem
             return "";
         }
 
-        TimeSpan span = DateTime.Parse(this.lifeData.AddedNextTime[0]) - DateTime.Now;
+        if (!TryParseDateTime(this.lifeData.AddedNextTime[0], out DateTime parsedTime))
+            return "";
+        TimeSpan span = parsedTime - DateTime.Now;
         return GetRemainingTime(span);
     }
 
@@ -239,13 +249,15 @@ public class LifeSystem
         if (this.lifeData.AddedNextTime.Count > 0)
         {
             string times = this.lifeData.AddedNextTime[lifeData.AddedNextTime.Count - 1];
-            DateTime nextTime = DateTime.Parse(times).AddSeconds(seconds);
-            this.lifeData.AddedNextTime.Add(nextTime.ToString());
+            if (!TryParseDateTime(times, out DateTime baseTime))
+                baseTime = DateTime.Now;
+            DateTime nextTime = baseTime.AddSeconds(seconds);
+            this.lifeData.AddedNextTime.Add(nextTime.ToString(CultureInfo.InvariantCulture));
         }
         else
         {
             DateTime nextTime = DateTime.Now.AddSeconds(seconds);
-            this.lifeData.AddedNextTime.Add(nextTime.ToString());
+            this.lifeData.AddedNextTime.Add(nextTime.ToString(CultureInfo.InvariantCulture));
         }
 
         SaveLifeData();
@@ -256,7 +268,14 @@ public class LifeSystem
         for (var i = 0; i < this.lifeData.AddedNextTime.Count; i++)
         {
             string nextTime = this.lifeData.AddedNextTime[i];
-            TimeSpan span = DateTime.Parse(nextTime) - DateTime.Now;
+            if (!TryParseDateTime(nextTime, out DateTime parsedTime))
+            {
+                this.lifeData.AddedNextTime.RemoveAt(i);
+                i--;
+                continue;
+            }
+
+            TimeSpan span = parsedTime - DateTime.Now;
 
             if (span.TotalSeconds < 0)
             {
@@ -308,12 +327,15 @@ public class LifeSystem
         {
             if (this.lifeData.AddedNextTime.Count > 0)
             {
-                TimeSpan span = DateTime.Parse(this.lifeData.AddedNextTime[0]) - DateTime.Now;
-                this.publisher.PublishAsync(new RecoveryLifeTimerUpdated(GetRemainingTime(span)));
-                if (span.TotalSeconds < 0)
+                if (TryParseDateTime(this.lifeData.AddedNextTime[0], out DateTime parsedTime))
                 {
-                    this.lifeData.AddedNextTime.RemoveAt(0);
-                    AddLife();
+                    TimeSpan span = parsedTime - DateTime.Now;
+                    this.publisher.PublishAsync(new RecoveryLifeTimerUpdated(GetRemainingTime(span)));
+                    if (span.TotalSeconds < 0)
+                    {
+                        this.lifeData.AddedNextTime.RemoveAt(0);
+                        AddLife();
+                    }
                 }
             }
 
