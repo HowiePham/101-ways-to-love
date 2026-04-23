@@ -226,7 +226,7 @@ namespace Mimi.Prototypes
             LogInitializeEvent("init_admob_consent", this.stepStopwatch.ElapsedMilliseconds);
 
             this.stepStopwatch.Restart();
-            await InitGoogleMobileAds();
+            InitGoogleMobileAds().Forget();
             LogInitializeEvent("init_gma", this.stepStopwatch.ElapsedMilliseconds);
 
 #if !UNITY_EDITOR
