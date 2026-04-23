@@ -99,13 +99,7 @@ namespace Mimi.Prototypes
             await UniTask.WhenAll(fakeLoadingBarProgress, waitForServiceInitialized, sceneLoadTask);
             Debug.Log($"--- (BOOT) Services + scene ready in {this.totalLoadingStopwatch.ElapsedMilliseconds - sceneLoadStart}ms (total {this.totalLoadingStopwatch.ElapsedMilliseconds}ms)");
 
-            this.gameContext.AnalyticTracker.LogEvent(new Feature_LOADING_FINISH()
-            {
-                eventName = Feature_LOADING_FINISH.EVENT_NAME.loading_finish,
-                placement = "app_open",
-                is_load = "1",
-                load_time = this.totalLoadingStopwatch.ElapsedMilliseconds.ToString()
-            });
+            LogLoadingFinishEvent();
 
             await DOTween.To(() => this.loadingPercentage,
                 value =>
@@ -113,6 +107,20 @@ namespace Mimi.Prototypes
                     this.loadingPercentage = value;
                     this.bootView.SetLoadingPercentage(this.loadingPercentage);
                 }, 1f, 0.1f).AsyncWaitForCompletion().AsUniTask();
+        }
+
+        private void LogLoadingFinishEvent()
+        {
+            string isRemoteConfigLoadSuccess = this.gameContext.IsRemoteConfigLoadSuccess ? "1" : "0";
+
+            this.gameContext.AnalyticTracker.LogEvent(new Feature_LOADING_FINISH()
+            {
+                eventName = Feature_LOADING_FINISH.EVENT_NAME.loading_finish,
+                placement = "app_open",
+                is_load = "1",
+                is_remote_config_loaded = isRemoteConfigLoadSuccess,
+                load_time = this.totalLoadingStopwatch.ElapsedMilliseconds.ToString()
+            });
         }
 
 #if UNITY_EDITOR
