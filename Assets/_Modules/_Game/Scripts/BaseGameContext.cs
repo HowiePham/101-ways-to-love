@@ -743,7 +743,7 @@ namespace Mimi.Prototypes
                 Debug.LogError($"[RemoteConfig] Fetching Error: " + configFetchError);
             };
 
-            var timeOutSeconds = 3f;
+            var timeOutSeconds = 4f;
             var cts = new CancellationTokenSource();
             cts.CancelAfterSlim(TimeSpan.FromSeconds(timeOutSeconds));
 
