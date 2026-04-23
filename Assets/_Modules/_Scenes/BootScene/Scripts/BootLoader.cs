@@ -46,6 +46,7 @@ namespace Mimi.Prototypes
             this.bootView.Show();
             await this.bootView.RunLogoEffect();
             await this.bootView.ShowLoadingBarEffect();
+            IsBootViewReady = true;
 
             this.loadingPercentage = 0f;
             await DOTween.To(() => this.loadingPercentage,
@@ -54,8 +55,6 @@ namespace Mimi.Prototypes
                     this.loadingPercentage = value;
                     this.bootView.SetLoadingPercentage(this.loadingPercentage);
                 }, 0.1f, 0.1f).AsyncWaitForCompletion();
-
-            IsBootViewReady = true;
 
             float loadingSecs = this.fakeLoadingSecs;
 

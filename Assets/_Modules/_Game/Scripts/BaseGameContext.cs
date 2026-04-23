@@ -141,6 +141,8 @@ namespace Mimi.Prototypes
 
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 
+            await UniTask.WaitUntil(() => BootLoader.IsBootViewReady);
+
 #if RELEASE
             Debug.unityLogger.filterLogType = LogType.Exception;
 #endif
@@ -741,7 +743,7 @@ namespace Mimi.Prototypes
                 Debug.LogError($"[RemoteConfig] Fetching Error: " + configFetchError);
             };
 
-            var timeOutSeconds = 3f;
+            var timeOutSeconds = 4f;
             var cts = new CancellationTokenSource();
             cts.CancelAfterSlim(TimeSpan.FromSeconds(timeOutSeconds));
 
