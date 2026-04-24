@@ -1,6 +1,6 @@
 {
 "skeleton": {
-	"hash": "izT1XYv4QVJ/iiCyCCYnPZngHyE",
+	"hash": "UXQ7HlRtO5soFVbdUvqetK5oBms",
 	"spine": "3.8.99",
 	"x": -898.06,
 	"y": -789.28,
@@ -193,7 +193,8 @@
 	{ "name": "SM4", "parent": "SM1", "x": 9.23, "y": 193.79, "scaleX": 0.7175, "scaleY": 0.7175 },
 	{ "name": "SM5", "parent": "SM1", "x": 9.23, "y": 193.79, "scaleX": 1.1817, "scaleY": 1.1817 },
 	{ "name": "SM7", "parent": "SM1", "x": 9.23, "y": 193.79 },
-	{ "name": "bone6", "parent": "bone", "x": 815.98, "y": 642.88 }
+	{ "name": "bone6", "parent": "bone", "x": 815.98, "y": 642.88 },
+	{ "name": "fx_lua2", "parent": "bone", "x": -25.21, "y": 882.51 }
 ],
 "slots": [
 	{ "name": "static_khubep", "bone": "bone", "attachment": "static_khubep" },
@@ -236,6 +237,7 @@
 	{ "name": "g_Foot_r", "bone": "g_Foot_r", "attachment": "g_Foot_r" },
 	{ "name": "g_body", "bone": "g_body", "attachment": "g_body" },
 	{ "name": "fx_lua", "bone": "fx_lua", "attachment": "fx_lua" },
+	{ "name": "fx_lua2", "bone": "fx_lua2", "attachment": "fx_lua" },
 	{ "name": "g_dress", "bone": "g_body", "attachment": "g_dress" },
 	{ "name": "g_Shoulder_r", "bone": "g_Shoulder_r", "attachment": "g_Shoulder_r" },
 	{ "name": "g_Arm_r", "bone": "g_Arm_r", "attachment": "g_Arm_r" },
@@ -665,6 +667,9 @@
 			"fx_lua": {
 				"fx_lua": { "x": 0.72, "y": 22.58, "width": 110, "height": 49 }
 			},
+			"fx_lua2": {
+				"fx_lua": { "x": 0.72, "y": 22.58, "width": 110, "height": 49 }
+			},
 			"fx_luato": {
 				"fx_luato": {
 					"type": "mesh",
@@ -996,6 +1001,13 @@
 				]
 			},
 			"fx_lua": {
+				"attachment": [
+					{ "name": null },
+					{ "time": 1, "name": null },
+					{ "time": 2, "name": null }
+				]
+			},
+			"fx_lua2": {
 				"attachment": [
 					{ "name": null },
 					{ "time": 1, "name": null },
@@ -2552,10 +2564,10 @@
 			{
 				"offsets": [
 					{ "slot": "drag_binhxanglua_false2", "offset": 4 },
-					{ "slot": "g_Arm_l", "offset": 12 },
-					{ "slot": "g_Hand_l", "offset": 12 },
-					{ "slot": "static_kieng3chan", "offset": -30 },
-					{ "slot": "Chao", "offset": -26 }
+					{ "slot": "g_Arm_l", "offset": 13 },
+					{ "slot": "g_Hand_l", "offset": 13 },
+					{ "slot": "static_kieng3chan", "offset": -31 },
+					{ "slot": "Chao", "offset": -27 }
 				]
 			}
 		]
@@ -2759,6 +2771,12 @@
 				]
 			},
 			"fx_lua": {
+				"attachment": [
+					{ "name": null },
+					{ "time": 2.5333, "name": "fx_lua" }
+				]
+			},
+			"fx_lua2": {
 				"attachment": [
 					{ "name": null },
 					{ "time": 2.5333, "name": "fx_lua" }
@@ -4850,6 +4868,66 @@
 				"scale": [
 					{ "x": 1.639, "y": 0.754 }
 				]
+			},
+			"fx_lua2": {
+				"translate": [
+					{ "x": 19.8, "y": 28.22 },
+					{ "time": 6.6333, "x": 18.7, "y": 53.01 }
+				],
+				"scale": [
+					{ "time": 2.5333, "x": 0.79, "y": -0.031 },
+					{ "time": 2.8333, "x": 0.831, "y": 1.307 },
+					{ "time": 2.9667, "x": 0.831, "y": 1.15 },
+					{ "time": 3.1, "x": 0.831, "y": 1.307 },
+					{ "time": 3.2333, "x": 0.831, "y": 1.15 },
+					{ "time": 3.3667, "x": 0.831, "y": 1.307 },
+					{ "time": 3.5, "x": 0.831, "y": 1.15 },
+					{ "time": 3.6333, "x": 0.831, "y": 1.307 },
+					{ "time": 3.7667, "x": 0.831, "y": 1.15 },
+					{ "time": 3.9, "x": 0.831, "y": 1.307 },
+					{ "time": 4.0333, "x": 0.831, "y": 1.15 },
+					{ "time": 4.1667, "x": 0.831, "y": 1.307 },
+					{ "time": 4.3, "x": 0.831, "y": 1.15 },
+					{ "time": 4.4333, "x": 0.831, "y": 1.307 },
+					{ "time": 4.5667, "x": 0.831, "y": 1.15 },
+					{ "time": 4.7, "x": 0.831, "y": 1.307 },
+					{ "time": 4.8333, "x": 0.831, "y": 1.15 },
+					{ "time": 4.9667, "x": 0.831, "y": 1.307 },
+					{ "time": 5.1, "x": 0.831, "y": 1.15 },
+					{ "time": 5.2333, "x": 0.831, "y": 1.307 },
+					{ "time": 5.3667, "x": 0.831, "y": 1.15 },
+					{ "time": 5.5, "x": 0.831, "y": 1.307 },
+					{ "time": 5.6333, "x": 0.831, "y": 1.15 },
+					{ "time": 5.7667, "x": 0.831, "y": 1.307 },
+					{ "time": 5.9, "x": 0.831, "y": 1.15 },
+					{ "time": 6.0333, "x": 0.831, "y": 1.307 },
+					{ "time": 6.1667, "x": 0.831, "y": 1.15 },
+					{ "time": 6.3, "x": 0.831, "y": 1.307 },
+					{ "time": 6.4333, "x": 0.831, "y": 1.15 },
+					{ "time": 6.5667, "x": 0.831, "y": 1.307 },
+					{ "time": 6.7, "x": 0.831, "y": 1.15 },
+					{ "time": 6.8333, "x": 0.831, "y": 1.307 },
+					{ "time": 6.9667, "x": 0.831, "y": 1.15 },
+					{ "time": 7.1, "x": 0.831, "y": 1.307 },
+					{ "time": 7.2333, "x": 0.831, "y": 1.15 },
+					{ "time": 7.3667, "x": 0.831, "y": 1.307 },
+					{ "time": 7.5, "x": 0.831, "y": 1.15 },
+					{ "time": 7.6333, "x": 0.831, "y": 1.307 },
+					{ "time": 7.7667, "x": 0.831, "y": 1.15 },
+					{ "time": 7.9, "x": 0.831, "y": 1.307 },
+					{ "time": 8.0333, "x": 0.831, "y": 1.15 },
+					{ "time": 8.1667, "x": 0.831, "y": 1.307 },
+					{ "time": 8.3, "x": 0.831, "y": 1.15 },
+					{ "time": 8.4333, "x": 0.831, "y": 1.307 },
+					{ "time": 8.5667, "x": 0.831, "y": 1.15 },
+					{ "time": 8.7, "x": 0.831, "y": 1.307 },
+					{ "time": 8.8333, "x": 0.831, "y": 1.15 },
+					{ "time": 8.9667, "x": 0.831, "y": 1.307 },
+					{ "time": 9.1, "x": 0.831, "y": 1.15 },
+					{ "time": 9.2333, "x": 0.831, "y": 1.307 },
+					{ "time": 9.3667, "x": 0.831, "y": 1.15 },
+					{ "time": 9.5, "x": 0.831, "y": 1.307 }
+				]
 			}
 		},
 		"ik": {
@@ -4866,17 +4944,18 @@
 			{
 				"offsets": [
 					{ "slot": "drag_binhxanglua_false2", "offset": 4 },
-					{ "slot": "g_Arm_l", "offset": 12 },
-					{ "slot": "g_Hand_l", "offset": 12 },
-					{ "slot": "static_kieng3chan", "offset": -25 },
-					{ "slot": "Chao", "offset": -26 }
+					{ "slot": "g_Arm_l", "offset": 13 },
+					{ "slot": "g_Hand_l", "offset": 13 },
+					{ "slot": "static_kieng3chan", "offset": -26 },
+					{ "slot": "Chao", "offset": -27 }
 				]
 			},
 			{
 				"time": 2,
 				"offsets": [
-					{ "slot": "g_Arm_l", "offset": 4 },
-					{ "slot": "g_Hand_l", "offset": 4 },
+					{ "slot": "g_Arm_l", "offset": 5 },
+					{ "slot": "g_Hand_l", "offset": 5 },
+					{ "slot": "fx_lua2", "offset": -23 },
 					{ "slot": "static_kieng3chan", "offset": -26 },
 					{ "slot": "Chao", "offset": -26 }
 				]
@@ -4885,8 +4964,8 @@
 				"time": 5.4333,
 				"offsets": [
 					{ "slot": "g_Leg_l", "offset": -1 },
-					{ "slot": "fx_lua", "offset": 6 },
-					{ "slot": "Chao", "offset": -27 }
+					{ "slot": "fx_lua", "offset": 7 },
+					{ "slot": "Chao", "offset": -28 }
 				]
 			},
 			{
@@ -4894,8 +4973,8 @@
 				"offsets": [
 					{ "slot": "g_Leg_l", "offset": 0 },
 					{ "slot": "g_hair", "offset": -6 },
-					{ "slot": "fx_lua", "offset": 6 },
-					{ "slot": "Chao", "offset": -27 },
+					{ "slot": "fx_lua", "offset": 7 },
+					{ "slot": "Chao", "offset": -28 },
 					{ "slot": "xucxich 7", "offset": 15 },
 					{ "slot": "xucxich 8", "offset": 15 },
 					{ "slot": "xucxich can do", "offset": 15 }
@@ -4995,6 +5074,11 @@
 				]
 			},
 			"fx_lua": {
+				"attachment": [
+					{ "name": "fx_lua" }
+				]
+			},
+			"fx_lua2": {
 				"attachment": [
 					{ "name": "fx_lua" }
 				]
@@ -6368,6 +6452,29 @@
 				"scale": [
 					{ "x": -0.875, "y": 0.875 }
 				]
+			},
+			"fx_lua2": {
+				"rotate": [
+					{}
+				],
+				"translate": [
+					{ "x": 18.7, "y": 53.01 }
+				],
+				"scale": [
+					{ "x": 0.831, "y": 1.307 },
+					{ "time": 0.1333, "x": 0.907, "y": 1.426 },
+					{ "time": 0.2333, "x": 0.831, "y": 1.307 },
+					{ "time": 0.4, "x": 0.907, "y": 1.426 },
+					{ "time": 0.5, "x": 0.831, "y": 1.307 },
+					{ "time": 0.6333, "x": 0.907, "y": 1.426 },
+					{ "time": 0.7333, "x": 0.831, "y": 1.307 },
+					{ "time": 0.8667, "x": 0.907, "y": 1.426 },
+					{ "time": 1, "x": 0.831, "y": 1.307 },
+					{ "time": 1.1333, "x": 0.907, "y": 1.426 },
+					{ "time": 1.2333, "x": 0.831, "y": 1.307 },
+					{ "time": 1.3667, "x": 0.907, "y": 1.426 },
+					{ "time": 1.4667, "x": 0.831, "y": 1.307 }
+				]
 			}
 		},
 		"ik": {
@@ -6391,8 +6498,8 @@
 				"offsets": [
 					{ "slot": "g_Leg_l", "offset": 0 },
 					{ "slot": "g_hair", "offset": -6 },
-					{ "slot": "fx_lua", "offset": 5 },
-					{ "slot": "Chao", "offset": -27 },
+					{ "slot": "fx_lua", "offset": 6 },
+					{ "slot": "Chao", "offset": -28 },
 					{ "slot": "xucxich 7", "offset": 15 },
 					{ "slot": "xucxich 8", "offset": 15 },
 					{ "slot": "xucxich can do", "offset": 15 }
@@ -6526,6 +6633,11 @@
 				]
 			},
 			"fx_lua": {
+				"attachment": [
+					{ "name": null }
+				]
+			},
+			"fx_lua2": {
 				"attachment": [
 					{ "name": null }
 				]
@@ -8653,19 +8765,19 @@
 			{
 				"offsets": [
 					{ "slot": "drag_binhxanglua_false2", "offset": 4 },
-					{ "slot": "g_Arm_l", "offset": 12 },
-					{ "slot": "g_Hand_l", "offset": 12 },
-					{ "slot": "static_kieng3chan", "offset": -26 },
-					{ "slot": "Chao", "offset": -26 }
+					{ "slot": "g_Arm_l", "offset": 13 },
+					{ "slot": "g_Hand_l", "offset": 13 },
+					{ "slot": "static_kieng3chan", "offset": -27 },
+					{ "slot": "Chao", "offset": -27 }
 				]
 			},
 			{
 				"time": 1.9,
 				"offsets": [
 					{ "slot": "drag_binhxanglua_false2", "offset": 3 },
-					{ "slot": "g_Arm_l", "offset": 11 },
-					{ "slot": "g_Hand_l", "offset": 11 },
-					{ "slot": "Chao", "offset": -27 },
+					{ "slot": "g_Arm_l", "offset": 12 },
+					{ "slot": "g_Hand_l", "offset": 12 },
+					{ "slot": "Chao", "offset": -28 },
 					{ "slot": "dau3", "offset": -26 }
 				]
 			}
@@ -8758,6 +8870,11 @@
 				]
 			},
 			"fx_lua": {
+				"attachment": [
+					{ "name": null }
+				]
+			},
+			"fx_lua2": {
 				"attachment": [
 					{ "name": null }
 				]
