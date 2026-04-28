@@ -44,7 +44,7 @@ namespace Mimi.Prototypes
             Debug.Log($"--- (BOOT) Start Loading Time");
 
             this.bootView.Show();
-            await this.bootView.RunLogoEffect();
+            this.bootView.RunLogoEffect();
             await this.bootView.ShowLoadingBarEffect();
             IsBootViewReady = true;
 
