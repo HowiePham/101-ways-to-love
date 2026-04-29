@@ -8,31 +8,57 @@ public class ScaleObjectHighlight : MonoBehaviour
     [SerializeField] private float duration = 0.5f;
     [SerializeField] private Ease ease = Ease.Linear;
     [SerializeField] private bool enableHighlight = true;
-    private Vector3 defaultScale = Vector3.one;
+
+    private Vector3 defaultScale;
     private Tween scalingTween;
 
     public bool EnableHighlight
     {
         get => this.enableHighlight;
-        set => this.enableHighlight = value;
+        set
+        {
+            if (this.enableHighlight == value) return;
+            this.enableHighlight = value;
+            if (!this.isActiveAndEnabled) return;
+            if (value)
+            {
+                this.StartHighlight();
+            }
+            else
+            {
+                this.StopHighlight();
+            }
+        }
+    }
+
+    private void Awake()
+    {
+        this.defaultScale = this.highlightTarget.localScale;
     }
 
     private void OnEnable()
     {
-        if (!this.EnableHighlight)
-        {
-            return;
-        }
+        if (this.enableHighlight)
+            this.StartHighlight();
+    }
 
+    private void OnDisable()
+    {
+        this.StopHighlight();
+    }
+
+    private void StartHighlight()
+    {
+        this.scalingTween?.Kill();
         this.scalingTween = this.highlightTarget.DOScale(this.maxScale, this.duration)
             .SetLoops(-1, LoopType.Yoyo)
             .SetEase(this.ease);
     }
 
-    private void OnDisable()
+    private void StopHighlight()
     {
-        this.highlightTarget.localScale = this.defaultScale;
-
         this.scalingTween?.Kill();
+        this.scalingTween = null;
+        this.highlightTarget.DOScale(this.defaultScale, 0.2f);
     }
 }
