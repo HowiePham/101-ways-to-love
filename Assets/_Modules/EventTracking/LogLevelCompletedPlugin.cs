@@ -115,17 +115,29 @@ namespace Tracking
             Debug.Log(
                 $"--- (TRACKING) Log level Completed: {currentLevelOrder} --- Hint: {this.useHint} --- Skip: {this.useSkip} --- False: {this.falseCount} --- Life: {this.lifeSystem.CurrentLifeCount}--- Duration: {playDurationMs}ms");
 
-            this.analyticTracker.LogEvent(new Feature_LEVEL_END()
+            // this.analyticTracker.LogEvent(new Feature_LEVEL_END()
+            // {
+            //     eventName = Feature_LEVEL_END.EVENT_NAME.level_end,
+            //     level = currentLevelOrder.ToString(),
+            //     level_mode = "normal",
+            //     result = levelCompleted.Status.ToString(),
+            //     use_hint = this.useHint.ToString().ToLower(),
+            //     use_skip = this.useSkip.ToString().ToLower(),
+            //     play_duration = playDurationMs.ToString(),
+            //     false_count = this.falseCount.ToString(),
+            //     life_count = this.lifeSystem.CurrentLifeCount.ToString()
+            // });
+            this.analyticTracker.LogEvent(new LevelEndEventData()
             {
-                eventName = Feature_LEVEL_END.EVENT_NAME.level_end,
+                eventName = LevelEndEventData.EVENT_NAME.level_end,
                 level = currentLevelOrder.ToString(),
                 level_mode = "normal",
                 result = levelCompleted.Status.ToString(),
                 use_hint = this.useHint.ToString().ToLower(),
                 use_skip = this.useSkip.ToString().ToLower(),
                 play_duration = playDurationMs.ToString(),
-                false_count = this.falseCount.ToString(),
-                life_count = this.lifeSystem.CurrentLifeCount.ToString()
+                false_count = this.falseCount,
+                life_count = this.lifeSystem.CurrentLifeCount
             });
         }
 

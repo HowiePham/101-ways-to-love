@@ -40,12 +40,20 @@ namespace Tracking
 
             UpdateUserProperties(currentLevelOrder);
 
-            this.analyticTracker.LogEvent(new Feature_LEVEL_START()
+            // this.analyticTracker.LogEvent(new Feature_LEVEL_START()
+            // {
+            //     eventName = Feature_LEVEL_START.EVENT_NAME.level_start,
+            //     level = currentLevelOrder.ToString(),
+            //     level_mode = "normal",
+            //     life_count = this.lifeSystem.CurrentLifeCount.ToString()
+            // });
+            
+            this.analyticTracker.LogEvent(new LevelStartEventData()
             {
-                eventName = Feature_LEVEL_START.EVENT_NAME.level_start,
+                eventName = LevelStartEventData.EVENT_NAME.level_start,
                 level = currentLevelOrder.ToString(),
                 level_mode = "normal",
-                life_count = this.lifeSystem.CurrentLifeCount.ToString()
+                life_count = this.lifeSystem.CurrentLifeCount
             });
         }
 

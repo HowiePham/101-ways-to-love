@@ -118,14 +118,23 @@ namespace Tracking
             long playDurationMs = (long)(DateTime.UtcNow - this.levelStartTime).TotalMilliseconds;
 
             Debug.Log($"--- (TRACKING) Level Exit: {currentLevelOrder}, play_duration={playDurationMs}ms");
-            this.analyticTracker.LogEvent(new Feature_LEVEL_EXIT
+            // this.analyticTracker.LogEvent(new Feature_LEVEL_EXIT
+            // {
+            //     eventName = Feature_LEVEL_EXIT.EVENT_NAME.level_exit,
+            //     level = currentLevelOrder.ToString(),
+            //     mode = "normal",
+            //     play_duration = playDurationMs.ToString(),
+            //     false_count = this.falseCount.ToString(),
+            //     life_count = this.lifeSystem.CurrentLifeCount.ToString()
+            // });
+            this.analyticTracker.LogEvent(new LevelExitEventData()
             {
-                eventName = Feature_LEVEL_EXIT.EVENT_NAME.level_exit,
+                eventName = LevelExitEventData.EVENT_NAME.level_exit,
                 level = currentLevelOrder.ToString(),
                 mode = "normal",
                 play_duration = playDurationMs.ToString(),
-                false_count = this.falseCount.ToString(),
-                life_count = this.lifeSystem.CurrentLifeCount.ToString()
+                false_count = this.falseCount,
+                life_count = this.lifeSystem.CurrentLifeCount
             });
         }
 
