@@ -148,8 +148,11 @@ public class LifeSystem
         RunTimer();
 
         Messenger.Broadcast(EventKey.PauseLevel, false);
-        this.activeLifeDialog.Hide();
-        this.activeLifeDialog = null;
+        if (this.activeLifeDialog != null)
+        {
+            this.activeLifeDialog.Hide();
+            this.activeLifeDialog = null;
+        }
     }
 
     private void SaveLifeData()
