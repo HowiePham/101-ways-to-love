@@ -10,7 +10,7 @@ public struct LevelEndEventData : IEventData{
     public string result{ get; set; }
     public string use_hint{ get; set; }
     public string use_skip{ get; set; }
-    public string play_duration{ get; set; }
+    public int play_duration{ get; set; }
     public int false_count{ get; set; }
     public int life_count{ get; set; }
 }
