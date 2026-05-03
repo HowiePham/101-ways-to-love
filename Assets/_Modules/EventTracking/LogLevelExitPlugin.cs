@@ -132,7 +132,7 @@ namespace Tracking
                 eventName = LevelExitEventData.EVENT_NAME.level_exit,
                 level = currentLevelOrder.ToString(),
                 mode = "normal",
-                play_duration = playDurationMs.ToString(),
+                play_duration = (int)playDurationMs,
                 false_count = this.falseCount,
                 life_count = this.lifeSystem.CurrentLifeCount
             });

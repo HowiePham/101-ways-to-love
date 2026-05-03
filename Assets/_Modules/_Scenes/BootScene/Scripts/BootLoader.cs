@@ -72,7 +72,6 @@ namespace Mimi.Prototypes
             this.gameContext.EventPublisher.PublishAsync(new BootGameCompleted());
             this.bootView.Hide();
             this.totalLoadingStopwatch.Stop();
-            Debug.LogError($"--- (BOOT) Total game loading time: {this.totalLoadingStopwatch.ElapsedMilliseconds}ms");
             Destroy(gameObject);
         }
 
@@ -98,7 +97,6 @@ namespace Mimi.Prototypes
 
             await UniTask.WhenAll(fakeLoadingBarProgress, waitForServiceInitialized, sceneLoadTask);
             Debug.Log($"--- (BOOT) Services + scene ready in {this.totalLoadingStopwatch.ElapsedMilliseconds - sceneLoadStart}ms (total {this.totalLoadingStopwatch.ElapsedMilliseconds}ms)");
-
             LogLoadingFinishEvent();
 
             await DOTween.To(() => this.loadingPercentage,
@@ -112,14 +110,15 @@ namespace Mimi.Prototypes
         private void LogLoadingFinishEvent()
         {
             string isRemoteConfigLoadSuccess = this.gameContext.IsRemoteConfigLoadSuccess ? "1" : "0";
-
-            this.gameContext.AnalyticTracker.LogEvent(new Feature_LOADING_FINISH()
+            int loadingTime = (int)this.totalLoadingStopwatch.ElapsedMilliseconds;
+            Debug.LogError($"--- (BOOT) Total game loading time: {loadingTime}ms");
+            this.gameContext.AnalyticTracker.LogEvent(new LoadingFinishEventData()
             {
-                eventName = Feature_LOADING_FINISH.EVENT_NAME.loading_finish,
+                eventName = LoadingFinishEventData.EVENT_NAME.loading_finish,
                 placement = "app_open",
                 is_load = "1",
                 is_remote_config_loaded = isRemoteConfigLoadSuccess,
-                load_time = this.totalLoadingStopwatch.ElapsedMilliseconds.ToString()
+                load_time = loadingTime
             });
         }
 

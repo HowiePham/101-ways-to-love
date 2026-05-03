@@ -36,40 +36,6 @@ public struct Feature_SESSION_START : IEventData{
 	 public EVENT_NAME eventName { get; set; }
 }
 
-public struct Feature_LEVEL_START : IEventData{
-	 public enum EVENT_NAME {
-		 level_start}
-
-	 public EVENT_NAME eventName { get; set; }
-	 public string level{ get; set; }
-	 public string level_mode{ get; set; }
-	 public string life_count{ get; set; }
-}
-
-public struct Feature_LEVEL_COMPLETE : IEventData{
-	 public enum EVENT_NAME {
-		 level_complete}
-
-	 public EVENT_NAME eventName { get; set; }
-	 public string level{ get; set; }
-	 public string timeplayed{ get; set; }
-}
-
-public struct Feature_LEVEL_END : IEventData{
-	 public enum EVENT_NAME {
-		 level_end}
-
-	 public EVENT_NAME eventName { get; set; }
-	 public string level{ get; set; }
-	 public string level_mode{ get; set; }
-	 public string result{ get; set; }
-	 public string use_hint{ get; set; }
-	 public string use_skip{ get; set; }
-	 public string play_duration{ get; set; }
-	 public string false_count{ get; set; }
-	 public string life_count{ get; set; }
-}
-
 public struct Feature_HINT : IEventData{
 	 public enum EVENT_NAME {
 		 hint}
@@ -121,18 +87,6 @@ public struct Feature_AD_REQUEST : IEventData{
 	 public string placement{ get; set; }
 	 public string is_load{ get; set; }
 	 public string load_time{ get; set; }
-}
-
-public struct Feature_LEVEL_EXIT : IEventData{
-	 public enum EVENT_NAME {
-		 level_exit}
-
-	 public EVENT_NAME eventName { get; set; }
-	 public string level{ get; set; }
-	 public string mode{ get; set; }
-	 public string play_duration{ get; set; }
-	 public string false_count{ get; set; }
-	 public string life_count{ get; set; }
 }
 
 public struct Feature_LEVEL_REOPEN : IEventData{
@@ -209,17 +163,6 @@ public struct Feature_LOADING_START : IEventData{
 
 	 public EVENT_NAME eventName { get; set; }
 	 public string placement{ get; set; }
-}
-
-public struct Feature_LOADING_FINISH : IEventData{
-	 public enum EVENT_NAME {
-		 loading_finish}
-
-	 public EVENT_NAME eventName { get; set; }
-	 public string placement{ get; set; }
-	 public string is_load{ get; set; }
-	 public string load_time{ get; set; }
-	 public string is_remote_config_loaded{ get; set; }
 }
 
 	}

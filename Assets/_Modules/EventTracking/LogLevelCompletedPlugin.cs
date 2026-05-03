@@ -135,7 +135,7 @@ namespace Tracking
                 result = levelCompleted.Status.ToString(),
                 use_hint = this.useHint.ToString().ToLower(),
                 use_skip = this.useSkip.ToString().ToLower(),
-                play_duration = playDurationMs.ToString(),
+                play_duration = (int)playDurationMs,
                 false_count = this.falseCount,
                 life_count = this.lifeSystem.CurrentLifeCount
             });
