@@ -49,6 +49,7 @@ namespace Mimi
         public override void Enter()
         {
             base.Enter();
+            Input.multiTouchEnabled = false;
             Context.EventSubscriber.Subscribe<NextLevelClicked>(NextLevelHandler).AddToBag(this.eventBag);
             Context.EventSubscriber.Subscribe<SkipLevel>(SkipLevelHandler).AddToBag(this.eventBag);
             Context.EventSubscriber.Subscribe<LevelTryAgain>(TryAgainLevelHandler).AddToBag(this.eventBag);
