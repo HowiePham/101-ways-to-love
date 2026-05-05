@@ -63,7 +63,7 @@ public class ChapterUnlockPresenter : BaseViewPresenter
         LevelInfo nextLevel = this.levelOrder.GetNextLevel(currentOrder);
         if (nextLevel == null) return false;
 
-        ShowForChapter(nextLevel.Chapter);
+        ShowForFirstSession(nextLevel.Chapter).Forget();
         return true;
     }
 
@@ -74,33 +74,15 @@ public class ChapterUnlockPresenter : BaseViewPresenter
         int currentOrder = this.runtimeState.CurrentLevelOrder.Value;
         LevelInfo nextLevel = this.levelOrder.GetNextLevel(currentOrder);
         if (nextLevel == null) return false;
+
         this.eventPublisher.PublishAsync(new DestroyLevelRequested());
-
-        this.backHomeRequested = false;
-        this.suppressEventPublish = true;
-
-        var tcs = new UniTaskCompletionSource();
-        void OnDismiss() => tcs.TrySetResult();
-
-        ShowForChapter(nextLevel.Chapter);
-        this.chapterUnlockView.OnContinueClicked += OnDismiss;
-        this.chapterUnlockView.OnBackHomeClicked += OnDismiss;
-
-        await tcs.Task;
-
-        this.chapterUnlockView.OnContinueClicked -= OnDismiss;
-        this.chapterUnlockView.OnBackHomeClicked -= OnDismiss;
-        this.suppressEventPublish = false;
-
+        await ShowForFirstSession(nextLevel.Chapter);
         return true;
     }
 
     public void ShowForChapter(int chapterNumber)
     {
-        ChapterInfo chapter = this.chapterLevelRepo.GetChapter(chapterNumber);
-        Sprite icon = Resources.Load<Sprite>("Icons/" + chapter.ChapterIconAddress);
-        this.chapterUnlockView.SetChapterData(icon, chapter.ChapterName);
-        Show();
+        ShowForFirstSession(chapterNumber).Forget();
     }
 
     protected override void OnShow()

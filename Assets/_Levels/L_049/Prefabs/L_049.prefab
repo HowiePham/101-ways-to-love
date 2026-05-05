@@ -4852,6 +4852,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7847923496759920705}
   - component: {fileID: 2280596876894922295}
+  - component: {fileID: 5269542137511902069}
   m_Layer: 0
   m_Name: static_HoaHong
   m_TagString: Untagged
@@ -4929,6 +4930,23 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &5269542137511902069
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7844555493809989371}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa04ca9537661134b8826ea02add14e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  highlightTarget: {fileID: 7847923496759920705}
+  maxScale: {x: 1.1, y: 1.1, z: 1}
+  duration: 0.5
+  ease: 1
+  enableHighlight: 0
 --- !u!1 &7859517350742174123
 GameObject:
   m_ObjectHideFlags: 0
@@ -6527,17 +6545,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2937192051556500481, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
   m_PrefabInstance: {fileID: 1016887854943334526}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &7667947757076949116 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7239171114073413634, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
-  m_PrefabInstance: {fileID: 1016887854943334526}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8217737215275734494}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa04ca9537661134b8826ea02add14e6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &8217737215275734494 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8941882117890696608, guid: be0c6d1377082ee42911b441c971b7a6, type: 3}
@@ -6842,11 +6849,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7281638907048261764, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 0.04
       objectReference: {fileID: 0}
     - target: {fileID: 7281638907048261764, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -2.2
+      value: -0.76
       objectReference: {fileID: 0}
     - target: {fileID: 7888149533098179239, guid: f2fbfb54846bf314f95c1218e4191e78, type: 3}
       propertyPath: m_LocalPosition.x
@@ -7856,7 +7863,7 @@ PrefabInstance:
     - target: {fileID: 6996030180818665119, guid: 77b33504dcc19a941a4ece2a723f7ce6, type: 3}
       propertyPath: 'objectHighlights.Array.data[1]'
       value: 
-      objectReference: {fileID: 7667947757076949116}
+      objectReference: {fileID: 5269542137511902069}
     - target: {fileID: 6996030180818665119, guid: 77b33504dcc19a941a4ece2a723f7ce6, type: 3}
       propertyPath: 'objectHighlights.Array.data[2]'
       value: 
