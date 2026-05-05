@@ -116,6 +116,7 @@ namespace _Modules._UI.WinView.Scripts
         {
             var gameContext = Context as GameContext;
             bool isAdAvailable = !gameContext.IsRemoveAds && this.adsAdapter.Interstitial.IsReady;
+            bool isAdCooldownCompletedAfterRewarded = gameContext.GameData.IsAdCoolDownCompletedAfterReward;
             bool allowShowAd = false;
 
             int currentLevelOrder = this.runtimeState.CurrentLevelOrder.Value + 1;
@@ -132,10 +133,11 @@ namespace _Modules._UI.WinView.Scripts
             }
 
             bool adCooldown = this.gameData.IsAdCoolDowning;
-            bool showAds = allowShowAd && isAdAvailable && !adCooldown;
+            bool showAds = allowShowAd && isAdAvailable && !adCooldown && isAdCooldownCompletedAfterRewarded;
             Debug.LogError("--- (NEXT) Ad Available Interstitial: " + isAdAvailable);
             Debug.LogError("--- (NEXT) Ad Level: " + allowShowAd);
             Debug.LogError("--- (NEXT) ads cooldown: " + adCooldown);
+            Debug.LogError("--- (NEXT) ads cooldown completed after rewarded: " + isAdCooldownCompletedAfterRewarded);
             Debug.LogError("--- (NEXT) showAds: " + showAds);
 
             if (showAds)
