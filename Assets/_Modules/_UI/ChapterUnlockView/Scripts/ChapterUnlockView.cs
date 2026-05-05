@@ -168,22 +168,8 @@ public class ChapterUnlockView : BaseView
         OnShowingCompleted?.Invoke();
         if (ct.IsCancellationRequested) return;
 
-        if (this.autoMode)
-        {
-            this.autoMode = false;
-            this.autoCompletionSource.TrySetResult();
-            return;
-        }
-
-        // === Phase 5: Buttons fade in + continue button pulse ===
-        this.backHomeBtnGroup.DOFade(1f, 0.5f);
-        await this.continueBtnGroup.DOFade(1f, 0.5f).AsyncWaitForCompletion();
-        if (ct.IsCancellationRequested) return;
-
-        this.ContinueBtnRect.localScale = Vector3.one;
-        this.continuePulseTween = this.ContinueBtnRect.DOScale(1.1f, 1f)
-            .SetEase(Ease.InOutQuad)
-            .SetLoops(-1, LoopType.Yoyo);
+        this.autoMode = false;
+        this.autoCompletionSource?.TrySetResult();
     }
 
     private void PlayAudio(string audioKey)
