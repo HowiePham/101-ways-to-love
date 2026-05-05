@@ -67,6 +67,11 @@ public class DrawingHint : BaseHint
 
     protected override void EnableHint(bool enable)
     {
+        if (this.hintGraphic == null || this.hintedObjectGraphic == null)
+        {
+            return;
+        }
+
         this.hintGraphic.SetActive(enable);
         this.hintedObjectGraphic.gameObject.SetActive(enable);
         this.hintGraphic.enabled = enable;

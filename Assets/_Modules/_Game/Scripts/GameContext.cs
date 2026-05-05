@@ -73,6 +73,7 @@ namespace Mimi.Prototypes
             pluginInstaller.AddPlugin(new LogResourceChangedPlugin((ResourceCollection)this.PlayerResources, this.AnalyticTracker));
             pluginInstaller.AddPlugin(new LogIapPlugin(this.EventSubscriber, this.AnalyticTracker, this.InAppPurchaseStore));
             pluginInstaller.AddPlugin(new RemoveAdOnPurchasePlugin(this));
+            pluginInstaller.AddPlugin(new DelayInterAfterShowReward(this));
         }
 
         private void CreateLevelServices()
