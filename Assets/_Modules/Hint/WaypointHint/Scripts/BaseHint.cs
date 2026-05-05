@@ -47,7 +47,11 @@ namespace VisualFlow
             Messenger.AddListener(EventKey.LevelWin, TurnOff);
             Messenger.AddListener(EventKey.AnimationStart, DisableHint);
             LeanTouch.OnFingerDown += FingerDownHandler;
-            this.leanSelectByFinger.OnSelected.AddListener(OnSelectedHandler);
+            if (this.leanSelectByFinger != null)
+            {
+                this.leanSelectByFinger.OnSelected.AddListener(OnSelectedHandler);
+            }
+
             LeanTouch.OnFingerUp += FingerUpHandler;
             await UniTask.CompletedTask;
         }
@@ -80,7 +84,23 @@ namespace VisualFlow
             Messenger.RemoveListener(EventKey.ResetAction, ActiveHint);
             Messenger.RemoveListener(EventKey.AnimationStart, DisableHint);
             Messenger.RemoveListener(EventKey.LevelWin, TurnOff);
-            this.leanSelectByFinger.OnSelected.RemoveListener(OnSelectedHandler);
+            if (this.leanSelectByFinger != null)
+            {
+                this.leanSelectByFinger.OnSelected.RemoveListener(OnSelectedHandler);
+            }
+        }
+
+        protected virtual void OnDestroy()
+        {
+            LeanTouch.OnFingerDown -= FingerDownHandler;
+            LeanTouch.OnFingerUp -= FingerUpHandler;
+            Messenger.RemoveListener(EventKey.ResetAction, ActiveHint);
+            Messenger.RemoveListener(EventKey.AnimationStart, DisableHint);
+            Messenger.RemoveListener(EventKey.LevelWin, TurnOff);
+            if (this.leanSelectByFinger != null)
+            {
+                this.leanSelectByFinger.OnSelected.RemoveListener(OnSelectedHandler);
+            }
         }
     }
 }
