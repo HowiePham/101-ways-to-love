@@ -15,10 +15,12 @@ namespace Games
         [SerializeField] private BaseHint[] hints;
         [SerializeField] private ScaleObjectHighlight[] objectHighlights;
         [SerializeField] private int totalStep;
-        [SerializeField] private float idleTimeBeforeHighlight = 15f;
+        private float idleTimeBeforeHighlight;
         private bool levelTutorial;
         private bool isAnimationPlaying;
         private bool isFingerDown;
+        private int falseTime;
+        private int objectHintFalseTime;
 
         public bool HasHint => this.hints.Length > 0;
         public bool LevelTutorial => this.levelTutorial;
@@ -71,12 +73,17 @@ namespace Games
 
         private void OnActionFailed()
         {
-            CancelIdleTimer();
-            ActiveObjectHighlight(true);
+            this.falseTime++;
+            if (this.falseTime >= this.objectHintFalseTime)
+            {
+                CancelIdleTimer();
+                ActiveObjectHighlight(true);
+            }
         }
 
         private void RestartIdleTimer()
         {
+            this.falseTime = 0;
             CancelIdleTimer();
             this.highlightTimerCts = new CancellationTokenSource();
             RunIdleTimer(this.highlightTimerCts.Token).Forget();
@@ -100,8 +107,11 @@ namespace Games
             this.levelTutorial = levelTutorial;
         }
 
-        public async UniTask Init()
+        public async UniTask Init(int objectHintFalseTime, float idleTimeBeforeHighlight)
         {
+            this.idleTimeBeforeHighlight = idleTimeBeforeHighlight;
+            this.objectHintFalseTime = objectHintFalseTime;
+
             foreach (BaseHint hint in this.hints)
             {
                 await hint.Initialize();

@@ -2,7 +2,6 @@
 {
     public static class ConfigKey
     {
-        
         public const string ClientVersion = "client_version";
         public const string LevelDevelopment = "level_dev";
         public const string LevelProduction = "level_prod";
@@ -41,5 +40,7 @@
         public const string SkipButtonDelay = "skip_button_delay";
         public const string ShowHintButtonAfterWrongTimes = "show_hint_button_after_wrong_times";
         public const string ShowSkipButtonAfterWrongTimes = "show_skip_button_after_wrong_times";
+        public const string ShowObjectHintAfterWrongTimes = "show_object_hint_after_wrong_times";
+        public const string ObjectHintDelay = "object_hint_delay";
     }
 }

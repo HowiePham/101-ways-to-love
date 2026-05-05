@@ -276,7 +276,9 @@ namespace Mimi
             ShowGameplayView();
             this.Context.StopSound(this.bgmSoundKey);
 
-            await this.hintPlayer.Init();
+            int objectHintFalseTime = this.Context.RemoteConfig.GetValue(ConfigKey.ShowObjectHintAfterWrongTimes).Int;
+            float objectHintDelay = this.Context.RemoteConfig.GetValue(ConfigKey.ObjectHintDelay).Float;
+            await this.hintPlayer.Init(objectHintFalseTime, objectHintDelay);
             this.hintPlayer.SetLevelTutorial(CanShowTutorial(levelOrder + 1));
 
             await Context.EventPublisher.PublishAsync(new LevelStarted(currentLevelInfo.Id));
