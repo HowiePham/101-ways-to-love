@@ -13,22 +13,27 @@ namespace Games
     public class HintPlayer : MonoBehaviour
     {
         [SerializeField] private BaseHint[] hints;
+        [SerializeField] private ScaleObjectHighlight[] objectHighlights;
         [SerializeField] private int totalStep;
+        [SerializeField] private float idleTimeBeforeHighlight = 15f;
         private bool levelTutorial;
         private bool isAnimationPlaying;
         private bool isFingerDown;
 
         public bool HasHint => this.hints.Length > 0;
         public bool LevelTutorial => this.levelTutorial;
-
         public int TotalStep => this.totalStep;
 
         private readonly CancellationTokenSource tokenSource = new();
+        private CancellationTokenSource highlightTimerCts;
 
         private void OnEnable()
         {
             Messenger.AddListener(EventKey.AnimationStart, OnAnimationStart);
             Messenger.AddListener(EventKey.AnimationComplete, OnAnimationComplete);
+            Messenger.AddListener(EventKey.ActionFailed, OnActionFailed);
+            Messenger.AddListener(EventKey.LevelWin, CancelIdleTimer);
+            Messenger.AddListener(EventKey.StartLevelGame, RestartIdleTimer);
             LeanTouch.OnFingerDown += OnFingerDown;
             LeanTouch.OnFingerUp += OnFingerUp;
         }
@@ -37,6 +42,9 @@ namespace Games
         {
             Messenger.RemoveListener(EventKey.AnimationStart, OnAnimationStart);
             Messenger.RemoveListener(EventKey.AnimationComplete, OnAnimationComplete);
+            Messenger.RemoveListener(EventKey.ActionFailed, OnActionFailed);
+            Messenger.RemoveListener(EventKey.LevelWin, CancelIdleTimer);
+            Messenger.RemoveListener(EventKey.StartLevelGame, RestartIdleTimer);
             LeanTouch.OnFingerDown -= OnFingerDown;
             LeanTouch.OnFingerUp -= OnFingerUp;
         }
@@ -51,8 +59,41 @@ namespace Games
             this.isAnimationPlaying = false;
         }
 
-        private void OnFingerDown(LeanFinger finger) => this.isFingerDown = true;
-        private void OnFingerUp(LeanFinger finger)   => this.isFingerDown = false;
+        private void OnFingerDown(LeanFinger finger)
+        {
+            this.isFingerDown = true;
+        }
+
+        private void OnFingerUp(LeanFinger finger)
+        {
+            this.isFingerDown = false;
+        }
+
+        private void OnActionFailed()
+        {
+            CancelIdleTimer();
+            ActiveObjectHighlight(true);
+        }
+
+        private void RestartIdleTimer()
+        {
+            CancelIdleTimer();
+            this.highlightTimerCts = new CancellationTokenSource();
+            RunIdleTimer(this.highlightTimerCts.Token).Forget();
+        }
+
+        private void CancelIdleTimer()
+        {
+            this.highlightTimerCts?.Cancel();
+            this.highlightTimerCts?.Dispose();
+            this.highlightTimerCts = null;
+        }
+
+        private async UniTask RunIdleTimer(CancellationToken token)
+        {
+            await UniTask.Delay(TimeSpan.FromSeconds(this.idleTimeBeforeHighlight), cancellationToken: token);
+            ActiveObjectHighlight(true);
+        }
 
         public void SetLevelTutorial(bool levelTutorial)
         {
@@ -111,6 +152,19 @@ namespace Games
             }
         }
 
+        private void ActiveObjectHighlight(bool active)
+        {
+            if (this.objectHighlights == null || this.objectHighlights.Length == 0)
+            {
+                return;
+            }
+
+            foreach (ScaleObjectHighlight objectHighlight in this.objectHighlights)
+            {
+                objectHighlight.EnableHighlight = active;
+            }
+        }
+
         public void CancelHint()
         {
             this.tokenSource.Cancel();
@@ -123,10 +177,28 @@ namespace Games
         }
 
         [Button]
+        private void TestHighlightObjectOn()
+        {
+            ActiveObjectHighlight(true);
+        }
+
+        [Button]
+        private void TestHighlightObjectOff()
+        {
+            ActiveObjectHighlight(false);
+        }
+
+        [Button]
         public void GetHints()
         {
             this.hints = GetComponentsInChildren<BaseHint>();
             this.totalStep = this.hints.Length;
+        }
+
+        [Button]
+        public void GetAllObjectHighlights()
+        {
+            this.objectHighlights = GetComponentsInChildren<ScaleObjectHighlight>();
         }
     }
 }
