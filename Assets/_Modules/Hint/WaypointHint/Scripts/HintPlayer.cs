@@ -42,6 +42,7 @@ namespace Games
 
         private void OnDisable()
         {
+            CancelIdleTimer();
             Messenger.RemoveListener(EventKey.AnimationStart, OnAnimationStart);
             Messenger.RemoveListener(EventKey.AnimationComplete, OnAnimationComplete);
             Messenger.RemoveListener(EventKey.ActionFailed, OnActionFailed);
@@ -171,6 +172,7 @@ namespace Games
 
             foreach (ScaleObjectHighlight objectHighlight in this.objectHighlights)
             {
+                if (objectHighlight == null) continue;
                 objectHighlight.EnableHighlight = active;
             }
         }
