@@ -27,6 +27,7 @@ public class HardLevelView : BaseView
 
     [Title("Clock")] [SerializeField] private CanvasGroup clockGroup;
     [SerializeField] private TMP_Text clockText;
+    [SerializeField] private Transform clockGroupMessageTarget;
 
     [Title("Message Group")] [SerializeField]
     private CanvasGroup messageGroup;
@@ -35,6 +36,7 @@ public class HardLevelView : BaseView
     [SerializeField] private Transform deathGod;
     [SerializeField] private TMP_Text messageText;
     [SerializeField] private Button playButton;
+    [SerializeField] private string messageString;
 
     [Title("Timeout")] [SerializeField] private GameObject timeoutGroup;
     [SerializeField] private GameObject timeoutPanel;
@@ -48,15 +50,25 @@ public class HardLevelView : BaseView
     [Title("SFX")] [SerializeField, SoundKey]
     private string hardLevelAudioKey;
 
+    private Tween clockPulseTween;
+    private Vector3 clockGroupOriginPosition;
+
     public event Action OnClickPlay;
     public event Action OnClickGetMoreTime;
     public event Action OnClickReplay;
     public event Action OnClickHome;
 
+    private const string HardLevelShowFirstTimeDataKey = "hard_level_show_first_time";
+
     public override void Initialize()
     {
         base.Initialize();
-        this.playButton.onClick.AddListener(() => OnClickPlay?.Invoke());
+        this.playButton.onClick.AddListener(() =>
+        {
+            StopClockPulse();
+            this.clockGroup.transform.DOLocalMove(this.clockGroupOriginPosition, 0.4f).SetEase(Ease.OutQuint);
+            OnClickPlay?.Invoke();
+        });
         this.getMoreTimeButton.onClick.AddListener(() => OnClickGetMoreTime?.Invoke());
         this.replayButton.onClick.AddListener(() => OnClickReplay?.Invoke());
         this.homeButton.onClick.AddListener(() => OnClickHome?.Invoke());
@@ -77,6 +89,8 @@ public class HardLevelView : BaseView
         // DOTween.Kill(this.warningFx.transform);
         DOTween.Kill(this.smallTitle);
         DOTween.Kill(this.clockGroup.transform);
+        this.clockPulseTween?.Kill();
+        this.clockPulseTween = null;
         DOTween.Kill(this.messageGroup);
         DOTween.Kill(this.deathGod);
         DOTween.Kill(this.messageBoard);
@@ -100,21 +114,21 @@ public class HardLevelView : BaseView
         ShowLogoHardLevel();
         yield return new WaitForSeconds(2.8f);
         ShowSmallTitle(smallTitleTargetPos);
-        // this.warningFx.gameObject.SetActive(false);
         HideCenterIconGroup();
         ShowClockGroup();
         yield return new WaitForSeconds(0.6f);
 
-        // if (GameData.IsFirstTimeShowHardLevel)
-        // {
-        //     GameData.IsFirstTimeShowHardLevel = false;
-        //     StartCoroutine(ShowMessageGroup());
-        //     StartCoroutine(TextAppearEffect(message));
-        // }
-        // else
-        // {
-        OnClickPlay?.Invoke();
-        // }
+        bool firstTimeShowingHardLevel = PlayerPrefs.GetInt(HardLevelShowFirstTimeDataKey) == 0;
+        if (firstTimeShowingHardLevel)
+        {
+            PlayerPrefs.SetInt(HardLevelShowFirstTimeDataKey, 1);
+            this.clockGroupOriginPosition = this.clockGroup.transform.localPosition;
+            ShowMessageGroup();
+        }
+        else
+        {
+            OnClickPlay?.Invoke();
+        }
     }
 
     private void ShowClockGroup()
@@ -122,19 +136,34 @@ public class HardLevelView : BaseView
         DOTween.Sequence().Append(this.clockGroup.transform.DOScale(1, 0.6f).SetEase(Ease.OutBack));
     }
 
-    private IEnumerator ShowMessageGroup()
+    private void StartClockPulse()
+    {
+        this.clockPulseTween = this.clockGroup.transform
+            .DOScale(1.1f, 0.6f)
+            .SetEase(Ease.InOutSine)
+            .SetLoops(-1, LoopType.Yoyo);
+    }
+
+    private void StopClockPulse()
+    {
+        this.clockPulseTween?.Kill();
+        this.clockPulseTween = null;
+        this.clockGroup.transform.localScale = Vector3.one;
+    }
+
+    private async UniTask ShowMessageGroup()
     {
         this.messageBoard.color = new Color(1, 1, 1, 0);
-        this.SetMessageActive(true);
+        SetMessageActive(true);
         this.messageText.SetText(string.Empty);
         this.messageGroup.alpha = 0;
         this.deathGod.localScale = Vector3.zero;
-        DOTween.Sequence().Append(this.messageGroup.DOFade(1, 0.2f).SetEase(Ease.Linear));
-        yield return new WaitForSeconds(0.2f);
-        DOTween.Sequence().Append(this.deathGod.DOScale(1, 0.6f).SetEase(Ease.OutBack));
-        yield return new WaitForSeconds(0.6f);
-        DOTween.Sequence().Append(this.messageBoard.DOFade(1, 0.2f).SetEase(Ease.InQuart));
-        yield return new WaitForSeconds(0.2f);
+        await DOTween.Sequence().Append(this.messageGroup.DOFade(1, 0.1f).SetEase(Ease.Linear)).AsyncWaitForCompletion();
+        await this.clockGroup.transform.DOLocalMove(this.clockGroupMessageTarget.localPosition, 0.4f).SetEase(Ease.OutQuint).AsyncWaitForCompletion();
+        StartClockPulse();
+        await DOTween.Sequence().Append(this.deathGod.DOScale(1, 0.3f).SetEase(Ease.OutBack)).AsyncWaitForCompletion();
+        await DOTween.Sequence().Append(this.messageBoard.DOFade(1, 0.2f).SetEase(Ease.InQuart)).AsyncWaitForCompletion();
+        await TextAppearEffect(this.messageString);
     }
 
     private async UniTask HideCenterIconGroup()
@@ -152,29 +181,17 @@ public class HardLevelView : BaseView
     {
         this.centerIconGroup.blocksRaycasts = true;
         this.centerIconGroup.alpha = 1;
-        // this.warningFx.transform.localScale = Vector3.zero;
         var bgColor = this.background.color;
         var startBgAlpha = bgColor.a;
         bgColor.a = 0;
         this.background.color = bgColor;
 
-        // this.warningFx.gameObject.SetActive(true);
 
         Sequence sequence = DOTween.Sequence();
         sequence.Append(this.background.DOFade(startBgAlpha, 1).SetEase(Ease.Linear));
-        // sequence.Append(DOTween.To(value =>
-        // {
-        //     var scale = new Vector3(value, value, value);
-        //     this.warningFx.transform.localScale = scale;
-        // }, 0, 1f, 2).SetEase(Ease.OutBack));
-        // sequence.Append(DOTween.To(value =>
-        // {
-        //     var scale = new Vector3(value, value, value);
-        //     this.warningFx.transform.localScale = scale;
-        // }, 1f, 0f, 0.75f).SetEase(Ease.Linear));
     }
 
-    private IEnumerator TextAppearEffect(string text)
+    private async UniTask TextAppearEffect(string text)
     {
         var characters = text.ToCharArray();
         var stringBuilder = new StringBuilder();
@@ -182,10 +199,10 @@ public class HardLevelView : BaseView
         {
             stringBuilder.Append(character);
             this.messageText.SetText(stringBuilder);
-            yield return new WaitForSeconds(0.01f);
+            await UniTask.WaitForSeconds(0.01f);
         }
 
-        yield return new WaitForSeconds(0.2f);
+        await UniTask.WaitForSeconds(0.2f);
         this.playButton.transform.DOScale(Vector3.one, 0.6f).SetEase(Ease.OutBack);
     }
 
