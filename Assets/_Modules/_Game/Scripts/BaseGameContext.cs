@@ -37,6 +37,7 @@ using Mimi.Prototypes.UI;
 using Mimi.ServiceLocators;
 using Mimi.Services.ScriptableObject.Audio;
 using Singular;
+using Tracking;
 using UnityEngine;
 
 namespace Mimi.Prototypes
@@ -283,7 +284,7 @@ namespace Mimi.Prototypes
 
         private void CreateAnalyticService()
         {
-            AnalyticTracker = new ReflectionTracker(new FirebaseTrackingProvider());
+            AnalyticTracker = new TypeAwareTracker(new FirebaseTrackingProvider());
 #if UNITY_EDITOR
             AnalyticTracker = new NullTracker();
 #endif
