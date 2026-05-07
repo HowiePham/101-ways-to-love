@@ -286,7 +286,7 @@ namespace Mimi.Prototypes
         {
             AnalyticTracker = new TypeAwareTracker(new FirebaseTrackingProvider());
 #if UNITY_EDITOR
-            AnalyticTracker = new NullTracker();
+            AnalyticTracker = new TestAnalyticTracker(new TestTrackingProvider());
 #endif
             this.AnalyticTracker.LogEvent(new Feature_LOADING_START()
             {

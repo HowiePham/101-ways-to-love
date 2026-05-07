@@ -1,24 +1,24 @@
 using System.Reflection;
+using Firebase.Analytics;
 using Mimi.Analytics.Tracking;
 using Mimi.Analytics.Tracking.Trackers;
 using UnityEngine;
 
 namespace Tracking
 {
-    public class TypeAwareTracker : IAnalyticTracker
+    public class TestAnalyticTracker : IAnalyticTracker
     {
-        private readonly ITrackingProvider trackingProvider;
+        private readonly TestTrackingProvider trackingProvider;
 
-        public TypeAwareTracker(ITrackingProvider trackingProvider)
+        public TestAnalyticTracker(TestTrackingProvider trackingProvider)
         {
             this.trackingProvider = trackingProvider;
         }
 
         public void LogEvent(IEventData e)
         {
-            if (!this.trackingProvider.IsReady) return;
             PropertyInfo[] properties = e.GetType().GetProperties();
-            IEvent newEvent = this.trackingProvider.NewEvent(properties[0].GetValue(e).ToString());
+            var newEvent = (TestTrackingEvent)this.trackingProvider.NewEvent(properties[0].GetValue(e).ToString());
 
             foreach (PropertyInfo property in properties)
             {
@@ -44,24 +44,18 @@ namespace Tracking
                 }
             }
 
-            newEvent.Track();
+            foreach (TestParameter parameter in newEvent.Parameters)
+            {
+                Debug.Log($"--- (TRACKING) property {parameter.Name} --- {parameter.Value} --- {parameter.Value?.GetType()})");
+            }
         }
 
         public void LogMachineLearningEvent(IMachineLearningEventData e)
         {
-            if (!this.trackingProvider.IsReady) return;
-            PropertyInfo[] properties = e.GetType().GetProperties();
-            IEvent tracker = this.trackingProvider.NewEvent(properties[0].GetValue(e).ToString());
-            tracker.Track();
         }
 
         public void SetUserProperties(IUserPropertyData property)
         {
-            if (!this.trackingProvider.IsReady) return;
-            PropertyInfo[] properties = property.GetType().GetProperties();
-            this.trackingProvider.SetUserProperty(
-                properties[0].GetValue(property).ToString(),
-                properties[1].GetValue(property).ToString());
         }
     }
 }
