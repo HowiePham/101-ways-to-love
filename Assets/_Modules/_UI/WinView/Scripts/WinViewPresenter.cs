@@ -27,11 +27,12 @@ namespace _Modules._UI.WinView.Scripts
         private readonly ILevelOrder levelOrder;
         private readonly IConfigProvider remoteConfig;
         private readonly LifeSystem lifeSystem;
+        private readonly ChapterLevelRepository chapterLevelRepo;
 
         public WinViewPresenter(BaseScenePresenter scenePresenter, Transform transform, IAsyncPublisher eventPublisher,
             RuntimeState runtimeState, IAdAdapter adsAdapter,
-            LevelConfig showAdLevelConfig, GameData gameData, ILevelOrder levelOrder, IConfigProvider remoteConfig, LifeSystem lifeSystem) : base(scenePresenter,
-            transform)
+            LevelConfig showAdLevelConfig, GameData gameData, ILevelOrder levelOrder, IConfigProvider remoteConfig, LifeSystem lifeSystem,
+            ChapterLevelRepository chapterLevelRepo) : base(scenePresenter, transform)
         {
             this.eventPublisher = eventPublisher;
             this.runtimeState = runtimeState;
@@ -41,6 +42,7 @@ namespace _Modules._UI.WinView.Scripts
             this.remoteConfig = remoteConfig;
             this.lifeSystem = lifeSystem;
             this.levelOrder = levelOrder;
+            this.chapterLevelRepo = chapterLevelRepo;
         }
 
         protected override void AddViews()
@@ -76,6 +78,15 @@ namespace _Modules._UI.WinView.Scripts
             {
                 int lifeReward = this.remoteConfig.GetValue(ConfigKey.LifeRecoverAfterChapter).Int;
                 this.lifeSystem.AddLives(lifeReward, "win_view");
+
+                int currentOrder = this.runtimeState.CurrentLevelOrder.Value;
+                LevelInfo nextLevel = this.levelOrder.GetNextLevel(currentOrder);
+                if (nextLevel != null)
+                {
+                    ChapterInfo nextChapter = this.chapterLevelRepo.GetChapter(nextLevel.Chapter);
+                    Sprite icon = Resources.Load<Sprite>("Icons/" + nextChapter.ChapterIconAddress);
+                    this.winView.SetNextChapterHint(true, icon);
+                }
             }
         }
 
@@ -93,6 +104,7 @@ namespace _Modules._UI.WinView.Scripts
             Messenger.RemoveListener(EventKey.RemoveAdsCompleted, HideRemoveAdsButton);
 
             this.adsAdapter.Mrec.Hide();
+            this.winView.SetNextChapterHint(false);
             // this.currencyView.OnAddCurrencyClicked -= AddCurrencyClickedHandler;
         }
 
