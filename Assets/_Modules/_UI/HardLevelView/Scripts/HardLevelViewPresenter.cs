@@ -120,7 +120,7 @@ public class HardLevelViewPresenter : BaseViewPresenter
     {
         int currentLevelOrder = this.runtimeState.CurrentLevelOrder.Value;
 
-        this.eventPublisher.PublishAsync(new LifeUsing());
+        this.eventPublisher.PublishAsync(new LifeUsing("replay_hard_level"));
         this.eventPublisher.PublishAsync(new LevelCompleted(currentLevelOrder.ToString(), LevelCompletionStatus.Lose));
 
         ScenePresenter.GetViewPresenter<GameplayViewPresenter>().Hide();
@@ -135,7 +135,7 @@ public class HardLevelViewPresenter : BaseViewPresenter
         int currentLevelOrder = this.runtimeState.CurrentLevelOrder.Value;
 
         ScenePresenter.GetViewPresenter<GameplayViewPresenter>().Hide();
-        this.eventPublisher.PublishAsync(new LifeUsing());
+        this.eventPublisher.PublishAsync(new LifeUsing("lose_hard_level"));
         this.eventPublisher.PublishAsync(new LevelCompleted(currentLevelOrder.ToString(), LevelCompletionStatus.Lose));
 
         Hide();

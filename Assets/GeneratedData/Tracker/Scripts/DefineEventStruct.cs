@@ -108,6 +108,7 @@ public struct Feature_RESOURCE_EARN : IEventData{
 	 public string resource_amount{ get; set; }
 	 public string placement{ get; set; }
 	 public string resource_balance{ get; set; }
+	 public string reason{ get; set; }
 }
 
 public struct Feature_RESOURCE_SPEND : IEventData{
@@ -120,6 +121,7 @@ public struct Feature_RESOURCE_SPEND : IEventData{
 	 public string resource_amount{ get; set; }
 	 public string placement{ get; set; }
 	 public string resource_balance{ get; set; }
+	 public string reason{ get; set; }
 }
 
 public struct Feature_IAP_SHOW : IEventData{
