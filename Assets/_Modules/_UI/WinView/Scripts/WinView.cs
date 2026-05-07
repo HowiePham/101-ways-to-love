@@ -6,6 +6,7 @@ using DG.Tweening;
 using DG.Tweening.Core;
 using DG.Tweening.Plugins.Options;
 using Mimi.Prototypes.UI;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -24,6 +25,8 @@ namespace _Modules._UI.WinView.Scripts
         [SerializeField] private Button continueButton;
         [SerializeField] private Button replayButton;
         [SerializeField] private Button homeButton;
+        [SerializeField] private RectTransform nextChapterParent;
+        [SerializeField] private Image nextChapterImage;
 
         private Dictionary<RectTransform, TweenerCore<Vector3, Vector3, VectorOptions>> loopScalingTweens;
         private CancellationTokenSource showCts;
@@ -59,6 +62,16 @@ namespace _Modules._UI.WinView.Scripts
             HandleUIEffect(this.showCts.Token);
         }
 
+        [Button]
+        private void TestEffect()
+        {
+            this.showCts?.Cancel();
+            this.showCts?.Dispose();
+            this.showCts = new CancellationTokenSource();
+
+            HandleUIEffect(this.showCts.Token);
+        }
+
         public override void Hide()
         {
             base.Hide();
@@ -71,13 +84,15 @@ namespace _Modules._UI.WinView.Scripts
             {
                 kvp.Value?.Kill();
             }
+
             this.loopScalingTweens.Clear();
 
             DOTween.Kill(this.ContinueBtnRect);
             DOTween.Kill(this.RemoveAdsRect);
-
             this.ContinueBtnRect.localScale = Vector3.one;
             this.RemoveAdsRect.localScale = Vector3.one;
+            this.nextChapterParent.localScale = Vector3.zero;
+            this.nextChapterParent.gameObject.SetActive(false);
         }
 
         private async UniTask HandleUIEffect(CancellationToken ct)
@@ -90,18 +105,40 @@ namespace _Modules._UI.WinView.Scripts
             this.settingBtnGroup.DOFade(0f, 0f);
             this.homeBtnBtnGroup.DOFade(0f, 0f);
 
+            if (this.nextChapterParent.gameObject.activeSelf)
+            {
+                this.nextChapterParent.localScale = Vector3.zero;
+            }
+
             await DOTween.Sequence().Append(this.resultView.DOScale(1f, 0.4f)).AsyncWaitForCompletion();
             if (ct.IsCancellationRequested) return;
 
-            this.continueBtnGroup.DOFade(1f, 0.5f).AsyncWaitForCompletion();
-            this.replayBtnGroup.DOFade(1f, 0.5f).AsyncWaitForCompletion();
-            this.removeAdsBtnGroup.DOFade(1f, 0.5f).AsyncWaitForCompletion();
-            this.homeBtnBtnGroup.DOFade(1f, 0.5f).AsyncWaitForCompletion();
-            await this.settingBtnGroup.DOFade(1f, 0.5f).AsyncWaitForCompletion();
-            if (ct.IsCancellationRequested) return;
+            if (this.nextChapterParent.gameObject.activeSelf)
+            {
+                await UniTask.WaitForSeconds(0.2f, cancellationToken: ct);
 
+                await DOTween.Sequence()
+                    .Append(this.nextChapterParent.DOScale(1.3f, 0.3f).SetEase(Ease.OutQuad))
+                    .Append(this.nextChapterParent.DOScale(1.4f, 0.3f).SetEase(Ease.OutQuad))
+                    .Append(this.nextChapterParent.DOScale(1f, 0.15f).SetEase(Ease.InOutQuad))
+                    .AsyncWaitForCompletion();
+                if (ct.IsCancellationRequested) return;
+
+                await UniTask.WaitForSeconds(0.75f, cancellationToken: ct);
+            }
+
+            this.removeAdsBtnGroup.DOFade(1f, 0.5f).AsyncWaitForCompletion();
+            this.settingBtnGroup.DOFade(1f, 0.5f).AsyncWaitForCompletion();
+            await this.continueBtnGroup.DOFade(1f, 0.5f).AsyncWaitForCompletion();
+            if (ct.IsCancellationRequested) return;
+            
             LoopScalingUIEffect(this.RemoveAdsRect, 1.1f, 0, 1f, ct);
             LoopScalingUIEffect(this.ContinueBtnRect, 1.1f, 0, 1f, ct);
+            await UniTask.WaitForSeconds(1f, cancellationToken: ct);
+            if (ct.IsCancellationRequested) return;
+
+            this.replayBtnGroup.DOFade(1f, 0.5f).AsyncWaitForCompletion();
+            await this.homeBtnBtnGroup.DOFade(1f, 0.5f).AsyncWaitForCompletion();
         }
 
         private async UniTask LoopScalingUIEffect(RectTransform uiItem, float targetValue, float delay, float duration, CancellationToken ct = default)
@@ -120,7 +157,16 @@ namespace _Modules._UI.WinView.Scripts
                 this.loopScalingTweens.Add(uiItem, tweenCore);
             }
         }
-        
+
+        public void SetNextChapterHint(bool show, Sprite chapterSprite = null)
+        {
+            this.nextChapterParent.gameObject.SetActive(show);
+            if (show && chapterSprite != null)
+            {
+                this.nextChapterImage.sprite = chapterSprite;
+            }
+        }
+
         public void SetActiveRemoveAdsButton(bool active)
         {
             this.removeAdsBtnGroup.gameObject.SetActive(active);
