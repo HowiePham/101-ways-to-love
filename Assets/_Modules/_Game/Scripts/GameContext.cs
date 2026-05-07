@@ -168,7 +168,7 @@ namespace Mimi.Prototypes
         [Button]
         private void TestLife()
         {
-            this.EventPublisher.PublishAsync(new LifeUsing());
+            this.EventPublisher.PublishAsync(new LifeUsing("test_life"));
         }
     }
 }

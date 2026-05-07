@@ -78,7 +78,7 @@ public class LifeSystem
             return;
         }
 
-        LooseLife();
+        LooseLife(lifeUsing.Reason);
         RunTimer();
 
         if (!AnyLifeLeft())
@@ -136,8 +136,8 @@ public class LifeSystem
     {
         if (reward.RewardId != "extra_life") return;
 
-        AddLife();
-        ShowLifeChangedDialog("+1",true);
+        AddLife("get_more_life");
+        ShowLifeChangedDialog("+1", true);
 
         if (this.lifeData.AddedNextTime.Count > 0)
         {
@@ -161,26 +161,26 @@ public class LifeSystem
         PlayerPrefs.SetString(LifeDataKey, JsonUtility.ToJson(this.lifeData));
     }
 
-    private void LooseLife()
+    private void LooseLife(string reason)
     {
         if (CurrentLifeCount > 0)
         {
-            this.playerResources.Sink(LifeResourceId, 1, TransactionInfo.New(LifeResourceId, "gameplay_view", "lose_life"));
+            this.playerResources.Sink(LifeResourceId, 1, TransactionInfo.New(LifeResourceId, "gameplay_view", reason));
             if (CurrentLifeCount < this.maxLifeCount)
                 SetTimeToAddNextLife();
             SaveLifeData();
             this.publisher.PublishAsync(new LifeUpdated(CurrentLifeCount));
 
-            ShowLifeChangedDialog("-1",false);
+            ShowLifeChangedDialog("-1", false);
         }
     }
 
-    private void AddLife()
+    private void AddLife(string reason)
     {
         if (CurrentLifeCount < this.maxLifeCount)
         {
             var placement = this.dialogId == DialogId.EndOfLifeDialog ? "gameplay_view" : "select_level_view";
-            this.playerResources.Source(LifeResourceId, 1, TransactionInfo.New(LifeResourceId, placement, "get_more_life"));
+            this.playerResources.Source(LifeResourceId, 1, TransactionInfo.New(LifeResourceId, placement, reason));
             SaveLifeData();
             this.publisher.PublishAsync(new LifeUpdated(CurrentLifeCount));
         }
@@ -188,7 +188,7 @@ public class LifeSystem
 
     public void RefillLife()
     {
-        this.playerResources.SetAmount(LifeResourceId, this.maxLifeCount, TransactionInfo.New(LifeResourceId, "LifeSystem", "Refill"));
+        this.playerResources.SetAmount(LifeResourceId, this.maxLifeCount, TransactionInfo.New(LifeResourceId, "LifeSystem", "refill"));
         this.lifeData.AddedNextTime = new List<string>();
         SaveLifeData();
     }
@@ -283,7 +283,7 @@ public class LifeSystem
             if (span.TotalSeconds < 0)
             {
                 this.lifeData.AddedNextTime.RemoveAt(0);
-                AddLife();
+                AddLife("refill_life");
                 i--;
             }
             else
@@ -337,7 +337,7 @@ public class LifeSystem
                     if (span.TotalSeconds < 0)
                     {
                         this.lifeData.AddedNextTime.RemoveAt(0);
-                        AddLife();
+                        AddLife("refill_life");
                     }
                 }
             }
