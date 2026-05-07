@@ -73,14 +73,16 @@ namespace _Modules._UI.WinView.Scripts
             this.winView.SetActiveRemoveAdsButton(!baseGameContext.IsRemoveAds);
 
             this.adsAdapter.Mrec.Show(new AdPlacement("win_view"));
+            bool isShowNextChapterInWinView = this.remoteConfig.GetValue(ConfigKey.ShowNextChapterInWinView).Boolean;
 
-            if (CanShowNextChapter())
+            if (isShowNextChapterInWinView && CanShowNextChapter())
             {
                 int lifeReward = this.remoteConfig.GetValue(ConfigKey.LifeRecoverAfterChapter).Int;
                 this.lifeSystem.AddLives(lifeReward, "win_view");
 
                 int currentOrder = this.runtimeState.CurrentLevelOrder.Value;
                 LevelInfo nextLevel = this.levelOrder.GetNextLevel(currentOrder);
+
                 if (nextLevel != null)
                 {
                     ChapterInfo nextChapter = this.chapterLevelRepo.GetChapter(nextLevel.Chapter);
