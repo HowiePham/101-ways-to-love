@@ -3,6 +3,7 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Games;
 using Mimi.Prototypes.UI;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,6 +18,7 @@ public class SettingView : BaseView
     [SerializeField] private Toggle musicButton;
     [SerializeField] private Toggle soundButton;
     [SerializeField] private Toggle vibrationButton;
+    [SerializeField] private TMP_Text buildInfoText;
 
     public Action OnCloseClicked;
     public Action OnReplayClicked;
@@ -46,7 +48,8 @@ public class SettingView : BaseView
     {
         base.Show();
 
-        RunSettingPanelEffectSequence();
+         RunSettingPanelEffectSequence();
+        ShowCurrentBuildInfo();
     }
 
     private async UniTask RunSettingPanelEffectSequence()
@@ -95,5 +98,32 @@ public class SettingView : BaseView
     public void SetActiveReplayButton(bool active)
     {
         this.replayButton.gameObject.SetActive(active);
+    }
+
+    private void ShowCurrentBuildInfo()
+    {
+        var buildInfoAsset = Resources.Load<TextAsset>("BuildInfo");
+        if (buildInfoAsset == null)
+        {
+            this.buildInfoText.text = "<color=red>Missing BuildInfo.txt</color>";
+            return;
+        }
+
+        var version = ExtractValue(buildInfoAsset.text, "App Version");
+        var buildDate = ExtractValue(buildInfoAsset.text, "Build Date");
+        this.buildInfoText.text = $"Version {version} | {buildDate}";
+    }
+
+    private static string ExtractValue(string content, string key)
+    {
+        foreach (var line in content.Split('\n'))
+        {
+            if (!line.StartsWith(key + ": ")) continue;
+            return line.Substring(key.Length + 2)
+                       .Replace("<color=green>", "")
+                       .Replace("</color>", "")
+                       .Trim();
+        }
+        return string.Empty;
     }
 }
