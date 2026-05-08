@@ -30,6 +30,7 @@ public class LifeSystem
     private CoroutineHandle lifeTimerCoroutine;
     private YesNoDialog activeLifeDialog;
     private DialogId dialogId;
+    private bool isInfiniteLife;
 
     public int CurrentLifeCount => (int)this.playerResources.GetAmount(LifeResourceId);
 
@@ -46,6 +47,7 @@ public class LifeSystem
         this.eventBag = new DisposableBag();
         this.subscriber.Subscribe<LifeUsing>(LifeUsingHandler).AddToBag(this.eventBag);
         this.adAdapter.RewardVideo.OnRewarded += OnLifeRewardCompleted;
+        this.isInfiniteLife = false;
 
         if (PlayerPrefs.HasKey(LifeDataKey))
         {
@@ -61,6 +63,7 @@ public class LifeSystem
 
         CheckLife();
         DebugLogConsole.AddCommandInstance("add-life", "Add 1 Life", "AddLife", this);
+        DebugLogConsole.AddCommandInstance("infinite-life", "infinite life", "InfiniteLife", this);
     }
 
     private static bool TryParseDateTime(string str, out DateTime result)
@@ -163,6 +166,11 @@ public class LifeSystem
 
     private void LooseLife(string reason)
     {
+        if (this.isInfiniteLife)
+        {
+            return;
+        }
+
         if (CurrentLifeCount > 0)
         {
             this.playerResources.Sink(LifeResourceId, 1, TransactionInfo.New(LifeResourceId, "gameplay_view", reason));
@@ -347,6 +355,11 @@ public class LifeSystem
 
         this.publisher.PublishAsync(new LifeUpdated(CurrentLifeCount));
         this.publisher.PublishAsync(new RecoveryLifeTimerUpdated(""));
+    }
+
+    private void InfiniteLife()
+    {
+        this.isInfiniteLife = true;
     }
 
     private void ShowLifeChangedDialog(string changedString, bool increased)
