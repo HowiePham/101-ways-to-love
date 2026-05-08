@@ -110,7 +110,10 @@ public class SettingView : BaseView
         }
 
         var version = ExtractValue(buildInfoAsset.text, "App Version");
-        var buildDate = ExtractValue(buildInfoAsset.text, "Build Date");
+        var rawDate = ExtractValue(buildInfoAsset.text, "Build Date");
+        var buildDate = DateTime.TryParse(rawDate, out var parsedDate)
+            ? parsedDate.ToString("MM/dd/yyyy HH:mm")
+            : rawDate;
         this.buildInfoText.text = $"Version {version} | {buildDate}";
     }
 
