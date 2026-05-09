@@ -715,6 +715,7 @@ namespace Mimi.Prototypes
                 .SetInt(ConfigKey.LifeCooldown, 900)
                 .SetInt(ConfigKey.MaxLife, 10)
                 .SetInt(ConfigKey.LifeRecoverAfterChapter, 2)
+                .SetInt(ConfigKey.LifeAddAfterReward, 1)
                 .SetInt(ConfigKey.ShowHintButtonAfterWrongTimes, 1)
                 .SetInt(ConfigKey.ShowSkipButtonAfterWrongTimes, 2)
                 .SetInt(ConfigKey.ShowObjectHintAfterWrongTimes, 1)
@@ -815,7 +816,7 @@ namespace Mimi.Prototypes
         {
             var lifeCooldown = this.RemoteConfig.GetValue(ConfigKey.LifeCooldown).Int;
             var maxLife = this.RemoteConfig.GetValue(ConfigKey.MaxLife).Int;
-            LifeSystem = new LifeSystem(maxLife, lifeCooldown, this.PlayerResources, this.EventPublisher, this.EventSubscriber, this.DialogManager, this.Ads);
+            LifeSystem = new LifeSystem(maxLife, lifeCooldown, this.PlayerResources, this.EventPublisher, this.EventSubscriber, this.DialogManager, this.Ads, this.RemoteConfig);
             LogInitializeEvent("init_life_system");
         }
     }

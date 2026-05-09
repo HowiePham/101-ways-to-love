@@ -6,7 +6,9 @@ using Cysharp.Threading.Tasks;
 using Economy.Resources;
 using IngameDebugConsole;
 using MEC;
+using Mimi;
 using Mimi.Ads.Adapters;
+using Mimi.Configs;
 using Mimi.Events.AsyncBus;
 using Mimi.Games;
 using Mimi.Prototypes.Currencies;
@@ -20,6 +22,7 @@ public class LifeSystem
     private readonly int maxLifeCount;
     private readonly int timeToAddLifeInSeconds;
     private readonly LifeData lifeData;
+    private readonly IConfigProvider remoteConfig;
     private readonly IResourceCollection playerResources;
     private readonly IAsyncPublisher publisher;
     private readonly IAsyncSubscriber subscriber;
@@ -35,7 +38,7 @@ public class LifeSystem
     public int CurrentLifeCount => (int)this.playerResources.GetAmount(LifeResourceId);
 
     public LifeSystem(int maxLifeCount, int timeToAddLifeInSeconds, IResourceCollection playerResources, IAsyncPublisher publisher, IAsyncSubscriber subscriber, DialogManager dialogManager,
-        IAdAdapter adAdapter)
+        IAdAdapter adAdapter, IConfigProvider remoteConfig)
     {
         this.maxLifeCount = maxLifeCount;
         this.timeToAddLifeInSeconds = timeToAddLifeInSeconds;
@@ -44,6 +47,7 @@ public class LifeSystem
         this.subscriber = subscriber;
         this.dialogManager = dialogManager;
         this.adAdapter = adAdapter;
+        this.remoteConfig = remoteConfig;
         this.eventBag = new DisposableBag();
         this.subscriber.Subscribe<LifeUsing>(LifeUsingHandler).AddToBag(this.eventBag);
         this.adAdapter.RewardVideo.OnRewarded += OnLifeRewardCompleted;
@@ -99,10 +103,13 @@ public class LifeSystem
             return;
         }
 
+        int lifeAddAfterReward = this.remoteConfig.GetValue(ConfigKey.LifeAddAfterReward).Int;
+
         if (this.dialogManager.TryShowModalDialogOnce(dialogId, out this.activeLifeDialog))
         {
             Messenger.Broadcast(EventKey.PauseLevel, true);
             this.dialogId = dialogId;
+            this.activeLifeDialog.SetContentText(lifeAddAfterReward.ToString());
             this.activeLifeDialog.SetYesCallback(OnGetMoreLifeClicked);
             this.activeLifeDialog.SetNoCallback(CloseGetMoreLifeDialog);
         }
@@ -139,8 +146,10 @@ public class LifeSystem
     {
         if (reward.RewardId != "extra_life") return;
 
-        AddLife("get_more_life");
-        ShowLifeChangedDialog("+1", true);
+        int lifeAddAfterReward = this.remoteConfig.GetValue(ConfigKey.LifeAddAfterReward).Int;
+        string placement = this.dialogId == DialogId.EndOfLifeDialog ? "gameplay_view" : "select_level_view";
+        AddLives(lifeAddAfterReward, placement, "get_more_life");
+        ShowLifeChangedDialog($"+{lifeAddAfterReward}", true);
 
         if (this.lifeData.AddedNextTime.Count > 0)
         {
@@ -183,11 +192,10 @@ public class LifeSystem
         }
     }
 
-    private void AddLife(string reason)
+    private void AddLife(string placement, string reason)
     {
         if (CurrentLifeCount < this.maxLifeCount)
         {
-            var placement = this.dialogId == DialogId.EndOfLifeDialog ? "gameplay_view" : "select_level_view";
             this.playerResources.Source(LifeResourceId, 1, TransactionInfo.New(LifeResourceId, placement, reason));
             SaveLifeData();
             this.publisher.PublishAsync(new LifeUpdated(CurrentLifeCount));
@@ -201,12 +209,12 @@ public class LifeSystem
         SaveLifeData();
     }
 
-    public void AddLives(int count, string placement)
+    public void AddLives(int count, string placement, string reason)
     {
         if (count <= 0) return;
 
         this.playerResources.Source(LifeResourceId, count,
-            TransactionInfo.New(LifeResourceId, placement, "add_life"));
+            TransactionInfo.New(LifeResourceId, placement, reason));
 
         if (CurrentLifeCount >= this.maxLifeCount)
         {
@@ -291,7 +299,7 @@ public class LifeSystem
             if (span.TotalSeconds < 0)
             {
                 this.lifeData.AddedNextTime.RemoveAt(0);
-                AddLife("refill_life");
+                AddLife("life_system", "refill_life");
                 i--;
             }
             else
@@ -345,7 +353,7 @@ public class LifeSystem
                     if (span.TotalSeconds < 0)
                     {
                         this.lifeData.AddedNextTime.RemoveAt(0);
-                        AddLife("refill_life");
+                        AddLife("life_system", "refill_life");
                     }
                 }
             }

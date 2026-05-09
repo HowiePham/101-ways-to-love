@@ -78,7 +78,7 @@ namespace _Modules._UI.WinView.Scripts
             if (isShowNextChapterInWinView && CanShowNextChapter())
             {
                 int lifeReward = this.remoteConfig.GetValue(ConfigKey.LifeRecoverAfterChapter).Int;
-                this.lifeSystem.AddLives(lifeReward, "win_view");
+                this.lifeSystem.AddLives(lifeReward, "win_view", "unlock_chapter");
 
                 int currentOrder = this.runtimeState.CurrentLevelOrder.Value;
                 LevelInfo nextLevel = this.levelOrder.GetNextLevel(currentOrder);
