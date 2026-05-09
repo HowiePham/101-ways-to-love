@@ -35,6 +35,7 @@
         public const string LifeCooldown = "life_cooldown";
         public const string MaxLife = "max_life";
         public const string LifeRecoverAfterChapter = "life_recover_after_chapter";
+        public const string LifeAddAfterReward = "life_add_after_reward";
         public const string ShowTutorialUI = "is_show_tutorial_ui";
         public const string HintButtonDelay = "hint_button_delay";
         public const string SkipButtonDelay = "skip_button_delay";
