@@ -3,6 +3,7 @@ using _Modules.GameEvent.Scripts;
 using Cysharp.Threading.Tasks;
 using Mimi;
 using Mimi.Ads.Adapters;
+using Mimi.Analytics.Tracking.Trackers;
 using Mimi.Configs;
 using Mimi.Events;
 using Mimi.Events.AsyncBus;
@@ -28,11 +29,12 @@ namespace _Modules._UI.WinView.Scripts
         private readonly IConfigProvider remoteConfig;
         private readonly LifeSystem lifeSystem;
         private readonly ChapterLevelRepository chapterLevelRepo;
+        private readonly IAnalyticTracker analyticTracker;
 
         public WinViewPresenter(BaseScenePresenter scenePresenter, Transform transform, IAsyncPublisher eventPublisher,
             RuntimeState runtimeState, IAdAdapter adsAdapter,
             LevelConfig showAdLevelConfig, GameData gameData, ILevelOrder levelOrder, IConfigProvider remoteConfig, LifeSystem lifeSystem,
-            ChapterLevelRepository chapterLevelRepo) : base(scenePresenter, transform)
+            ChapterLevelRepository chapterLevelRepo, IAnalyticTracker analyticTracker) : base(scenePresenter, transform)
         {
             this.eventPublisher = eventPublisher;
             this.runtimeState = runtimeState;
@@ -43,6 +45,7 @@ namespace _Modules._UI.WinView.Scripts
             this.lifeSystem = lifeSystem;
             this.levelOrder = levelOrder;
             this.chapterLevelRepo = chapterLevelRepo;
+            this.analyticTracker = analyticTracker;
         }
 
         protected override void AddViews()
@@ -126,6 +129,19 @@ namespace _Modules._UI.WinView.Scripts
             Debug.Log($"--- (Currency) Add currency clicked");
         }
 
+        private void LogWinViewFlow(string nextLevel, string returnHome, string replay, bool hasAds)
+        {
+            string hasAdsString = hasAds ? "true" : "false";
+            this.analyticTracker.LogEvent(new Feature_WIN_VIEW_FLOW
+            {
+                eventName = Feature_WIN_VIEW_FLOW.EVENT_NAME.win_view_flow,
+                next_level = nextLevel,
+                return_home = returnHome,
+                replay = replay,
+                has_ads = hasAdsString
+            });
+        }
+
         private void ContinueClickedHandler()
         {
             var gameContext = Context as GameContext;
@@ -153,6 +169,8 @@ namespace _Modules._UI.WinView.Scripts
             Debug.LogError("--- (NEXT) ads cooldown: " + adCooldown);
             Debug.LogError("--- (NEXT) ads cooldown completed after rewarded: " + isAdCooldownCompletedAfterRewarded);
             Debug.LogError("--- (NEXT) showAds: " + showAds);
+
+            LogWinViewFlow("true", "false", "false", showAds);
 
             if (showAds)
             {
@@ -199,6 +217,7 @@ namespace _Modules._UI.WinView.Scripts
 
         private void ReplayClickedHandler()
         {
+            LogWinViewFlow("false", "false", "true", false);
             this.eventPublisher.PublishAsync(new LevelTryAgain());
             Hide();
         }
@@ -213,6 +232,7 @@ namespace _Modules._UI.WinView.Scripts
 
         private void HomeClickedHandler()
         {
+            LogWinViewFlow("false", "true", "false", false);
             this.eventPublisher.PublishAsync(new BackHome());
             Hide();
         }
