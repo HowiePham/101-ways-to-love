@@ -164,6 +164,8 @@ public struct Feature_WIN_VIEW_FLOW : IEventData{
 		 win_view_flow}
 
 	 public EVENT_NAME eventName { get; set; }
+	 public string level{ get; set; }
+	 public string level_mode{ get; set; }
 	 public string next_level{ get; set; }
 	 public string return_home{ get; set; }
 	 public string replay{ get; set; }
