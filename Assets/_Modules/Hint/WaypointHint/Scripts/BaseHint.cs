@@ -17,6 +17,7 @@ namespace VisualFlow
         [SerializeField, Required] protected VisualAction hintedAction;
 
         protected LeanSelectByFinger leanSelectByFinger;
+        private bool isListening;
         public bool Completed => this.hintedAction.Completed;
 
         protected VisualAction HintedAction => this.hintedAction;
@@ -43,6 +44,7 @@ namespace VisualFlow
 
         protected override async UniTask OnExecuting(CancellationToken cancellationToken)
         {
+            isListening = true;
             Messenger.AddListener(EventKey.ResetAction, ActiveHint);
             Messenger.AddListener(EventKey.LevelWin, TurnOff);
             Messenger.AddListener(EventKey.AnimationStart, DisableHint);
@@ -81,6 +83,8 @@ namespace VisualFlow
         {
             LeanTouch.OnFingerDown -= FingerDownHandler;
             LeanTouch.OnFingerUp -= FingerUpHandler;
+            if (!isListening) return;
+            isListening = false;
             Messenger.RemoveListener(EventKey.ResetAction, ActiveHint);
             Messenger.RemoveListener(EventKey.AnimationStart, DisableHint);
             Messenger.RemoveListener(EventKey.LevelWin, TurnOff);
@@ -92,15 +96,7 @@ namespace VisualFlow
 
         protected virtual void OnDestroy()
         {
-            LeanTouch.OnFingerDown -= FingerDownHandler;
-            LeanTouch.OnFingerUp -= FingerUpHandler;
-            Messenger.RemoveListener(EventKey.ResetAction, ActiveHint);
-            Messenger.RemoveListener(EventKey.AnimationStart, DisableHint);
-            Messenger.RemoveListener(EventKey.LevelWin, TurnOff);
-            if (this.leanSelectByFinger != null)
-            {
-                this.leanSelectByFinger.OnSelected.RemoveListener(OnSelectedHandler);
-            }
+            StopListeningEvent();
         }
     }
 }
