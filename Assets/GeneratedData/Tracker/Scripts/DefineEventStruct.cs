@@ -159,6 +159,19 @@ public struct Feature_IAP_PURCHASE : IEventData{
 	 public string currency{ get; set; }
 }
 
+public struct Feature_WIN_VIEW_FLOW : IEventData{
+	 public enum EVENT_NAME {
+		 win_view_flow}
+
+	 public EVENT_NAME eventName { get; set; }
+	 public string level{ get; set; }
+	 public string level_mode{ get; set; }
+	 public string next_level{ get; set; }
+	 public string return_home{ get; set; }
+	 public string replay{ get; set; }
+	 public string has_ads{ get; set; }
+}
+
 public struct Feature_LOADING_START : IEventData{
 	 public enum EVENT_NAME {
 		 loading_start}
