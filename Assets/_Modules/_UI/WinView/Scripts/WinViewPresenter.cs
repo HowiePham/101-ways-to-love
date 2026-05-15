@@ -132,20 +132,21 @@ namespace _Modules._UI.WinView.Scripts
         private void LogWinViewFlow(string nextLevel, string returnHome, string replay, bool hasAds)
         {
             int currentLevelOrder = this.runtimeState.CurrentLevelOrder.Value;
-            bool isFirstWin = currentLevelOrder == this.runtimeState.TopCompletedLevelOrder.Value;
-            if (!isFirstWin) return;
-
             int level = currentLevelOrder + 1;
-            Debug.Log($"--- (TRACKING) win_view_flow | level: {level} | level_mode: normal | next_level: {nextLevel} | return_home: {returnHome} | replay: {replay} | has_ads: {hasAds}");
-            this.analyticTracker.LogEvent(new Feature_WIN_VIEW_FLOW
+            int playIndex = PlayerPrefs.GetInt($"play_index_{level}", 0);
+
+            Debug.Log(
+                $"--- (TRACKING) win_view_flow | level: {level} | play_index: {playIndex} | level_mode: normal | next_level: {nextLevel} | return_home: {returnHome} | replay: {replay} | has_ads: {hasAds}");
+            this.analyticTracker.LogEvent(new WinViewFlowEventData
             {
-                eventName = Feature_WIN_VIEW_FLOW.EVENT_NAME.win_view_flow,
+                eventName = WinViewFlowEventData.EVENT_NAME.win_view_flow,
                 level = level.ToString(),
                 level_mode = "normal",
                 next_level = nextLevel,
                 return_home = returnHome,
                 replay = replay,
                 has_ads = hasAds ? "true" : "false",
+                play_index = playIndex
             });
         }
 

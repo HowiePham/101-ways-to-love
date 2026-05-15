@@ -27,26 +27,18 @@ namespace Tracking
 
                 if (property.PropertyType == typeof(int))
                 {
-                    Debug.Log($"--- (TRACKING) INT property {property.Name} --- {(int)valueObj})");
                     newEvent.AddIntParam(property.Name, (int)valueObj);
                 }
                 else if (property.PropertyType == typeof(float))
                 {
-                    Debug.Log($"--- (TRACKING) FLOAT property {property.Name} --- {(int)valueObj})");
                     newEvent.AddFloatParam(property.Name, (float)valueObj);
                 }
                 else
                 {
                     string value = valueObj.ToString();
-                    Debug.Log($"--- (TRACKING) STRING property {property.Name} --- {value})");
                     if (!string.IsNullOrEmpty(value))
                         newEvent.AddStringParam(property.Name, value);
                 }
-            }
-
-            foreach (TestParameter parameter in newEvent.Parameters)
-            {
-                Debug.Log($"--- (TRACKING) property {parameter.Name} --- {parameter.Value} --- {parameter.Value?.GetType()})");
             }
         }
 

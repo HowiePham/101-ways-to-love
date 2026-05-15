@@ -2,14 +2,12 @@ using System;
 using System.Threading;
 using _Modules.GameEvent.Scripts;
 using Cysharp.Threading.Tasks;
-using FrogunnerGames;
 using Mimi.Ads.Adapters;
 using Mimi.Analytics.Tracking.Trackers;
 using Mimi.Events;
 using Mimi.Events.AsyncBus;
 using Mimi.Games.Plugins;
 using Mimi.Prototypes;
-using Mimi.Prototypes.Events;
 using UnityEngine;
 
 namespace Tracking
@@ -118,15 +116,7 @@ namespace Tracking
             long playDurationMs = (long)(DateTime.UtcNow - this.levelStartTime).TotalMilliseconds;
 
             Debug.Log($"--- (TRACKING) Level Exit: {currentLevelOrder}, play_duration={playDurationMs}ms");
-            // this.analyticTracker.LogEvent(new Feature_LEVEL_EXIT
-            // {
-            //     eventName = Feature_LEVEL_EXIT.EVENT_NAME.level_exit,
-            //     level = currentLevelOrder.ToString(),
-            //     mode = "normal",
-            //     play_duration = playDurationMs.ToString(),
-            //     false_count = this.falseCount.ToString(),
-            //     life_count = this.lifeSystem.CurrentLifeCount.ToString()
-            // });
+
             this.analyticTracker.LogEvent(new LevelExitEventData()
             {
                 eventName = LevelExitEventData.EVENT_NAME.level_exit,

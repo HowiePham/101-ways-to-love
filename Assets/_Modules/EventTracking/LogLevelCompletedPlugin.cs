@@ -111,34 +111,43 @@ namespace Tracking
         {
             await UniTask.CompletedTask;
             int currentLevelOrder = this.runtimeState.CurrentLevelOrder.Value + 1;
+            int playIndex = PlayerPrefs.GetInt($"play_index_{currentLevelOrder}", 0);
+            int winIndex = PlayerPrefs.GetInt($"win_index_{currentLevelOrder}", 0);
             long playDurationMs = (long)(DateTime.UtcNow - this.startTime).TotalMilliseconds - this.totalAdDurationMs;
-            Debug.Log(
-                $"--- (TRACKING) Log level Completed: {currentLevelOrder} --- Hint: {this.useHint} --- Skip: {this.useSkip} --- False: {this.falseCount} --- Life: {this.lifeSystem.CurrentLifeCount}--- Duration: {playDurationMs}ms");
+            LevelCompletionStatus levelCompletionStatus = levelCompleted.Status;
 
-            // this.analyticTracker.LogEvent(new Feature_LEVEL_END()
-            // {
-            //     eventName = Feature_LEVEL_END.EVENT_NAME.level_end,
-            //     level = currentLevelOrder.ToString(),
-            //     level_mode = "normal",
-            //     result = levelCompleted.Status.ToString(),
-            //     use_hint = this.useHint.ToString().ToLower(),
-            //     use_skip = this.useSkip.ToString().ToLower(),
-            //     play_duration = playDurationMs.ToString(),
-            //     false_count = this.falseCount.ToString(),
-            //     life_count = this.lifeSystem.CurrentLifeCount.ToString()
-            // });
-            this.analyticTracker.LogEvent(new LevelEndEventData()
+            if (levelCompletionStatus == LevelCompletionStatus.Win)
             {
-                eventName = LevelEndEventData.EVENT_NAME.level_end,
-                level = currentLevelOrder.ToString(),
-                level_mode = "normal",
-                result = levelCompleted.Status.ToString(),
-                use_hint = this.useHint.ToString().ToLower(),
-                use_skip = this.useSkip.ToString().ToLower(),
-                play_duration = (int)playDurationMs,
-                false_count = this.falseCount,
-                life_count = this.lifeSystem.CurrentLifeCount
-            });
+                winIndex++;
+                PlayerPrefs.SetInt($"win_index_{currentLevelOrder}", winIndex);
+            }
+
+            Debug.Log(
+                $"--- (TRACKING) Log level Completed: {currentLevelOrder} " +
+                $"--- Hint: {this.useHint} " +
+                $"--- Skip: {this.useSkip} " +
+                $"--- False: {this.falseCount} " +
+                $"--- Life: {this.lifeSystem.CurrentLifeCount} " +
+                $"--- Duration: {playDurationMs}ms " +
+                $"--- PlayIndex: {playIndex} " +
+                $"--- WinIndex: {winIndex}");
+
+            {
+                this.analyticTracker.LogEvent(new LevelEndEventData()
+                {
+                    eventName = LevelEndEventData.EVENT_NAME.level_end,
+                    level = currentLevelOrder.ToString(),
+                    level_mode = "normal",
+                    result = levelCompletionStatus.ToString(),
+                    use_hint = this.useHint.ToString().ToLower(),
+                    use_skip = this.useSkip.ToString().ToLower(),
+                    play_duration = (int)playDurationMs,
+                    false_count = this.falseCount,
+                    life_count = this.lifeSystem.CurrentLifeCount,
+                    play_index = playIndex,
+                    win_index = winIndex
+                });
+            }
         }
 
         public async UniTask Uninstall()
