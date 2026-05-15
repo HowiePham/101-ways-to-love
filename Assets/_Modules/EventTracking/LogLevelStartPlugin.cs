@@ -36,24 +36,22 @@ namespace Tracking
         {
             await UniTask.CompletedTask;
             int currentLevelOrder = this.runtimeState.CurrentLevelOrder.Value + 1;
-            Debug.Log($"--- (TRACKING) Log level Start: {currentLevelOrder}");
+
+            int playIndex = PlayerPrefs.GetInt($"play_index_{currentLevelOrder}", 0) + 1;
+            PlayerPrefs.SetInt($"play_index_{currentLevelOrder}", playIndex);
+            PlayerPrefs.Save();
+
+            Debug.Log($"--- (TRACKING) Log level Start: {currentLevelOrder} --- PlayIndex: {playIndex}");
 
             UpdateUserProperties(currentLevelOrder);
 
-            // this.analyticTracker.LogEvent(new Feature_LEVEL_START()
-            // {
-            //     eventName = Feature_LEVEL_START.EVENT_NAME.level_start,
-            //     level = currentLevelOrder.ToString(),
-            //     level_mode = "normal",
-            //     life_count = this.lifeSystem.CurrentLifeCount.ToString()
-            // });
-            
             this.analyticTracker.LogEvent(new LevelStartEventData()
             {
                 eventName = LevelStartEventData.EVENT_NAME.level_start,
                 level = currentLevelOrder.ToString(),
                 level_mode = "normal",
-                life_count = this.lifeSystem.CurrentLifeCount
+                life_count = this.lifeSystem.CurrentLifeCount,
+                play_index = playIndex
             });
         }
 

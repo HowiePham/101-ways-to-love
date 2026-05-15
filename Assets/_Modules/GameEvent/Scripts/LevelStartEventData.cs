@@ -11,4 +11,5 @@ public struct LevelStartEventData : IEventData
     public string level { get; set; }
     public string level_mode { get; set; }
     public int life_count { get; set; }
+    public int play_index { get; set; }
 }
