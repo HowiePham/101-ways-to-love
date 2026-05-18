@@ -20,6 +20,9 @@ public class HoldToRotate : VisualAction
     [SerializeField] private BaseAudioServiceSO audioPlayer;
 
     private bool complete;
+    private bool isFingerInArea;
+    private int trackedFingerIndex = -1;
+    private Vector2 prevFingerScreenPosition;
 
     protected override async UniTask OnExecuting(CancellationToken cancellationToken)
     {
@@ -53,6 +56,15 @@ public class HoldToRotate : VisualAction
             return;
         }
 
+        if (this.trackedFingerIndex != -1)
+        {
+            return;
+        }
+
+        this.isFingerInArea = true;
+        this.trackedFingerIndex = finger.Index;
+        this.prevFingerScreenPosition = finger.ScreenPosition;
+
         if (string.IsNullOrEmpty(this.soundKey))
         {
             return;
@@ -63,10 +75,13 @@ public class HoldToRotate : VisualAction
 
     private void FingerUpHandler(LeanFinger finger)
     {
-        if (finger.IsOverGui)
+        if (finger.IsOverGui || finger.Index != this.trackedFingerIndex)
         {
             return;
         }
+
+        this.isFingerInArea = false;
+        this.trackedFingerIndex = -1;
 
         if (!string.IsNullOrEmpty(this.soundKey))
         {
@@ -87,18 +102,29 @@ public class HoldToRotate : VisualAction
 
     private void FingerUpdateHandler(LeanFinger finger)
     {
-        if (finger.IsOverGui || !this.area.ContainsScreenPosition(finger.ScreenPosition, Camera.main))
+        if (finger.IsOverGui || !this.isFingerInArea || finger.Index != this.trackedFingerIndex)
         {
             return;
         }
 
-        float currentAngle = this.target.eulerAngles.z;
-        float rotateAngle = currentAngle + this.angleValue;
-        this.target.DORotate(new Vector3(0, 0, rotateAngle), 0f, RotateMode.FastBeyond360);
+        Vector2 currentScreenPos = finger.ScreenPosition;
+        Vector2 pivotScreenPos = Camera.main.WorldToScreenPoint(this.target.position);
+
+        float prevAngle = Vector2.SignedAngle(Vector2.up, this.prevFingerScreenPosition - pivotScreenPos);
+        float currentAngle = Vector2.SignedAngle(Vector2.up, currentScreenPos - pivotScreenPos);
+        float angleDelta = Mathf.DeltaAngle(prevAngle, currentAngle);
+
+        Vector3 euler = this.target.eulerAngles;
+        euler.z += angleDelta * this.angleValue;
+        this.target.eulerAngles = euler;
+
+        this.prevFingerScreenPosition = currentScreenPos;
     }
 
     private void OnDisable()
     {
+        this.isFingerInArea = false;
+        this.trackedFingerIndex = -1;
         LeanTouch.OnFingerUpdate -= FingerUpdateHandler;
         LeanTouch.OnFingerUp -= FingerUpHandler;
         LeanTouch.OnFingerDown -= FingerDownHandler;
