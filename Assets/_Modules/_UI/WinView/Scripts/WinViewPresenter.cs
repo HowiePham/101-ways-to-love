@@ -61,6 +61,7 @@ namespace _Modules._UI.WinView.Scripts
         protected override void OnShow()
         {
             base.OnShow();
+            this.eventPublisher.PublishAsync(new ScreenShown("win_view"));
 
             this.winView.OnContinueClicked += ContinueClickedHandler;
             this.winView.OnReplayClicked += ReplayClickedHandler;

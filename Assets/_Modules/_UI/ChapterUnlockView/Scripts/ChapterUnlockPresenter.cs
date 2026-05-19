@@ -88,6 +88,7 @@ public class ChapterUnlockPresenter : BaseViewPresenter
     protected override void OnShow()
     {
         base.OnShow();
+        this.eventPublisher.PublishAsync(new ScreenShown("chapter_unlock"));
 
         this.chapterUnlockView.OnContinueClicked += ContinueClickedHandler;
         this.chapterUnlockView.OnBackHomeClicked += BackHomeClickedHandler;

@@ -81,6 +81,7 @@ public class GameplayViewPresenter : BaseViewPresenter
     protected override void OnShow()
     {
         base.OnShow();
+        this.eventPublisher.PublishAsync(new ScreenShown("gameplay"));
 
         this.gameplayView.OnSettingClicked += SettingClickedHandler;
         this.gameplayView.OnSkipClicked += SkipClickedHandler;
