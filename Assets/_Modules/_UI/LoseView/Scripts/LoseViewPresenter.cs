@@ -1,3 +1,4 @@
+using _Modules.GameEvent.Scripts;
 using Mimi.Events.AsyncBus;
 using Mimi.Prototypes.UI;
 using UnityEngine;
@@ -26,6 +27,7 @@ namespace _Modules._UI.LoseView.Scripts
         protected override void OnShow()
         {
             base.OnShow();
+            this.eventPublisher.PublishAsync(new ScreenShown("lose_view"));
 
             this.loseView.OnTryAgainClicked += TryAgainClickedHandler;
         }

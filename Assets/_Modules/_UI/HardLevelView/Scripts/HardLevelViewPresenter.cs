@@ -65,6 +65,7 @@ public class HardLevelViewPresenter : BaseViewPresenter
     protected override void OnShow()
     {
         base.OnShow();
+        this.eventPublisher.PublishAsync(new ScreenShown("hard_level_view"));
         Messenger.AddListener<bool>(EventKey.PauseLevel, StopTimerHandler);
         Messenger.AddListener(EventKey.AnimationStart, StopTimer);
         Messenger.AddListener(EventKey.AnimationComplete, ResumeTimer);

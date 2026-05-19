@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using _Modules.GameEvent.Scripts;
 using _Modules.Gameflow_Events_.Scripts;
 using Cysharp.Threading.Tasks;
 using EnhancedUI.EnhancedScroller;
@@ -64,6 +65,7 @@ public class ChapterSelectLevelPresenter : BaseViewPresenter
     protected override void OnShow()
     {
         base.OnShow();
+        this.eventPublisher.PublishAsync(new ScreenShown("chapter_select_level"));
 
         this.chapterView.OnClickSetting += OnClickSettingHandler;
         this.chapterView.OnTopButtonClick += JumpToFirstPage;

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using _Modules.GameEvent.Scripts;
 using _Modules.Gameflow_Events_.Scripts;
 using EnhancedUI.EnhancedScroller;
 using Mimi.Ads.Adapters;
@@ -54,6 +55,7 @@ public class SelectLevelPresenter : BaseViewPresenter
     protected override void OnShow()
     {
         base.OnShow();
+        this.eventPublisher.PublishAsync(new ScreenShown("select_level"));
 
         this.selectLevelView.OnClickSetting += OnClickSettingHandler;
         this.selectLevelView.OnTopButtonClick += JumpToFirstPage;

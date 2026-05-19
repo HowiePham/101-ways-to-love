@@ -72,6 +72,7 @@ namespace Mimi.Prototypes
             pluginInstaller.AddPlugin(new LogLevelReopenPlugin(this.RuntimeState, this.EventSubscriber, this.AnalyticTracker));
             pluginInstaller.AddPlugin(new LogResourceChangedPlugin((ResourceCollection)this.PlayerResources, this.AnalyticTracker));
             pluginInstaller.AddPlugin(new LogIapPlugin(this.EventSubscriber, this.AnalyticTracker, this.InAppPurchaseStore));
+            pluginInstaller.AddPlugin(new LogSessionDurationPlugin(this.RuntimeState, this.EventSubscriber, this.AnalyticTracker, this.LifeSystem, this.Ads));
             pluginInstaller.AddPlugin(new RemoveAdOnPurchasePlugin(this));
             pluginInstaller.AddPlugin(new DelayInterAfterShowReward(this));
         }
