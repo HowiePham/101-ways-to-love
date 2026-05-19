@@ -145,7 +145,7 @@ namespace Tracking
                 level = level.ToString(),
                 last_screen_name = this.lastScreenName,
                 life_count = lifeCount,
-                session_duration = durationMs,
+                duration = durationMs,
                 total_played_level = totalPlayedLevel,
             });
         }
