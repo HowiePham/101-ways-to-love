@@ -85,10 +85,12 @@ namespace _Modules._UI.WinView.Scripts
 
             if (CanShowNextChapter())
             {
+                int currentLife = this.lifeSystem.CurrentLifeCount;
+                this.winView.SetChapterRewardData(true, currentLife);
+                
                 int lifeReward = this.remoteConfig.GetValue(ConfigKey.LifeRecoverAfterChapter).Int;
                 this.lifeSystem.AddLives(lifeReward, "win_view", "unlock_chapter");
 
-                this.winView.SetChapterRewardData(true, lifeReward);
                 this.winView.OnBonusClicked += BonusClickedHandler;
                 this.winView.OnLoseBonusClicked += LoseBonusClickedHandler;
                 this.adsAdapter.RewardVideo.OnRewarded += BonusRewardedHandler;

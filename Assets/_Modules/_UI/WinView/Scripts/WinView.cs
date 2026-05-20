@@ -9,7 +9,6 @@ using Mimi.Prototypes.UI;
 using Sirenix.OdinInspector;
 using Spine;
 using Spine.Unity;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -35,6 +34,7 @@ namespace _Modules._UI.WinView.Scripts
         [Header("Chapter Reward")] [SerializeField]
         private RectTransform chapterRewardPanel;
 
+        [SerializeField] private NumberBasedLifeView numberBasedLifeView;
         [SerializeField] private CanvasGroup rewardDarkBg;
         [SerializeField] private RectTransform rewardMainPanel;
         [SerializeField] private Button bonusButton;
@@ -50,7 +50,6 @@ namespace _Modules._UI.WinView.Scripts
         protected new string rewardIdleAnimation;
 
         private bool showChapterReward;
-        private int chapterRewardAmount;
         private Dictionary<RectTransform, TweenerCore<Vector3, Vector3, VectorOptions>> loopScalingTweens;
         private CancellationTokenSource showCts;
         private RectTransform RemoveAdsRect => this.removeAdsButton.GetComponent<RectTransform>();
@@ -286,10 +285,10 @@ namespace _Modules._UI.WinView.Scripts
                 this.chapterProgressBar.SetProgressData(completedCount, totalLevels);
         }
 
-        public void SetChapterRewardData(bool show, int amount)
+        public void SetChapterRewardData(bool show, int currentLife)
         {
             this.showChapterReward = show;
-            this.chapterRewardAmount = amount;
+            this.numberBasedLifeView.SetLifeCount(currentLife);
         }
     }
 }
