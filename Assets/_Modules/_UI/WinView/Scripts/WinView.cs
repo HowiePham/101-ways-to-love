@@ -151,7 +151,12 @@ namespace _Modules._UI.WinView.Scripts
             this.settingBtnGroup.DOFade(0f, 0f);
             this.homeBtnBtnGroup.DOFade(0f, 0f);
 
+            this.boxSkeletonGraphic.AnimationState.SetAnimation(this.track, this.openingAnimation, false);
+
             await DOTween.Sequence().Append(this.resultView.DOScale(1f, 0.4f)).AsyncWaitForCompletion();
+            if (ct.IsCancellationRequested) return;
+
+            await UniTask.WaitForSeconds(0.5f, cancellationToken: ct);
             if (ct.IsCancellationRequested) return;
 
             if (this.chapterProgressBar != null)
@@ -163,7 +168,6 @@ namespace _Modules._UI.WinView.Scripts
             if (this.showChapterReward)
             {
                 await ShowChapterRewardPanelEffect(ct);
-                // Normal buttons are shown by HideChapterRewardAndShowButtons() after user clicks bonus/lose
             }
             else
             {

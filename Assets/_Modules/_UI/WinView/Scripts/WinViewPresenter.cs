@@ -87,6 +87,7 @@ namespace _Modules._UI.WinView.Scripts
             {
                 int lifeReward = this.remoteConfig.GetValue(ConfigKey.LifeRecoverAfterChapter).Int;
                 this.lifeSystem.AddLives(lifeReward, "win_view", "unlock_chapter");
+
                 this.winView.SetChapterRewardData(true, lifeReward);
                 this.winView.OnBonusClicked += BonusClickedHandler;
                 this.winView.OnLoseBonusClicked += LoseBonusClickedHandler;
@@ -124,11 +125,6 @@ namespace _Modules._UI.WinView.Scripts
         {
             var removeAdsPresenter = this.ScenePresenter.GetViewPresenter<RemoveAdsViewPresenter>();
             removeAdsPresenter.Show();
-        }
-
-        private void AddCurrencyClickedHandler()
-        {
-            Debug.Log($"--- (Currency) Add currency clicked");
         }
 
         private void LogWinViewFlow(string nextLevel, string returnHome, string replay, bool hasAds)
@@ -224,9 +220,25 @@ namespace _Modules._UI.WinView.Scripts
 
         private void LoseBonusClickedHandler()
         {
-            int bonusAmount = this.remoteConfig.GetValue(ConfigKey.LifeRecoverAfterChapter).Int;
-            this.lifeSystem.AddLives(bonusAmount, "chapter_bonus", "chapter_recovery");
+            LogChapterBonusEvent(false);
+
             this.winView.HideChapterRewardAndShowButtons();
+        }
+
+        private void LogChapterBonusEvent(bool useRewardBonus)
+        {
+            int currentLevelOrder = this.runtimeState.CurrentLevelOrder.Value;
+            int level = currentLevelOrder + 1;
+            string useRewardBonusParam = useRewardBonus ? "true" : "false";
+
+            Debug.Log($"--- (TRACKING) Log Chapter Reward Event --- Level: {level} --- Use Reward: {useRewardBonusParam}");
+
+            this.analyticTracker.LogEvent(new ChapterRewardEventData()
+            {
+                eventName = ChapterRewardEventData.EVENT_NAME.chapter_reward,
+                level = level.ToString(),
+                use_reward_bonus = useRewardBonusParam
+            });
         }
 
         private void BonusClickedHandler()
@@ -252,7 +264,11 @@ namespace _Modules._UI.WinView.Scripts
             }
 
             int bonusAmount = this.remoteConfig.GetValue(ConfigKey.LifeBonusAfterChapter).Int;
+            int defaultLifeReward = this.remoteConfig.GetValue(ConfigKey.LifeRecoverAfterChapter).Int;
+            bonusAmount -= defaultLifeReward;
+
             this.lifeSystem.AddLives(bonusAmount, "chapter_bonus", rewardId);
+            LogChapterBonusEvent(true);
             this.winView.HideChapterRewardAndShowButtons();
         }
 
