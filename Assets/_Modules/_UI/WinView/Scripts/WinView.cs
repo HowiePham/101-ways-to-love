@@ -134,10 +134,18 @@ namespace _Modules._UI.WinView.Scripts
 
             if (this.chapterRewardPanel != null)
             {
-                DOTween.Kill(this.rewardDarkBg);
-                DOTween.Kill(this.rewardMainPanel);
-                this.rewardDarkBg.alpha = 0f;
-                this.rewardMainPanel.localScale = Vector3.one;
+                if (this.rewardDarkBg != null)
+                {
+                    DOTween.Kill(this.rewardDarkBg);
+                    this.rewardDarkBg.alpha = 0f;
+                }
+
+                if (this.rewardMainPanel != null)
+                {
+                    DOTween.Kill(this.rewardMainPanel);
+                    this.rewardMainPanel.localScale = Vector3.one;
+                }
+
                 this.chapterRewardPanel.gameObject.SetActive(false);
             }
 
@@ -286,7 +294,8 @@ namespace _Modules._UI.WinView.Scripts
         public void SetChapterRewardData(bool show, int currentLife)
         {
             this.showChapterReward = show;
-            this.numberBasedLifeView.SetLifeCount(currentLife);
+            if (this.numberBasedLifeView != null)
+                this.numberBasedLifeView.SetLifeCount(currentLife);
         }
     }
 }
