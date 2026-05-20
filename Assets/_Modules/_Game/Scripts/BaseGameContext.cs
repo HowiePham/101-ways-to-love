@@ -716,7 +716,7 @@ namespace Mimi.Prototypes
                 .SetInt(ConfigKey.MaxLife, 10)
                 .SetInt(ConfigKey.LifeRecoverAfterChapter, 1)
                 .SetInt(ConfigKey.LifeBonusAfterChapter, 3)
-                .SetInt(ConfigKey.LifeAddAfterReward, 1)
+                .SetInt(ConfigKey.LifeAddAfterReward,3)
                 .SetInt(ConfigKey.ShowHintButtonAfterWrongTimes, 1)
                 .SetInt(ConfigKey.ShowSkipButtonAfterWrongTimes, 2)
                 .SetInt(ConfigKey.ShowObjectHintAfterWrongTimes, 1)
