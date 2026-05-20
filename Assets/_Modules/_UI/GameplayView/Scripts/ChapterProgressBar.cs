@@ -78,7 +78,6 @@ public class ChapterProgressBar : MonoBehaviour
         if (!autoHide) return;
 
         await UniTask.WaitForSeconds(this.hideDelay);
-        await transform.DOScale(0f, this.hideDuration).SetEase(Ease.InBack).AsyncWaitForCompletion();
     }
 
     public async UniTask PlayHideAnimation()

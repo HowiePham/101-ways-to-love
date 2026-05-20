@@ -38,6 +38,7 @@ namespace _Modules._UI.WinView.Scripts
         [SerializeField] private NumberBasedLifeView numberBasedLifeView;
         [SerializeField] private CanvasGroup rewardDarkBg;
         [SerializeField] private RectTransform rewardMainPanel;
+        [SerializeField] private CanvasGroup rewardMainPanelGroup;
         [SerializeField] private Button bonusButton;
         [SerializeField] private Button loseBonusButton;
         [SerializeField] private CanvasGroup loseBonusButtonGroup;
@@ -171,6 +172,12 @@ namespace _Modules._UI.WinView.Scripts
                     this.rewardMainPanel.localScale = Vector3.one;
                 }
 
+                if (this.rewardMainPanelGroup != null)
+                {
+                    DOTween.Kill(this.rewardMainPanelGroup);
+                    this.rewardMainPanelGroup.alpha = 1f;
+                }
+
                 if (this.bonusButton != null)
                 {
                     var bonusRect = (RectTransform)this.bonusButton.transform;
@@ -201,6 +208,11 @@ namespace _Modules._UI.WinView.Scripts
                 {
                     this.rewardSkeletonGraphic.AnimationState.Event -= PlayLifeNumberEffect;
                     this.rewardSkeletonGraphic.gameObject.SetActive(false);
+                }
+
+                if (this.boxSkeletonGraphic != null)
+                {
+                    this.boxSkeletonGraphic.gameObject.SetActive(true);
                 }
 
                 this.chapterRewardPanel.gameObject.SetActive(false);
@@ -238,6 +250,7 @@ namespace _Modules._UI.WinView.Scripts
             }
             else
             {
+                await this.chapterProgressBar.PlayHideAnimation();
                 await ShowNormalButtonsEffect(ct);
             }
         }
@@ -250,17 +263,25 @@ namespace _Modules._UI.WinView.Scripts
 
             this.chapterRewardPanel.gameObject.SetActive(true);
             this.rewardDarkBg.alpha = 0f;
-            this.rewardMainPanel.localScale = Vector3.zero;
+            this.rewardMainPanel.localScale = Vector3.one;
+            if (this.rewardMainPanelGroup != null) this.rewardMainPanelGroup.alpha = 0f;
             if (this.rewardBoxRect != null) this.rewardBoxRect.gameObject.SetActive(true);
+            if (this.boxSkeletonGraphic != null) this.boxSkeletonGraphic.gameObject.SetActive(true);
+            if (this.rewardSkeletonGraphic != null) this.rewardSkeletonGraphic.gameObject.SetActive(false);
 
             await this.rewardDarkBg.DOFade(1f, 0.3f).AsyncWaitForCompletion();
+            this.chapterProgressBar.PlayHideAnimation();
             if (ct.IsCancellationRequested) return;
 
             await JumpRewardBoxAsync(ct);
             if (ct.IsCancellationRequested) return;
 
-            await this.rewardMainPanel.DOScale(1f, 0.4f).SetEase(Ease.OutBack).AsyncWaitForCompletion();
-            if (ct.IsCancellationRequested) return;
+            if (this.rewardMainPanelGroup != null)
+            {
+                await this.rewardMainPanelGroup.DOFade(1f, 0.4f).SetEase(Ease.OutQuad).AsyncWaitForCompletion();
+                this.rewardBoxRect.gameObject.SetActive(false);
+                if (ct.IsCancellationRequested) return;
+            }
 
             await OpenRewardBox(ct);
             if (ct.IsCancellationRequested) return;
@@ -297,7 +318,6 @@ namespace _Modules._UI.WinView.Scripts
             Vector3 startScale = Vector3.one * this.rewardBoxStartScale;
             Vector3 endScale = Vector3.one * this.rewardBoxEndScale;
             Vector3 takeoffSquash = new Vector3(startScale.x * 1.15f, startScale.y * 0.85f, startScale.z);
-            Vector3 landingSquash = new Vector3(endScale.x * 1.15f, endScale.y * 0.85f, endScale.z);
 
             this.rewardBoxRect.position = this.rewardStartPoint.position;
             this.rewardBoxRect.localScale = startScale;
@@ -313,21 +333,6 @@ namespace _Modules._UI.WinView.Scripts
                 .SetEase(Ease.OutCubic);
             this.rewardBoxRect.DOScale(endScale, this.rewardBoxJumpDuration).SetEase(Ease.OutQuad);
             await jump.AsyncWaitForCompletion();
-            if (ct.IsCancellationRequested) return;
-
-            await this.rewardBoxRect
-                .DOScale(landingSquash, 0.08f)
-                .SetEase(Ease.OutQuad)
-                .AsyncWaitForCompletion();
-            if (ct.IsCancellationRequested) return;
-
-            await this.rewardBoxRect
-                .DOScale(endScale, 0.12f)
-                .SetEase(Ease.OutBack)
-                .AsyncWaitForCompletion();
-            if (ct.IsCancellationRequested) return;
-
-            this.rewardBoxRect.gameObject.SetActive(false);
         }
 
         public async UniTaskVoid HideChapterRewardAndShowButtons()
@@ -341,8 +346,11 @@ namespace _Modules._UI.WinView.Scripts
                 this.loopScalingTweens.Remove(bonusRect);
             }
 
-            await this.rewardMainPanel.DOScale(0f, 0.3f).SetEase(Ease.InBack).AsyncWaitForCompletion();
-            if (ct.IsCancellationRequested) return;
+            if (this.rewardMainPanelGroup != null)
+            {
+                await this.rewardMainPanelGroup.DOFade(0f, 0.3f).SetEase(Ease.InQuad).AsyncWaitForCompletion();
+                if (ct.IsCancellationRequested) return;
+            }
 
             await this.rewardDarkBg.DOFade(0f, 0.2f).AsyncWaitForCompletion();
             if (ct.IsCancellationRequested) return;
@@ -351,6 +359,13 @@ namespace _Modules._UI.WinView.Scripts
             this.chapterRewardPanel.gameObject.SetActive(false);
 
             await ShowNormalButtonsEffect(ct);
+            if (ct.IsCancellationRequested) return;
+
+            if (this.rewardSkeletonGraphic != null)
+                this.rewardSkeletonGraphic.gameObject.SetActive(false);
+            if (this.boxSkeletonGraphic != null)
+                this.boxSkeletonGraphic.gameObject.SetActive(true);
+            this.isPlayingReward = false;
         }
 
         private async UniTask ShowNormalButtonsEffect(CancellationToken ct)
@@ -390,6 +405,8 @@ namespace _Modules._UI.WinView.Scripts
         {
             await PlayRewardAnimationAsync(this.defaultRewardAnimation, ct);
             if (ct.IsCancellationRequested) return;
+
+            await UniTask.WaitForSeconds(0.5f, cancellationToken: ct);
             HideChapterRewardAndShowButtons().Forget();
         }
 
@@ -397,6 +414,8 @@ namespace _Modules._UI.WinView.Scripts
         {
             await PlayRewardAnimationAsync(this.bonusRewardAnimation, ct);
             if (ct.IsCancellationRequested) return;
+
+            await UniTask.WaitForSeconds(0.5f, cancellationToken: ct);
             HideChapterRewardAndShowButtons().Forget();
         }
 
@@ -425,6 +444,9 @@ namespace _Modules._UI.WinView.Scripts
                 await HideChapterButtonsAsync(ct);
                 if (ct.IsCancellationRequested) return;
 
+                if (this.boxSkeletonGraphic != null)
+                    this.boxSkeletonGraphic.gameObject.SetActive(false);
+
                 var animState = this.rewardSkeletonGraphic.AnimationState;
                 this.rewardSkeletonGraphic.gameObject.SetActive(true);
 
@@ -442,9 +464,6 @@ namespace _Modules._UI.WinView.Scripts
             }
             finally
             {
-                if (this.rewardSkeletonGraphic != null)
-                    this.rewardSkeletonGraphic.gameObject.SetActive(false);
-                this.isPlayingReward = false;
             }
         }
 
@@ -462,7 +481,6 @@ namespace _Modules._UI.WinView.Scripts
 
             this.loseBonusButtonGroup.DOFade(0f, 0.2f).SetEase(Ease.OutQuad);
             await bonusRect.DOScale(0f, 0.2f).SetEase(Ease.InBack).AsyncWaitForCompletion();
-            if (ct.IsCancellationRequested) return;
         }
 
         private void PlayLifeNumberEffect(TrackEntry trackEntry, Event e)
