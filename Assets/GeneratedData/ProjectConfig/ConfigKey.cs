@@ -2,7 +2,6 @@
 {
     public static class ConfigKey
     {
-        
         public const string ClientVersion = "client_version";
         public const string LevelDevelopment = "level_dev";
         public const string LevelProduction = "level_prod";
@@ -36,6 +35,7 @@
         public const string LifeCooldown = "life_cooldown";
         public const string MaxLife = "max_life";
         public const string LifeRecoverAfterChapter = "life_recover_after_chapter";
+        public const string LifeBonusAfterChapter = "life_bonus_after_chapter";
         public const string LifeAddAfterReward = "life_add_after_reward";
         public const string ShowTutorialUI = "is_show_tutorial_ui";
         public const string HintButtonDelay = "hint_button_delay";

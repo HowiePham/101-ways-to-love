@@ -224,6 +224,8 @@ namespace _Modules._UI.WinView.Scripts
 
         private void LoseBonusClickedHandler()
         {
+            int bonusAmount = this.remoteConfig.GetValue(ConfigKey.LifeRecoverAfterChapter).Int;
+            this.lifeSystem.AddLives(bonusAmount, "chapter_bonus", "chapter_recovery");
             this.winView.HideChapterRewardAndShowButtons();
         }
 
@@ -249,8 +251,8 @@ namespace _Modules._UI.WinView.Scripts
                 return;
             }
 
-            int bonusAmount = this.remoteConfig.GetValue(ConfigKey.LifeRecoverAfterChapter).Int;
-            this.lifeSystem.AddLives(bonusAmount, "chapter_bonus", "reward_video");
+            int bonusAmount = this.remoteConfig.GetValue(ConfigKey.LifeBonusAfterChapter).Int;
+            this.lifeSystem.AddLives(bonusAmount, "chapter_bonus", rewardId);
             this.winView.HideChapterRewardAndShowButtons();
         }
 
