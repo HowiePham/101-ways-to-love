@@ -47,6 +47,9 @@ namespace _Modules._UI.WinView.Scripts
         protected new string openingAnimation;
 
         [SerializeField, SpineAnimation(dataField = "boxSkeletonGraphic")]
+        protected new string boxIdleAnimation;
+
+        [SerializeField, SpineAnimation(dataField = "boxSkeletonGraphic")]
         protected new string rewardIdleAnimation;
 
         private bool showChapterReward;
@@ -242,6 +245,7 @@ namespace _Modules._UI.WinView.Scripts
             await this.rewardDarkBg.DOFade(0f, 0.2f).AsyncWaitForCompletion();
             if (ct.IsCancellationRequested) return;
 
+            this.boxSkeletonGraphic.AnimationState.SetAnimation(this.track, this.boxIdleAnimation, true);
             this.chapterRewardPanel.gameObject.SetActive(false);
 
             await ShowNormalButtonsEffect(ct);
