@@ -154,8 +154,6 @@ namespace _Modules._UI.WinView.Scripts
             this.settingBtnGroup.DOFade(0f, 0f);
             this.homeBtnBtnGroup.DOFade(0f, 0f);
 
-            this.boxSkeletonGraphic.AnimationState.SetAnimation(this.track, this.openingAnimation, false);
-
             await DOTween.Sequence().Append(this.resultView.DOScale(1f, 0.4f)).AsyncWaitForCompletion();
             if (ct.IsCancellationRequested) return;
 
