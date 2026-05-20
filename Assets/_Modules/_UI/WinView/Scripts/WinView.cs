@@ -7,6 +7,7 @@ using DG.Tweening.Core;
 using DG.Tweening.Plugins.Options;
 using Mimi.Prototypes.UI;
 using Sirenix.OdinInspector;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -27,9 +28,20 @@ namespace _Modules._UI.WinView.Scripts
         [SerializeField] private Button homeButton;
         [SerializeField] private RectTransform nextChapterParent;
         [SerializeField] private Image nextChapterImage;
-        [Header("Chapter Progress")]
-        [SerializeField] private ChapterProgressBar chapterProgressBar;
 
+        [Header("Chapter Progress")] [SerializeField]
+        private ChapterProgressBar chapterProgressBar;
+
+        [Header("Chapter Reward")] [SerializeField]
+        private RectTransform chapterRewardPanel;
+
+        [SerializeField] private Button bonusButton;
+        [SerializeField] private Button loseBonusButton;
+        [SerializeField] private CanvasGroup loseBonusButtonGroup;
+        [SerializeField] private TMP_Text rewardAmountText;
+
+        private bool showChapterReward;
+        private int chapterRewardAmount;
         private Dictionary<RectTransform, TweenerCore<Vector3, Vector3, VectorOptions>> loopScalingTweens;
         private CancellationTokenSource showCts;
         private RectTransform RemoveAdsRect => this.removeAdsButton.GetComponent<RectTransform>();
@@ -40,6 +52,8 @@ namespace _Modules._UI.WinView.Scripts
         public Action OnRemoveAdsClicked;
         public Action OnSettingClicked;
         public Action OnHomeClicked;
+        public Action OnBonusClicked;
+        public Action OnLoseBonusClicked;
 
         public override void Initialize()
         {
@@ -49,6 +63,13 @@ namespace _Modules._UI.WinView.Scripts
 
             if (this.chapterProgressBar != null)
                 this.chapterProgressBar.Initialize();
+
+            if (this.chapterRewardPanel != null)
+            {
+                this.chapterRewardPanel.gameObject.SetActive(false);
+                this.bonusButton.onClick.AddListener(() => OnBonusClicked?.Invoke());
+                this.loseBonusButton.onClick.AddListener(() => this.OnLoseBonusClicked?.Invoke());
+            }
 
             this.continueButton.onClick.AddListener(() => OnContinueClicked?.Invoke());
             this.replayButton.onClick.AddListener(() => OnReplayClicked?.Invoke());
@@ -103,6 +124,14 @@ namespace _Modules._UI.WinView.Scripts
                 this.chapterProgressBar.transform.localScale = Vector3.zero;
             }
 
+            if (this.chapterRewardPanel != null)
+            {
+                DOTween.Kill(this.chapterRewardPanel);
+                this.chapterRewardPanel.gameObject.SetActive(false);
+                this.chapterRewardPanel.localScale = Vector3.one;
+            }
+
+            this.showChapterReward = false;
             this.nextChapterParent.localScale = Vector3.zero;
             this.nextChapterParent.gameObject.SetActive(false);
         }
@@ -145,11 +174,65 @@ namespace _Modules._UI.WinView.Scripts
                 if (ct.IsCancellationRequested) return;
             }
 
+            if (this.showChapterReward)
+            {
+                await ShowChapterRewardPanelEffect(ct);
+                // Normal buttons are shown by HideChapterRewardAndShowButtons() after user clicks bonus/lose
+            }
+            else
+            {
+                await ShowNormalButtonsEffect(ct);
+            }
+        }
+
+        private async UniTask ShowChapterRewardPanelEffect(CancellationToken ct)
+        {
+            if (this.rewardAmountText != null)
+                this.rewardAmountText.text = $"+{this.chapterRewardAmount}";
+
+            this.loseBonusButtonGroup.alpha = 0f;
+
+            this.chapterRewardPanel.gameObject.SetActive(true);
+            this.chapterRewardPanel.localScale = Vector3.zero;
+
+            await this.chapterRewardPanel.DOScale(1f, 0.4f).SetEase(Ease.OutBack).AsyncWaitForCompletion();
+            if (ct.IsCancellationRequested) return;
+
+            var bonusRect = (RectTransform)this.bonusButton.transform;
+            LoopScalingUIEffect(bonusRect, 1.1f, 0, 1f, ct);
+
+            await UniTask.WaitForSeconds(1f, cancellationToken: ct);
+            if (ct.IsCancellationRequested) return;
+
+            await this.loseBonusButtonGroup.DOFade(1f, 0.5f).AsyncWaitForCompletion();
+        }
+
+        public async UniTaskVoid HideChapterRewardAndShowButtons()
+        {
+            var ct = this.showCts?.Token ?? CancellationToken.None;
+
+            var bonusRect = (RectTransform)this.bonusButton.transform;
+            if (this.loopScalingTweens.TryGetValue(bonusRect, out var pulseTween))
+            {
+                pulseTween?.Kill();
+                this.loopScalingTweens.Remove(bonusRect);
+            }
+
+            await this.chapterRewardPanel.DOScale(0f, 0.3f).SetEase(Ease.InBack).AsyncWaitForCompletion();
+            if (ct.IsCancellationRequested) return;
+
+            this.chapterRewardPanel.gameObject.SetActive(false);
+
+            await ShowNormalButtonsEffect(ct);
+        }
+
+        private async UniTask ShowNormalButtonsEffect(CancellationToken ct)
+        {
             this.removeAdsBtnGroup.DOFade(1f, 0.5f).AsyncWaitForCompletion();
             this.settingBtnGroup.DOFade(1f, 0.5f).AsyncWaitForCompletion();
             await this.continueBtnGroup.DOFade(1f, 0.5f).AsyncWaitForCompletion();
             if (ct.IsCancellationRequested) return;
-            
+
             LoopScalingUIEffect(this.RemoveAdsRect, 1.1f, 0, 1f, ct);
             LoopScalingUIEffect(this.ContinueBtnRect, 1.1f, 0, 1f, ct);
             await UniTask.WaitForSeconds(1f, cancellationToken: ct);
@@ -194,6 +277,12 @@ namespace _Modules._UI.WinView.Scripts
         {
             if (this.chapterProgressBar != null)
                 this.chapterProgressBar.SetProgressData(completedCount, totalLevels);
+        }
+
+        public void SetChapterRewardData(bool show, int amount)
+        {
+            this.showChapterReward = show;
+            this.chapterRewardAmount = amount;
         }
     }
 }
