@@ -707,7 +707,7 @@ namespace Mimi.Prototypes
                 .SetBool(ConfigKey.ShowRewarded, true)
                 .SetBool(ConfigKey.UseAdmobBanner, false)
                 .SetBool(ConfigKey.UseMaxAoa, true)
-                .SetString(ConfigKey.HardLevel, "10,20,30,38,50,61,72,81,91,100,110,120")
+                .SetString(ConfigKey.HardLevel, "20,30,38,50,61,72,81,91,100,110,120")
                 .SetInt(ConfigKey.HardLevelBaseTime, 30)
                 .SetInt(ConfigKey.HardLevelAdditionalTime, 30)
                 .SetInt(ConfigKey.HardLevelWarningTime, 10)
