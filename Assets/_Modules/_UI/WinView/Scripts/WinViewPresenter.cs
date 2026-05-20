@@ -8,6 +8,7 @@ using Mimi.Configs;
 using Mimi.Events;
 using Mimi.Events.AsyncBus;
 using Mimi.Prototypes;
+using Mimi.Prototypes.Currencies;
 using Mimi.Prototypes.Events;
 using Mimi.Prototypes.LevelManagement;
 using Mimi.Prototypes.UI;
@@ -30,11 +31,12 @@ namespace _Modules._UI.WinView.Scripts
         private readonly LifeSystem lifeSystem;
         private readonly ChapterLevelRepository chapterLevelRepo;
         private readonly IAnalyticTracker analyticTracker;
+        private readonly DialogManager dialogManager;
 
         public WinViewPresenter(BaseScenePresenter scenePresenter, Transform transform, IAsyncPublisher eventPublisher,
             RuntimeState runtimeState, IAdAdapter adsAdapter,
             LevelConfig showAdLevelConfig, GameData gameData, ILevelOrder levelOrder, IConfigProvider remoteConfig, LifeSystem lifeSystem,
-            ChapterLevelRepository chapterLevelRepo, IAnalyticTracker analyticTracker) : base(scenePresenter, transform)
+            ChapterLevelRepository chapterLevelRepo, IAnalyticTracker analyticTracker, DialogManager dialogManager) : base(scenePresenter, transform)
         {
             this.eventPublisher = eventPublisher;
             this.runtimeState = runtimeState;
@@ -46,6 +48,7 @@ namespace _Modules._UI.WinView.Scripts
             this.levelOrder = levelOrder;
             this.chapterLevelRepo = chapterLevelRepo;
             this.analyticTracker = analyticTracker;
+            this.dialogManager = dialogManager;
         }
 
         protected override void AddViews()
@@ -63,6 +66,8 @@ namespace _Modules._UI.WinView.Scripts
             base.OnShow();
             this.eventPublisher.PublishAsync(new ScreenShown("win_view"));
 
+            ShowChapterProgress();
+
             this.winView.OnContinueClicked += ContinueClickedHandler;
             this.winView.OnReplayClicked += ReplayClickedHandler;
             this.winView.OnRemoveAdsClicked += ShowRemoveAdsView;
@@ -77,22 +82,17 @@ namespace _Modules._UI.WinView.Scripts
             this.winView.SetActiveRemoveAdsButton(!baseGameContext.IsRemoveAds);
 
             this.adsAdapter.Mrec.Show(new AdPlacement("win_view"));
-            bool isShowNextChapterInWinView = this.remoteConfig.GetValue(ConfigKey.ShowNextChapterInWinView).Boolean;
 
-            if (isShowNextChapterInWinView && CanShowNextChapter())
+            if (CanShowNextChapter())
             {
                 int lifeReward = this.remoteConfig.GetValue(ConfigKey.LifeRecoverAfterChapter).Int;
                 this.lifeSystem.AddLives(lifeReward, "win_view", "unlock_chapter");
 
-                int currentOrder = this.runtimeState.CurrentLevelOrder.Value;
-                LevelInfo nextLevel = this.levelOrder.GetNextLevel(currentOrder);
-
-                if (nextLevel != null)
-                {
-                    ChapterInfo nextChapter = this.chapterLevelRepo.GetChapter(nextLevel.Chapter);
-                    Sprite icon = Resources.Load<Sprite>("Icons/" + nextChapter.ChapterIconAddress);
-                    this.winView.SetNextChapterHint(true, icon);
-                }
+                this.winView.SetChapterRewardData(true, lifeReward);
+                this.winView.OnBonusClicked += BonusClickedHandler;
+                this.winView.OnLoseBonusClicked += LoseBonusClickedHandler;
+                this.adsAdapter.RewardVideo.OnRewarded += BonusRewardedHandler;
+                this.adsAdapter.RewardVideo.OnShowFailed += BonusShowFailedHandler;
             }
         }
 
@@ -110,8 +110,10 @@ namespace _Modules._UI.WinView.Scripts
             Messenger.RemoveListener(EventKey.RemoveAdsCompleted, HideRemoveAdsButton);
 
             this.adsAdapter.Mrec.Hide();
-            this.winView.SetNextChapterHint(false);
-            // this.currencyView.OnAddCurrencyClicked -= AddCurrencyClickedHandler;
+            this.winView.OnBonusClicked -= BonusClickedHandler;
+            this.winView.OnLoseBonusClicked -= LoseBonusClickedHandler;
+            this.adsAdapter.RewardVideo.OnRewarded -= BonusRewardedHandler;
+            this.adsAdapter.RewardVideo.OnShowFailed -= BonusShowFailedHandler;
         }
 
         private void HideRemoveAdsButton()
@@ -123,11 +125,6 @@ namespace _Modules._UI.WinView.Scripts
         {
             var removeAdsPresenter = this.ScenePresenter.GetViewPresenter<RemoveAdsViewPresenter>();
             removeAdsPresenter.Show();
-        }
-
-        private void AddCurrencyClickedHandler()
-        {
-            Debug.Log($"--- (Currency) Add currency clicked");
         }
 
         private void LogWinViewFlow(string nextLevel, string returnHome, string replay, bool hasAds)
@@ -200,7 +197,7 @@ namespace _Modules._UI.WinView.Scripts
         {
             if (CanShowNextChapter())
             {
-                ShowChapterUnlockThenReward().Forget();
+                ShowChapterUnlockFlow().Forget();
                 return;
             }
 
@@ -208,20 +205,83 @@ namespace _Modules._UI.WinView.Scripts
             Hide();
         }
 
-        private async UniTaskVoid ShowChapterUnlockThenReward()
+        private async UniTaskVoid ShowChapterUnlockFlow()
         {
             Hide();
 
             var chapterUnlockPresenter = this.ScenePresenter.GetViewPresenter<ChapterUnlockPresenter>();
             bool chapterShown = await chapterUnlockPresenter.TryShowForNextChapterAndWait();
 
-            var lifeRewardPresenter = this.ScenePresenter.GetViewPresenter<RewardPresenter>();
-            await lifeRewardPresenter.ShowAndWait();
-
             if (chapterShown && chapterUnlockPresenter.WasBackHomeRequested)
                 this.eventPublisher.PublishAsync(new BackHome());
             else
                 this.eventPublisher.PublishAsync(new NextLevelClicked());
+        }
+
+        private void LoseBonusClickedHandler()
+        {
+            LogChapterBonusEvent(false);
+
+            this.winView.HideChapterRewardAndShowButtons();
+        }
+
+        private void LogChapterBonusEvent(bool useRewardBonus)
+        {
+            int currentLevelOrder = this.runtimeState.CurrentLevelOrder.Value;
+            int level = currentLevelOrder + 1;
+            string useRewardBonusParam = useRewardBonus ? "true" : "false";
+
+            Debug.Log($"--- (TRACKING) Log Chapter Reward Event --- Level: {level} --- Use Reward: {useRewardBonusParam}");
+
+            this.analyticTracker.LogEvent(new ChapterRewardEventData()
+            {
+                eventName = ChapterRewardEventData.EVENT_NAME.chapter_reward,
+                level = level.ToString(),
+                use_reward_bonus = useRewardBonusParam
+            });
+        }
+
+        private void BonusClickedHandler()
+        {
+            if (this.adsAdapter.RewardVideo.IsReady)
+            {
+                var adReward = new AdReward("bonus_life_chapter");
+                var adPlacement = new AdPlacement("chapter_bonus");
+                this.adsAdapter.RewardVideo.Show(adReward, adPlacement);
+            }
+            else
+            {
+                ShowAdFailedDialog();
+            }
+        }
+
+        private void BonusRewardedHandler(AdReward adReward)
+        {
+            string rewardId = adReward.RewardId;
+            if (!rewardId.Equals("bonus_life_chapter"))
+            {
+                return;
+            }
+
+            int bonusAmount = this.remoteConfig.GetValue(ConfigKey.LifeBonusAfterChapter).Int;
+            int defaultLifeReward = this.remoteConfig.GetValue(ConfigKey.LifeRecoverAfterChapter).Int;
+            bonusAmount -= defaultLifeReward;
+
+            this.lifeSystem.AddLives(bonusAmount, "chapter_bonus", rewardId);
+            LogChapterBonusEvent(true);
+            this.winView.HideChapterRewardAndShowButtons();
+        }
+
+        private void BonusShowFailedHandler(AdReward adReward, AdError adError)
+        {
+            string rewardId = adReward.RewardId;
+
+            if (!rewardId.Equals("bonus_life_chapter"))
+            {
+                return;
+            }
+
+            ShowAdFailedDialog();
         }
 
         private void ReplayClickedHandler()
@@ -246,6 +306,22 @@ namespace _Modules._UI.WinView.Scripts
             Hide();
         }
 
+        private void ShowChapterProgress()
+        {
+            int currentOrder = this.runtimeState.CurrentLevelOrder.Value;
+            LevelInfo currentLevel = this.levelOrder.GetByOrder(currentOrder);
+            if (currentLevel == null) return;
+
+            ChapterInfo chapter = this.chapterLevelRepo.GetChapter(currentLevel.Chapter);
+            if (chapter == null) return;
+
+            int firstStage = chapter.Levels[0].StageNumber;
+            int currentStage = currentOrder + 1;
+            int completedInChapter = currentStage - firstStage + 1;
+
+            this.winView.SetChapterProgress(completedInChapter, chapter.LevelCount);
+        }
+
         private void InterstitialClosedHandler(AdPlacement adPlacement)
         {
             if (adPlacement.location == "level_complete")
@@ -260,6 +336,15 @@ namespace _Modules._UI.WinView.Scripts
             if (adPlacement.location == "level_complete")
             {
                 NextLevelHandler();
+            }
+        }
+
+        private void ShowAdFailedDialog()
+        {
+            if (this.dialogManager.TryShowModalDialogOnce(DialogId.GenericAutoHide,
+                    out AutoHideNotificationDialog dialog))
+            {
+                dialog.SetText("Ads is not available");
             }
         }
     }

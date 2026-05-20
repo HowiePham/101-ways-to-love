@@ -28,8 +28,7 @@ namespace Mimi.Prototypes
             AddViewPresenter(chapterSelectLevelViewPresenter);
             Debug.Log($"--- (PRESENTER) Init GameplayViewPresenter");
             var gameplayViewPresenter = new GameplayViewPresenter(this, this.Transform, gameContext.EventPublisher, gameContext.EventSubscriber,
-                gameContext.RuntimeState, gameContext.LifeSystem, gameContext.HintLevelConfig, gameContext.Ads, gameContext.DialogManager,
-                gameContext.ChapterLevelRepo, gameContext.LevelOrder, gameContext.RemoteConfig);
+                gameContext.RuntimeState, gameContext.LifeSystem, gameContext.HintLevelConfig, gameContext.Ads, gameContext.DialogManager, gameContext.LevelOrder, gameContext.RemoteConfig);
             AddViewPresenter(gameplayViewPresenter);
             var hardLevelViewPresenter = new HardLevelViewPresenter(this, this.Transform, gameContext.RemoteConfig, gameContext.Ads, gameContext.DialogManager,
                 gameContext.EventPublisher, gameContext.RuntimeState);
@@ -42,13 +41,11 @@ namespace Mimi.Prototypes
             Debug.Log($"--- (PRESENTER) Init WinViewPresenter");
             var winViewPresenter = new WinViewPresenter(this, this.Transform, gameContext.EventPublisher,
                 gameContext.RuntimeState, gameContext.Ads, gameContext.ShowInterstitialLevelConfig, gameContext.GameData, gameContext.LevelOrder,
-                gameContext.RemoteConfig, gameContext.LifeSystem, gameContext.ChapterLevelRepo, gameContext.AnalyticTracker);
+                gameContext.RemoteConfig, gameContext.LifeSystem, gameContext.ChapterLevelRepo, gameContext.AnalyticTracker, gameContext.DialogManager);
             AddViewPresenter(winViewPresenter);
             Debug.Log($"--- (PRESENTER) Init LoseViewPresenter");
             var loseViewPresenter = new LoseViewPresenter(this, this.Transform, gameContext.EventPublisher);
             AddViewPresenter(loseViewPresenter);
-            var lifeRewardPresenter = new RewardPresenter(this, this.Transform, gameContext.RemoteConfig, gameContext.EventPublisher);
-            AddViewPresenter(lifeRewardPresenter);
             var chapterUnlockPresenter = new ChapterUnlockPresenter(
                 this, this.Transform, gameContext.EventPublisher, gameContext.ChapterLevelRepo, gameContext.LevelOrder,
                 gameContext.RuntimeState, gameContext.RemoteConfig, gameContext.DialogManager);

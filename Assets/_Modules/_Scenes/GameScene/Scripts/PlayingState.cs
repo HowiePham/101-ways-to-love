@@ -81,9 +81,6 @@ namespace Mimi
         private void LimitedTimeViewClickPlayHandler()
         {
             this.levelPlayer.Play();
-
-            var gameplayViewPresenter = this.Presenter.GetViewPresenter<GameplayViewPresenter>();
-            gameplayViewPresenter.PlayChapterProgressBarAnimation().Forget();
         }
 
         private async UniTask SkipLevelHandler(SkipLevel skipLevel, CancellationToken cancellation)
@@ -271,8 +268,6 @@ namespace Mimi
             UpdateLevelGeneralSound();
 
             bool isHardLevel = Context.HardLevelConfig.HasLevel(StringNumber.IntToText(levelOrder + 1));
-            var gameplayViewPresenter = this.Presenter.GetViewPresenter<GameplayViewPresenter>();
-            gameplayViewPresenter.SetDelayProgressBarAnimation(isHardLevel);
 
             ShowGameplayView();
             this.Context.StopSound(this.bgmSoundKey);
