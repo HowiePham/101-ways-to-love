@@ -87,7 +87,7 @@ namespace _Modules._UI.WinView.Scripts
             {
                 int currentLife = this.lifeSystem.CurrentLifeCount;
                 this.winView.SetChapterRewardData(true, currentLife);
-                
+
                 int lifeReward = this.remoteConfig.GetValue(ConfigKey.LifeRecoverAfterChapter).Int;
                 this.lifeSystem.AddLives(lifeReward, "win_view", "unlock_chapter");
 
@@ -223,7 +223,18 @@ namespace _Modules._UI.WinView.Scripts
         private void LoseBonusClickedHandler()
         {
             LogChapterBonusEvent(false);
+            Test1();
+        }
 
+        private async UniTask Test1()
+        {
+            await this.winView.Test1();
+            this.winView.HideChapterRewardAndShowButtons();
+        }
+
+        private async UniTask Test2()
+        {
+            await this.winView.Test2();
             this.winView.HideChapterRewardAndShowButtons();
         }
 
@@ -271,7 +282,7 @@ namespace _Modules._UI.WinView.Scripts
 
             this.lifeSystem.AddLives(bonusAmount, "chapter_bonus", rewardId);
             LogChapterBonusEvent(true);
-            this.winView.HideChapterRewardAndShowButtons();
+            Test2();
         }
 
         private void BonusShowFailedHandler(AdReward adReward, AdError adError)

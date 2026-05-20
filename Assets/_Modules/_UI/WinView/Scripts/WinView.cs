@@ -11,6 +11,7 @@ using Spine;
 using Spine.Unity;
 using UnityEngine;
 using UnityEngine.UI;
+using Event = Spine.Event;
 
 namespace _Modules._UI.WinView.Scripts
 {
@@ -41,6 +42,7 @@ namespace _Modules._UI.WinView.Scripts
         [SerializeField] private Button loseBonusButton;
         [SerializeField] private CanvasGroup loseBonusButtonGroup;
         [SerializeField] protected SkeletonGraphic boxSkeletonGraphic;
+        [SerializeField] protected SkeletonGraphic rewardSkeletonGraphic;
         [SerializeField] private int track;
 
         [SerializeField, SpineAnimation(dataField = "boxSkeletonGraphic")]
@@ -51,6 +53,14 @@ namespace _Modules._UI.WinView.Scripts
 
         [SerializeField, SpineAnimation(dataField = "boxSkeletonGraphic")]
         protected new string rewardIdleAnimation;
+
+        [SerializeField, SpineAnimation(dataField = "rewardSkeletonGraphic")]
+        protected new string defaultRewardAnimation;
+
+        [SerializeField, SpineAnimation(dataField = "rewardSkeletonGraphic")]
+        protected new string bonusRewardAnimation;
+
+        [SerializeField] protected string lifeChangedEvent;
 
         private bool showChapterReward;
         private Dictionary<RectTransform, TweenerCore<Vector3, Vector3, VectorOptions>> loopScalingTweens;
@@ -281,6 +291,31 @@ namespace _Modules._UI.WinView.Scripts
             {
                 TweenerCore<Vector3, Vector3, VectorOptions> tweenCore = uiItem.DOScale(targetValue, duration).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo);
                 this.loopScalingTweens.Add(uiItem, tweenCore);
+            }
+        }
+
+        public async UniTask Test1()
+        {
+            this.rewardSkeletonGraphic.AnimationState.Event += PlayLifeNumberEffect;
+            TrackEntry currentEntry = this.rewardSkeletonGraphic.AnimationState.GetCurrent(this.track);
+            currentEntry = this.rewardSkeletonGraphic.AnimationState.SetAnimation(this.track, this.defaultRewardAnimation, false);
+            await UniTask.WaitUntil(() => currentEntry.IsComplete);
+        }
+
+        public async UniTask Test2()
+        {
+            this.rewardSkeletonGraphic.AnimationState.Event += PlayLifeNumberEffect;
+            TrackEntry currentEntry = this.rewardSkeletonGraphic.AnimationState.GetCurrent(this.track);
+            currentEntry = this.rewardSkeletonGraphic.AnimationState.SetAnimation(this.track, this.bonusRewardAnimation, false);
+            await UniTask.WaitUntil(() => currentEntry.IsComplete);
+        }
+
+        private void PlayLifeNumberEffect(TrackEntry trackEntry, Event e)
+        {
+            bool eventMatch = string.Equals(e.Data.Name, this.lifeChangedEvent, System.StringComparison.Ordinal); // Testing recommendation: String compare.
+            if (eventMatch)
+            {
+                this.numberBasedLifeView.PlayLifeGainedEffect();
             }
         }
 
