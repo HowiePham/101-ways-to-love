@@ -223,19 +223,19 @@ namespace _Modules._UI.WinView.Scripts
         private void LoseBonusClickedHandler()
         {
             LogChapterBonusEvent(false);
-            Test1();
+            PlayDefaultRewardFlow().Forget();
         }
 
-        private async UniTask Test1()
+        private async UniTaskVoid PlayDefaultRewardFlow()
         {
-            await this.winView.Test1();
-            this.winView.HideChapterRewardAndShowButtons();
+            var ct = this.winView.GetShowCancellationToken();
+            await this.winView.PlayDefaultRewardAndCloseAsync(ct);
         }
 
-        private async UniTask Test2()
+        private async UniTaskVoid PlayBonusRewardFlow()
         {
-            await this.winView.Test2();
-            this.winView.HideChapterRewardAndShowButtons();
+            var ct = this.winView.GetShowCancellationToken();
+            await this.winView.PlayBonusRewardAndCloseAsync(ct);
         }
 
         private void LogChapterBonusEvent(bool useRewardBonus)
@@ -282,7 +282,7 @@ namespace _Modules._UI.WinView.Scripts
 
             this.lifeSystem.AddLives(bonusAmount, "chapter_bonus", rewardId);
             LogChapterBonusEvent(true);
-            Test2();
+            PlayBonusRewardFlow().Forget();
         }
 
         private void BonusShowFailedHandler(AdReward adReward, AdError adError)

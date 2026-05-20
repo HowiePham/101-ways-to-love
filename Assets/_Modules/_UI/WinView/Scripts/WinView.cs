@@ -63,6 +63,8 @@ namespace _Modules._UI.WinView.Scripts
         [SerializeField] protected string lifeChangedEvent;
 
         private bool showChapterReward;
+        private bool isPlayingReward;
+        private int currentLife;
         private Dictionary<RectTransform, TweenerCore<Vector3, Vector3, VectorOptions>> loopScalingTweens;
         private CancellationTokenSource showCts;
         private RectTransform RemoveAdsRect => this.removeAdsButton.GetComponent<RectTransform>();
@@ -159,10 +161,36 @@ namespace _Modules._UI.WinView.Scripts
                     this.rewardMainPanel.localScale = Vector3.one;
                 }
 
+                if (this.bonusButton != null)
+                {
+                    var bonusRect = (RectTransform)this.bonusButton.transform;
+                    DOTween.Kill(bonusRect);
+                    bonusRect.localScale = Vector3.one;
+                    this.bonusButton.interactable = true;
+                }
+
+                if (this.loseBonusButtonGroup != null)
+                {
+                    DOTween.Kill(this.loseBonusButtonGroup);
+                    this.loseBonusButtonGroup.alpha = 1f;
+                }
+
+                if (this.loseBonusButton != null)
+                {
+                    this.loseBonusButton.interactable = true;
+                }
+
+                if (this.rewardSkeletonGraphic != null)
+                {
+                    this.rewardSkeletonGraphic.AnimationState.Event -= PlayLifeNumberEffect;
+                    this.rewardSkeletonGraphic.gameObject.SetActive(false);
+                }
+
                 this.chapterRewardPanel.gameObject.SetActive(false);
             }
 
             this.showChapterReward = false;
+            this.isPlayingReward = false;
         }
 
         private async UniTask HandleUIEffect(CancellationToken ct)
@@ -294,29 +322,94 @@ namespace _Modules._UI.WinView.Scripts
             }
         }
 
-        public async UniTask Test1()
+        public async UniTask PlayDefaultRewardAndCloseAsync(CancellationToken ct)
         {
-            this.rewardSkeletonGraphic.AnimationState.Event += PlayLifeNumberEffect;
-            TrackEntry currentEntry = this.rewardSkeletonGraphic.AnimationState.GetCurrent(this.track);
-            currentEntry = this.rewardSkeletonGraphic.AnimationState.SetAnimation(this.track, this.defaultRewardAnimation, false);
-            await UniTask.WaitUntil(() => currentEntry.IsComplete);
+            await PlayRewardAnimationAsync(this.defaultRewardAnimation, ct);
+            if (ct.IsCancellationRequested) return;
+            HideChapterRewardAndShowButtons().Forget();
         }
 
-        public async UniTask Test2()
+        public async UniTask PlayBonusRewardAndCloseAsync(CancellationToken ct)
         {
-            this.rewardSkeletonGraphic.AnimationState.Event += PlayLifeNumberEffect;
-            TrackEntry currentEntry = this.rewardSkeletonGraphic.AnimationState.GetCurrent(this.track);
-            currentEntry = this.rewardSkeletonGraphic.AnimationState.SetAnimation(this.track, this.bonusRewardAnimation, false);
-            await UniTask.WaitUntil(() => currentEntry.IsComplete);
+            await PlayRewardAnimationAsync(this.bonusRewardAnimation, ct);
+            if (ct.IsCancellationRequested) return;
+            HideChapterRewardAndShowButtons().Forget();
+        }
+
+        public CancellationToken GetShowCancellationToken()
+        {
+            return this.showCts?.Token ?? CancellationToken.None;
+        }
+
+        public void SetChapterButtonsInteractable(bool value)
+        {
+            if (this.bonusButton != null) this.bonusButton.interactable = value;
+            if (this.loseBonusButton != null) this.loseBonusButton.interactable = value;
+        }
+
+        private async UniTask PlayRewardAnimationAsync(string animationName, CancellationToken ct)
+        {
+            if (this.isPlayingReward) return;
+            if (this.rewardSkeletonGraphic == null) return;
+            if (string.IsNullOrEmpty(animationName)) return;
+
+            this.isPlayingReward = true;
+            SetChapterButtonsInteractable(false);
+
+            try
+            {
+                await HideChapterButtonsAsync(ct);
+                if (ct.IsCancellationRequested) return;
+
+                var animState = this.rewardSkeletonGraphic.AnimationState;
+                this.rewardSkeletonGraphic.gameObject.SetActive(true);
+
+                animState.Event += PlayLifeNumberEffect;
+                try
+                {
+                    TrackEntry entry = animState.SetAnimation(this.track, animationName, false);
+                    await UniTask.WaitUntil(() => entry == null || entry.IsComplete,
+                        PlayerLoopTiming.Update, ct);
+                }
+                finally
+                {
+                    animState.Event -= PlayLifeNumberEffect;
+                }
+            }
+            finally
+            {
+                if (this.rewardSkeletonGraphic != null)
+                    this.rewardSkeletonGraphic.gameObject.SetActive(false);
+                this.isPlayingReward = false;
+            }
+        }
+
+        private async UniTask HideChapterButtonsAsync(CancellationToken ct)
+        {
+            var bonusRect = (RectTransform)this.bonusButton.transform;
+            if (this.loopScalingTweens.TryGetValue(bonusRect, out var pulse))
+            {
+                pulse?.Kill();
+                this.loopScalingTweens.Remove(bonusRect);
+            }
+
+            DOTween.Kill(bonusRect);
+            DOTween.Kill(this.loseBonusButtonGroup);
+
+            this.loseBonusButtonGroup.DOFade(0f, 0.2f).SetEase(Ease.OutQuad);
+            await bonusRect.DOScale(0f, 0.2f).SetEase(Ease.InBack).AsyncWaitForCompletion();
+            if (ct.IsCancellationRequested) return;
         }
 
         private void PlayLifeNumberEffect(TrackEntry trackEntry, Event e)
         {
-            bool eventMatch = string.Equals(e.Data.Name, this.lifeChangedEvent, System.StringComparison.Ordinal); // Testing recommendation: String compare.
-            if (eventMatch)
-            {
-                this.numberBasedLifeView.PlayLifeGainedEffect();
-            }
+            bool eventMatch = string.Equals(e.Data.Name, this.lifeChangedEvent, System.StringComparison.Ordinal);
+            if (!eventMatch) return;
+            if (this.numberBasedLifeView == null) return;
+
+            this.currentLife++;
+            this.numberBasedLifeView.SetLifeCount(this.currentLife);
+            this.numberBasedLifeView.PlayLifeGainedEffect();
         }
 
         public void SetActiveRemoveAdsButton(bool active)
@@ -333,8 +426,11 @@ namespace _Modules._UI.WinView.Scripts
         public void SetChapterRewardData(bool show, int currentLife)
         {
             this.showChapterReward = show;
+            this.currentLife = currentLife;
             if (this.numberBasedLifeView != null)
+            {
                 this.numberBasedLifeView.SetLifeCount(currentLife);
+            }
         }
     }
 }
