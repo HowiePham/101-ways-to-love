@@ -35,6 +35,8 @@ namespace _Modules._UI.WinView.Scripts
         [Header("Chapter Reward")] [SerializeField]
         private RectTransform chapterRewardPanel;
 
+        [SerializeField] private CanvasGroup rewardDarkBg;
+        [SerializeField] private RectTransform rewardMainPanel;
         [SerializeField] private Button bonusButton;
         [SerializeField] private Button loseBonusButton;
         [SerializeField] private CanvasGroup loseBonusButtonGroup;
@@ -133,9 +135,11 @@ namespace _Modules._UI.WinView.Scripts
 
             if (this.chapterRewardPanel != null)
             {
-                DOTween.Kill(this.chapterRewardPanel);
+                DOTween.Kill(this.rewardDarkBg);
+                DOTween.Kill(this.rewardMainPanel);
+                this.rewardDarkBg.alpha = 0f;
+                this.rewardMainPanel.localScale = Vector3.one;
                 this.chapterRewardPanel.gameObject.SetActive(false);
-                this.chapterRewardPanel.localScale = Vector3.one;
             }
 
             this.showChapterReward = false;
@@ -182,9 +186,13 @@ namespace _Modules._UI.WinView.Scripts
             bonusRect.localScale = Vector3.zero;
 
             this.chapterRewardPanel.gameObject.SetActive(true);
-            this.chapterRewardPanel.localScale = Vector3.zero;
+            this.rewardDarkBg.alpha = 0f;
+            this.rewardMainPanel.localScale = Vector3.zero;
 
-            await this.chapterRewardPanel.DOScale(1f, 0.4f).SetEase(Ease.OutBack).AsyncWaitForCompletion();
+            await this.rewardDarkBg.DOFade(1f, 0.3f).AsyncWaitForCompletion();
+            if (ct.IsCancellationRequested) return;
+
+            await this.rewardMainPanel.DOScale(1f, 0.4f).SetEase(Ease.OutBack).AsyncWaitForCompletion();
             if (ct.IsCancellationRequested) return;
 
             await OpenRewardBox(ct);
@@ -223,7 +231,10 @@ namespace _Modules._UI.WinView.Scripts
                 this.loopScalingTweens.Remove(bonusRect);
             }
 
-            await this.chapterRewardPanel.DOScale(0f, 0.3f).SetEase(Ease.InBack).AsyncWaitForCompletion();
+            await this.rewardMainPanel.DOScale(0f, 0.3f).SetEase(Ease.InBack).AsyncWaitForCompletion();
+            if (ct.IsCancellationRequested) return;
+
+            await this.rewardDarkBg.DOFade(0f, 0.2f).AsyncWaitForCompletion();
             if (ct.IsCancellationRequested) return;
 
             this.chapterRewardPanel.gameObject.SetActive(false);
