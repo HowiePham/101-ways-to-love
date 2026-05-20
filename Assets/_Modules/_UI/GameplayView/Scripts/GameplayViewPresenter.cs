@@ -29,8 +29,6 @@ public class GameplayViewPresenter : BaseViewPresenter
     private readonly LifeSystem lifeSystem;
     private readonly IAdAdapter adAdapter;
     private readonly DialogManager dialogManager;
-    private readonly ChapterLevelRepository chapterLevelRepo;
-    private readonly ILevelOrder levelOrder;
 
     private GameplayView gameplayView;
     private TutorialOverlayView tutorialView;
@@ -51,8 +49,7 @@ public class GameplayViewPresenter : BaseViewPresenter
     private const string TutorialCompletedKey = "tutorial_overlay_completed_v1";
 
     public GameplayViewPresenter(BaseScenePresenter scenePresenter, Transform transform, IAsyncPublisher eventPublisher, IAsyncSubscriber eventSubscriber,
-        RuntimeState runtimeState, LifeSystem lifeSystem, LevelConfig hintLevelConfig, IAdAdapter adAdapter, DialogManager dialogManager,
-        ChapterLevelRepository chapterLevelRepo, ILevelOrder levelOrder, IConfigProvider remoteConfig) :
+        RuntimeState runtimeState, LifeSystem lifeSystem, LevelConfig hintLevelConfig, IAdAdapter adAdapter, DialogManager dialogManager, ILevelOrder levelOrder, IConfigProvider remoteConfig) :
         base(scenePresenter, transform)
     {
         this.eventPublisher = eventPublisher;
@@ -62,8 +59,6 @@ public class GameplayViewPresenter : BaseViewPresenter
         this.hintLevelConfig = hintLevelConfig;
         this.adAdapter = adAdapter;
         this.dialogManager = dialogManager;
-        this.chapterLevelRepo = chapterLevelRepo;
-        this.levelOrder = levelOrder;
         this.remoteConfig = remoteConfig;
     }
 
@@ -114,7 +109,6 @@ public class GameplayViewPresenter : BaseViewPresenter
         HandleSkipButtonVisible(skipButtonDelay);
 
         ShowLevelInfo();
-        ShowChapterProgress();
 
         this.previousLifeCount = this.lifeSystem.CurrentLifeCount;
         this.numberBasedLifeView.SetLifeCount(this.lifeSystem.CurrentLifeCount);
@@ -134,8 +128,6 @@ public class GameplayViewPresenter : BaseViewPresenter
     {
         if (this.tutorialView == null || !this.remoteConfig.GetValue(ConfigKey.ShowTutorialUI).Boolean) return;
         if (PlayerPrefs.GetInt(TutorialCompletedKey, 0) == 1) return;
-
-        this.gameplayView.DelayProgressBarAnimation = true;
 
         this.tutorialCts?.Cancel();
         this.tutorialCts?.Dispose();
@@ -158,15 +150,7 @@ public class GameplayViewPresenter : BaseViewPresenter
             return;
         }
 
-        // Progress bar plays first while screen is still fully visible
-        await this.gameplayView.PlayChapterProgressBarAnimation(autoHide: false);
-        if (ct.IsCancellationRequested)
-        {
-            CleanupTutorial();
-            return;
-        }
-
-        // Dark overlay fades in after progress bar has finished its animation
+        // Dark overlay fades in after entry animations have finished
         await this.tutorialView.PlayIntroAnimation(ct);
         if (ct.IsCancellationRequested)
         {
@@ -223,7 +207,6 @@ public class GameplayViewPresenter : BaseViewPresenter
         this.isTutorialRunning = false;
         this.tutorialView.OnNextClicked -= HandleTutorialNextClicked;
         this.tutorialView.Hide();
-        this.gameplayView.HideChapterProgressBar().Forget();
         Messenger.Broadcast(EventKey.PauseLevel, false);
     }
 
@@ -277,16 +260,6 @@ public class GameplayViewPresenter : BaseViewPresenter
         if (ct.IsCancellationRequested) return;
         this.isHintButtonShown = true;
         this.gameplayView.SetActiveHintButton(true).Forget();
-    }
-
-    public void SetDelayProgressBarAnimation(bool delay)
-    {
-        this.gameplayView.DelayProgressBarAnimation = delay;
-    }
-
-    public async UniTask PlayChapterProgressBarAnimation()
-    {
-        await this.gameplayView.PlayChapterProgressBarAnimation();
     }
 
     public void InitStepPoint(int stepNumber)
@@ -436,22 +409,6 @@ public class GameplayViewPresenter : BaseViewPresenter
     {
         int currentLevel = this.runtimeState.CurrentLevelOrder.Value + 1;
         this.gameplayView.SetLevelCurrent(currentLevel.ToString());
-    }
-
-    private void ShowChapterProgress()
-    {
-        int currentOrder = this.runtimeState.CurrentLevelOrder.Value;
-        LevelInfo currentLevel = this.levelOrder.GetByOrder(currentOrder);
-        if (currentLevel == null) return;
-
-        ChapterInfo chapter = this.chapterLevelRepo.GetChapter(currentLevel.Chapter);
-        if (chapter == null) return;
-
-        int firstStage = chapter.Levels[0].StageNumber;
-        int currentStage = currentOrder + 1;
-        int completedInChapter = currentStage - firstStage + 1;
-
-        this.gameplayView.SetChapterProgress(completedInChapter, chapter.LevelCount);
     }
 
     private void ShowWinView()

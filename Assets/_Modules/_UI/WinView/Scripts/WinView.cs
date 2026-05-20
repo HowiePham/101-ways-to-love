@@ -27,6 +27,8 @@ namespace _Modules._UI.WinView.Scripts
         [SerializeField] private Button homeButton;
         [SerializeField] private RectTransform nextChapterParent;
         [SerializeField] private Image nextChapterImage;
+        [Header("Chapter Progress")]
+        [SerializeField] private ChapterProgressBar chapterProgressBar;
 
         private Dictionary<RectTransform, TweenerCore<Vector3, Vector3, VectorOptions>> loopScalingTweens;
         private CancellationTokenSource showCts;
@@ -44,6 +46,10 @@ namespace _Modules._UI.WinView.Scripts
             base.Initialize();
 
             this.loopScalingTweens = new Dictionary<RectTransform, TweenerCore<Vector3, Vector3, VectorOptions>>();
+
+            if (this.chapterProgressBar != null)
+                this.chapterProgressBar.Initialize();
+
             this.continueButton.onClick.AddListener(() => OnContinueClicked?.Invoke());
             this.replayButton.onClick.AddListener(() => OnReplayClicked?.Invoke());
             this.settingButton.onClick.AddListener(() => this.OnSettingClicked?.Invoke());
@@ -91,6 +97,12 @@ namespace _Modules._UI.WinView.Scripts
             DOTween.Kill(this.RemoveAdsRect);
             this.ContinueBtnRect.localScale = Vector3.one;
             this.RemoveAdsRect.localScale = Vector3.one;
+            if (this.chapterProgressBar != null)
+            {
+                DOTween.Kill(this.chapterProgressBar.transform);
+                this.chapterProgressBar.transform.localScale = Vector3.zero;
+            }
+
             this.nextChapterParent.localScale = Vector3.zero;
             this.nextChapterParent.gameObject.SetActive(false);
         }
@@ -125,6 +137,12 @@ namespace _Modules._UI.WinView.Scripts
                 if (ct.IsCancellationRequested) return;
 
                 await UniTask.WaitForSeconds(0.75f, cancellationToken: ct);
+            }
+
+            if (this.chapterProgressBar != null)
+            {
+                await this.chapterProgressBar.PlayShowAnimation();
+                if (ct.IsCancellationRequested) return;
             }
 
             this.removeAdsBtnGroup.DOFade(1f, 0.5f).AsyncWaitForCompletion();
@@ -170,6 +188,12 @@ namespace _Modules._UI.WinView.Scripts
         public void SetActiveRemoveAdsButton(bool active)
         {
             this.removeAdsBtnGroup.gameObject.SetActive(active);
+        }
+
+        public void SetChapterProgress(int completedCount, int totalLevels)
+        {
+            if (this.chapterProgressBar != null)
+                this.chapterProgressBar.SetProgressData(completedCount, totalLevels);
         }
     }
 }
