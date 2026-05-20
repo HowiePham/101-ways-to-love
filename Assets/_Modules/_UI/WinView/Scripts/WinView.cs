@@ -45,6 +45,16 @@ namespace _Modules._UI.WinView.Scripts
         [SerializeField] protected SkeletonGraphic rewardSkeletonGraphic;
         [SerializeField] private int track;
 
+        [Header("Reward Box Jump")] [SerializeField]
+        private RectTransform rewardBoxRect;
+
+        [SerializeField] private RectTransform rewardStartPoint;
+        [SerializeField] private RectTransform rewardTargetPoint;
+        [SerializeField] private float rewardBoxJumpPower = 200f;
+        [SerializeField] private float rewardBoxJumpDuration = 0.6f;
+        [SerializeField] private float rewardBoxStartScale = 0.5f;
+        [SerializeField] private float rewardBoxEndScale = 1f;
+
         [SerializeField, SpineAnimation(dataField = "boxSkeletonGraphic")]
         protected new string openingAnimation;
 
@@ -180,6 +190,13 @@ namespace _Modules._UI.WinView.Scripts
                     this.loseBonusButton.interactable = true;
                 }
 
+                if (this.rewardBoxRect != null)
+                {
+                    DOTween.Kill(this.rewardBoxRect);
+                    this.rewardBoxRect.localScale = new Vector3(this.rewardBoxStartScale, this.rewardBoxStartScale, this.rewardBoxStartScale);
+                    this.rewardBoxRect.gameObject.SetActive(false);
+                }
+
                 if (this.rewardSkeletonGraphic != null)
                 {
                     this.rewardSkeletonGraphic.AnimationState.Event -= PlayLifeNumberEffect;
@@ -234,8 +251,12 @@ namespace _Modules._UI.WinView.Scripts
             this.chapterRewardPanel.gameObject.SetActive(true);
             this.rewardDarkBg.alpha = 0f;
             this.rewardMainPanel.localScale = Vector3.zero;
+            if (this.rewardBoxRect != null) this.rewardBoxRect.gameObject.SetActive(true);
 
             await this.rewardDarkBg.DOFade(1f, 0.3f).AsyncWaitForCompletion();
+            if (ct.IsCancellationRequested) return;
+
+            await JumpRewardBoxAsync(ct);
             if (ct.IsCancellationRequested) return;
 
             await this.rewardMainPanel.DOScale(1f, 0.4f).SetEase(Ease.OutBack).AsyncWaitForCompletion();
@@ -264,6 +285,49 @@ namespace _Modules._UI.WinView.Scripts
             currentEntry = this.boxSkeletonGraphic.AnimationState.SetAnimation(this.track, this.openingAnimation, false);
             await UniTask.WaitUntil(() => currentEntry.IsComplete, PlayerLoopTiming.Update, ct);
             this.boxSkeletonGraphic.AnimationState.SetAnimation(this.track, this.rewardIdleAnimation, true);
+        }
+
+        private async UniTask JumpRewardBoxAsync(CancellationToken ct)
+        {
+            if (this.rewardBoxRect == null || this.rewardStartPoint == null || this.rewardTargetPoint == null)
+                return;
+
+            DOTween.Kill(this.rewardBoxRect);
+
+            Vector3 startScale = Vector3.one * this.rewardBoxStartScale;
+            Vector3 endScale = Vector3.one * this.rewardBoxEndScale;
+            Vector3 takeoffSquash = new Vector3(startScale.x * 1.15f, startScale.y * 0.85f, startScale.z);
+            Vector3 landingSquash = new Vector3(endScale.x * 1.15f, endScale.y * 0.85f, endScale.z);
+
+            this.rewardBoxRect.position = this.rewardStartPoint.position;
+            this.rewardBoxRect.localScale = startScale;
+
+            await this.rewardBoxRect
+                .DOScale(takeoffSquash, 0.1f)
+                .SetEase(Ease.OutQuad)
+                .AsyncWaitForCompletion();
+            if (ct.IsCancellationRequested) return;
+
+            var jump = this.rewardBoxRect
+                .DOJump(this.rewardTargetPoint.position, this.rewardBoxJumpPower, 1, this.rewardBoxJumpDuration)
+                .SetEase(Ease.OutCubic);
+            this.rewardBoxRect.DOScale(endScale, this.rewardBoxJumpDuration).SetEase(Ease.OutQuad);
+            await jump.AsyncWaitForCompletion();
+            if (ct.IsCancellationRequested) return;
+
+            await this.rewardBoxRect
+                .DOScale(landingSquash, 0.08f)
+                .SetEase(Ease.OutQuad)
+                .AsyncWaitForCompletion();
+            if (ct.IsCancellationRequested) return;
+
+            await this.rewardBoxRect
+                .DOScale(endScale, 0.12f)
+                .SetEase(Ease.OutBack)
+                .AsyncWaitForCompletion();
+            if (ct.IsCancellationRequested) return;
+
+            this.rewardBoxRect.gameObject.SetActive(false);
         }
 
         public async UniTaskVoid HideChapterRewardAndShowButtons()
