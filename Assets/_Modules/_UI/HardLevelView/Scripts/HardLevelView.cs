@@ -51,6 +51,7 @@ public class HardLevelView : BaseView
     private string hardLevelAudioKey;
 
     private Tween clockPulseTween;
+    private Tween getMoreTimePulseTween;
     private Vector3 clockGroupOriginPosition;
 
     public event Action OnClickPlay;
@@ -69,7 +70,11 @@ public class HardLevelView : BaseView
             this.clockGroup.transform.DOLocalMove(this.clockGroupOriginPosition, 0.4f).SetEase(Ease.OutQuint);
             OnClickPlay?.Invoke();
         });
-        this.getMoreTimeButton.onClick.AddListener(() => OnClickGetMoreTime?.Invoke());
+        this.getMoreTimeButton.onClick.AddListener(() =>
+        {
+            StopGetMoreTimeButtonPulse();
+            OnClickGetMoreTime?.Invoke();
+        });
         this.replayButton.onClick.AddListener(() => OnClickReplay?.Invoke());
         this.homeButton.onClick.AddListener(() => OnClickHome?.Invoke());
     }
@@ -91,6 +96,8 @@ public class HardLevelView : BaseView
         DOTween.Kill(this.clockGroup.transform);
         this.clockPulseTween?.Kill();
         this.clockPulseTween = null;
+        this.getMoreTimePulseTween?.Kill();
+        this.getMoreTimePulseTween = null;
         DOTween.Kill(this.messageGroup);
         DOTween.Kill(this.deathGod);
         DOTween.Kill(this.messageBoard);
@@ -149,6 +156,21 @@ public class HardLevelView : BaseView
         this.clockPulseTween?.Kill();
         this.clockPulseTween = null;
         this.clockGroup.transform.localScale = Vector3.one;
+    }
+
+    private void StartGetMoreTimeButtonPulse()
+    {
+        this.getMoreTimePulseTween = this.getMoreTimeButton.transform
+            .DOScale(1.08f, 0.7f)
+            .SetEase(Ease.InOutSine)
+            .SetLoops(-1, LoopType.Yoyo);
+    }
+
+    private void StopGetMoreTimeButtonPulse()
+    {
+        this.getMoreTimePulseTween?.Kill();
+        this.getMoreTimePulseTween = null;
+        this.getMoreTimeButton.transform.localScale = Vector3.one;
     }
 
     private async UniTask ShowMessageGroup()
@@ -236,6 +258,8 @@ public class HardLevelView : BaseView
         this.replayButton.transform.DOScale(Vector3.one, 0.2f).SetEase(Ease.OutBack);
         yield return Timing.WaitForSeconds(0.1f);
         this.homeButton.transform.DOScale(Vector3.one, 0.2f).SetEase(Ease.OutBack);
+        yield return Timing.WaitForSeconds(0.2f);
+        StartGetMoreTimeButtonPulse();
     }
 
     public void SetTimeOutGroupActive(bool active)
