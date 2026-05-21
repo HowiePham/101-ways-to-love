@@ -148,10 +148,17 @@ namespace _Modules._UI.WinView.Scripts
 
             this.loopScalingTweens.Clear();
 
-            DOTween.Kill(this.ContinueBtnRect);
-            DOTween.Kill(this.RemoveAdsRect);
-            this.ContinueBtnRect.localScale = Vector3.one;
-            this.RemoveAdsRect.localScale = Vector3.one;
+            if (this.continueBtnGroup != null)
+            {
+                DOTween.Kill(this.ContinueBtnRect);
+                this.ContinueBtnRect.localScale = Vector3.one;
+            }
+
+            if (this.removeAdsButton != null)
+            {
+                DOTween.Kill(this.RemoveAdsRect);
+                this.RemoveAdsRect.localScale = Vector3.one;
+            }
             if (this.chapterProgressBar != null)
             {
                 DOTween.Kill(this.chapterProgressBar.transform);
@@ -206,7 +213,8 @@ namespace _Modules._UI.WinView.Scripts
 
                 if (this.rewardSkeletonGraphic != null)
                 {
-                    this.rewardSkeletonGraphic.AnimationState.Event -= PlayLifeNumberEffect;
+                    if (this.rewardSkeletonGraphic.AnimationState != null)
+                        this.rewardSkeletonGraphic.AnimationState.Event -= PlayLifeNumberEffect;
                     this.rewardSkeletonGraphic.gameObject.SetActive(false);
                 }
 
