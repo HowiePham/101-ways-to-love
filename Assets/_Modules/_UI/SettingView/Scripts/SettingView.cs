@@ -48,8 +48,10 @@ public class SettingView : BaseView
     {
         base.Show();
 
-         RunSettingPanelEffectSequence();
+        RunSettingPanelEffectSequence();
+#if DEVELOPMENT
         ShowCurrentBuildInfo();
+#endif
     }
 
     private async UniTask RunSettingPanelEffectSequence()
@@ -123,10 +125,11 @@ public class SettingView : BaseView
         {
             if (!line.StartsWith(key + ": ")) continue;
             return line.Substring(key.Length + 2)
-                       .Replace("<color=green>", "")
-                       .Replace("</color>", "")
-                       .Trim();
+                .Replace("<color=green>", "")
+                .Replace("</color>", "")
+                .Trim();
         }
+
         return string.Empty;
     }
 }
