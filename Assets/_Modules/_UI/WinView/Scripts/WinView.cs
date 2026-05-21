@@ -63,6 +63,9 @@ namespace _Modules._UI.WinView.Scripts
         protected new string boxIdleAnimation;
 
         [SerializeField, SpineAnimation(dataField = "boxSkeletonGraphic")]
+        protected new string boxHidingAnimation;
+
+        [SerializeField, SpineAnimation(dataField = "boxSkeletonGraphic")]
         protected new string rewardIdleAnimation;
 
         [SerializeField, SpineAnimation(dataField = "rewardSkeletonGraphic")]
@@ -159,6 +162,7 @@ namespace _Modules._UI.WinView.Scripts
                 DOTween.Kill(this.RemoveAdsRect);
                 this.RemoveAdsRect.localScale = Vector3.one;
             }
+
             if (this.chapterProgressBar != null)
             {
                 DOTween.Kill(this.chapterProgressBar.transform);
@@ -367,7 +371,7 @@ namespace _Modules._UI.WinView.Scripts
             this.chapterRewardPanel.gameObject.SetActive(false);
             this.rewardBoxRect.localScale = new Vector3(this.rewardBoxStartScale, this.rewardBoxStartScale, this.rewardBoxStartScale);
             this.rewardBoxRect.position = this.rewardStartPoint.position;
-            
+
             await ShowNormalButtonsEffect(ct);
             if (ct.IsCancellationRequested) return;
 
@@ -454,9 +458,7 @@ namespace _Modules._UI.WinView.Scripts
                 await HideChapterButtonsAsync(ct);
                 if (ct.IsCancellationRequested) return;
 
-                if (this.boxSkeletonGraphic != null)
-                    this.boxSkeletonGraphic.gameObject.SetActive(false);
-
+                this.boxSkeletonGraphic.AnimationState.SetAnimation(this.track, this.boxHidingAnimation, false);
                 this.rewardSkeletonGraphic.gameObject.SetActive(true);
                 var animState = this.rewardSkeletonGraphic.AnimationState;
                 if (animState == null) return;
