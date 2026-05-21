@@ -365,7 +365,9 @@ namespace _Modules._UI.WinView.Scripts
 
             this.boxSkeletonGraphic.AnimationState.SetAnimation(this.track, this.boxIdleAnimation, true);
             this.chapterRewardPanel.gameObject.SetActive(false);
-
+            this.rewardBoxRect.localScale = new Vector3(this.rewardBoxStartScale, this.rewardBoxStartScale, this.rewardBoxStartScale);
+            this.rewardBoxRect.position = this.rewardStartPoint.position;
+            
             await ShowNormalButtonsEffect(ct);
             if (ct.IsCancellationRequested) return;
 
