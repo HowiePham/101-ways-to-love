@@ -5,7 +5,9 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using DG.Tweening.Core;
 using DG.Tweening.Plugins.Options;
+using Mimi.Audio;
 using Mimi.Prototypes.UI;
+using Mimi.Services.ScriptableObject.Audio;
 using Sirenix.OdinInspector;
 using Spine;
 using Spine.Unity;
@@ -75,6 +77,15 @@ namespace _Modules._UI.WinView.Scripts
         protected new string bonusRewardAnimation;
 
         [SerializeField] protected string lifeChangedEvent;
+
+        [Header("Reward SFX")] [SerializeField]
+        private BaseAudioServiceSO audioPlayer;
+
+        [SerializeField, SoundKey] private string progressBarIncreasingSFX;
+        [SerializeField, SoundKey] private string rewardBoxJumpingSFX;
+        [SerializeField, SoundKey] private string openingRewardSFX;
+        [SerializeField, SoundKey] private string bonusRewardSFX;
+        [SerializeField, SoundKey] private string collectRewardSFX;
 
         private bool showChapterReward;
         private bool isPlayingReward;
@@ -252,6 +263,7 @@ namespace _Modules._UI.WinView.Scripts
 
             if (this.chapterProgressBar != null)
             {
+                PlayAudio(this.progressBarIncreasingSFX);
                 await this.chapterProgressBar.PlayShowAnimation();
                 if (ct.IsCancellationRequested) return;
             }
@@ -316,6 +328,8 @@ namespace _Modules._UI.WinView.Scripts
         {
             TrackEntry currentEntry = this.boxSkeletonGraphic.AnimationState.GetCurrent(this.track);
             currentEntry = this.boxSkeletonGraphic.AnimationState.SetAnimation(this.track, this.openingAnimation, false);
+            PlayAudio(this.openingRewardSFX);
+
             await UniTask.WaitUntil(() => currentEntry.IsComplete, PlayerLoopTiming.Update, ct);
             this.boxSkeletonGraphic.AnimationState.SetAnimation(this.track, this.rewardIdleAnimation, true);
         }
@@ -339,6 +353,8 @@ namespace _Modules._UI.WinView.Scripts
                 .SetEase(Ease.OutQuad)
                 .AsyncWaitForCompletion();
             if (ct.IsCancellationRequested) return;
+
+            PlayAudio(this.rewardBoxJumpingSFX);
 
             var jump = this.rewardBoxRect
                 .DOJump(this.rewardTargetPoint.position, this.rewardBoxJumpPower, 1, this.rewardBoxJumpDuration)
@@ -426,6 +442,7 @@ namespace _Modules._UI.WinView.Scripts
 
         public async UniTask PlayBonusRewardAndCloseAsync(CancellationToken ct)
         {
+            PlayAudio(this.bonusRewardSFX);
             await PlayRewardAnimationAsync(this.bonusRewardAnimation, ct);
             if (ct.IsCancellationRequested) return;
 
@@ -438,7 +455,7 @@ namespace _Modules._UI.WinView.Scripts
             return this.showCts?.Token ?? CancellationToken.None;
         }
 
-        public void SetChapterButtonsInteractable(bool value)
+        public void SetBonusButtonsInteractable(bool value)
         {
             if (this.bonusButton != null) this.bonusButton.interactable = value;
             if (this.loseBonusButton != null) this.loseBonusButton.interactable = value;
@@ -451,11 +468,11 @@ namespace _Modules._UI.WinView.Scripts
             if (string.IsNullOrEmpty(animationName)) return;
 
             this.isPlayingReward = true;
-            SetChapterButtonsInteractable(false);
+            SetBonusButtonsInteractable(false);
 
             try
             {
-                await HideChapterButtonsAsync(ct);
+                await HideBonusButtonsAsync(ct);
                 if (ct.IsCancellationRequested) return;
 
                 this.boxSkeletonGraphic.AnimationState.SetAnimation(this.track, this.boxHidingAnimation, false);
@@ -480,7 +497,7 @@ namespace _Modules._UI.WinView.Scripts
             }
         }
 
-        private async UniTask HideChapterButtonsAsync(CancellationToken ct)
+        private async UniTask HideBonusButtonsAsync(CancellationToken ct)
         {
             var bonusRect = (RectTransform)this.bonusButton.transform;
             if (this.loopScalingTweens.TryGetValue(bonusRect, out var pulse))
@@ -502,6 +519,7 @@ namespace _Modules._UI.WinView.Scripts
             if (!eventMatch) return;
             if (this.numberBasedLifeView == null) return;
 
+            PlayAudio(this.collectRewardSFX);
             this.currentLife++;
             this.numberBasedLifeView.SetLifeCount(this.currentLife);
             this.numberBasedLifeView.PlayLifeGainedEffect();
@@ -526,6 +544,12 @@ namespace _Modules._UI.WinView.Scripts
             {
                 this.numberBasedLifeView.SetLifeCount(currentLife);
             }
+        }
+
+        private void PlayAudio(string audioKey)
+        {
+            this.audioPlayer.StopSound(audioKey);
+            this.audioPlayer.PlaySound(audioKey);
         }
     }
 }
