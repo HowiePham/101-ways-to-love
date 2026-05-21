@@ -1,3 +1,4 @@
+using System;
 using _Modules._UI.CheatView.Scripts;
 using _Modules._UI.LoseView.Scripts;
 using _Modules._UI.TransitionView.Scripts;
@@ -39,10 +40,17 @@ namespace Mimi.Prototypes
                 gameContext.RuntimeState, gameContext.AudioService, gameContext.Ads);
             AddViewPresenter(settingViewPresenter);
             Debug.Log($"--- (PRESENTER) Init WinViewPresenter");
-            var winViewPresenter = new WinViewPresenter(this, this.Transform, gameContext.EventPublisher,
-                gameContext.RuntimeState, gameContext.Ads, gameContext.ShowInterstitialLevelConfig, gameContext.GameData, gameContext.LevelOrder,
-                gameContext.RemoteConfig, gameContext.LifeSystem, gameContext.ChapterLevelRepo, gameContext.AnalyticTracker, gameContext.DialogManager);
-            AddViewPresenter(winViewPresenter);
+            try
+            {
+                var winViewPresenter = new WinViewPresenter(this, this.Transform, gameContext.EventPublisher,
+                    gameContext.RuntimeState, gameContext.Ads, gameContext.ShowInterstitialLevelConfig, gameContext.GameData, gameContext.LevelOrder,
+                    gameContext.RemoteConfig, gameContext.LifeSystem, gameContext.ChapterLevelRepo, gameContext.AnalyticTracker, gameContext.DialogManager);
+                AddViewPresenter(winViewPresenter);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"--- (PRESENTER) WinViewPresenter INIT FAILED: {e}");
+            }
             Debug.Log($"--- (PRESENTER) Init LoseViewPresenter");
             var loseViewPresenter = new LoseViewPresenter(this, this.Transform, gameContext.EventPublisher);
             AddViewPresenter(loseViewPresenter);
