@@ -455,8 +455,9 @@ namespace _Modules._UI.WinView.Scripts
                 if (this.boxSkeletonGraphic != null)
                     this.boxSkeletonGraphic.gameObject.SetActive(false);
 
-                var animState = this.rewardSkeletonGraphic.AnimationState;
                 this.rewardSkeletonGraphic.gameObject.SetActive(true);
+                var animState = this.rewardSkeletonGraphic.AnimationState;
+                if (animState == null) return;
 
                 animState.Event += PlayLifeNumberEffect;
                 try
