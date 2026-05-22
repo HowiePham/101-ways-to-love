@@ -40,6 +40,11 @@ public class MechanicGenerator
         for (var i = 0; i < waitSpineAnims.Length; i++)
         {
             WaitSpineAnim waitAnim = waitSpineAnims[i];
+            if (waitAnim.gameObject.name.Contains("Win_"))
+            {
+                continue;
+            }
+
             if (skeletonAnimation != null)
             {
                 waitAnim.SetField("skeletonAnimation", skeletonAnimation, AccessModifier.Private);
@@ -53,6 +58,11 @@ public class MechanicGenerator
         for (var i = 0; i < playSpineAnims.Length; i++)
         {
             PlaySpineAnim playAnim = playSpineAnims[i];
+            if (playAnim.gameObject.name.Contains("Win_"))
+            {
+                continue;
+            }
+
             if (skeletonAnimation != null)
             {
                 playAnim.SetField("skeletonAnimation", skeletonAnimation, AccessModifier.Private);
@@ -68,6 +78,11 @@ public class MechanicGenerator
         SetActiveMultipleGameObjectsAction[] setActiveCommand = blueprintObject.GetComponentsInChildren<SetActiveMultipleGameObjectsAction>();
         foreach (SetActiveMultipleGameObjectsAction setActive in setActiveCommand)
         {
+            if (setActive.gameObject.name.Contains("Win_"))
+            {
+                continue;
+            }
+
             setActive.SetField("gameObjects", gameObjects, AccessModifier.Private);
         }
     }
