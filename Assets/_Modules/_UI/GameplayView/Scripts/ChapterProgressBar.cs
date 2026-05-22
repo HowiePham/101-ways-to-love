@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using Mimi.Audio;
+using Mimi.Services.ScriptableObject.Audio;
 using UnityEngine;
 
 public class ChapterProgressBar : MonoBehaviour
@@ -9,6 +11,11 @@ public class ChapterProgressBar : MonoBehaviour
     [SerializeField] private Transform blockContainer;
     [SerializeField] private float hideDelay = 1f;
     [SerializeField] private float hideDuration = 0.3f;
+
+    [Header("Reward SFX")] [SerializeField]
+    private BaseAudioServiceSO audioPlayer;
+
+    [SerializeField, SoundKey] private string progressBarIncreasingSFX;
 
     private List<ChapterProgressBlock> blocks;
     private Sequence currentBlockSequence;
@@ -63,6 +70,7 @@ public class ChapterProgressBar : MonoBehaviour
     public async UniTask PlayShowAnimation(bool autoHide = true)
     {
         this.currentBlockSequence?.Kill();
+        PlayProgressBarSFX();
 
         transform.localScale = Vector3.zero;
         this.blocks[this.currentBlockIndex].HideFill();
@@ -97,5 +105,11 @@ public class ChapterProgressBar : MonoBehaviour
                 this.blocks.Add(block);
             }
         }
+    }
+
+    public void PlayProgressBarSFX()
+    {
+        this.audioPlayer.StopSound(this.progressBarIncreasingSFX);
+        this.audioPlayer.PlaySound(this.progressBarIncreasingSFX);
     }
 }
