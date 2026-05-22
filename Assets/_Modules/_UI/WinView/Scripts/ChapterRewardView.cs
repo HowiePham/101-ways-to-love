@@ -289,7 +289,11 @@ namespace _Modules._UI.WinView.Scripts
             await this.rewardDarkBg.DOFade(0f, 0.2f).AsyncWaitForCompletion();
             if (ct.IsCancellationRequested) return;
 
-            this.boxSkeletonGraphic.AnimationState.SetAnimation(this.track, this.boxIdleAnimation, true);
+            if (this.boxSkeletonGraphic != null && this.boxSkeletonGraphic.AnimationState != null)
+            {
+                this.boxSkeletonGraphic.AnimationState.SetAnimation(this.track, this.boxIdleAnimation, true);
+            }
+
             this.chapterRewardPanel.gameObject.SetActive(false);
             this.rewardBoxRect.localScale = new Vector3(this.rewardBoxStartScale, this.rewardBoxStartScale, this.rewardBoxStartScale);
             this.rewardBoxRect.position = this.rewardStartPoint.position;
@@ -318,6 +322,11 @@ namespace _Modules._UI.WinView.Scripts
             {
                 await HideBonusButtonsAsync(ct);
                 if (ct.IsCancellationRequested) return;
+
+                if (this.boxSkeletonGraphic == null || this.boxSkeletonGraphic.AnimationState == null)
+                {
+                    return;
+                }
 
                 this.boxSkeletonGraphic.AnimationState.SetAnimation(this.track, this.boxHidingAnimation, false);
                 this.rewardSkeletonGraphic.gameObject.SetActive(true);
