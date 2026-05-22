@@ -142,7 +142,7 @@ namespace _Modules._UI.WinView.Scripts
                 eventName = WinViewFlowEventData.EVENT_NAME.win_view_flow,
                 level = level.ToString(),
                 level_mode = "normal",
-                next_level = nextLevel,
+                play_next_level = nextLevel,
                 return_home = returnHome,
                 replay = replay,
                 has_ads = hasAds ? "true" : "false",
