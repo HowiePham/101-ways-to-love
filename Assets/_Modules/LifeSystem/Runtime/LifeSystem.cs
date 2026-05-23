@@ -203,7 +203,11 @@ public class LifeSystem
 
     private void OnApplicationFocusChanged(bool hasFocus)
     {
-        if (!hasFocus) FlushLifeDataNow();
+        if (!hasFocus && this.isLifeDataDirty)
+        {
+            PlayerPrefs.SetString(LifeDataKey, JsonUtility.ToJson(this.lifeData));
+            this.isLifeDataDirty = false;
+        }
     }
 
     private void LooseLife(string reason)
