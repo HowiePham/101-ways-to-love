@@ -52,15 +52,15 @@ public class VRSupport
         {
             return null;
         }
-        else
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        // Poco is a test-automation SDK; only retry-with-sleep in dev/editor builds.
+        // Thread.Sleep on the main thread in a production build is an ANR risk.
+        Thread.Sleep(1000);
+        if (commands != null && commands.Count > 0)
         {
-            Thread.Sleep(1000); // we wait a bit and check again just in case we run in between calls
-            if (commands != null && commands.Count > 0)
-            {
-                return null;
-            }
+            return null;
         }
-
+#endif
         return commands.Count;
     }
 
