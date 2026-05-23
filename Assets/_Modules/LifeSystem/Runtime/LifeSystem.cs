@@ -30,7 +30,10 @@ public class LifeSystem
     private readonly IAdAdapter adAdapter;
     private readonly DisposableBag eventBag;
     private const string LifeDataKey = "LIFE";
+    private const float FlushDebounceSeconds = 5f;
     private CoroutineHandle lifeTimerCoroutine;
+    private CoroutineHandle flushCoroutine;
+    private bool isLifeDataDirty;
     private YesNoDialog activeLifeDialog;
     private DialogId dialogId;
     private bool isInfiniteLife;
@@ -52,6 +55,9 @@ public class LifeSystem
         this.subscriber.Subscribe<LifeUsing>(LifeUsingHandler).AddToBag(this.eventBag);
         this.adAdapter.RewardVideo.OnRewarded += OnLifeRewardCompleted;
         this.isInfiniteLife = false;
+
+        Application.focusChanged += OnApplicationFocusChanged;
+        Application.quitting += FlushLifeDataNow;
 
         if (PlayerPrefs.HasKey(LifeDataKey))
         {
@@ -170,7 +176,34 @@ public class LifeSystem
     private void SaveLifeData()
     {
         this.lifeData.CurrentLifeCount = CurrentLifeCount;
+        this.isLifeDataDirty = true;
+        ScheduleFlush();
+    }
+
+    private void ScheduleFlush()
+    {
+        if (this.flushCoroutine != default) return;
+        this.flushCoroutine = Timing.RunCoroutine(FlushAfterDelay());
+    }
+
+    private IEnumerator<float> FlushAfterDelay()
+    {
+        yield return Timing.WaitForSeconds(FlushDebounceSeconds);
+        this.flushCoroutine = default;
+        FlushLifeDataNow();
+    }
+
+    private void FlushLifeDataNow()
+    {
+        if (!this.isLifeDataDirty) return;
         PlayerPrefs.SetString(LifeDataKey, JsonUtility.ToJson(this.lifeData));
+        PlayerPrefs.Save();
+        this.isLifeDataDirty = false;
+    }
+
+    private void OnApplicationFocusChanged(bool hasFocus)
+    {
+        if (!hasFocus) FlushLifeDataNow();
     }
 
     private void LooseLife(string reason)
