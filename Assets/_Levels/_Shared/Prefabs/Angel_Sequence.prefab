@@ -427,9 +427,13 @@ MonoBehaviour:
   heartPool: {fileID: 8922245578067745659}
   hearts:
   - {fileID: 752595962775696853}
+  stopFloatingAfterComplete: 0
   floatUpOffset: 1.5
   floatUpDuration: 0.5
   floatUpEase: 6
+  bouncePeakExtra: 0.2
+  settleDownDuration: 0.2
+  scaleOvershoot: 1.5
   floatDuration: 1
   floatAmplitude: 0.12
   floatCycleDuration: 0.6
@@ -934,6 +938,10 @@ PrefabInstance:
     - target: {fileID: 4139356644623094927, guid: 682d9388beb055c408cd3f61ac7653fa, type: 3}
       propertyPath: m_Name
       value: WaitSeconds
+      objectReference: {fileID: 0}
+    - target: {fileID: 4217407709670480836, guid: 682d9388beb055c408cd3f61ac7653fa, type: 3}
+      propertyPath: seconds
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8607784441929486360, guid: 682d9388beb055c408cd3f61ac7653fa, type: 3}
       propertyPath: m_LocalPosition.x
