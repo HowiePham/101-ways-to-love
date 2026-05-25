@@ -826,17 +826,17 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: lose it
+  m_text: Continue
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2c7e423ec435ca946b29826e345a79bc, type: 2}
-  m_sharedMaterial: {fileID: -8225090394194780310, guid: 2c7e423ec435ca946b29826e345a79bc, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: c7f59462220c6614fbd4a56ecd36ebc0, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4287532686
-  m_fontColor: {r: 0.5566038, g: 0.5566038, b: 0.5566038, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -853,8 +853,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 58.26
-  m_fontSizeBase: 58.26
+  m_fontSize: 42.8
+  m_fontSizeBase: 42.8
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -3100,7 +3100,6 @@ MonoBehaviour:
   rewardMainPanelGroup: {fileID: 1214631592349998011}
   bonusButton: {fileID: 8787109870262115063}
   loseBonusButton: {fileID: 2884734648165557073}
-  loseBonusButtonGroup: {fileID: 6042487187253669151}
   boxSkeletonGraphic: {fileID: 9157260932289930608}
   rewardSkeletonGraphic: {fileID: 2389815400455254943}
   track: 0
@@ -3133,8 +3132,8 @@ GameObject:
   m_Component:
   - component: {fileID: 8771427594255526040}
   - component: {fileID: 7886523975963951439}
+  - component: {fileID: 8301784808256931989}
   - component: {fileID: 2884734648165557073}
-  - component: {fileID: 6042487187253669151}
   m_Layer: 5
   m_Name: LoseItButton
   m_TagString: Untagged
@@ -3159,8 +3158,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -500}
-  m_SizeDelta: {x: 436.8458, y: 169.1583}
+  m_AnchoredPosition: {x: 0.00001955, y: -529.5811}
+  m_SizeDelta: {x: 277.3517, y: 109.9961}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7886523975963951439
 CanvasRenderer:
@@ -3170,6 +3169,36 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6861024030858320149}
   m_CullTransparentMesh: 1
+--- !u!114 &8301784808256931989
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6861024030858320149}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: -20, y: -20, z: -20, w: -20}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: be590ac380c323a46b0c923ff9ca3dac, type: 3}
+  m_Type: 1
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!114 &2884734648165557073
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3189,7 +3218,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 0
+  m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -3210,22 +3239,10 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 0}
+  m_TargetGraphic: {fileID: 8301784808256931989}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!225 &6042487187253669151
-CanvasGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6861024030858320149}
-  m_Enabled: 1
-  m_Alpha: 1
-  m_Interactable: 1
-  m_BlocksRaycasts: 1
-  m_IgnoreParentGroups: 0
 --- !u!1 &7295509740775343879
 GameObject:
   m_ObjectHideFlags: 0
