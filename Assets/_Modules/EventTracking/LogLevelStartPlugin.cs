@@ -39,7 +39,6 @@ namespace Tracking
 
             int playIndex = PlayerPrefs.GetInt($"play_index_{currentLevelOrder}", 0) + 1;
             PlayerPrefs.SetInt($"play_index_{currentLevelOrder}", playIndex);
-            PlayerPrefs.Save();
 
             Debug.Log($"--- (TRACKING) Log level Start: {currentLevelOrder} --- PlayIndex: {playIndex}");
 

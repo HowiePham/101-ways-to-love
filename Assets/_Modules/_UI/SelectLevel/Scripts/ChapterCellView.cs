@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using DG.Tweening;
 using Mimi.Prototypes.Events;
 using TMPro;
@@ -6,6 +7,18 @@ using UnityEngine.UI;
 
 public class ChapterCellView : MonoBehaviour
 {
+    private static readonly Dictionary<string, Sprite> spriteCache = new Dictionary<string, Sprite>();
+
+    private static Sprite LoadIcon(string address)
+    {
+        if (spriteCache.TryGetValue(address, out Sprite cached) && cached != null)
+            return cached;
+        Sprite sprite = Resources.Load<Sprite>("Icons/" + address);
+        if (sprite != null)
+            spriteCache[address] = sprite;
+        return sprite;
+    }
+
     [SerializeField] protected Button selectBtn;
     [SerializeField] protected TMP_Text chapterOrderText;
     [SerializeField] protected Image lockIcon;
@@ -53,14 +66,14 @@ public class ChapterCellView : MonoBehaviour
         {
             case CellStatus.Lock:
                 this.cell.SetActive(true);
-                this.chapterIcon.sprite = Resources.Load<Sprite>("Icons/" + this.iconAddress);
+                this.chapterIcon.sprite = LoadIcon(this.iconAddress);
                 SetButtonInteractable(false);
                 SetActiveLockIcon(true);
                 this.highlightObject.SetActive(false);
                 this.cell.transform.localScale = this.lockCellScale;
                 break;
             case CellStatus.Playing:
-                this.chapterIcon.sprite = Resources.Load<Sprite>("Icons/" + this.iconAddress);
+                this.chapterIcon.sprite = LoadIcon(this.iconAddress);
                 this.cell.SetActive(true);
                 SetButtonInteractable(true);
                 SetActiveLockIcon(false);
@@ -69,7 +82,7 @@ public class ChapterCellView : MonoBehaviour
                 PlayPulse();
                 break;
             case CellStatus.Complete:
-                this.chapterIcon.sprite = Resources.Load<Sprite>("Icons/" + this.iconAddress);
+                this.chapterIcon.sprite = LoadIcon(this.iconAddress);
                 this.cell.SetActive(true);
                 SetButtonInteractable(true);
                 SetActiveLockIcon(false);

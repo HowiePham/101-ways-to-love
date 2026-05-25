@@ -185,7 +185,6 @@ public class GameplayViewPresenter : BaseViewPresenter
         await this.tutorialView.PlayOutroAnimation(ct);
 
         PlayerPrefs.SetInt(TutorialCompletedKey, 1);
-        PlayerPrefs.Save();
         CleanupTutorial();
     }
 
