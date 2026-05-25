@@ -33,7 +33,7 @@ public class TapTimingMovingObjectInsideArea : VisualAction
 
     private void FingerDownHandler(LeanFinger finger)
     {
-        if (finger.IsOverGui || !this.area.Active || !this.target.gameObject.activeSelf)
+        if (finger.IsOverGui || this.area == null || !this.area.Active || !this.target.gameObject.activeSelf)
         {
             return;
         }

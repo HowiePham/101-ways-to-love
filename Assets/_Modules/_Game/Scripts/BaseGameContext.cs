@@ -771,7 +771,7 @@ namespace Mimi.Prototypes
                 }
 
                 this.IsRemoteConfigLoadSuccess = false;
-                Debug.LogException(ex);
+                // Debug.LogException(ex);
             }
             finally
             {
