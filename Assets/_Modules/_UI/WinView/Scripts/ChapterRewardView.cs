@@ -27,7 +27,6 @@ namespace _Modules._UI.WinView.Scripts
         [SerializeField] private CanvasGroup rewardMainPanelGroup;
         [SerializeField] private Button bonusButton;
         [SerializeField] private Button loseBonusButton;
-        [SerializeField] private CanvasGroup loseBonusButtonGroup;
         [SerializeField] protected SkeletonGraphic boxSkeletonGraphic;
         [SerializeField] protected SkeletonGraphic rewardSkeletonGraphic;
         [SerializeField] private int track;
@@ -74,6 +73,7 @@ namespace _Modules._UI.WinView.Scripts
         private bool isPlayingReward;
         private int currentLife;
         private Dictionary<RectTransform, TweenerCore<Vector3, Vector3, VectorOptions>> loopScalingTweens;
+        private CancellationTokenSource showPanelCts;
 
         public bool ShouldShow => this.showChapterReward;
 
@@ -123,14 +123,14 @@ namespace _Modules._UI.WinView.Scripts
                 this.bonusButton.interactable = true;
             }
 
-            if (this.loseBonusButtonGroup != null)
-            {
-                DOTween.Kill(this.loseBonusButtonGroup);
-                this.loseBonusButtonGroup.alpha = 1f;
-            }
 
             if (this.loseBonusButton != null)
+            {
+                var loseBonusRect = (RectTransform)this.loseBonusButton.transform;
+                DOTween.Kill(loseBonusRect);
+                loseBonusRect.localScale = Vector3.one;
                 this.loseBonusButton.interactable = true;
+            }
 
             if (this.rewardBoxRect != null)
             {
@@ -149,6 +149,10 @@ namespace _Modules._UI.WinView.Scripts
             if (this.boxSkeletonGraphic != null)
                 this.boxSkeletonGraphic.gameObject.SetActive(true);
 
+            this.showPanelCts?.Cancel();
+            this.showPanelCts?.Dispose();
+            this.showPanelCts = null;
+
             this.chapterRewardPanel.gameObject.SetActive(false);
             this.showChapterReward = false;
             this.isPlayingReward = false;
@@ -164,7 +168,12 @@ namespace _Modules._UI.WinView.Scripts
 
         public async UniTask ShowPanelEffect(CancellationToken ct, Action hideProgressBar)
         {
-            this.loseBonusButtonGroup.alpha = 0f;
+            this.showPanelCts?.Cancel();
+            this.showPanelCts?.Dispose();
+            this.showPanelCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+
+            var loseBonusRect = (RectTransform)this.loseBonusButton.transform;
+            loseBonusRect.localScale = Vector3.zero;
             var bonusRect = (RectTransform)this.bonusButton.transform;
             bonusRect.localScale = Vector3.zero;
 
@@ -172,7 +181,7 @@ namespace _Modules._UI.WinView.Scripts
             this.rewardDarkBg.alpha = 0f;
             this.rewardMainPanel.localScale = Vector3.one;
             if (this.rewardMainPanelGroup != null) this.rewardMainPanelGroup.alpha = 0f;
-            if (this.rewardBoxRect != null) this.rewardBoxRect.gameObject.SetActive(true);
+            // if (this.rewardBoxRect != null) this.rewardBoxRect.gameObject.SetActive(true);
             if (this.boxSkeletonGraphic != null) this.boxSkeletonGraphic.gameObject.SetActive(true);
             if (this.rewardSkeletonGraphic != null) this.rewardSkeletonGraphic.gameObject.SetActive(false);
 
@@ -180,8 +189,8 @@ namespace _Modules._UI.WinView.Scripts
             hideProgressBar?.Invoke();
             if (ct.IsCancellationRequested) return;
 
-            await JumpRewardBoxAsync(ct);
-            if (ct.IsCancellationRequested) return;
+            // await JumpRewardBoxAsync(ct);
+            // if (ct.IsCancellationRequested) return;
 
             if (this.rewardMainPanelGroup != null)
             {
@@ -193,18 +202,18 @@ namespace _Modules._UI.WinView.Scripts
             await OpenRewardBox(ct);
             if (ct.IsCancellationRequested) return;
 
-            await UniTask.WaitForSeconds(1f, cancellationToken: ct);
-            if (ct.IsCancellationRequested) return;
+            // await UniTask.WaitForSeconds(1f, cancellationToken: ct);
+            // if (ct.IsCancellationRequested) return;
 
             await bonusRect.DOScale(1f, 0.3f).SetEase(Ease.OutBack).AsyncWaitForCompletion();
             if (ct.IsCancellationRequested) return;
 
             LoopScalingUIEffect(bonusRect, 1.1f, 0, 1f, ct);
 
-            await UniTask.WaitForSeconds(2f, cancellationToken: ct);
-            if (ct.IsCancellationRequested) return;
+            bool cancelled = await UniTask.WaitForSeconds(1f, cancellationToken: this.showPanelCts.Token).SuppressCancellationThrow();
+            if (cancelled || ct.IsCancellationRequested) return;
 
-            await this.loseBonusButtonGroup.DOFade(1f, 0.5f).AsyncWaitForCompletion();
+            await loseBonusRect.DOScale(1f, 0.5f).SetEase(Ease.OutBack).AsyncWaitForCompletion();
         }
 
         private async UniTask OpenRewardBox(CancellationToken ct)
@@ -316,6 +325,7 @@ namespace _Modules._UI.WinView.Scripts
             if (string.IsNullOrEmpty(animationName)) return;
 
             this.isPlayingReward = true;
+            this.showPanelCts?.Cancel();
             SetBonusButtonsInteractable(false);
 
             try
@@ -359,10 +369,12 @@ namespace _Modules._UI.WinView.Scripts
                 this.loopScalingTweens.Remove(bonusRect);
             }
 
-            DOTween.Kill(bonusRect);
-            DOTween.Kill(this.loseBonusButtonGroup);
+            var loseBonusRect = (RectTransform)this.loseBonusButton.transform;
 
-            this.loseBonusButtonGroup.DOFade(0f, 0.2f).SetEase(Ease.OutQuad);
+            DOTween.Kill(bonusRect);
+            DOTween.Kill(loseBonusRect);
+
+            loseBonusRect.DOScale(0f, 0.2f).SetEase(Ease.InBack);
             await bonusRect.DOScale(0f, 0.2f).SetEase(Ease.InBack).AsyncWaitForCompletion();
         }
 
