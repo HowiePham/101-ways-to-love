@@ -14,6 +14,7 @@ namespace Mimi.Prototypes.SaveLoad
             playerSave.CurrentLevel = context.RuntimeState.CurrentLevelOrder.Value;
             playerSave.TopLevel = context.RuntimeState.TopLevelOrder.Value;
             playerSave.TopCompleteLevel = context.RuntimeState.TopCompletedLevelOrder.Value;
+            playerSave.AngelSkins = context.GameData.AngelSkins;
             // playerSave.LastCompleteLevel = context.GameData.LastCompletedLevelOrder;
             // playerSave.TopLevel = context.GameData.LevelTop;
             // //Games

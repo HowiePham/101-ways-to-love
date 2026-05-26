@@ -22,6 +22,7 @@ namespace Mimi.Prototypes
         public ILevelRepository LevelRepository { private set; get; }
         public ILevelOrder LevelOrder { private set; get; }
         public ChapterLevelRepository ChapterLevelRepo { private set; get; }
+        public AngelSkinRepo AngelSkinRepo { private set; get; }
         public LevelConfig HintLevelConfig { private set; get; }
         public LevelConfig HardLevelConfig { private set; get; }
 
@@ -31,6 +32,7 @@ namespace Mimi.Prototypes
         public override void CreateServices()
         {
             CreateLevelServices();
+            InitAngelSkinServices();
             InitShowInterstitialLevelConfig();
             InitHintLevelConfig();
             InitHardLevelConfig();
@@ -75,6 +77,17 @@ namespace Mimi.Prototypes
             // pluginInstaller.AddPlugin(new LogSessionDurationPlugin(this.RuntimeState, this.EventSubscriber, this.AnalyticTracker, this.LifeSystem, this.Ads));
             pluginInstaller.AddPlugin(new RemoveAdOnPurchasePlugin(this));
             pluginInstaller.AddPlugin(new DelayInterAfterShowReward(this));
+        }
+
+        private void InitAngelSkinServices()
+        {
+            AngelSkinRepo = new AngelSkinRepo(GetDataSheet<SheetAngelSkinModel>("AngelSkinRepo"));
+
+            foreach (SheetAngelSkinModel model in AngelSkinRepo.GetAll())
+            {
+                if (!this.GameData.AngelSkins.ContainsKey(model.SkinName))
+                    this.GameData.AngelSkins[model.SkinName] = false;
+            }
         }
 
         private void CreateLevelServices()

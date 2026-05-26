@@ -25,5 +25,7 @@ namespace Mimi.Prototypes.SaveLoad
 
         public List<int> lstErase = new List<int>();
         public int currentErase;
+
+        public Dictionary<string, bool> AngelSkins = new Dictionary<string, bool>();
     }
 }

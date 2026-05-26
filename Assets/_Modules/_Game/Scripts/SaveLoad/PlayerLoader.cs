@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Mimi.Prototypes.SaveLoad
 {
     public class PlayerLoader : ILoadStrategy<SaveRoot, BaseGameContext>
@@ -28,6 +30,8 @@ namespace Mimi.Prototypes.SaveLoad
                 ? playerSaver.TopCompleteLevel
                 : playerSaver.TopLevel;
             context.RuntimeState.TopCompletedLevelOrder.Set(topCompleteLevel);
+
+            gameData.AngelSkins = playerSaver.AngelSkins ?? new Dictionary<string, bool>();
         }
     }
 }
