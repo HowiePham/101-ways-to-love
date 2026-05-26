@@ -62,6 +62,7 @@ namespace Mimi
                 LimitedTimeViewClickPlayHandler;
 
             Messenger.AddListener(EventKey.LevelWin, LevelWinHandler);
+            Messenger.AddListener(EventKey.AngelAppearing, LogAngelAppearingEvent);
 
             LeanTouch.OnFingerDown += ClickSoundHandler;
 
@@ -333,6 +334,19 @@ namespace Mimi
 
                 this.Context.StopSound(soundKey);
             }
+        }
+        
+        private void LogAngelAppearingEvent()
+        {
+            int currentLevelOrder = this.Context.RuntimeState.CurrentLevelOrder.Value + 1;
+            Debug.Log($"--- (TRACKING) Log Angel Appearing Event --- Level: {currentLevelOrder}");
+
+            this.Context.AnalyticTracker.LogEvent(new ShowingAngelEventData()
+            {
+                eventName = ShowingAngelEventData.EVENT_NAME.showing_angel,
+                level = currentLevelOrder.ToString(),
+                level_mode = "normal"
+            });
         }
     }
 }
