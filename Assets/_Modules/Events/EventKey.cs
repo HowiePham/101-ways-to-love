@@ -17,4 +17,5 @@
     public const string SelectLevel = "selectlevel";
     public const string SelectChapter = "selectchapter";
     public const string RemoveAdsCompleted = "removeadscompleted";
+    public const string AngelAppearing = "angelappearing";
 }
