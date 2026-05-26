@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using Mimi.Audio;
+using Mimi.Services.ScriptableObject.Audio;
 using Mimi.VisualActions;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -12,6 +14,8 @@ public class HeartRisingUpAction : VisualAction
     [SerializeField] private Transform heartPool;
     [SerializeField] private Transform[] hearts;
     [SerializeField] private bool stopFloatingAfterComplete;
+    [SerializeField] private BaseAudioServiceSO audioPlayer;
+    [SerializeField, SoundKey] private string heartRisingSoundKey;
 
     [FoldoutGroup("Rise")] [SerializeField]
     private float floatUpOffset = 0.5f;
@@ -83,6 +87,11 @@ public class HeartRisingUpAction : VisualAction
 
         Vector3 peakPos = state.OriginalPos + Vector3.up * (floatUpOffset + bouncePeakExtra);
         Vector3 finalPos = state.OriginalPos + Vector3.up * floatUpOffset;
+
+        if (!string.IsNullOrEmpty(this.heartRisingSoundKey))
+        {
+            this.audioPlayer.PlaySound(this.heartRisingSoundKey);
+        }
 
         Sequence riseSeq = DOTween.Sequence();
         riseSeq.Append(heart.DOMove(peakPos, floatUpDuration).SetEase(floatUpEase));
