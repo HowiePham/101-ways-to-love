@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using Mimi.Audio;
+using Mimi.Services.ScriptableObject.Audio;
 using Mimi.VisualActions;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -12,6 +14,8 @@ public class HeartCollectingAction : VisualAction
     [SerializeField] private Transform heartPool;
     [SerializeField] private Transform[] hearts;
     [SerializeField] private Transform angel;
+    [SerializeField] private BaseAudioServiceSO audioPlayer;
+    [SerializeField, SoundKey] private string heartCollectingSoundKey;
 
     [FoldoutGroup("Fly")] [SerializeField] private float flyDuration = 0.45f;
     [FoldoutGroup("Fly")] [SerializeField] private float flyStagger = 0.08f;
@@ -55,6 +59,11 @@ public class HeartCollectingAction : VisualAction
         seq.Join(heart.DOScale(Vector3.zero, scaleDownDuration).SetEase(Ease.InBack).SetDelay(scaleDownDelay));
 
         await seq.AsyncWaitForCompletion();
+
+        if (!string.IsNullOrEmpty(this.heartCollectingSoundKey))
+        {
+            this.audioPlayer.PlaySound(this.heartCollectingSoundKey);
+        }
 
         heart.gameObject.SetActive(false);
     }
