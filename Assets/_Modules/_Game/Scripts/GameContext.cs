@@ -85,8 +85,10 @@ namespace Mimi.Prototypes
 
             foreach (SheetAngelSkinModel model in AngelSkinRepo.GetAll())
             {
-                if (!this.GameData.AngelSkins.ContainsKey(model.SkinName))
-                    this.GameData.AngelSkins[model.SkinName] = false;
+                if (!this.GameData.AngelSkins.ContainsKey(model.Id))
+                {
+                    this.GameData.AngelSkins[model.Id] = false;
+                }
             }
         }
 
@@ -176,6 +178,9 @@ namespace Mimi.Prototypes
 
             this.lootProcessor = new CompositeLootProcessor();
             this.lootProcessor.AddProcessor("Currency", new CurrencyLootProcessor(PlayerResources));
+            this.lootProcessor.AddProcessor("Skin", new SkinLootProcessor(this.GameData));
+
+            this.lootFactory.AddFactory("Skin", new SkinLootFactory());
             LogInitializeEvent("init_loot_system");
         }
 

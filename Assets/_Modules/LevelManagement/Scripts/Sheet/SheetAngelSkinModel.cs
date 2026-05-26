@@ -7,5 +7,6 @@ namespace Mimi.Prototypes.LevelManagement
     {
         public string Id { private set; get; }
         public string SkinName { private set; get; }
+        public string SkinType { private set; get; }
     }
 }
