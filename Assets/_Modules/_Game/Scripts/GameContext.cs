@@ -90,6 +90,13 @@ namespace Mimi.Prototypes
                     this.GameData.AngelSkins[model.Id] = false;
                 }
             }
+
+            if (this.GameData.EquippedAngelSkins.Count <= 0)
+            {
+                this.GameData.EquippedAngelSkins["wings"] = "canh1";
+                this.GameData.EquippedAngelSkins["staff"] = "gay1";
+                this.GameData.EquippedAngelSkins["clothes"] = "ao1";
+            }
         }
 
         private void CreateLevelServices()

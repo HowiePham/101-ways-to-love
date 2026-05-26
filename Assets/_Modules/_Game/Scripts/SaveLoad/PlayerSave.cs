@@ -27,5 +27,6 @@ namespace Mimi.Prototypes.SaveLoad
         public int currentErase;
 
         public Dictionary<string, bool> AngelSkins = new Dictionary<string, bool>();
+        public Dictionary<string, string> EquippedAngelSkins = new Dictionary<string, string>();
     }
 }

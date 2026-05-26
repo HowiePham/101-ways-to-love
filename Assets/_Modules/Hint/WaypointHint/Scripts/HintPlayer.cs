@@ -21,7 +21,6 @@ namespace Games
         private bool isFingerDown;
         private int falseTime;
         private int objectHintFalseTime;
-
         public bool HasHint => this.hints.Length > 0;
         public bool LevelTutorial => this.levelTutorial;
         public int TotalStep => this.totalStep;
