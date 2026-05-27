@@ -32,6 +32,18 @@ namespace Mimi.Prototypes
             MaxLevel = max;
         }
 
+        public List<string> GetLevels()
+        {
+            List<string> levelStrings = new List<string>();
+
+            foreach (string levelString in this.levels)
+            {
+                levelStrings.Add(levelString);
+            }
+
+            return levelStrings;
+        }
+
         public bool HasLevel(string levelId)
         {
             return this.levels.Contains(levelId);

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using _Modules.LevelManagement.Scripts.Sheet;
 using Ads;
 using Economy.Resources;
 using Games;
@@ -23,9 +24,12 @@ namespace Mimi.Prototypes
         public ILevelOrder LevelOrder { private set; get; }
         public ChapterLevelRepository ChapterLevelRepo { private set; get; }
         public SheetAngelSkinRepo SheetAngelSkinRepo { private set; get; }
+        public SheetAngelUpgradeRepository SheetAngelUpgradeRepository { private set; get; }
         public LevelConfig HintLevelConfig { private set; get; }
         public LevelConfig HardLevelConfig { private set; get; }
         public LevelConfig UpgradeAngelChapterConfig { private set; get; }
+        public List<string> UpgradeAngelChapterOrder { private set; get; }
+        public CompositeLootProcessor LootProcessor => this.lootProcessor;
 
         private CompositeLootProcessor lootProcessor;
         private CompositeLootFactory lootFactory;
@@ -33,21 +37,29 @@ namespace Mimi.Prototypes
         public override void CreateServices()
         {
             CreateLevelServices();
-            InitAngelSkinServices();
             InitShowInterstitialLevelConfig();
             InitHintLevelConfig();
             InitHardLevelConfig();
             InitRateLevelConfig();
             InitUpgradeAngelChapterConfig();
+            InitAngelSkinServices();
             InitLootSystem();
+            InitAngelUpgradeRepository();
 
             this.IsServiceInitialized = true;
         }
 
+        private void InitAngelUpgradeRepository()
+        {
+            this.SheetAngelUpgradeRepository = new SheetAngelUpgradeRepository(GetDataSheet<SheetAngelUpgradeModel>("AngelUpgrade"), this.lootFactory);
+        }
+
         private void InitUpgradeAngelChapterConfig()
         {
+            string configString = this.RemoteConfig.GetValue(ConfigKey.UpgradeAngelInChapter).String;
             this.UpgradeAngelChapterConfig = new LevelConfig();
-            this.UpgradeAngelChapterConfig.ParseConfig(this.RemoteConfig.GetValue(ConfigKey.UpgradeAngelInChapter).String);
+            this.UpgradeAngelChapterConfig.ParseConfig(configString);
+            this.UpgradeAngelChapterOrder = this.UpgradeAngelChapterConfig.GetLevels();
         }
 
         private void InitRateLevelConfig()
@@ -190,12 +202,12 @@ namespace Mimi.Prototypes
         {
             this.lootFactory = new CompositeLootFactory();
             this.lootFactory.AddFactory("Currency", new CurrencyLootFactory());
+            this.lootFactory.AddFactory("Skin", new SkinLootFactory());
 
             this.lootProcessor = new CompositeLootProcessor();
             this.lootProcessor.AddProcessor("Currency", new CurrencyLootProcessor(this.PlayerResources));
             this.lootProcessor.AddProcessor("Skin", new SkinLootProcessor(this.GameData, this.SheetAngelSkinRepo));
 
-            this.lootFactory.AddFactory("Skin", new SkinLootFactory());
             LogInitializeEvent("init_loot_system");
         }
 

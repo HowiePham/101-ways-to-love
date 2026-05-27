@@ -185,7 +185,8 @@ namespace Mimi.Prototypes
 
         private void InitSheetAssets()
         {
-            ISheetSerializer sheetSerializer = new SheetSerializerDefaultLit(new ModelConverterAot());
+            // ISheetSerializer sheetSerializer = new SheetSerializerDefaultLit(new ModelConverterAot());
+            ISheetSerializer sheetSerializer = new SheetSerializerDefaultMini(new ExtensibleModelAotConverter());
             this.gameDataAsset.Init(sheetSerializer);
             // this.localizeAsset.Init(sheetSerializer);
         }

@@ -71,6 +71,7 @@ public class AngelUpgradeView : BaseView
         this.sequenceCts = null;
         DOTween.Kill(this.darkBG);
         this.darkBG.alpha = 0f;
+        this.darkBG.gameObject.SetActive(false);
         base.Hide();
     }
 
@@ -83,6 +84,7 @@ public class AngelUpgradeView : BaseView
 
         this.appliedNewSkin = false;
         this.newAngelSkins = newAngelSkin;
+        this.darkBG.gameObject.SetActive(true);
         this.darkBG.alpha = 0f;
 
         await this.darkBG.DOFade(this.bgTargetAlpha, this.bgFadeDuration).AsyncWaitForCompletion();

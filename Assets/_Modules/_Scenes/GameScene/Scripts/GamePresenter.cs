@@ -29,7 +29,8 @@ namespace Mimi.Prototypes
             AddViewPresenter(chapterSelectLevelViewPresenter);
             Debug.Log($"--- (PRESENTER) Init GameplayViewPresenter");
             var gameplayViewPresenter = new GameplayViewPresenter(this, this.Transform, gameContext.EventPublisher, gameContext.EventSubscriber,
-                gameContext.RuntimeState, gameContext.LifeSystem, gameContext.HintLevelConfig, gameContext.Ads, gameContext.DialogManager, gameContext.LevelOrder, gameContext.RemoteConfig);
+                gameContext.RuntimeState, gameContext.LifeSystem, gameContext.HintLevelConfig, gameContext.Ads, gameContext.DialogManager,
+                gameContext.LevelOrder, gameContext.RemoteConfig, gameContext.SheetAngelUpgradeRepository, gameContext.LootProcessor, gameContext.SaveManager);
             AddViewPresenter(gameplayViewPresenter);
             var hardLevelViewPresenter = new HardLevelViewPresenter(this, this.Transform, gameContext.RemoteConfig, gameContext.Ads, gameContext.DialogManager,
                 gameContext.EventPublisher, gameContext.RuntimeState);
@@ -51,6 +52,7 @@ namespace Mimi.Prototypes
             {
                 Debug.LogError($"--- (PRESENTER) WinViewPresenter INIT FAILED: {e}");
             }
+
             Debug.Log($"--- (PRESENTER) Init LoseViewPresenter");
             var loseViewPresenter = new LoseViewPresenter(this, this.Transform, gameContext.EventPublisher);
             AddViewPresenter(loseViewPresenter);
