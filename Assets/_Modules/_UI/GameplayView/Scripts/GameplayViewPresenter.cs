@@ -1,9 +1,9 @@
+using System.Collections.Generic;
 using System.Threading;
 using _Modules._UI.CheatView.Scripts;
 using _Modules._UI.WinView.Scripts;
 using _Modules.GameEvent.Scripts;
 using Cysharp.Threading.Tasks;
-using FrogunnerGames;
 using MEC;
 using Mimi;
 using Mimi.Ads.Adapters;
@@ -32,7 +32,9 @@ public class GameplayViewPresenter : BaseViewPresenter
 
     private GameplayView gameplayView;
     private TutorialOverlayView tutorialView;
+    private AngelUpgradeView angelUpgradeView;
     private NumberBasedLifeView numberBasedLifeView;
+    private CancellationTokenSource angelSequenceCts;
     private CoroutineHandle timerCoroutineHandler;
     private int previousLifeCount;
     private float timeLeft;
@@ -67,6 +69,7 @@ public class GameplayViewPresenter : BaseViewPresenter
         this.gameplayView = AddView<GameplayView>();
         this.numberBasedLifeView = this.gameplayView.LifeView;
         this.tutorialView = AddView<TutorialOverlayView>(startingView: false);
+        this.angelUpgradeView = AddView<AngelUpgradeView>(startingView: false);
     }
 
     protected override void AddChildren()
@@ -86,6 +89,7 @@ public class GameplayViewPresenter : BaseViewPresenter
         this.numberBasedLifeView.Show();
         this.numberBasedLifeView.OnLifeButtonClicked += LifeButtonClickedHandler;
         this.gameplayView.OnNoLifeBlockerClicked += NoLifeBlockerClickedHandler;
+        this.angelUpgradeView.OnTestingAngelUpgradingEffect += ShowAngelUpgradeSequence;
 
         this.adAdapter.RewardVideo.OnRewarded += OnRewardCompleted;
         this.adAdapter.RewardVideo.OnShowFailed += OnRewardFailed;
@@ -359,6 +363,7 @@ public class GameplayViewPresenter : BaseViewPresenter
         this.numberBasedLifeView.OnLifeButtonClicked -= LifeButtonClickedHandler;
         this.numberBasedLifeView.Hide();
         this.gameplayView.OnNoLifeBlockerClicked -= NoLifeBlockerClickedHandler;
+        this.angelUpgradeView.OnTestingAngelUpgradingEffect -= ShowAngelUpgradeSequence;
 
         this.adAdapter.RewardVideo.OnRewarded -= OnRewardCompleted;
         this.adAdapter.RewardVideo.OnShowFailed -= OnRewardFailed;
@@ -369,6 +374,10 @@ public class GameplayViewPresenter : BaseViewPresenter
         Messenger.RemoveListener(EventKey.ShowHint, ShowHint);
         Messenger.RemoveListener(EventKey.ActionFailed, ActionFailedHandler);
         Messenger.RemoveListener(EventKey.ShowStartLevelGameButton, ShowStartLevelGameButtonHandler);
+
+        this.angelSequenceCts?.Cancel();
+        this.angelSequenceCts?.Dispose();
+        this.angelSequenceCts = null;
 
 #if DEVELOPMENT
         var cheatViewPresenter = this.ScenePresenter.GetViewPresenter<CheatViewPresenter>();
@@ -408,6 +417,50 @@ public class GameplayViewPresenter : BaseViewPresenter
     {
         int currentLevel = this.runtimeState.CurrentLevelOrder.Value + 1;
         this.gameplayView.SetLevelCurrent(currentLevel.ToString());
+    }
+
+    private void ShowAngelUpgradeSequence()
+    {
+        this.angelSequenceCts?.Cancel();
+        this.angelSequenceCts?.Dispose();
+        this.angelSequenceCts = new CancellationTokenSource();
+        RunAngelSequence(this.angelSequenceCts.Token).Forget();
+    }
+
+    private async UniTaskVoid RunAngelSequence(CancellationToken ct)
+    {
+        var baseGameContext = (BaseGameContext)this.Context;
+        baseGameContext.GameData.EquippedAngelSkins = new Dictionary<string, string>()
+        {
+            { "wings", "canh1" },
+            { "staff", "ao1" },
+            { "clothes", "gay1" }
+        };
+        List<string> currentAngelSkin = GetAngelSkins();
+
+        baseGameContext.GameData.EquippedAngelSkins = new Dictionary<string, string>()
+        {
+            { "wings", "canh3" },
+            { "staff", "ao3" },
+            { "clothes", "gay3" }
+        };
+        List<string> newAngelSkin = GetAngelSkins();
+
+        await this.angelUpgradeView.PlaySequenceAsync(currentAngelSkin, newAngelSkin, ct);
+    }
+
+    private List<string> GetAngelSkins()
+    {
+        var baseGameContext = (BaseGameContext)this.Context;
+        Dictionary<string, string> currentAngelSkin = baseGameContext.GameData.EquippedAngelSkins;
+        var angelSkins = new List<string>(currentAngelSkin.Count);
+
+        foreach (string skinId in currentAngelSkin.Values)
+        {
+            angelSkins.Add(skinId);
+        }
+
+        return angelSkins;
     }
 
     private void ShowWinView()
