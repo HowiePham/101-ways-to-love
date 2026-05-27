@@ -22,7 +22,7 @@ namespace Mimi.Prototypes
         public ILevelRepository LevelRepository { private set; get; }
         public ILevelOrder LevelOrder { private set; get; }
         public ChapterLevelRepository ChapterLevelRepo { private set; get; }
-        public AngelSkinRepo AngelSkinRepo { private set; get; }
+        public SheetAngelSkinRepo SheetAngelSkinRepo { private set; get; }
         public LevelConfig HintLevelConfig { private set; get; }
         public LevelConfig HardLevelConfig { private set; get; }
 
@@ -81,9 +81,9 @@ namespace Mimi.Prototypes
 
         private void InitAngelSkinServices()
         {
-            AngelSkinRepo = new AngelSkinRepo(GetDataSheet<SheetAngelSkinModel>("AngelSkinRepo"));
+            this.SheetAngelSkinRepo = new SheetAngelSkinRepo(GetDataSheet<SheetAngelSkinModel>("AngelSkinRepo"));
 
-            foreach (SheetAngelSkinModel model in AngelSkinRepo.GetAll())
+            foreach (SheetAngelSkinModel model in this.SheetAngelSkinRepo.GetAll())
             {
                 if (!this.GameData.AngelSkins.ContainsKey(model.Id))
                 {
@@ -184,8 +184,8 @@ namespace Mimi.Prototypes
             this.lootFactory.AddFactory("Currency", new CurrencyLootFactory());
 
             this.lootProcessor = new CompositeLootProcessor();
-            this.lootProcessor.AddProcessor("Currency", new CurrencyLootProcessor(PlayerResources));
-            this.lootProcessor.AddProcessor("Skin", new SkinLootProcessor(this.GameData));
+            this.lootProcessor.AddProcessor("Currency", new CurrencyLootProcessor(this.PlayerResources));
+            this.lootProcessor.AddProcessor("Skin", new SkinLootProcessor(this.GameData, this.SheetAngelSkinRepo));
 
             this.lootFactory.AddFactory("Skin", new SkinLootFactory());
             LogInitializeEvent("init_loot_system");
