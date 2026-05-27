@@ -59,10 +59,10 @@ public class AngelUpgradeView : BaseView
     public override void Hide()
     {
         AnimationState animState = this.angelSkeletonGraphic.AnimationState;
-        this.angelSkeletonGraphic.PlayAnimation(this.disappearingLoopAnimation, true);
         if (animState != null)
         {
             animState.Event -= ApplyNewAngelSkin;
+            this.angelSkeletonGraphic.PlayAnimation(this.disappearingLoopAnimation, true);
         }
 
         this.angelSkeletonGraphic.gameObject.SetActive(false);
