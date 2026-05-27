@@ -32,6 +32,7 @@ namespace Mimi.Prototypes.SaveLoad
             context.RuntimeState.TopCompletedLevelOrder.Set(topCompleteLevel);
 
             gameData.AngelSkins = playerSaver.AngelSkins ?? new Dictionary<string, bool>();
+            gameData.EquippedAngelSkins = playerSaver.EquippedAngelSkins ?? new Dictionary<string, string>();
         }
     }
 }

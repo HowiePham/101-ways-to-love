@@ -43,13 +43,6 @@ public class GameplayView : BaseView
     private RectTransform SkipBtnRect => this.skipBtn.GetComponent<RectTransform>();
     private RectTransform StartLevelGameBtnRect => this.startLevelGameButton.GetComponent<RectTransform>();
     public NumberBasedLifeView LifeView => this.lifeView;
-    public RectTransform HintButtonRect => this.hintBtn.GetComponent<RectTransform>();
-    public RectTransform LevelTitle => this.levelTextCurrent.GetComponent<RectTransform>();
-    public RectTransform SkipButtonRect => this.skipBtn.GetComponent<RectTransform>();
-    public RectTransform SettingButtonRect => this.settingBtn.GetComponent<RectTransform>();
-    public RectTransform LifeViewRect => this.lifePanel.GetComponent<RectTransform>();
-    public RectTransform StepPanelRect => this.stepPanel as RectTransform;
-    public RectTransform StartLevelButtonRect => this.startLevelGameButton.GetComponent<RectTransform>();
 
     public Action OnSettingClicked;
     public Action OnSkipClicked;

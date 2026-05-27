@@ -28,18 +28,6 @@ namespace _Modules.Ads
                 TagForUnderAgeOfConsent = false,
             };
 
-#if DEVELOPMENT
-            request.ConsentDebugSettings = new ConsentDebugSettings
-            {
-                DebugGeography = DebugGeography.EEA,
-                TestDeviceHashedIds =
-                    new List<string>
-                    {
-                        "BAB7D139-24B3-4699-A6AF-3DC8DFF555F4",
-                    }
-            };
-#endif
-
 #if !UNITY_EDITOR
             if (ConsentInformation.CanRequestAds())
             {

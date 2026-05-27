@@ -15,15 +15,7 @@ namespace Mimi.Prototypes.SaveLoad
             playerSave.TopLevel = context.RuntimeState.TopLevelOrder.Value;
             playerSave.TopCompleteLevel = context.RuntimeState.TopCompletedLevelOrder.Value;
             playerSave.AngelSkins = context.GameData.AngelSkins;
-            // playerSave.LastCompleteLevel = context.GameData.LastCompletedLevelOrder;
-            // playerSave.TopLevel = context.GameData.LevelTop;
-            // //Games
-            // playerSave.Coin = context.CurrencyRepository.GetCurrency(CurrencyType.Coin).TotalAmount;
-            // playerSave.Rated = context.GameData.Rated;
-            // playerSave.IsReceiveReward = context.GameData.IsReceiveReward;
-            // //shop
-            // playerSave.lstErase = context.GameData.gamedatalistEraseCurrent;
-            // playerSave.currentErase = context.GameData.CurrentErase;
+            playerSave.EquippedAngelSkins = context.GameData.EquippedAngelSkins;
         }
     }
 }

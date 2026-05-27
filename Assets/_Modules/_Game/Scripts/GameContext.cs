@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using _Modules.LevelManagement.Scripts.Sheet;
 using Ads;
 using Economy.Resources;
 using Games;
@@ -22,9 +23,13 @@ namespace Mimi.Prototypes
         public ILevelRepository LevelRepository { private set; get; }
         public ILevelOrder LevelOrder { private set; get; }
         public ChapterLevelRepository ChapterLevelRepo { private set; get; }
-        public AngelSkinRepo AngelSkinRepo { private set; get; }
+        public SheetAngelSkinRepo SheetAngelSkinRepo { private set; get; }
+        public SheetAngelUpgradeRepository SheetAngelUpgradeRepository { private set; get; }
         public LevelConfig HintLevelConfig { private set; get; }
         public LevelConfig HardLevelConfig { private set; get; }
+        public LevelConfig UpgradeAngelChapterConfig { private set; get; }
+        public List<string> UpgradeAngelChapterOrder { private set; get; }
+        public CompositeLootProcessor LootProcessor => this.lootProcessor;
 
         private CompositeLootProcessor lootProcessor;
         private CompositeLootFactory lootFactory;
@@ -32,14 +37,29 @@ namespace Mimi.Prototypes
         public override void CreateServices()
         {
             CreateLevelServices();
-            InitAngelSkinServices();
             InitShowInterstitialLevelConfig();
             InitHintLevelConfig();
             InitHardLevelConfig();
             InitRateLevelConfig();
+            InitUpgradeAngelChapterConfig();
+            InitAngelSkinServices();
             InitLootSystem();
+            InitAngelUpgradeRepository();
 
             this.IsServiceInitialized = true;
+        }
+
+        private void InitAngelUpgradeRepository()
+        {
+            this.SheetAngelUpgradeRepository = new SheetAngelUpgradeRepository(GetDataSheet<SheetAngelUpgradeModel>("AngelUpgrade"), this.lootFactory);
+        }
+
+        private void InitUpgradeAngelChapterConfig()
+        {
+            string configString = this.RemoteConfig.GetValue(ConfigKey.UpgradeAngelInChapter).String;
+            this.UpgradeAngelChapterConfig = new LevelConfig();
+            this.UpgradeAngelChapterConfig.ParseConfig(configString);
+            this.UpgradeAngelChapterOrder = this.UpgradeAngelChapterConfig.GetLevels();
         }
 
         private void InitRateLevelConfig()
@@ -81,14 +101,21 @@ namespace Mimi.Prototypes
 
         private void InitAngelSkinServices()
         {
-            AngelSkinRepo = new AngelSkinRepo(GetDataSheet<SheetAngelSkinModel>("AngelSkinRepo"));
+            this.SheetAngelSkinRepo = new SheetAngelSkinRepo(GetDataSheet<SheetAngelSkinModel>("AngelSkinRepo"));
 
-            foreach (SheetAngelSkinModel model in AngelSkinRepo.GetAll())
+            foreach (SheetAngelSkinModel model in this.SheetAngelSkinRepo.GetAll())
             {
                 if (!this.GameData.AngelSkins.ContainsKey(model.Id))
                 {
                     this.GameData.AngelSkins[model.Id] = false;
                 }
+            }
+
+            if (this.GameData.EquippedAngelSkins.Count <= 0)
+            {
+                this.GameData.EquippedAngelSkins["wings"] = "canh1";
+                this.GameData.EquippedAngelSkins["staff"] = "gay1";
+                this.GameData.EquippedAngelSkins["clothes"] = "ao1";
             }
         }
 
@@ -175,12 +202,12 @@ namespace Mimi.Prototypes
         {
             this.lootFactory = new CompositeLootFactory();
             this.lootFactory.AddFactory("Currency", new CurrencyLootFactory());
+            this.lootFactory.AddFactory("Skin", new SkinLootFactory());
 
             this.lootProcessor = new CompositeLootProcessor();
-            this.lootProcessor.AddProcessor("Currency", new CurrencyLootProcessor(PlayerResources));
-            this.lootProcessor.AddProcessor("Skin", new SkinLootProcessor(this.GameData));
+            this.lootProcessor.AddProcessor("Currency", new CurrencyLootProcessor(this.PlayerResources));
+            this.lootProcessor.AddProcessor("Skin", new SkinLootProcessor(this.GameData, this.SheetAngelSkinRepo));
 
-            this.lootFactory.AddFactory("Skin", new SkinLootFactory());
             LogInitializeEvent("init_loot_system");
         }
 

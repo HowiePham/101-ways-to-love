@@ -185,7 +185,8 @@ namespace Mimi.Prototypes
 
         private void InitSheetAssets()
         {
-            ISheetSerializer sheetSerializer = new SheetSerializerDefaultLit(new ModelConverterAot());
+            // ISheetSerializer sheetSerializer = new SheetSerializerDefaultLit(new ModelConverterAot());
+            ISheetSerializer sheetSerializer = new SheetSerializerDefaultMini(new ExtensibleModelAotConverter());
             this.gameDataAsset.Init(sheetSerializer);
             // this.localizeAsset.Init(sheetSerializer);
         }
@@ -689,6 +690,7 @@ namespace Mimi.Prototypes
                 .SetFloat(ConfigKey.AdCooldown, 120f)
                 .SetString(ConfigKey.RateLevel, "30")
                 .SetString(ConfigKey.HintLevel, "1")
+                .SetString(ConfigKey.UpgradeAngelInChapter, "1,2,3,4,5,6,7,8,9")
                 .SetBool(ConfigKey.IsShowAOA, false)
                 .SetBool(ConfigKey.RequireInternet, true)
                 .SetBool(ConfigKey.ShowNextChapterInWinView, true)

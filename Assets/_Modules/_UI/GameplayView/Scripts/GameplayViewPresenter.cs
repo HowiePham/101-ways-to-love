@@ -1,9 +1,9 @@
+using System.Collections.Generic;
 using System.Threading;
 using _Modules._UI.CheatView.Scripts;
 using _Modules._UI.WinView.Scripts;
 using _Modules.GameEvent.Scripts;
 using Cysharp.Threading.Tasks;
-using FrogunnerGames;
 using MEC;
 using Mimi;
 using Mimi.Ads.Adapters;
@@ -11,10 +11,12 @@ using Mimi.Configs;
 using Mimi.Events.AsyncBus;
 using Mimi.Games;
 using Mimi.Games.Events;
+using Mimi.Loots;
 using Mimi.Prototypes;
 using Mimi.Prototypes.Currencies;
 using Mimi.Prototypes.Events;
 using Mimi.Prototypes.LevelManagement;
+using Mimi.Prototypes.SaveLoad;
 using Mimi.Prototypes.UI;
 using UnityEngine;
 
@@ -29,10 +31,16 @@ public class GameplayViewPresenter : BaseViewPresenter
     private readonly LifeSystem lifeSystem;
     private readonly IAdAdapter adAdapter;
     private readonly DialogManager dialogManager;
+    private readonly SheetAngelUpgradeRepository angelUpgradeRepository;
+    private readonly ILootProcessor lootProcessor;
+    private readonly ISaveManager saveManager;
 
     private GameplayView gameplayView;
     private TutorialOverlayView tutorialView;
+    private AngelUpgradeView angelUpgradeView;
     private NumberBasedLifeView numberBasedLifeView;
+    private CancellationTokenSource angelSequenceCts;
+    private int topLevelAtLevelStart;
     private CoroutineHandle timerCoroutineHandler;
     private int previousLifeCount;
     private float timeLeft;
@@ -49,7 +57,8 @@ public class GameplayViewPresenter : BaseViewPresenter
     private const string TutorialCompletedKey = "tutorial_overlay_completed_v1";
 
     public GameplayViewPresenter(BaseScenePresenter scenePresenter, Transform transform, IAsyncPublisher eventPublisher, IAsyncSubscriber eventSubscriber,
-        RuntimeState runtimeState, LifeSystem lifeSystem, LevelConfig hintLevelConfig, IAdAdapter adAdapter, DialogManager dialogManager, ILevelOrder levelOrder, IConfigProvider remoteConfig) :
+        RuntimeState runtimeState, LifeSystem lifeSystem, LevelConfig hintLevelConfig, IAdAdapter adAdapter, DialogManager dialogManager, ILevelOrder levelOrder, IConfigProvider remoteConfig,
+        SheetAngelUpgradeRepository angelUpgradeRepository, ILootProcessor lootProcessor, ISaveManager saveManager) :
         base(scenePresenter, transform)
     {
         this.eventPublisher = eventPublisher;
@@ -60,6 +69,9 @@ public class GameplayViewPresenter : BaseViewPresenter
         this.adAdapter = adAdapter;
         this.dialogManager = dialogManager;
         this.remoteConfig = remoteConfig;
+        this.angelUpgradeRepository = angelUpgradeRepository;
+        this.lootProcessor = lootProcessor;
+        this.saveManager = saveManager;
     }
 
     protected override void AddViews()
@@ -67,6 +79,7 @@ public class GameplayViewPresenter : BaseViewPresenter
         this.gameplayView = AddView<GameplayView>();
         this.numberBasedLifeView = this.gameplayView.LifeView;
         this.tutorialView = AddView<TutorialOverlayView>(startingView: false);
+        this.angelUpgradeView = AddView<AngelUpgradeView>(startingView: false);
     }
 
     protected override void AddChildren()
@@ -86,6 +99,7 @@ public class GameplayViewPresenter : BaseViewPresenter
         this.numberBasedLifeView.Show();
         this.numberBasedLifeView.OnLifeButtonClicked += LifeButtonClickedHandler;
         this.gameplayView.OnNoLifeBlockerClicked += NoLifeBlockerClickedHandler;
+        this.angelUpgradeView.OnTestingAngelUpgradingEffect += ShowAngelUpgradeSequence;
 
         this.adAdapter.RewardVideo.OnRewarded += OnRewardCompleted;
         this.adAdapter.RewardVideo.OnShowFailed += OnRewardFailed;
@@ -121,6 +135,7 @@ public class GameplayViewPresenter : BaseViewPresenter
         cheatViewPresenter.Show();
 #endif
 
+        this.topLevelAtLevelStart = this.runtimeState.TopLevelOrder.Value;
         TryStartTutorial();
     }
 
@@ -142,7 +157,6 @@ public class GameplayViewPresenter : BaseViewPresenter
         this.tutorialView.OnNextClicked += HandleTutorialNextClicked;
         this.tutorialView.Show();
 
-        // Wait for GameplayView entry animations to finish
         bool canceled = await UniTask.Delay(300, cancellationToken: ct).SuppressCancellationThrow();
         if (canceled)
         {
@@ -150,7 +164,6 @@ public class GameplayViewPresenter : BaseViewPresenter
             return;
         }
 
-        // Dark overlay fades in after entry animations have finished
         await this.tutorialView.PlayIntroAnimation(ct);
         if (ct.IsCancellationRequested)
         {
@@ -359,6 +372,7 @@ public class GameplayViewPresenter : BaseViewPresenter
         this.numberBasedLifeView.OnLifeButtonClicked -= LifeButtonClickedHandler;
         this.numberBasedLifeView.Hide();
         this.gameplayView.OnNoLifeBlockerClicked -= NoLifeBlockerClickedHandler;
+        this.angelUpgradeView.OnTestingAngelUpgradingEffect -= ShowAngelUpgradeSequence;
 
         this.adAdapter.RewardVideo.OnRewarded -= OnRewardCompleted;
         this.adAdapter.RewardVideo.OnShowFailed -= OnRewardFailed;
@@ -369,6 +383,10 @@ public class GameplayViewPresenter : BaseViewPresenter
         Messenger.RemoveListener(EventKey.ShowHint, ShowHint);
         Messenger.RemoveListener(EventKey.ActionFailed, ActionFailedHandler);
         Messenger.RemoveListener(EventKey.ShowStartLevelGameButton, ShowStartLevelGameButtonHandler);
+
+        this.angelSequenceCts?.Cancel();
+        this.angelSequenceCts?.Dispose();
+        this.angelSequenceCts = null;
 
 #if DEVELOPMENT
         var cheatViewPresenter = this.ScenePresenter.GetViewPresenter<CheatViewPresenter>();
@@ -410,7 +428,125 @@ public class GameplayViewPresenter : BaseViewPresenter
         this.gameplayView.SetLevelCurrent(currentLevel.ToString());
     }
 
+    private void ShowAngelUpgradeSequence()
+    {
+        this.angelSequenceCts?.Cancel();
+        this.angelSequenceCts?.Dispose();
+        this.angelSequenceCts = new CancellationTokenSource();
+        RunAngelSequence(this.angelSequenceCts.Token).Forget();
+    }
+
+    private async UniTaskVoid RunAngelSequence(CancellationToken ct)
+    {
+        var baseGameContext = (BaseGameContext)this.Context;
+        baseGameContext.GameData.EquippedAngelSkins = new Dictionary<string, string>()
+        {
+            { "wings", "canh1" },
+            { "staff", "ao1" },
+            { "clothes", "gay1" }
+        };
+        List<string> currentAngelSkin = GetAngelSkins();
+
+        baseGameContext.GameData.EquippedAngelSkins = new Dictionary<string, string>()
+        {
+            { "wings", "canh3" },
+            { "staff", "ao3" },
+            { "clothes", "gay3" }
+        };
+        List<string> newAngelSkin = GetAngelSkins();
+
+        this.angelUpgradeView.Show();
+        try
+        {
+            await this.angelUpgradeView.PlaySequenceAsync(currentAngelSkin, newAngelSkin, ct);
+        }
+        finally
+        {
+            this.angelUpgradeView.Hide();
+        }
+    }
+
+    private List<string> GetAngelSkins()
+    {
+        var baseGameContext = (BaseGameContext)this.Context;
+        Dictionary<string, string> currentAngelSkin = baseGameContext.GameData.EquippedAngelSkins;
+        var angelSkins = new List<string>(currentAngelSkin.Count);
+
+        foreach (string skinId in currentAngelSkin.Values)
+        {
+            angelSkins.Add(skinId);
+        }
+
+        return angelSkins;
+    }
+
     private void ShowWinView()
+    {
+        ShowWinViewAsync().Forget();
+    }
+
+    private async UniTaskVoid ShowWinViewAsync()
+    {
+        var gameContext = (GameContext)this.Context;
+        int currentOrder = this.runtimeState.CurrentLevelOrder.Value;
+        LevelInfo currentLevel = gameContext.LevelOrder.GetByOrder(currentOrder);
+
+        if (currentLevel != null &&
+            gameContext.UpgradeAngelChapterConfig.HasLevel(currentLevel.Chapter.ToString()))
+        {
+            LevelInfo nextLevel = gameContext.LevelOrder.GetNextLevel(currentOrder);
+            bool isLastInChapter = nextLevel == null || nextLevel.Chapter != currentLevel.Chapter;
+
+            if (isLastInChapter && currentOrder >= this.topLevelAtLevelStart)
+            {
+                string chapterKey = currentLevel.Chapter.ToString();
+                int upgradeOrder = gameContext.UpgradeAngelChapterOrder.IndexOf(chapterKey) + 1;
+                if (upgradeOrder > 0)
+                {
+                    await RunAngelUpgradeAndShowWin(upgradeOrder);
+                    return;
+                }
+            }
+        }
+
+        ShowWinViewImmediate();
+    }
+
+    private async UniTask RunAngelUpgradeAndShowWin(int upgradeOrder)
+    {
+        this.angelSequenceCts?.Cancel();
+        this.angelSequenceCts?.Dispose();
+        this.angelSequenceCts = new CancellationTokenSource();
+        var ct = this.angelSequenceCts.Token;
+
+        List<string> oldSkins = GetAngelSkins();
+
+        IList<ILoot> angelUpgrades = this.angelUpgradeRepository.GetAngelUpgrades(upgradeOrder);
+        if (angelUpgrades != null && angelUpgrades.Count > 0)
+        {
+            var lootContext = LootContext.New("gameplay_view", "angel_upgrade");
+            this.lootProcessor.Process((IReadOnlyList<ILoot>)angelUpgrades, lootContext);
+        }
+
+        this.saveManager.Save();
+
+        List<string> newSkins = GetAngelSkins();
+
+        this.angelUpgradeView.Show();
+        try
+        {
+            await this.angelUpgradeView.PlaySequenceAsync(oldSkins, newSkins, ct);
+        }
+        finally
+        {
+            this.angelUpgradeView.Hide();
+        }
+
+        if (!ct.IsCancellationRequested)
+            ShowWinViewImmediate();
+    }
+
+    private void ShowWinViewImmediate()
     {
         Debug.Log($"--- (GAMEVIEW) Show Win View");
 
@@ -418,7 +554,6 @@ public class GameplayViewPresenter : BaseViewPresenter
         var settingViewPresenter = this.ScenePresenter.GetViewPresenter<SettingViewPresenter>();
         var hardLevelViewPresenter = this.ScenePresenter.GetViewPresenter<HardLevelViewPresenter>();
         winViewPresenter.Show();
-
         settingViewPresenter.Hide();
         hardLevelViewPresenter.Hide();
         Hide();
