@@ -25,6 +25,7 @@ namespace Mimi.Prototypes
         public SheetAngelSkinRepo SheetAngelSkinRepo { private set; get; }
         public LevelConfig HintLevelConfig { private set; get; }
         public LevelConfig HardLevelConfig { private set; get; }
+        public LevelConfig UpgradeAngelChapterConfig { private set; get; }
 
         private CompositeLootProcessor lootProcessor;
         private CompositeLootFactory lootFactory;
@@ -37,9 +38,16 @@ namespace Mimi.Prototypes
             InitHintLevelConfig();
             InitHardLevelConfig();
             InitRateLevelConfig();
+            InitUpgradeAngelChapterConfig();
             InitLootSystem();
 
             this.IsServiceInitialized = true;
+        }
+
+        private void InitUpgradeAngelChapterConfig()
+        {
+            this.UpgradeAngelChapterConfig = new LevelConfig();
+            this.UpgradeAngelChapterConfig.ParseConfig(this.RemoteConfig.GetValue(ConfigKey.UpgradeAngelInChapter).String);
         }
 
         private void InitRateLevelConfig()

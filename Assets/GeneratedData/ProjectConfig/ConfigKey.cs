@@ -45,5 +45,6 @@
         public const string ShowObjectHintAfterWrongTimes = "show_object_hint_after_wrong_times";
         public const string ObjectHintDelay = "object_hint_delay";
         public const string ShowNextChapterInWinView = "show_next_chapter_in_win_view";
+        public const string UpgradeAngelInChapter = "upgrade_angel_in_chapter";
     }
 }
