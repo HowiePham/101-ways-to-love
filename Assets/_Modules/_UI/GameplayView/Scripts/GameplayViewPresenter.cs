@@ -112,6 +112,7 @@ public class GameplayViewPresenter : BaseViewPresenter
         Messenger.AddListener(EventKey.ShowHint, ShowHint);
         Messenger.AddListener(EventKey.ActionFailed, ActionFailedHandler);
         Messenger.AddListener(EventKey.ShowStartLevelGameButton, ShowStartLevelGameButtonHandler);
+        Messenger.AddListener(EventKey.LevelDone, OnLevelDoneHandler);
 
         this.wrongAnswerCount = 0;
         this.isHintButtonShown = false;
@@ -340,6 +341,13 @@ public class GameplayViewPresenter : BaseViewPresenter
         this.gameplayView.UpdateStepPoint();
     }
 
+    private void OnLevelDoneHandler()
+    {
+        this.hintButtonCts?.Cancel();
+        this.skipButtonCts?.Cancel();
+        this.gameplayView.HideButtonsOnLevelDone();
+    }
+
     protected override void OnHide()
     {
         this.hintButtonCts?.Cancel();
@@ -383,6 +391,7 @@ public class GameplayViewPresenter : BaseViewPresenter
         Messenger.RemoveListener(EventKey.ShowHint, ShowHint);
         Messenger.RemoveListener(EventKey.ActionFailed, ActionFailedHandler);
         Messenger.RemoveListener(EventKey.ShowStartLevelGameButton, ShowStartLevelGameButtonHandler);
+        Messenger.RemoveListener(EventKey.LevelDone, OnLevelDoneHandler);
 
         this.angelSequenceCts?.Cancel();
         this.angelSequenceCts?.Dispose();
