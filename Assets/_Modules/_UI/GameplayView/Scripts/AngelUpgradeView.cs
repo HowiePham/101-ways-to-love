@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using Mimi.Audio;
 using Mimi.Prototypes.UI;
+using Mimi.Services.ScriptableObject.Audio;
 using Mimi.VisualActions.Spines;
 using Sirenix.OdinInspector;
 using Spine;
@@ -44,6 +46,14 @@ public class AngelUpgradeView : BaseView
 
     [SerializeField, SpineAnimation(dataField = "angelSkeletonGraphic")]
     protected string disappearingLoopAnimation;
+
+    [Header("Upgrading SFX")] [SerializeField]
+    private BaseAudioServiceSO audioPlayer;
+
+    [SerializeField, SoundKey] private string angelAppearingSFX;
+    [SerializeField, SoundKey] private string angelDisappearingSFX;
+    [SerializeField, SoundKey] private string upgradingSFX;
+    [SerializeField, SoundKey] private string angelHappySFX;
 
     private CancellationTokenSource sequenceCts;
     private List<string> newAngelSkins;
@@ -100,6 +110,7 @@ public class AngelUpgradeView : BaseView
 
         ApplyMixedSkin(oldAngelSkin);
 
+        PlayAudio(this.appearingAnimation);
         await this.angelSkeletonGraphic.WaitAnimation(this.appearingAnimation, cancellationToken: ct);
         if (ct.IsCancellationRequested) return;
 
@@ -107,14 +118,17 @@ public class AngelUpgradeView : BaseView
         bool cancelled = await UniTask.WaitForSeconds(this.idleDuration, cancellationToken: ct).SuppressCancellationThrow();
         if (cancelled) return;
 
+        PlayAudio(this.upgradingSFX);
         await this.angelSkeletonGraphic.WaitAnimation(this.changeSkinAnimation, cancellationToken: ct);
         if (ct.IsCancellationRequested) return;
 
+        PlayAudio(this.angelHappySFX);
         this.angelSkeletonGraphic.PlayAnimation(this.happyAnimation, true);
         cancelled = await UniTask.WaitForSeconds(this.happyDuration, cancellationToken: ct).SuppressCancellationThrow();
         if (cancelled) return;
 
         // this.darkBG.DOFade(0f, this.bgFadeDuration);
+        PlayAudio(this.disappearingAnimation);
         await this.angelSkeletonGraphic.WaitAnimation(this.disappearingAnimation, cancellationToken: ct);
     }
 
@@ -158,5 +172,16 @@ public class AngelUpgradeView : BaseView
         skeleton.SetSkin(skin);
         skeleton.SetSlotsToSetupPose();
         this.angelSkeletonGraphic.AnimationState.Apply(skeleton);
+    }
+
+    private void PlayAudio(string audioKey)
+    {
+        if (string.IsNullOrEmpty(audioKey))
+        {
+            return;
+        }
+
+        this.audioPlayer.StopSound(audioKey);
+        this.audioPlayer.PlaySound(audioKey);
     }
 }
