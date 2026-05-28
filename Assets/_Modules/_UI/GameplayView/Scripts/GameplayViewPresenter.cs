@@ -563,6 +563,7 @@ public class GameplayViewPresenter : BaseViewPresenter
 
         List<string> newSkins = GetAngelSkins();
 
+        LogUpgradingAngelEvent();
         this.angelUpgradeView.Show();
         try
         {
@@ -575,6 +576,20 @@ public class GameplayViewPresenter : BaseViewPresenter
 
         if (!ct.IsCancellationRequested)
             ShowWinViewImmediate();
+    }
+
+    private void LogUpgradingAngelEvent()
+    {
+        int currentLevelOrder = this.runtimeState.CurrentLevelOrder.Value + 1;
+        Debug.Log($"--- (TRACKING) Log Upgrading Angel Event --- Level: {currentLevelOrder}");
+
+        var baseGameContext = (BaseGameContext)this.Context;
+        baseGameContext.AnalyticTracker.LogEvent(new UpgradingAngelEventData()
+        {
+            eventName = UpgradingAngelEventData.EVENT_NAME.upgrading_angel,
+            level = currentLevelOrder.ToString(),
+            level_mode = "normal"
+        });
     }
 
     private void ShowWinViewImmediate()
