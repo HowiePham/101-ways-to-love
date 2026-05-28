@@ -265,6 +265,21 @@ public class GameplayView : BaseView
         }
     }
 
+    private async UniTask ScaleDownAndHideButton(RectTransform rect, Button btn)
+    {
+        if (!btn.gameObject.activeSelf) return;
+        KillLoopScalingTween(rect);
+        await rect.DOScale(0f, 0.3f).SetEase(Ease.InOutQuad).AsyncWaitForCompletion();
+        btn.gameObject.SetActive(false);
+        rect.localScale = Vector3.one;
+    }
+
+    public void HideButtonsOnLevelDone()
+    {
+        ScaleDownAndHideButton(this.HintBtnRect, this.hintBtn).Forget();
+        ScaleDownAndHideButton(this.SkipBtnRect, this.skipBtn).Forget();
+    }
+
     private async UniTask MovingUIEffect(RectTransform uiItem, Vector3 firstPos, Vector3 targetPos, float duration, float delay, bool bounceEffect)
     {
         uiItem.anchoredPosition = firstPos;
