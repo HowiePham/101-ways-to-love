@@ -27,10 +27,12 @@ public class HardLevelView : BaseView
 
     [Title("Clock")] [SerializeField] private CanvasGroup clockGroup;
     [SerializeField] private TMP_Text clockText;
+    [SerializeField] private Transform clockGroupMessageTarget;
 
     [Title("Message Group")] [SerializeField]
     private CanvasGroup messageGroup;
 
+    [SerializeField] private CanvasGroup darkBg;
     [SerializeField] private Image messageBoard;
     [SerializeField] private Transform deathGod;
     [SerializeField] private TMP_Text messageText;
@@ -49,7 +51,9 @@ public class HardLevelView : BaseView
     [Title("SFX")] [SerializeField, SoundKey]
     private string hardLevelAudioKey;
 
+    private Tween clockPulseTween;
     private Tween getMoreTimePulseTween;
+    private Vector3 clockGroupOriginPosition;
 
     public event Action OnClickPlay;
     public event Action OnClickGetMoreTime;
@@ -63,6 +67,8 @@ public class HardLevelView : BaseView
         base.Initialize();
         this.playButton.onClick.AddListener(() =>
         {
+            StopClockPulse();
+            this.clockGroup.transform.DOLocalMove(this.clockGroupOriginPosition, 0.4f).SetEase(Ease.OutQuint);
             OnClickPlay?.Invoke();
         });
         this.getMoreTimeButton.onClick.AddListener(() =>
@@ -89,9 +95,12 @@ public class HardLevelView : BaseView
         // DOTween.Kill(this.warningFx.transform);
         DOTween.Kill(this.smallTitle);
         DOTween.Kill(this.clockGroup.transform);
+        this.clockPulseTween?.Kill();
+        this.clockPulseTween = null;
         this.getMoreTimePulseTween?.Kill();
         this.getMoreTimePulseTween = null;
         DOTween.Kill(this.messageGroup);
+        DOTween.Kill(this.darkBg);
         DOTween.Kill(this.deathGod);
         DOTween.Kill(this.messageBoard);
         this.centerIconGroup.blocksRaycasts = false;
@@ -122,6 +131,7 @@ public class HardLevelView : BaseView
         if (firstTimeShowingHardLevel)
         {
             PlayerPrefs.SetInt(HardLevelShowFirstTimeDataKey, 1);
+            this.clockGroupOriginPosition = this.clockGroup.transform.localPosition;
             ShowMessageGroup();
         }
         else
@@ -133,6 +143,21 @@ public class HardLevelView : BaseView
     private void ShowClockGroup()
     {
         DOTween.Sequence().Append(this.clockGroup.transform.DOScale(1, 0.6f).SetEase(Ease.OutBack));
+    }
+
+    private void StartClockPulse()
+    {
+        this.clockPulseTween = this.clockGroup.transform
+            .DOScale(1.1f, 0.6f)
+            .SetEase(Ease.InOutSine)
+            .SetLoops(-1, LoopType.Yoyo);
+    }
+
+    private void StopClockPulse()
+    {
+        this.clockPulseTween?.Kill();
+        this.clockPulseTween = null;
+        this.clockGroup.transform.localScale = Vector3.one;
     }
 
     private void StartGetMoreTimeButtonPulse()
@@ -156,8 +181,12 @@ public class HardLevelView : BaseView
         SetMessageActive(true);
         this.messageText.SetText(string.Empty);
         this.messageGroup.alpha = 0;
+        this.darkBg.alpha = 0;
         this.deathGod.localScale = Vector3.zero;
-        await DOTween.Sequence().Append(this.messageGroup.DOFade(1, 0.1f).SetEase(Ease.Linear)).AsyncWaitForCompletion();
+        DOTween.Sequence().Append(this.messageGroup.DOFade(1, 0.1f).SetEase(Ease.Linear));
+        await DOTween.Sequence().Append(this.darkBg.DOFade(1, 0.1f).SetEase(Ease.Linear)).AsyncWaitForCompletion();
+        await this.clockGroup.transform.DOLocalMove(this.clockGroupMessageTarget.localPosition, 0.4f).SetEase(Ease.OutQuint).AsyncWaitForCompletion();
+        StartClockPulse();
         await DOTween.Sequence().Append(this.deathGod.DOScale(1, 0.3f).SetEase(Ease.OutBack)).AsyncWaitForCompletion();
         await DOTween.Sequence().Append(this.messageBoard.DOFade(1, 0.2f).SetEase(Ease.InQuart)).AsyncWaitForCompletion();
         await TextAppearEffect(this.messageString);
@@ -216,6 +245,7 @@ public class HardLevelView : BaseView
     public void SetMessageActive(bool active)
     {
         this.messageGroup.gameObject.SetActive(active);
+        this.darkBg.gameObject.SetActive(active);
     }
 
     public IEnumerator<float> TimeoutAppearFromTopEffect()
