@@ -110,7 +110,7 @@ public class AngelUpgradeView : BaseView
 
         ApplyMixedSkin(oldAngelSkin);
 
-        PlayAudio(this.appearingAnimation);
+        PlayAudio(this.angelAppearingSFX);
         await this.angelSkeletonGraphic.WaitAnimation(this.appearingAnimation, cancellationToken: ct);
         if (ct.IsCancellationRequested) return;
 
@@ -128,7 +128,7 @@ public class AngelUpgradeView : BaseView
         if (cancelled) return;
 
         // this.darkBG.DOFade(0f, this.bgFadeDuration);
-        PlayAudio(this.disappearingAnimation);
+        PlayAudio(this.angelDisappearingSFX);
         await this.angelSkeletonGraphic.WaitAnimation(this.disappearingAnimation, cancellationToken: ct);
     }
 
