@@ -34,6 +34,8 @@ public class GameplayViewPresenter : BaseViewPresenter
     private readonly SheetAngelUpgradeRepository angelUpgradeRepository;
     private readonly ILootProcessor lootProcessor;
     private readonly ISaveManager saveManager;
+    private readonly ILevelOrder levelOrder;
+    private readonly ChapterLevelRepository chapterLevelRepo;
 
     private GameplayView gameplayView;
     private TutorialOverlayView tutorialView;
@@ -58,7 +60,7 @@ public class GameplayViewPresenter : BaseViewPresenter
 
     public GameplayViewPresenter(BaseScenePresenter scenePresenter, Transform transform, IAsyncPublisher eventPublisher, IAsyncSubscriber eventSubscriber,
         RuntimeState runtimeState, LifeSystem lifeSystem, LevelConfig hintLevelConfig, IAdAdapter adAdapter, DialogManager dialogManager, ILevelOrder levelOrder, IConfigProvider remoteConfig,
-        SheetAngelUpgradeRepository angelUpgradeRepository, ILootProcessor lootProcessor, ISaveManager saveManager) :
+        SheetAngelUpgradeRepository angelUpgradeRepository, ILootProcessor lootProcessor, ISaveManager saveManager, ChapterLevelRepository chapterLevelRepo) :
         base(scenePresenter, transform)
     {
         this.eventPublisher = eventPublisher;
@@ -72,6 +74,8 @@ public class GameplayViewPresenter : BaseViewPresenter
         this.angelUpgradeRepository = angelUpgradeRepository;
         this.lootProcessor = lootProcessor;
         this.saveManager = saveManager;
+        this.levelOrder = levelOrder;
+        this.chapterLevelRepo = chapterLevelRepo;
     }
 
     protected override void AddViews()
@@ -500,6 +504,10 @@ public class GameplayViewPresenter : BaseViewPresenter
         int currentOrder = this.runtimeState.CurrentLevelOrder.Value;
         LevelInfo currentLevel = gameContext.LevelOrder.GetByOrder(currentOrder);
 
+        var (completedCount, totalLevels) = GetChapterProgress(currentOrder);
+        if (totalLevels > 0)
+            await this.gameplayView.PlayChapterProgressAsync(completedCount, totalLevels);
+
         if (currentLevel != null &&
             gameContext.UpgradeAngelChapterConfig.HasLevel(currentLevel.Chapter.ToString()))
         {
@@ -519,6 +527,20 @@ public class GameplayViewPresenter : BaseViewPresenter
         }
 
         ShowWinViewImmediate();
+    }
+
+    private (int completedCount, int totalLevels) GetChapterProgress(int currentOrder)
+    {
+        LevelInfo currentLevel = this.levelOrder.GetByOrder(currentOrder);
+        if (currentLevel == null) return (0, 0);
+
+        ChapterInfo chapter = this.chapterLevelRepo.GetChapter(currentLevel.Chapter);
+        if (chapter == null) return (0, 0);
+
+        int firstStage = chapter.Levels[0].StageNumber;
+        int currentStage = currentOrder + 1;
+        int completedInChapter = currentStage - firstStage + 1;
+        return (completedInChapter, chapter.LevelCount);
     }
 
     private async UniTask RunAngelUpgradeAndShowWin(int upgradeOrder)

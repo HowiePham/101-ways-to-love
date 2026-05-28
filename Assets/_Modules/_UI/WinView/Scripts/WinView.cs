@@ -26,9 +26,6 @@ namespace _Modules._UI.WinView.Scripts
         [SerializeField] private Button replayButton;
         [SerializeField] private Button homeButton;
 
-        [Header("Chapter Progress")] [SerializeField]
-        private ChapterProgressBar chapterProgressBar;
-
         [SerializeField] private ChapterRewardView chapterRewardView;
 
         private Dictionary<RectTransform, TweenerCore<Vector3, Vector3, VectorOptions>> loopScalingTweens;
@@ -49,9 +46,6 @@ namespace _Modules._UI.WinView.Scripts
             base.Initialize();
 
             this.loopScalingTweens = new Dictionary<RectTransform, TweenerCore<Vector3, Vector3, VectorOptions>>();
-
-            if (this.chapterProgressBar != null)
-                this.chapterProgressBar.Initialize();
 
             if (this.chapterRewardView != null)
                 this.chapterRewardView.Initialize(
@@ -110,12 +104,6 @@ namespace _Modules._UI.WinView.Scripts
                 this.RemoveAdsRect.localScale = Vector3.one;
             }
 
-            if (this.chapterProgressBar != null)
-            {
-                DOTween.Kill(this.chapterProgressBar.transform);
-                this.chapterProgressBar.transform.localScale = Vector3.zero;
-            }
-
             this.chapterRewardView?.Cleanup();
         }
 
@@ -135,19 +123,12 @@ namespace _Modules._UI.WinView.Scripts
             await UniTask.WaitForSeconds(0.5f, cancellationToken: ct);
             if (ct.IsCancellationRequested) return;
 
-            if (this.chapterProgressBar != null)
-            {
-                await this.chapterProgressBar.PlayShowAnimation();
-                if (ct.IsCancellationRequested) return;
-            }
-
             if (this.chapterRewardView != null && this.chapterRewardView.ShouldShow)
             {
-                await this.chapterRewardView.ShowPanelEffect(ct, () => this.chapterProgressBar.PlayHideAnimation());
+                await this.chapterRewardView.ShowPanelEffect(ct);
             }
             else
             {
-                await this.chapterProgressBar.PlayHideAnimation();
                 await ShowNormalButtonsEffect(ct);
             }
         }
@@ -188,12 +169,6 @@ namespace _Modules._UI.WinView.Scripts
         public void SetActiveRemoveAdsButton(bool active)
         {
             this.removeAdsBtnGroup.gameObject.SetActive(active);
-        }
-
-        public void SetChapterProgress(int completedCount, int totalLevels)
-        {
-            if (this.chapterProgressBar != null)
-                this.chapterProgressBar.SetProgressData(completedCount, totalLevels);
         }
 
         public void SetChapterRewardData(bool show, int currentLife)

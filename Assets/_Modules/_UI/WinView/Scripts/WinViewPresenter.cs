@@ -66,8 +66,6 @@ namespace _Modules._UI.WinView.Scripts
             base.OnShow();
             this.eventPublisher.PublishAsync(new ScreenShown("win_view"));
 
-            ShowChapterProgress();
-
             this.winView.OnContinueClicked += ContinueClickedHandler;
             this.winView.OnReplayClicked += ReplayClickedHandler;
             this.winView.OnRemoveAdsClicked += ShowRemoveAdsView;
@@ -317,22 +315,6 @@ namespace _Modules._UI.WinView.Scripts
             LogWinViewFlow("false", "true", "false", false);
             this.eventPublisher.PublishAsync(new BackHome());
             Hide();
-        }
-
-        private void ShowChapterProgress()
-        {
-            int currentOrder = this.runtimeState.CurrentLevelOrder.Value;
-            LevelInfo currentLevel = this.levelOrder.GetByOrder(currentOrder);
-            if (currentLevel == null) return;
-
-            ChapterInfo chapter = this.chapterLevelRepo.GetChapter(currentLevel.Chapter);
-            if (chapter == null) return;
-
-            int firstStage = chapter.Levels[0].StageNumber;
-            int currentStage = currentOrder + 1;
-            int completedInChapter = currentStage - firstStage + 1;
-
-            this.winView.SetChapterProgress(completedInChapter, chapter.LevelCount);
         }
 
         private void InterstitialClosedHandler(AdPlacement adPlacement)

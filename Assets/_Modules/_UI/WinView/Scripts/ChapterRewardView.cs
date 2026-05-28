@@ -166,7 +166,7 @@ namespace _Modules._UI.WinView.Scripts
                 this.numberBasedLifeView.SetLifeCount(currentLife);
         }
 
-        public async UniTask ShowPanelEffect(CancellationToken ct, Action hideProgressBar)
+        public async UniTask ShowPanelEffect(CancellationToken ct)
         {
             this.showPanelCts?.Cancel();
             this.showPanelCts?.Dispose();
@@ -186,7 +186,6 @@ namespace _Modules._UI.WinView.Scripts
             if (this.rewardSkeletonGraphic != null) this.rewardSkeletonGraphic.gameObject.SetActive(false);
 
             await this.rewardDarkBg.DOFade(1f, 0.3f).AsyncWaitForCompletion();
-            hideProgressBar?.Invoke();
             if (ct.IsCancellationRequested) return;
 
             // await JumpRewardBoxAsync(ct);

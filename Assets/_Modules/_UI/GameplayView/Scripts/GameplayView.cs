@@ -30,6 +30,9 @@ public class GameplayView : BaseView
     [SerializeField] private Button startLevelGameButton;
     [SerializeField] private Button noLifeBlocker;
 
+    [Header("Chapter Progress")] [SerializeField]
+    private ChapterProgressBar chapterProgressBar;
+
     [Header("Popup Effect")] [SerializeField]
     private RectTransform[] showingEffectUIs;
 
@@ -55,9 +58,10 @@ public class GameplayView : BaseView
     {
         base.Initialize();
         if (this.lifeView != null)
-        {
             this.lifeView.Initialize();
-        }
+
+        if (this.chapterProgressBar != null)
+            this.chapterProgressBar.Initialize();
 
         this.wrongSignal.gameObject.SetActive(false);
         this.wrongSignal.localScale = Vector3.zero;
@@ -98,7 +102,14 @@ public class GameplayView : BaseView
             {
                 kvp.Value?.Kill();
             }
+
             this.loopScalingTweens.Clear();
+        }
+        
+        if (this.chapterProgressBar != null)
+        {
+            DOTween.Kill(this.chapterProgressBar.transform);
+            this.chapterProgressBar.transform.localScale = Vector3.zero;
         }
 
         DOTween.Kill(this.HintBtnRect);
@@ -311,6 +322,15 @@ public class GameplayView : BaseView
         this.noLifeBlocker.gameObject.SetActive(active);
     }
 
+    public async UniTask PlayChapterProgressAsync(int completedCount, int totalLevels)
+    {
+        if (this.chapterProgressBar == null) return;
+        this.chapterProgressBar.SetProgressData(completedCount, totalLevels);
+        Canvas.ForceUpdateCanvases();
+        await this.chapterProgressBar.PlayShowAnimation();
+        await this.chapterProgressBar.PlayHideAnimation();
+    }
+
     private async UniTask LoopScalingUIEffect(RectTransform uiItem, float targetValue, float delay, float duration, CancellationToken ct = default)
     {
         uiItem.localScale = Vector3.one;
@@ -321,6 +341,7 @@ public class GameplayView : BaseView
         {
             existing?.Kill();
         }
+
         TweenerCore<Vector3, Vector3, VectorOptions> tweenCore = uiItem.DOScale(targetValue, duration).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo);
         this.loopScalingTweens[uiItem] = tweenCore;
     }
