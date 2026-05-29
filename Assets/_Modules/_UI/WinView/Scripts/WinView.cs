@@ -179,7 +179,9 @@ namespace _Modules._UI.WinView.Scripts
         public async UniTask PlayDefaultRewardAndCloseAsync(CancellationToken ct)
         {
             if (this.chapterRewardView != null)
+            {
                 await this.chapterRewardView.PlayDefaultRewardAndCloseAsync(ct, ShowNormalButtonsEffect);
+            }
         }
 
         public async UniTask PlayBonusRewardAndCloseAsync(CancellationToken ct)

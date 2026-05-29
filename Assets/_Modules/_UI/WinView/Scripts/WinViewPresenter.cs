@@ -79,8 +79,6 @@ namespace _Modules._UI.WinView.Scripts
             var baseGameContext = (BaseGameContext)this.Context;
             this.winView.SetActiveRemoveAdsButton(!baseGameContext.IsRemoveAds);
 
-            this.adsAdapter.Mrec.Show(new AdPlacement("win_view"));
-
             if (CanShowNextChapter())
             {
                 int currentLife = this.lifeSystem.CurrentLifeCount;
@@ -93,6 +91,10 @@ namespace _Modules._UI.WinView.Scripts
                 this.winView.OnLoseBonusClicked += LoseBonusClickedHandler;
                 this.adsAdapter.RewardVideo.OnRewarded += BonusRewardedHandler;
                 this.adsAdapter.RewardVideo.OnShowFailed += BonusShowFailedHandler;
+            }
+            else
+            {
+                this.adsAdapter.Mrec.Show(new AdPlacement("win_view"));
             }
         }
 
@@ -228,12 +230,16 @@ namespace _Modules._UI.WinView.Scripts
         {
             var ct = this.winView.GetShowCancellationToken();
             await this.winView.PlayDefaultRewardAndCloseAsync(ct);
+            if (ct.IsCancellationRequested) return;
+            this.adsAdapter.Mrec.Show(new AdPlacement("win_view"));
         }
 
         private async UniTaskVoid PlayBonusRewardFlow()
         {
             var ct = this.winView.GetShowCancellationToken();
             await this.winView.PlayBonusRewardAndCloseAsync(ct);
+            if (ct.IsCancellationRequested) return;
+            this.adsAdapter.Mrec.Show(new AdPlacement("win_view"));
         }
 
         private void LogChapterBonusEvent(bool useRewardBonus)
