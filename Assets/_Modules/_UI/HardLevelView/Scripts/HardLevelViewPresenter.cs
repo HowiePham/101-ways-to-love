@@ -69,7 +69,7 @@ public class HardLevelViewPresenter : BaseViewPresenter
         Messenger.AddListener<bool>(EventKey.PauseLevel, StopTimerHandler);
         Messenger.AddListener(EventKey.AnimationStart, StopTimer);
         Messenger.AddListener(EventKey.AnimationComplete, ResumeTimer);
-        Messenger.AddListener(EventKey.LevelDone, StopTimer);
+        Messenger.AddListener(EventKey.LevelDone, FinishTimer);
         Messenger.AddListener(EventKey.LevelWin, FinishTimer);
         Messenger.AddListener(EventKey.StartLevelGame, StartTimer);
 
@@ -91,7 +91,7 @@ public class HardLevelViewPresenter : BaseViewPresenter
         Messenger.RemoveListener<bool>(EventKey.PauseLevel, StopTimerHandler);
         Messenger.RemoveListener(EventKey.AnimationStart, StopTimer);
         Messenger.RemoveListener(EventKey.AnimationComplete, ResumeTimer);
-        Messenger.RemoveListener(EventKey.LevelDone, StopTimer);
+        Messenger.RemoveListener(EventKey.LevelDone, FinishTimer);
         Messenger.RemoveListener(EventKey.LevelWin, FinishTimer);
         Messenger.RemoveListener(EventKey.StartLevelGame, StartTimer);
 
@@ -192,6 +192,11 @@ public class HardLevelViewPresenter : BaseViewPresenter
 
     public void ResumeTimer()
     {
+        if (this.countdownCoroutine == default)
+        {
+            return;
+        }
+
         Timing.ResumeCoroutines(this.countdownCoroutine);
     }
 
@@ -202,6 +207,11 @@ public class HardLevelViewPresenter : BaseViewPresenter
 
     public void FinishTimer()
     {
+        if (this.countdownCoroutine == default)
+        {
+            return;
+        }
+
         Timing.KillCoroutines(this.countdownCoroutine);
         this.countdownCoroutine = default;
     }
