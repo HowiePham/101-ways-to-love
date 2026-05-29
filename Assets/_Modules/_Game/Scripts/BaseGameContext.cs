@@ -242,7 +242,19 @@ namespace Mimi.Prototypes
 
             this.stepStopwatch.Restart();
             UniTask adsInitTask = InitAdsService();
-            await UniTask.WhenAny(adsInitTask, UniTask.Delay(TimeSpan.FromSeconds(5)));
+            var isShowAOA = RemoteConfig.GetValue(ConfigKey.IsShowAOA).Boolean;
+            if (IsFirstSession || !isShowAOA)
+            {
+                await UniTask.WhenAny(adsInitTask, UniTask.Delay(TimeSpan.FromSeconds(5)));
+            }
+            else
+            {
+                await adsInitTask;
+                await UniTask.WhenAny(
+                    UniTask.WaitUntil(() => Ads.AppOpen.IsReady),
+                    UniTask.Delay(TimeSpan.FromSeconds(3)));
+            }
+
             LogInitializeEvent("init_ads", this.stepStopwatch.ElapsedMilliseconds);
 
             InitLifeSystem();
@@ -691,7 +703,7 @@ namespace Mimi.Prototypes
                 .SetString(ConfigKey.RateLevel, "30")
                 .SetString(ConfigKey.HintLevel, "1")
                 .SetString(ConfigKey.UpgradeAngelInChapter, "1,2,3,4,5,6,7,8,9")
-                .SetBool(ConfigKey.IsShowAOA, false)
+                .SetBool(ConfigKey.IsShowAOA, true)
                 .SetBool(ConfigKey.RequireInternet, true)
                 .SetBool(ConfigKey.ShowNextChapterInWinView, true)
                 .SetFloat(ConfigKey.InternetFailedDelay, 7f)
@@ -705,7 +717,7 @@ namespace Mimi.Prototypes
                 .SetBool(ConfigKey.ShowCollapAdManually, false)
                 .SetBool(ConfigKey.ShowBanner, true)
                 .SetBool(ConfigKey.ShowInterstitial, true)
-                .SetBool(ConfigKey.ShowMREC, false)
+                .SetBool(ConfigKey.ShowMREC, true)
                 .SetBool(ConfigKey.ShowRewarded, true)
                 .SetBool(ConfigKey.UseAdmobBanner, false)
                 .SetBool(ConfigKey.UseMaxAoa, true)
