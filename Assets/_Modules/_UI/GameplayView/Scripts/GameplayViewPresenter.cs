@@ -103,7 +103,6 @@ public class GameplayViewPresenter : BaseViewPresenter
         this.numberBasedLifeView.Show();
         this.numberBasedLifeView.OnLifeButtonClicked += LifeButtonClickedHandler;
         this.gameplayView.OnNoLifeBlockerClicked += NoLifeBlockerClickedHandler;
-        this.angelUpgradeView.OnTestingAngelUpgradingEffect += ShowAngelUpgradeSequence;
 
         this.adAdapter.RewardVideo.OnRewarded += OnRewardCompleted;
         this.adAdapter.RewardVideo.OnShowFailed += OnRewardFailed;
@@ -384,7 +383,6 @@ public class GameplayViewPresenter : BaseViewPresenter
         this.numberBasedLifeView.OnLifeButtonClicked -= LifeButtonClickedHandler;
         this.numberBasedLifeView.Hide();
         this.gameplayView.OnNoLifeBlockerClicked -= NoLifeBlockerClickedHandler;
-        this.angelUpgradeView.OnTestingAngelUpgradingEffect -= ShowAngelUpgradeSequence;
 
         this.adAdapter.RewardVideo.OnRewarded -= OnRewardCompleted;
         this.adAdapter.RewardVideo.OnShowFailed -= OnRewardFailed;
@@ -439,44 +437,6 @@ public class GameplayViewPresenter : BaseViewPresenter
     {
         int currentLevel = this.runtimeState.CurrentLevelOrder.Value + 1;
         this.gameplayView.SetLevelCurrent(currentLevel.ToString());
-    }
-
-    private void ShowAngelUpgradeSequence()
-    {
-        this.angelSequenceCts?.Cancel();
-        this.angelSequenceCts?.Dispose();
-        this.angelSequenceCts = new CancellationTokenSource();
-        RunAngelSequence(this.angelSequenceCts.Token).Forget();
-    }
-
-    private async UniTaskVoid RunAngelSequence(CancellationToken ct)
-    {
-        var baseGameContext = (BaseGameContext)this.Context;
-        baseGameContext.GameData.EquippedAngelSkins = new Dictionary<string, string>()
-        {
-            { "wings", "canh1" },
-            { "staff", "ao1" },
-            { "clothes", "gay1" }
-        };
-        List<string> currentAngelSkin = GetAngelSkins();
-
-        baseGameContext.GameData.EquippedAngelSkins = new Dictionary<string, string>()
-        {
-            { "wings", "canh3" },
-            { "staff", "ao3" },
-            { "clothes", "gay3" }
-        };
-        List<string> newAngelSkin = GetAngelSkins();
-
-        this.angelUpgradeView.Show();
-        try
-        {
-            await this.angelUpgradeView.PlaySequenceAsync(currentAngelSkin, newAngelSkin, ct);
-        }
-        finally
-        {
-            this.angelUpgradeView.Hide();
-        }
     }
 
     private List<string> GetAngelSkins()
@@ -563,7 +523,6 @@ public class GameplayViewPresenter : BaseViewPresenter
 
         List<string> newSkins = GetAngelSkins();
 
-        LogUpgradingAngelEvent();
         this.angelUpgradeView.Show();
         try
         {
@@ -571,6 +530,7 @@ public class GameplayViewPresenter : BaseViewPresenter
         }
         finally
         {
+            LogUpgradingAngelEvent();
             this.angelUpgradeView.Hide();
         }
 
