@@ -250,6 +250,9 @@ namespace Mimi.Prototypes
             else
             {
                 await adsInitTask;
+                await UniTask.WhenAny(
+                    UniTask.WaitUntil(() => Ads.AppOpen.IsReady),
+                    UniTask.Delay(TimeSpan.FromSeconds(3)));
             }
 
             LogInitializeEvent("init_ads", this.stepStopwatch.ElapsedMilliseconds);
